@@ -44,6 +44,10 @@ declare module 'express-session' {
 
 const app = express();
 
+if (config.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(helmet({
   contentSecurityPolicy: config.NODE_ENV === 'production',
 }));
@@ -69,7 +73,7 @@ app.use(session({
   saveUninitialized: false,
   name: 'sid',
   cookie: {
-    secure: config.NODE_ENV === 'production',
+    secure: config.NODE_ENV === 'production' ? 'auto' : false,
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
