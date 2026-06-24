@@ -1,0 +1,37 @@
+<%- include('../partials/header', { title, description, siteName, siteDescription }) %>
+
+<section class="py-24 md:py-32 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mb-14 animate-on-scroll">
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 section-title">Разговоры с&nbsp;основателями</h1>
+      <p class="text-xl text-gray-600 leading-relaxed">Разговоры с основателями бизнеса о решениях, команде и лидерстве.</p>
+    </div>
+
+    <% if (interviews.length) { %>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <% interviews.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/interviews/<%= item.slug %>" class="flex flex-col sm:flex-row h-full">
+          <div class="w-full sm:w-48 md:w-56 h-56 sm:h-auto flex-shrink-0 bg-gray-100 overflow-hidden img-zoom">
+            <img src="<%= item.entrepreneur?.photo || item.coverImage || '/images/placeholder.jpg' %>" alt="<%= item.entrepreneur?.name %>" class="w-full h-full object-cover">
+          </div>
+          <div class="flex-1 p-6 flex flex-col justify-center">
+            <h2 class="text-xl font-bold mb-2 group-hover:text-terracotta transition-colors"><%= item.entrepreneur?.name || item.title %></h2>
+            <p class="text-sm text-gray-500 mb-4"><%= item.entrepreneur?.title %></p>
+            <p class="text-gray-700 italic mb-4 line-clamp-2">«<%= item.quote || item.entrepreneur?.quote %>»</p>
+            <span class="inline-flex items-center text-terracotta font-semibold text-sm">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              Смотреть интервью
+            </span>
+          </div>
+        </a>
+      </article>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-500 animate-on-scroll">Пока нет опубликованных интервью.</p>
+    <% } %>
+  </div>
+</section>
+
+<%- include('../partials/footer', { siteName, siteDescription }) %>

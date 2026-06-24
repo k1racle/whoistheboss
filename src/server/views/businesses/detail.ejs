@@ -1,0 +1,91 @@
+<%- include('../partials/header', { title, description, siteName, siteDescription }) %>
+
+<section class="pt-24 md:pt-32 pb-16 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-terracotta font-semibold mb-4 animate-on-scroll"><a href="/businesses" class="hover:underline">← Все бизнесы</a></p>
+
+    <header class="mb-10 animate-on-scroll">
+      <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 leading-tight"><%= business.name %></h1>
+      <% if (business.entrepreneur) { %>
+      <p class="text-lg text-gray-600">
+        <a href="/entrepreneurs/<%= business.entrepreneur.slug %>" class="font-semibold text-gray-900 hover:text-terracotta transition-colors"><%= business.entrepreneur.name %></a>
+        · <%= business.entrepreneur.title %>
+      </p>
+      <% } %>
+    </header>
+
+    <% if (business.coverImage) { %>
+    <div class="aspect-video bg-gray-100 overflow-hidden mb-10 rounded-2xl shadow-xl animate-on-scroll img-zoom">
+      <img src="<%= business.coverImage %>" alt="<%= business.name %>" class="w-full h-full object-cover">
+    </div>
+    <% } %>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-on-scroll">
+      <div>
+        <% if (business.description) { %>
+        <h2 class="text-xl font-bold mb-3">О бизнесе</h2>
+        <div class="article-content text-gray-700 leading-relaxed mb-6"><%- business.description %></div>
+        <% } %>
+      </div>
+      <div class="space-y-4">
+        <% if (business.address || business.city) { %>
+        <div class="card p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Адрес</p>
+          <p class="font-medium"><%= [business.city, business.address].filter(Boolean).join(', ') %></p>
+        </div>
+        <% } %>
+        <% if (business.phone) { %>
+        <div class="card p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Телефон</p>
+          <a href="tel:<%= business.phone %>" class="font-medium hover:text-terracotta transition-colors"><%= business.phone %></a>
+        </div>
+        <% } %>
+        <% if (business.email) { %>
+        <div class="card p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Email</p>
+          <a href="mailto:<%= business.email %>" class="font-medium hover:text-terracotta transition-colors"><%= business.email %></a>
+        </div>
+        <% } %>
+        <% if (business.website) { %>
+        <div class="card p-5">
+          <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Сайт</p>
+          <a href="<%= business.website %>" target="_blank" rel="noopener" class="font-medium hover:text-terracotta transition-colors"><%= business.website.replace(/^https?:\/\//, '') %></a>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="mt-12">
+      <%- include('../partials/engagement', {
+        type: 'BUSINESS',
+        itemId: business.id,
+        engagement: engagement,
+        path: `/businesses/${business.slug}`,
+        title: business.name,
+        siteUrl: siteUrl
+      }) %>
+    </div>
+  </div>
+</section>
+
+<% if (related.length) { %>
+<section class="py-20 bg-gray-50 border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl md:text-3xl font-extrabold mb-10 animate-on-scroll section-title">Ещё бизнесы</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% related.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/businesses/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || '/images/placeholder.jpg' %>" alt="<%= item.name %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <h3 class="font-bold text-lg group-hover:text-terracotta transition-colors"><a href="/businesses/<%= item.slug %>"><%= item.name %></a></h3>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('../partials/footer', { siteName, siteDescription }) %>

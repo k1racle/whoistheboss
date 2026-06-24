@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(SUBSCRIBER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comments  Comment[]
+  likes     Like[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  SUBSCRIBER
+}
+
+model Entrepreneur {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  title       String
+  photo       String?
+  bio         String?  @db.Text
+  quote       String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  interviews  Interview[]
+  reels       Reel[]
+  articles    Article[]
+  comments    Comment[]
+  businesses  Business[]
+
+  @@map("entrepreneurs")
+}
+
+model Interview {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  title          String
+  subtitle       String?
+  entrepreneurId String
+  entrepreneur   Entrepreneur @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  coverImage     String?
+  videoType      VideoType @default(EMBED)
+  videoUrl       String?
+  videoFile      String?
+  summary        String?   @db.Text
+  content        String?   @db.Text
+  quote          String?
+  isPublished    Boolean   @default(false)
+  publishedAt    DateTime?
+  views          Int       @default(0)
+  metaTitle      String?
+  metaDesc       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  comments       Comment[]
+
+  @@map("interviews")
+}
+
+model Reel {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  title          String
+  entrepreneurId String?
+  entrepreneur   Entrepreneur? @relation(fields: [entrepreneurId], references: [id], onDelete: SetNull)
+  coverImage     String?
+  videoType      VideoType     @default(EMBED)
+  videoUrl       String?
+  videoFile      String?
+  description    String?       @db.Text
+  isPublished    Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  comments       Comment[]
+
+  @@map("reels")
+}
+
+model Article {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  title          String
+  subtitle       String?
+  entrepreneurId String?
+  entrepreneur   Entrepreneur? @relation(fields: [entrepreneurId], references: [id], onDelete: SetNull)
+  coverImage     String?
+  content        String        @db.Text
+  isPublished    Boolean       @default(false)
+  publishedAt    DateTime?
+  metaTitle      String?
+  metaDesc       String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  comments       Comment[]
+
+  @@map("articles")
+}
+
+model Business {
+  id             String       @id @default(cuid())
+  slug           String       @unique
+  name           String
+  type           String
+  description    String?      @db.Text
+  address        String?
+  city           String?
+  phone          String?
+  email          String?
+  website        String?
+  coverImage     String?
+  isPublished    Boolean      @default(false)
+  entrepreneurId String
+  entrepreneur   Entrepreneur @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("businesses")
+}
+
+model Comment {
+  id             String        @id @default(cuid())
+  content        String        @db.Text
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interviewId    String?
+  interview      Interview?    @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  articleId      String?
+  article        Article?      @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  reelId         String?
+  reel           Reel?         @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  entrepreneurId String?
+  entrepreneur   Entrepreneur? @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  isApproved     Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+
+  @@map("comments")
+}
+
+model Like {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String
+  entityId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, entityType, entityId])
+  @@index([entityType, entityId])
+  @@map("likes")
+}
+
+model ShareEvent {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  platform   String
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@map("share_events")
+}
+
+model ShootingRequest {
+  id        String        @id @default(cuid())
+  name      String
+  company   String?
+  phone     String?
+  email     String
+  message   String?       @db.Text
+  status    RequestStatus @default(NEW)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("shooting_requests")
+}
+
+enum RequestStatus {
+  NEW
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("subscribers")
+}
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String @db.Text
+
+  @@map("site_settings")
+}
+
+enum VideoType {
+  EMBED
+  SELF_HOSTED
+}

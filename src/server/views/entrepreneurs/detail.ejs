@@ -1,0 +1,139 @@
+<%- include('../partials/header', { title, description, siteName, siteDescription }) %>
+
+<section class="pt-24 md:pt-32 pb-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-terracotta font-semibold mb-4 animate-on-scroll"><a href="/entrepreneurs" class="hover:underline">← Все бизнесмены</a></p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div class="aspect-[3/4] bg-gray-100 overflow-hidden rounded-2xl shadow-xl img-zoom animate-on-scroll">
+        <img src="<%= entrepreneur.photo || '/images/placeholder.jpg' %>" alt="<%= entrepreneur.name %>" class="w-full h-full object-cover">
+      </div>
+      <div class="animate-on-scroll delay-200">
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-3 leading-tight"><%= entrepreneur.name %></h1>
+        <p class="text-xl text-gray-600 mb-8 font-light"><%= entrepreneur.title %></p>
+
+        <% if (entrepreneur.quote) { %>
+        <blockquote class="text-2xl md:text-3xl font-light italic text-gray-900 mb-8 pl-6 border-l-4 border-terracotta leading-snug mt-8">
+          «<%= entrepreneur.quote %>»
+        </blockquote>
+        <% } %>
+        <% if (entrepreneur.bio) { %>
+        <div class="article-content text-gray-700 leading-relaxed">
+          <%- entrepreneur.bio %>
+        </div>
+        <% } %>
+
+        <div class="mt-10">
+          <%- include('../partials/engagement', {
+            type: 'ENTREPRENEUR',
+            itemId: entrepreneur.id,
+            engagement: engagement,
+            path: `/entrepreneurs/${entrepreneur.slug}`,
+            title: entrepreneur.name,
+            siteUrl: siteUrl
+          }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% if (businesses.length) { %>
+<section class="py-20 bg-white border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl md:text-3xl font-extrabold mb-10 animate-on-scroll section-title">Бизнесы</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% businesses.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/businesses/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || entrepreneur.photo || '/images/placeholder.jpg' %>" alt="<%= item.name %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <span class="px-2.5 py-1 bg-terracotta/10 text-terracotta text-xs font-semibold rounded-full uppercase tracking-wide"><%= item.type %></span>
+          <h3 class="font-bold text-lg mt-3 group-hover:text-terracotta transition-colors"><a href="/businesses/<%= item.slug %>"><%= item.name %></a></h3>
+          <% if (item.city) { %>
+          <p class="text-sm text-gray-500 mt-1"><%= item.city %></p>
+          <% } %>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (interviews.length) { %>
+<section class="py-20 bg-gray-50 border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl md:text-3xl font-extrabold mb-10 animate-on-scroll section-title">Интервью</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% interviews.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/interviews/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || entrepreneur.photo || '/images/placeholder.jpg' %>" alt="<%= item.title %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <h3 class="font-bold text-lg group-hover:text-terracotta transition-colors"><a href="/interviews/<%= item.slug %>"><%= item.title %></a></h3>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (reels.length) { %>
+<section class="py-20 bg-white border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl md:text-3xl font-extrabold mb-10 animate-on-scroll section-title">Рилсы</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% reels.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/reels/<%= item.slug %>" class="group block relative aspect-reel bg-gray-900 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || entrepreneur.photo || '/images/placeholder.jpg' %>" alt="<%= item.title %>" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500 blur-[2px]">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-16 h-16 rounded-full bg-white/95 flex items-center justify-center group-hover:bg-terracotta group-hover:text-white transition-all duration-300 group-hover:scale-110">
+              <svg class="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </a>
+        <div class="p-6">
+          <h3 class="font-bold text-lg group-hover:text-terracotta transition-colors"><a href="/reels/<%= item.slug %>"><%= item.title %></a></h3>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (articles.length) { %>
+<section class="py-20 bg-gray-50 border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl md:text-3xl font-extrabold mb-10 animate-on-scroll section-title">Статьи</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% articles.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/blog/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || entrepreneur.photo || '/images/placeholder.jpg' %>" alt="<%= item.title %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <h3 class="font-bold text-lg group-hover:text-terracotta transition-colors"><a href="/blog/<%= item.slug %>"><%= item.title %></a></h3>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('../partials/comments', {
+  comments: entrepreneur.comments,
+  commentCount: entrepreneur._count.comments,
+  type: 'entrepreneur',
+  itemId: entrepreneur.id,
+  path: `/entrepreneurs/${entrepreneur.slug}`,
+  user: user,
+  formatDate: formatDate
+}) %>
+
+<%- include('../partials/footer', { siteName, siteDescription }) %>

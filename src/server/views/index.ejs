@@ -1,0 +1,267 @@
+<%- include('partials/header', { title, description, siteName, siteDescription }) %>
+
+<!-- Hero -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
+  <div class="hero-mesh">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+    <div class="hero-blob hero-blob-3"></div>
+  </div>
+  <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMSIvPjwvZz48L2c+PC9zdmc+')] opacity-40"></div>
+
+  <!-- Floating entrepreneur polaroids -->
+  <div class="absolute inset-0 z-0 pointer-events-none" aria-hidden="true">
+    <% const slots = [
+      [10, 6], [14, 78], [34, 4], [38, 82],
+      [62, 8], [66, 76], [82, 22], [84, 58]
+    ]; %>
+    <% for (let i = slots.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [slots[i], slots[j]] = [slots[j], slots[i]]; } %>
+    <% entrepreneurs.slice(0, slots.length).forEach((item, i) => { %>
+      <% const [top, left] = slots[i]; %>
+      <% const rot = (Math.random() * 24 - 12).toFixed(1); %>
+      <% const dur = (Math.random() * 8 + 14).toFixed(1); %>
+      <% const delay = (Math.random() * -dur).toFixed(1); %>
+      <div class="polaroid polaroid-float hidden md:block" style="top: <%= top %>%; left: <%= left %>%; --rot: <%= rot %>deg; animation-duration: <%= dur %>s; animation-delay: <%= delay %>s;">
+        <div class="polaroid-inner">
+          <img src="<%= item.photo || '/images/placeholder.jpg' %>" alt="<%= item.name %>">
+          <p><%= item.name %></p>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="hero-question" aria-hidden="true">?</div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-32">
+    <p class="hero-reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/80 text-sm font-medium mb-8">
+      <span class="w-2 h-2 rounded-full bg-terracotta animate-pulse"></span>
+      Медиа о тех, кто строит бизнес
+    </p>
+
+    <h1 class="hero-reveal hero-reveal-delay-1 text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white mb-8 leading-[0.9]">
+      КТО ЗДЕСЬ<br>
+      <span class="text-accent-hero">ГЛАВНЫЙ</span>
+    </h1>
+
+    <p class="hero-reveal hero-reveal-delay-2 text-lg md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
+      Интервью, рилсы, колонки и истории от основателей, которые прошли путь от идеи до компании.
+    </p>
+
+    <div class="hero-reveal hero-reveal-delay-3 flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+      <a href="/interviews" class="btn-primary text-base rounded-full px-8 py-4 shimmer">Смотреть интервью</a>
+      <a href="/shooting-request" class="inline-flex items-center text-white font-medium hover:text-terracotta transition-colors px-6 py-4">
+        Стать героем
+        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+    </div>
+
+    <div class="hero-reveal hero-reveal-delay-4 flex flex-wrap items-center justify-center gap-6">
+      <div class="glass-card px-6 py-4 rounded-2xl">
+        <p class="text-3xl font-black text-white">50+</p>
+        <p class="text-xs text-gray-400 uppercase tracking-wider">интервью</p>
+      </div>
+      <div class="glass-card px-6 py-4 rounded-2xl">
+        <p class="text-3xl font-black text-white">100+</p>
+        <p class="text-xs text-gray-400 uppercase tracking-wider">историй</p>
+      </div>
+      <div class="glass-card px-6 py-4 rounded-2xl">
+        <p class="text-3xl font-black text-white">10K+</p>
+        <p class="text-xs text-gray-400 uppercase tracking-wider">подписчиков</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+    <svg class="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+  </div>
+</section>
+
+<!-- Interviews -->
+<section class="py-24 md:py-32 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-end justify-between mb-14 animate-on-scroll">
+      <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight section-title">Разговоры о деле</h2>
+      <a href="/interviews" class="hidden md:inline-flex items-center text-terracotta font-semibold hover:underline group">
+        Все интервью
+        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+    </div>
+
+    <% if (interviews.length) { %>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <% interviews.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group <%= index % 2 === 0 ? 'delay-100' : 'delay-200' %>" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/interviews/<%= item.slug %>" class="flex flex-col sm:flex-row h-full">
+          <div class="w-full sm:w-48 md:w-56 h-56 sm:h-auto flex-shrink-0 bg-gray-100 overflow-hidden img-zoom">
+            <img src="<%= item.entrepreneur?.photo || item.coverImage || '/images/placeholder.jpg' %>" alt="<%= item.entrepreneur?.name %>" class="w-full h-full object-cover">
+          </div>
+          <div class="flex-1 p-6 flex flex-col justify-center">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-terracotta transition-colors"><%= item.entrepreneur?.name || item.title %></h3>
+            <p class="text-sm text-gray-500 mb-4"><%= item.entrepreneur?.title %></p>
+            <p class="text-gray-700 italic mb-4 line-clamp-2">«<%= item.quote || item.entrepreneur?.quote %>»</p>
+            <span class="inline-flex items-center text-terracotta font-semibold text-sm">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              Смотреть
+            </span>
+          </div>
+        </a>
+      </article>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-500 animate-on-scroll">Пока нет опубликованных интервью.</p>
+    <% } %>
+  </div>
+</section>
+
+<!-- Businesses -->
+<section class="py-24 md:py-32 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-end justify-between mb-14 animate-on-scroll">
+      <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight section-title">Бизнесы</h2>
+      <a href="/businesses" class="hidden md:inline-flex items-center text-terracotta font-semibold hover:underline group">
+        Все бизнесы
+        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+    </div>
+
+    <% if (businesses.length) { %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% businesses.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 120 %>ms">
+        <a href="/businesses/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || '/images/placeholder.jpg' %>" alt="<%= item.name %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-1 group-hover:text-terracotta transition-colors">
+            <a href="/businesses/<%= item.slug %>"><%= item.name %></a>
+          </h3>
+          <% if (item.entrepreneur) { %>
+          <p class="text-sm text-gray-500"><a href="/entrepreneurs/<%= item.entrepreneur.slug %>" class="hover:text-terracotta transition-colors"><%= item.entrepreneur.name %></a></p>
+          <% } %>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-500 animate-on-scroll">Пока нет бизнесов.</p>
+    <% } %>
+  </div>
+</section>
+
+<!-- Reels -->
+<section class="py-24 md:py-32 bg-[#FDF8F3]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-end justify-between mb-14 animate-on-scroll">
+      <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight section-title">Коротко. По делу</h2>
+      <a href="/reels" class="hidden md:inline-flex items-center text-terracotta font-semibold hover:underline group">
+        Все рилсы
+        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+    </div>
+
+    <% if (reels.length) { %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% reels.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 120 %>ms">
+        <a href="/reels/<%= item.slug %>" class="block relative aspect-reel bg-gray-900 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || item.entrepreneur?.photo || '/images/placeholder.jpg' %>" alt="<%= item.entrepreneur?.name %>" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500 blur-[2px]">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-16 h-16 rounded-full bg-white/95 flex items-center justify-center group-hover:bg-terracotta group-hover:text-white transition-all duration-300 group-hover:scale-110 shadow-lg">
+              <svg class="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </a>
+        <div class="p-6">
+          <h3 class="font-bold text-lg group-hover:text-terracotta transition-colors"><a href="/reels/<%= item.slug %>"><%= item.title %></a></h3>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-500 animate-on-scroll">Пока нет опубликованных рилсов.</p>
+    <% } %>
+  </div>
+</section>
+
+<!-- Quotes -->
+<section class="py-24 md:py-32 bg-white overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-14 animate-on-scroll">
+      <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight section-title">Главные мысли</h2>
+    </div>
+
+    <% if (entrepreneurs.length) { %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
+      <% entrepreneurs.forEach((item, index) => { %>
+      <div class="animate-on-scroll flex flex-col md:flex-row gap-6" style="transition-delay: <%= index * 150 %>ms">
+        <div class="w-32 h-40 md:w-40 md:h-52 flex-shrink-0 bg-gray-100 overflow-hidden rounded-2xl img-zoom">
+          <img src="<%= item.photo || '/images/placeholder.jpg' %>" alt="<%= item.name %>" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500">
+        </div>
+        <div class="flex-1 flex flex-col justify-center">
+          <blockquote class="text-2xl md:text-3xl font-light italic text-gray-900 mb-6 leading-snug">
+            «<%= item.quote %>»
+          </blockquote>
+          <div>
+            <p class="font-bold text-lg"><%= item.name %></p>
+            <p class="text-gray-500"><%= item.title %></p>
+          </div>
+          <div class="mt-4 w-12 h-1 bg-terracotta rounded-full"></div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-500 animate-on-scroll">Пока нет профилей.</p>
+    <% } %>
+  </div>
+</section>
+
+<!-- Blog -->
+<section class="py-24 md:py-32 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-end justify-between mb-14 animate-on-scroll">
+      <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight section-title">Материалы</h2>
+      <a href="/blog" class="hidden md:inline-flex items-center text-terracotta font-semibold hover:underline group">
+        Все материалы
+        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
+    </div>
+
+    <% if (articles.length) { %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% articles.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 120 %>ms">
+        <a href="/blog/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || '/images/placeholder.jpg' %>" alt="<%= item.title %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <p class="text-xs text-gray-500 mb-3 uppercase tracking-wider">Бизнес · <%= formatDate(item.publishedAt) %></p>
+          <h3 class="text-xl font-bold mb-3 group-hover:text-terracotta transition-colors leading-tight">
+            <a href="/blog/<%= item.slug %>"><%= item.title %></a>
+          </h3>
+          <p class="text-gray-600 text-sm line-clamp-2"><%= item.subtitle %></p>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-500 animate-on-scroll">Пока нет статей.</p>
+    <% } %>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-24 md:py-32 bg-gray-900 relative overflow-hidden">
+  <div class="absolute inset-0 opacity-20">
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-terracotta rounded-full blur-[120px]"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-terracotta-600 rounded-full blur-[120px]"></div>
+  </div>
+  <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
+    <h2 class="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight">Есть история, о которой стоит рассказать?</h2>
+    <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">Мы снимаем интервью с предпринимателями, экспертами и командами. Расскажите о своём проекте.</p>
+    <a href="/shooting-request" class="btn-primary text-lg shimmer">Оставить заявку на съёмку</a>
+  </div>
+</section>
+
+<%- include('partials/footer', { siteName, siteDescription }) %>

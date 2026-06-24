@@ -1,0 +1,37 @@
+<%- include('../partials/header', { title, description, siteName, siteDescription }) %>
+
+<section class="py-24 md:py-32 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mb-14 animate-on-scroll">
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 section-title">Бизнесы</h1>
+      <p class="text-xl text-gray-600 leading-relaxed">Рестораны, винодельни, кафе, магазины и другие дела, которые строят наши герои.</p>
+    </div>
+
+    <% if (businesses.length) { %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% businesses.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/businesses/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || '/images/placeholder.jpg' %>" alt="<%= item.name %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <h2 class="text-xl font-bold mb-2 group-hover:text-terracotta transition-colors">
+            <a href="/businesses/<%= item.slug %>"><%= item.name %></a>
+          </h2>
+          <% if (item.city) { %>
+          <p class="text-sm text-gray-500 mb-3"><%= item.city %><%= item.address ? ', ' + item.address : '' %></p>
+          <% } %>
+          <% if (item.entrepreneur) { %>
+          <p class="text-sm text-gray-700"><a href="/entrepreneurs/<%= item.entrepreneur.slug %>" class="hover:text-terracotta transition-colors font-medium"><%= item.entrepreneur.name %></a></p>
+          <% } %>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <p class="text-gray-500 animate-on-scroll">Пока нет бизнесов.</p>
+    <% } %>
+  </div>
+</section>
+
+<%- include('../partials/footer', { siteName, siteDescription }) %>

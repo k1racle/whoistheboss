@@ -1,0 +1,52 @@
+<%- include('partials/header', { title, description, siteName, siteDescription }) %>
+
+<section class="py-24 md:py-32 bg-gray-50">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12 animate-on-scroll">
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 section-title inline-block">Заявка на съёмку</h1>
+      <p class="text-xl text-gray-600">Расскажите о вашем бизнесе, и мы свяжемся для обсуждения проекта.</p>
+    </div>
+
+    <div class="card p-8 animate-on-scroll">
+      <% if (success) { %>
+      <div class="bg-green-50 border border-green-200 text-green-800 p-6 rounded-xl mb-8">
+        Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.
+      </div>
+      <% } %>
+
+      <% if (error) { %>
+      <div class="bg-red-50 border border-red-200 text-red-800 p-6 rounded-xl mb-8">
+        Произошла ошибка. Проверьте введённые данные и попробуйте снова.
+      </div>
+      <% } %>
+
+      <form action="/api/shooting-request" method="POST" class="space-y-6">
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Имя *</label>
+          <input type="text" id="name" name="name" required class="input">
+        </div>
+        <div>
+          <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Компания</label>
+          <input type="text" id="company" name="company" class="input">
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+            <input type="email" id="email" name="email" required class="input">
+          </div>
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+            <input type="tel" id="phone" name="phone" class="input">
+          </div>
+        </div>
+        <div>
+          <label for="message" class="block text-sm font-medium text-gray-700 mb-1">О проекте</label>
+          <textarea id="message" name="message" rows="5" class="input"></textarea>
+        </div>
+        <button type="submit" class="btn-primary w-full md:w-auto">Отправить заявку</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer', { siteName, siteDescription }) %>

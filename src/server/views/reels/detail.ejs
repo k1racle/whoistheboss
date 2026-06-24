@@ -1,0 +1,82 @@
+<%- include('../partials/header', { title, description, siteName, siteDescription }) %>
+
+<section class="pt-24 md:pt-32 pb-16 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-terracotta font-semibold mb-4 animate-on-scroll"><a href="/reels" class="hover:underline">← Все рилсы</a></p>
+    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-8 animate-on-scroll leading-tight"><%= reel.title %></h1>
+
+    <div class="max-w-md mx-auto animate-on-scroll mt-8">
+      <div class="aspect-reel bg-gray-900 overflow-hidden mb-8 rounded-2xl shadow-2xl img-zoom">
+        <% if (reel.videoType === 'EMBED') { %>
+        <iframe src="<%= reel.videoUrl %>" class="w-full h-full" frameborder="0" allowfullscreen title="<%= reel.title %>"></iframe>
+        <% } else { %>
+        <video src="<%= reel.videoFile %>" controls class="w-full h-full"></video>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (reel.description) { %>
+    <div class="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto animate-on-scroll article-content"><%- reel.description %></div>
+    <% } %>
+
+    <% if (reel.entrepreneur) { %>
+    <div class="mt-8 max-w-2xl mx-auto animate-on-scroll">
+      <a href="/entrepreneurs/<%= reel.entrepreneur.slug %>" class="card p-4 flex items-center gap-4 hover:border-terracotta/30 transition-colors">
+        <img src="<%= reel.entrepreneur.photo || '/images/placeholder.jpg' %>" alt="<%= reel.entrepreneur.name %>" class="w-14 h-14 rounded-full object-cover">
+        <div>
+          <p class="font-bold text-lg"><%= reel.entrepreneur.name %></p>
+          <p class="text-sm text-gray-500"><%= reel.entrepreneur.title %></p>
+        </div>
+      </a>
+    </div>
+    <% } %>
+
+    <div class="mt-12 max-w-2xl mx-auto">
+      <%- include('../partials/engagement', {
+        type: 'REEL',
+        itemId: reel.id,
+        engagement: engagement,
+        path: `/reels/${reel.slug}`,
+        title: reel.title,
+        siteUrl: siteUrl
+      }) %>
+    </div>
+  </div>
+</section>
+
+<% if (related.length) { %>
+<section class="py-20 bg-white border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl md:text-3xl font-extrabold mb-10 animate-on-scroll section-title">Ещё рилсы</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% related.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/reels/<%= item.slug %>" class="block relative aspect-reel bg-gray-900 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || item.entrepreneur?.photo || '/images/placeholder.jpg' %>" alt="<%= item.entrepreneur?.name %>" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500 blur-[2px]">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-16 h-16 rounded-full bg-white/95 flex items-center justify-center group-hover:bg-terracotta group-hover:text-white transition-all duration-300 group-hover:scale-110">
+              <svg class="w-7 h-7 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </a>
+        <div class="p-6">
+          <h3 class="font-bold text-lg group-hover:text-terracotta transition-colors"><a href="/reels/<%= item.slug %>"><%= item.title %></a></h3>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('../partials/comments', {
+  comments: reel.comments,
+  commentCount: reel._count.comments,
+  type: 'reel',
+  itemId: reel.id,
+  path: `/reels/${reel.slug}`,
+  user: user,
+  formatDate: formatDate
+}) %>
+
+<%- include('../partials/footer', { siteName, siteDescription }) %>

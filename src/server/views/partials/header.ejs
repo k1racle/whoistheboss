@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : siteName %></title>
+  <meta name="description" content="<%= typeof description !== 'undefined' ? description : siteDescription %>">
+  <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : siteName %>">
+  <meta property="og:description" content="<%= typeof description !== 'undefined' ? description : siteDescription %>">
+  <meta property="og:type" content="<%= typeof type !== 'undefined' ? type : 'website' %>">
+  <meta property="og:url" content="<%= typeof path !== 'undefined' ? siteUrl + path : siteUrl %>">
+  <meta property="og:image" content="<%= typeof image !== 'undefined' ? image : siteUrl + '/images/og-default.jpg' %>">
+  <meta property="og:site_name" content="<%= siteName %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : siteName %>">
+  <meta name="twitter:description" content="<%= typeof description !== 'undefined' ? description : siteDescription %>">
+  <meta name="twitter:image" content="<%= typeof image !== 'undefined' ? image : siteUrl + '/images/og-default.jpg' %>">
+  <link rel="canonical" href="<%= typeof path !== 'undefined' ? siteUrl + path : siteUrl %>">
+  <% if (typeof jsonLd !== 'undefined' && jsonLd) { %><%- jsonLd %><% } %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+<body class="font-sans text-gray-900 bg-white antialiased">
+  <header class="site-header header-solid" data-transparent="false">
+    <div class="header-inner mx-auto max-w-7xl flex items-center justify-between">
+      <% const headerLogoUrl = typeof headerLogo !== 'undefined' ? headerLogo : ''; %>
+      <a href="/" class="header-logo text-lg md:text-xl font-black tracking-tight transition-colors uppercase">
+        <% if (headerLogoUrl) { %>
+          <img src="<%= headerLogoUrl %>" alt="<%= siteName.toUpperCase() %>" class="h-8 md:h-9 w-auto object-contain">
+        <% } else { %>
+          <%= siteName %>
+        <% } %>
+      </a>
+
+      <% const menu = typeof siteMenu !== 'undefined' ? siteMenu : []; %>
+      <nav class="hidden md:flex items-center gap-8">
+        <% menu.forEach((item) => { %>
+        <a href="<%= item.path %>" class="nav-link <%= typeof path !== 'undefined' && path.startsWith(item.path) ? 'active' : '' %>"><%= item.label %></a>
+        <% }) %>
+      </nav>
+
+      <div class="hidden md:flex items-center gap-4">
+        <% if (user) { %>
+          <span class="text-sm font-medium header-user-name"><%= user.name %></span>
+          <a href="/api/auth/logout" class="text-sm font-medium header-auth-link">Выйти</a>
+        <% } else { %>
+          <a href="/login" class="text-sm font-medium header-auth-link">Войти</a>
+        <% } %>
+        <a href="/shooting-request" class="header-cta btn-primary text-sm rounded-full px-5 py-2.5">Съёмка</a>
+      </div>
+
+      <button id="mobile-menu-button" class="md:hidden relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors" aria-label="Открыть меню" aria-expanded="false">
+        <svg class="w-6 h-6 header-hamburger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile menu overlay -->
+  <div id="mobile-menu" class="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300">
+    <div class="flex flex-col items-center justify-center h-full gap-8 px-6">
+      <% menu.forEach((item) => { %>
+      <a href="<%= item.path %>" class="mobile-nav-link"><%= item.label %></a>
+      <% }) %>
+      <a href="/shooting-request" class="btn-primary text-lg rounded-full px-8 py-3 mt-4">Заявка на съёмку</a>
+      <% if (!user) { %>
+      <a href="/login" class="text-lg font-medium text-gray-700 hover:text-terracotta transition-colors">Войти</a>
+      <% } else { %>
+      <a href="/api/auth/logout" class="text-lg font-medium text-gray-700 hover:text-terracotta transition-colors">Выйти</a>
+      <% } %>
+      <div class="mt-4">
+        <%- include('social-links', { social: typeof social !== 'undefined' ? social : {}, iconClass: 'text-gray-700 hover:text-terracotta transition-colors' }) %>
+      </div>
+    </div>
+  </div>
+
+  <main class="<%= typeof transparentHeader !== 'undefined' && transparentHeader ? 'pt-0' : 'pt-24 md:pt-28' %>">

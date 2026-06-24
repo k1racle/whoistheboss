@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans text-gray-900 bg-gray-50 antialiased;
+  }
+}
+
+#editor-content,
+#editor-bio,
+#editor-description {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ql-container {
+  flex: 1 1 auto;
+  min-height: 200px;
+  height: auto !important;
+  border-bottom-left-radius: 0.125rem;
+  border-bottom-right-radius: 0.125rem;
+}
+
+.ql-editor {
+  min-height: 200px;
+  height: auto !important;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-y: visible;
+}
+
+.ql-toolbar {
+  border-top-left-radius: 0.125rem;
+  border-top-right-radius: 0.125rem;
+}
