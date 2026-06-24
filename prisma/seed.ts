@@ -1,8 +1,8 @@
 import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import { config } from '../src/server/config.js';
 
 const prisma = new PrismaClient();
+const adminPassword = process.env.ADMIN_SEED_PASSWORD || 'admin123';
 
 function placeholder(width: number, height: number, bg: string, text: string) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="${bg}"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-size="${Math.min(width, height) / 4}" font-family="sans-serif" font-weight="bold">${text}</text></svg>`;
@@ -10,7 +10,7 @@ function placeholder(width: number, height: number, bg: string, text: string) {
 }
 
 async function main() {
-  const password = await bcrypt.hash(config.ADMIN_SEED_PASSWORD, 10);
+  const password = await bcrypt.hash(adminPassword, 10);
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@guessboss.local' },
@@ -169,8 +169,8 @@ async function main() {
   ]);
 
   console.log('Seed completed');
-  console.log('Admin: admin@guessboss.local / ' + config.ADMIN_SEED_PASSWORD);
-  console.log('Editor: editor@guessboss.local / ' + config.ADMIN_SEED_PASSWORD);
+  console.log('Admin: admin@guessboss.local / ' + adminPassword);
+  console.log('Editor: editor@guessboss.local / ' + adminPassword);
 }
 
 main()

@@ -17,6 +17,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:admin": "tsx prisma/seed-admin.ts",
     "db:studio": "prisma studio",
     "lint": "tsc --noEmit"
   },
