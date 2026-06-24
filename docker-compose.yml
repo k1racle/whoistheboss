@@ -8,7 +8,24 @@ services:
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
     environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-guessboss}?schema=public
+      SESSION_SECRET: ${SESSION_SECRET}
+      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin123}
+      UPLOAD_DIR: ${UPLOAD_DIR:-./public/uploads}
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-100}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      FROM_EMAIL: ${FROM_EMAIL:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      SITE_NAME: ${SITE_NAME:-Кто здесь главный?}
+      SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Интервью с основателями бизнеса. Видео, рилсы, фото.}
     volumes:
       - uploads:/app/public/uploads
     depends_on:
