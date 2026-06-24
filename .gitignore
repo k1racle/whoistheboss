@@ -10,4 +10,3 @@ public/uploads/*
 Thumbs.db
 .vscode/settings.json
 coverage/
-prisma/migrations/*/migration.sql
