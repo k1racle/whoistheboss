@@ -2,17 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Dexapro';
+  src: url('/fonts/dexapro-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Dexapro', sans-serif;
+}
+
+.marquee {
+  font-family: 'Dexapro', sans-serif;
+}
+
+.marquee-track {
+  animation: marquee 20s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply font-sans text-gray-900 bg-white antialiased;
+    @apply font-sans text-gray-900 antialiased bg-site-gray;
   }
 
   ::selection {
-    background-color: rgba(217, 74, 43, 0.2);
+    background-color: rgba(219, 42, 0, 0.2);
   }
 }
 
@@ -94,7 +123,7 @@
   }
   .header-transparent.is-scrolled .header-cta {
     @apply text-white transition-all duration-300;
-    background: linear-gradient(135deg, #D94A2B 0%, #AE3B22 100%);
+    background: linear-gradient(135deg, #DB2A00 0%, #B82400 100%);
   }
   .header-transparent.is-scrolled .header-cta:hover {
     @apply bg-terracotta-600;
@@ -138,7 +167,7 @@
   /* Primary CTA */
   .btn-primary {
     @apply inline-flex items-center justify-center px-6 py-3 bg-terracotta text-white font-medium rounded-xl transition-all duration-300;
-    background: linear-gradient(135deg, #D94A2B 0%, #AE3B22 100%);
+    background: linear-gradient(135deg, #DB2A00 0%, #B82400 100%);
     box-shadow: 0 4px 14px rgba(217, 74, 43, 0.35);
   }
   .btn-primary:hover {
@@ -180,7 +209,7 @@
   /* Gradient text */
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #D94A2B 0%, #AE3B22 50%, #832C1A 100%);
+    background-image: linear-gradient(135deg, #DB2A00 0%, #B82400 50%, #7E1900 100%);
   }
 
   /* Underline slide on hover */
@@ -350,7 +379,7 @@
 
   .text-accent-hero {
     @apply relative inline-block bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #D94A2B 0%, #FF7A59 50%, #D94A2B 100%);
+    background-image: linear-gradient(135deg, #DB2A00 0%, #FF4D4D 50%, #DB2A00 100%);
     text-shadow: 0 0 40px rgba(217, 74, 43, 0.45);
   }
   .text-accent-hero::after {

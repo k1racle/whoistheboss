@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { logger } from './lib/logger.js';
 import { prisma } from './lib/prisma.js';
+import { getSetting } from './lib/settings.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { formatDate } from './lib/seo.js';
 import rateLimit from 'express-rate-limit';
@@ -81,6 +82,26 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, '../../public')));
 app.use('/admin', express.static(path.join(__dirname, '../../dist/admin')));
+
+app.use(async (req, res, next) => {
+  if (req.method !== 'GET') return next();
+  if (!req.headers.accept?.includes('text/html')) return next();
+  const skipPaths = ['/admin', '/api', '/health', '/css', '/js', '/fonts', '/images', '/uploads', '/robots.txt', '/sitemap.xml', '/favicon.ico', '/logo.svg'];
+  if (skipPaths.some((p) => req.path.startsWith(p))) return next();
+  try {
+    const enabled = await getSetting('SPLASH_ENABLED');
+    if (enabled !== 'true') return next();
+    const logo = (await getSetting('SPLASH_LOGO')) || '/images/logo.svg';
+    const marquee = (await getSetting('SPLASH_MARQUEE')) || 'СКОРО ВЫ УЗНАЕТЕ КТО ЗДЕСЬ ГЛАВНЫЙ — ЛИЧНЫЕ ИСТОРИИ ПРЕДПРИНИМАТЕЛЕЙ ЧЕРЕЗ ИХ БИЗНЕС';
+    return res.render('splash', {
+      siteName: config.SITE_NAME,
+      logo,
+      marquee,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.use((req, res, next) => {
   res.locals.user = req.session.userId

@@ -1,7 +1,7 @@
 import { api, type Settings } from '../api.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 
-const KNOWN_KEYS: { key: string; label: string; type?: 'text' | 'textarea' | 'image' }[] = [
+const KNOWN_KEYS: { key: string; label: string; type?: 'text' | 'textarea' | 'image' | 'select' }[] = [
   { key: 'SITE_NAME', label: 'Название сайта' },
   { key: 'SITE_DESCRIPTION', label: 'Описание сайта' },
   { key: 'SITE_URL', label: 'URL сайта' },
@@ -23,6 +23,9 @@ const KNOWN_KEYS: { key: string; label: string; type?: 'text' | 'textarea' | 'im
   { key: 'HEADER_MENU', label: 'Меню в шапке (одна строка = /путь|Название)' },
   { key: 'HEADER_LOGO', label: 'Логотип в шапке', type: 'image' },
   { key: 'FOOTER_LOGO', label: 'Логотип в подвале', type: 'image' },
+  { key: 'SPLASH_ENABLED', label: 'Включить заглушку', type: 'select' },
+  { key: 'SPLASH_LOGO', label: 'Логотип на заглушке', type: 'image' },
+  { key: 'SPLASH_MARQUEE', label: 'Текст бегущей строки на заглушке', type: 'textarea' },
 ];
 
 export function settingsView(user?: UserInfo | null) {
@@ -54,6 +57,17 @@ function renderForm(settings: Settings): string {
           <div class="mt-2 logo-preview">
             ${value ? `<img src="${escapeHtml(value)}" alt="" class="h-12 w-auto object-contain border border-gray-200 rounded-sm">` : ''}
           </div>
+        </div>
+      `;
+    }
+    if (type === 'select') {
+      return `
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">${escapeHtml(label)}</label>
+          <select name="${key}" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
+            <option value="false" ${value === 'true' ? '' : 'selected'}>Выключено</option>
+            <option value="true" ${value === 'true' ? 'selected' : ''}>Включено</option>
+          </select>
         </div>
       `;
     }

@@ -8,3 +8,8 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
   }
   return settings;
 }
+
+export async function getSetting(key: string): Promise<string | null> {
+  const settings = await getSiteSettings();
+  return settings[key] || null;
+}
