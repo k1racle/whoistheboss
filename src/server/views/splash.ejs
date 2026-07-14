@@ -16,9 +16,13 @@
   </main>
 
   <div class="fixed bottom-0 left-0 right-0 bg-terracotta text-white py-4 md:py-5 overflow-hidden">
-    <div class="marquee-track whitespace-nowrap flex">
-      <% for (let i = 0; i < 4; i++) { %>
-      <span class="marquee text-lg md:text-2xl lg:text-3xl uppercase tracking-widest px-8 md:px-12"><%= marquee %></span>
+    <div class="marquee-track flex">
+      <% for (let group = 0; group < 2; group++) { %>
+      <div class="marquee-group flex shrink-0">
+        <% for (let i = 0; i < 6; i++) { %>
+        <span class="marquee text-lg md:text-2xl lg:text-3xl uppercase tracking-widest px-8 md:px-12"><%= marquee %></span>
+        <% } %>
+      </div>
       <% } %>
     </div>
   </div>

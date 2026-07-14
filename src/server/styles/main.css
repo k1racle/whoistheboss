@@ -22,6 +22,18 @@ h1, h2, h3, h4, h5, h6 {
   animation: marquee 10s linear infinite;
 }
 
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100vw;
+}
+
+@media (max-width: 768px) {
+  .marquee-track {
+    animation-duration: 3.33s;
+  }
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);
