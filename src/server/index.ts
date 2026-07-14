@@ -95,6 +95,7 @@ app.use(async (req, res, next) => {
     const marquee = (await getSetting('SPLASH_MARQUEE')) || 'СКОРО ВЫ УЗНАЕТЕ КТО ЗДЕСЬ ГЛАВНЫЙ — ЛИЧНЫЕ ИСТОРИИ ПРЕДПРИНИМАТЕЛЕЙ ЧЕРЕЗ ИХ БИЗНЕС';
     return res.render('splash', {
       siteName: config.SITE_NAME,
+      siteUrl: config.SITE_URL,
       logo,
       marquee,
     });
