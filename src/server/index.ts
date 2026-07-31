@@ -50,7 +50,11 @@ if (config.NODE_ENV === 'production') {
 }
 
 app.use(helmet({
-  contentSecurityPolicy: config.NODE_ENV === 'production',
+  // The public pages currently rely on inline scripts inside EJS templates
+  // for scroll scenes, reveal animations and section ordering.
+  // A strict CSP blocks them in production and breaks the homepage.
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
 }));
 app.use(compression());
 app.use(express.json());
