@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../../lib/prisma.js';
+import { createUniqueSlug } from '../../lib/uniqueSlug.js';
 
 const router = Router();
 
 const schema = z.object({
-  slug: z.string().min(1),
+  slug: z.string().optional(),
   title: z.string().min(1),
   entrepreneurId: z.string().optional().nullable(),
   coverImage: z.string().optional().nullable(),
@@ -35,8 +36,11 @@ router.post('/', async (req, res, next) => {
       res.status(400).json({ error: 'Invalid input', issues: parsed.error.issues });
       return;
     }
+    const slug = await createUniqueSlug(parsed.data.title, async (candidate) => Boolean(
+      await prisma.reel.findUnique({ where: { slug: candidate }, select: { id: true } }),
+    ));
     const reel = await prisma.reel.create({
-      data: parsed.data,
+      data: { ...parsed.data, slug },
       include: { entrepreneur: { select: { id: true, name: true } } },
     });
     res.status(201).json(reel);
@@ -72,9 +76,15 @@ router.put('/:id', async (req, res, next) => {
       res.status(404).json({ error: 'Reel not found' });
       return;
     }
+    const slug = await createUniqueSlug(parsed.data.title, async (candidate) => Boolean(
+      await prisma.reel.findFirst({
+        where: { slug: candidate, id: { not: req.params.id } },
+        select: { id: true },
+      }),
+    ));
     const reel = await prisma.reel.update({
       where: { id: req.params.id },
-      data: parsed.data,
+      data: { ...parsed.data, slug },
       include: { entrepreneur: { select: { id: true, name: true } } },
     });
     res.json(reel);

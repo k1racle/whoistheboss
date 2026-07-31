@@ -3,17 +3,24 @@ import { config } from '../config.js';
 import { prisma } from '../lib/prisma.js';
 import { buildSEO } from '../lib/seo.js';
 import { organizationSchema, renderJsonLd, websiteSchema } from '../lib/jsonld.js';
+import { getSiteSettings } from '../lib/settings.js';
 
 const router = Router();
 
 router.get('/', async (_req, res, next) => {
   try {
-    const [interviews, reels, entrepreneurs, articles, businesses] = await Promise.all([
+    const homeSettings = await getSiteSettings();
+    const configuredLatestNewsCount = Number.parseInt(homeSettings.HOME_LATEST_NEWS_COUNT || '6', 10);
+    const latestNewsCount = Number.isFinite(configuredLatestNewsCount)
+      ? Math.min(Math.max(configuredLatestNewsCount, 1), 20)
+      : 6;
+
+    const [interviews, reels, entrepreneurs, articles, businesses, audienceCards] = await Promise.all([
       prisma.interview.findMany({
         where: { isPublished: true },
         include: { entrepreneur: true },
         orderBy: { publishedAt: 'desc' },
-        take: 4,
+        take: 12,
       }),
       prisma.reel.findMany({
         where: { isPublished: true },
@@ -24,19 +31,23 @@ router.get('/', async (_req, res, next) => {
       prisma.entrepreneur.findMany({
         where: { isPublished: true },
         orderBy: { createdAt: 'desc' },
-        take: 4,
+        take: 6,
       }),
       prisma.article.findMany({
         where: { isPublished: true },
         include: { entrepreneur: true },
         orderBy: { publishedAt: 'desc' },
-        take: 3,
+        take: latestNewsCount,
       }),
       prisma.business.findMany({
         where: { isPublished: true },
         include: { entrepreneur: true },
         orderBy: { createdAt: 'desc' },
         take: 3,
+      }),
+      prisma.audienceCard.findMany({
+        where: { isPublished: true },
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
       }),
     ]);
 
@@ -56,8 +67,11 @@ router.get('/', async (_req, res, next) => {
       entrepreneurs,
       articles,
       businesses,
+      audienceCards,
+      homeSettings,
       jsonLd: renderJsonLd([websiteSchema(), organizationSchema()]),
       transparentHeader: true,
+      hideSiteHeader: true,
     });
   } catch (err) {
     next(err);

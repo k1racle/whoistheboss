@@ -4,19 +4,27 @@ import { config } from '../config.js';
 import { buildSEO } from '../lib/seo.js';
 import { renderJsonLd } from '../lib/jsonld.js';
 import { getEngagement } from '../lib/engagement.js';
+import { getSiteSettings } from '../lib/settings.js';
 
 const router = Router();
 
 router.get('/', async (_req, res, next) => {
   try {
-    const entrepreneurs = await prisma.entrepreneur.findMany({
-      where: { isPublished: true },
-      orderBy: { createdAt: 'desc' },
-    });
+    const [entrepreneurs, audienceCards, homeSettings] = await Promise.all([
+      prisma.entrepreneur.findMany({
+        where: { isPublished: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.audienceCard.findMany({
+        where: { isPublished: true },
+        orderBy: { sortOrder: 'asc' },
+      }),
+      getSiteSettings(),
+    ]);
 
     const seo = buildSEO({
-      title: 'Бизнесмены',
-      description: 'Профили предпринимателей, основателей бизнеса.',
+      title: 'Предприниматели',
+      description: 'Истории предпринимателей, героев бизнеса и создателей проектов.',
       path: '/entrepreneurs',
     });
 
@@ -26,6 +34,8 @@ router.get('/', async (_req, res, next) => {
       siteName: config.SITE_NAME,
       siteUrl: config.SITE_URL,
       entrepreneurs,
+      audienceCards,
+      homeSettings,
     });
   } catch (err) {
     next(err);
@@ -55,7 +65,7 @@ router.get('/:slug', async (req, res, next) => {
       });
     }
 
-    const [interviews, reels, articles, businesses] = await Promise.all([
+    const [interviews, reels, articles, businesses, homeSettings] = await Promise.all([
       prisma.interview.findMany({
         where: { isPublished: true, entrepreneurId: entrepreneur.id },
         orderBy: { publishedAt: 'desc' },
@@ -76,6 +86,7 @@ router.get('/:slug', async (req, res, next) => {
         orderBy: { createdAt: 'desc' },
         take: 6,
       }),
+      getSiteSettings(),
     ]);
 
     const seo = buildSEO({
@@ -109,6 +120,7 @@ router.get('/:slug', async (req, res, next) => {
       reels,
       articles,
       businesses,
+      homeSettings,
       jsonLd,
       engagement,
     });

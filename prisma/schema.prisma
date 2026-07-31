@@ -34,10 +34,44 @@ model Entrepreneur {
   slug        String   @unique
   name        String
   title       String
+  heroLeftTeaser  String?
+  heroRightTeaser String?
+  heroBottomRightTeaser String?
+  heroMarquee     String?  @db.Text
+  aboutIntroTitle String?
+  aboutIntroDescription String? @db.Text
+  aboutMenuLabels String? @db.Text
+  aboutMenuDescriptions String? @db.Text
+  biographyTextOne String? @db.Text
+  biographyTextTwo String? @db.Text
+  biographyTextThree String? @db.Text
+  biographyPhoto String?
+  childhoodTitle String?
+  childhoodTextOne String? @db.Text
+  childhoodTextTwo String? @db.Text
+  educationTitle String? @db.Text
+  educationText String? @db.Text
+  educationAsideText String? @db.Text
+  educationPhoto String?
+  turnoverTitle String? @db.Text
+  turnoverText String? @db.Text
+  turnoverBottomText String? @db.Text
+  turnoverPhoto String?
+  moreCardTitles String? @db.Text
+  moreCardLinks String? @db.Text
+  morePhoto String?
+  featuredInterviewVideoType VideoType?
+  featuredInterviewVideoUrl String? @db.Text
+  featuredInterviewVideoFile String?
   photo       String?
+  aboutGalleryPhotos String? @db.Text
+  galleryPhotos String?    @db.Text
+  hoverPhoto  String?
   bio         String?  @db.Text
-  quote       String?
-  isPublished Boolean  @default(false)
+    quote       String?
+    sectionVisibility String? @db.Text
+    sectionOrder String? @db.Text
+    isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -48,6 +82,21 @@ model Entrepreneur {
   businesses  Business[]
 
   @@map("entrepreneurs")
+}
+
+model AudienceCard {
+  id               String   @id @default(cuid())
+  title            String
+  description      String?  @db.Text
+  hoverTitle       String?
+  hoverDescription String?  @db.Text
+  sortOrder        Int      @default(0)
+  isPublished      Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@map("audience_cards")
 }
 
 model Interview {
@@ -102,10 +151,17 @@ model Article {
   slug           String        @unique
   title          String
   subtitle       String?
+  category       String?
   entrepreneurId String?
   entrepreneur   Entrepreneur? @relation(fields: [entrepreneurId], references: [id], onDelete: SetNull)
   coverImage     String?
   content        String        @db.Text
+  secondaryImage String?
+  secondaryText  String?       @db.Text
+  relatedTitle   String?
+  relatedMaterials String?     @db.Text
+  sectionVisibility String?    @db.Text
+  sectionOrder    String?      @db.Text
   isPublished    Boolean       @default(false)
   publishedAt    DateTime?
   metaTitle      String?
@@ -123,7 +179,40 @@ model Business {
   slug           String       @unique
   name           String
   type           String
-  description    String?      @db.Text
+  heroTeaser     String?      @db.Text
+  heroMarquee    String?      @db.Text
+  manifestTitle  String?      @db.Text
+  manifestTextOne String?     @db.Text
+  manifestTextTwo String?     @db.Text
+  manifestTextThree String?   @db.Text
+  manifestBackgroundImage String?
+  manifestSquareImage String?
+  aboutTitle      String?      @db.Text
+  aboutText       String?      @db.Text
+  aboutAsideText  String?      @db.Text
+  aboutPhoto      String?
+  founderPhoto    String?
+  specsTitle      String?      @db.Text
+  specsDescription String?     @db.Text
+  specsItems      String?      @db.Text
+  mapEmbed        String?      @db.Text
+  awardsEnabled   Boolean      @default(true)
+  awardsTitle     String?      @db.Text
+  awardsDescription String?    @db.Text
+  awardsItems     String?      @db.Text
+  factsTitle      String?      @db.Text
+  factsSubtitle   String?      @db.Text
+  factsTextOne    String?      @db.Text
+  factsTextTwo    String?      @db.Text
+  factsPhoto      String?
+  galleryImages   String?      @db.Text
+  moreCardTitles  String?      @db.Text
+  moreCardLinks   String?      @db.Text
+  morePhoto       String?
+    relatedTitle    String?      @db.Text
+    sectionVisibility String?    @db.Text
+    sectionOrder     String?      @db.Text
+    description    String?      @db.Text
   address        String?
   city           String?
   phone          String?
@@ -187,7 +276,7 @@ model ShootingRequest {
   name      String
   company   String?
   phone     String?
-  email     String
+  email     String?
   message   String?       @db.Text
   status    RequestStatus @default(NEW)
   createdAt DateTime      @default(now())

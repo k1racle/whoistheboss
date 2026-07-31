@@ -1,15 +1,19 @@
 import { loginView } from './views/login.js';
-import { dashboardView } from './views/dashboard.js';
+import { homeView } from './views/home.js';
 import { entrepreneursView, entrepreneurFormView } from './views/entrepreneurs.js';
 import { interviewsView, interviewFormView } from './views/interviews.js';
 import { reelsView, reelFormView } from './views/reels.js';
 import { articlesView, articleFormView } from './views/articles.js';
 import { businessesView, businessFormView } from './views/businesses.js';
+import { audienceCardsView, audienceCardFormView } from './views/audienceCards.js';
+import { bannerView } from './views/banner.js';
+import { stagesView } from './views/stages.js';
 import { commentsView } from './views/comments.js';
 import { shootingRequestsView } from './views/shootingRequests.js';
 import { subscribersView } from './views/subscribers.js';
 import { usersView, userFormView } from './views/users.js';
 import { settingsView } from './views/settings.js';
+import { blogPageView, companiesPageView, entrepreneursPageView, shootingPageView } from './views/pageEditors.js';
 import type { UserInfo } from './views/layout.js';
 
 export interface RouteResult {
@@ -35,8 +39,13 @@ export const router = {
     }
 
     if (path === '/admin' || path === '/admin/') {
-      return dashboardView(user);
+      return homeView(user);
     }
+
+    if (path === '/admin/pages/entrepreneurs') return entrepreneursPageView(user);
+    if (path === '/admin/pages/companies') return companiesPageView(user);
+    if (path === '/admin/pages/blog') return blogPageView(user);
+    if (path === '/admin/pages/shooting-request') return shootingPageView(user);
 
     if (path === '/admin/entrepreneurs') return entrepreneursView(user);
     if (match(path, '/admin/entrepreneurs/new')) return entrepreneurFormView(null, user);
@@ -58,6 +67,12 @@ export const router = {
     if (match(path, '/admin/businesses/new')) return businessFormView(null, user);
     if (match(path, '/admin/businesses/:id/edit')) return businessFormView(param(path, '/admin/businesses/:id/edit'), user);
 
+    if (path === '/admin/audience-cards') return audienceCardsView(user);
+    if (match(path, '/admin/audience-cards/new')) return audienceCardFormView(null, user);
+    if (match(path, '/admin/audience-cards/:id/edit')) return audienceCardFormView(param(path, '/admin/audience-cards/:id/edit'), user);
+    if (path === '/admin/banner') return bannerView(user);
+    if (path === '/admin/stages') return stagesView(user);
+
     if (path === '/admin/comments') return commentsView(user);
     if (path === '/admin/shooting-requests') return shootingRequestsView(user);
     if (path === '/admin/subscribers') return subscribersView(user);
@@ -66,6 +81,6 @@ export const router = {
     if (match(path, '/admin/users/:id/edit')) return userFormView(param(path, '/admin/users/:id/edit'), user);
     if (path === '/admin/settings') return settingsView(user);
 
-    return dashboardView(user);
+    return homeView(user);
   },
 };

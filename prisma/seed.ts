@@ -38,13 +38,13 @@ async function main() {
     prisma.entrepreneur.upsert({
       where: { slug: 'aleksey-smirnov' },
       update: {
-        photo: placeholder(800, 800, '#D94A2B', 'АС'),
+        photo: placeholder(800, 800, '#DB2A00', 'АС'),
       },
       create: {
         slug: 'aleksey-smirnov',
         name: 'Алексей Смирнов',
         title: 'Основатель сети кофеен',
-        photo: placeholder(800, 800, '#D94A2B', 'АС'),
+        photo: placeholder(800, 800, '#DB2A00', 'АС'),
         bio: 'Алексей основал сеть кофеен в 2018 году. Сегодня под его управлением 15 точек в трёх городах России.',
         quote: 'Главный — не тот, кто орет, а тот, кто решает.',
         isPublished: true,
@@ -53,13 +53,13 @@ async function main() {
     prisma.entrepreneur.upsert({
       where: { slug: 'anna-belova' },
       update: {
-        photo: placeholder(800, 800, '#AE3B22', 'АБ'),
+        photo: placeholder(800, 800, '#DB2A00', 'АБ'),
       },
       create: {
         slug: 'anna-belova',
         name: 'Анна Белова',
         title: 'Основательница бренда косметики',
-        photo: placeholder(800, 800, '#AE3B22', 'АБ'),
+        photo: placeholder(800, 800, '#DB2A00', 'АБ'),
         bio: 'Анна вывела свой бренд натуральной косметики на маркетплейсы и за год достигла оборота в 100 млн рублей.',
         quote: 'Рынок не терпит посредственности. Либо лучший, либо никакой.',
         isPublished: true,
@@ -68,13 +68,13 @@ async function main() {
     prisma.entrepreneur.upsert({
       where: { slug: 'dmitriy-volkov' },
       update: {
-        photo: placeholder(800, 800, '#832C1A', 'ДВ'),
+        photo: placeholder(800, 800, '#DB2A00', 'ДВ'),
       },
       create: {
         slug: 'dmitriy-volkov',
         name: 'Дмитрий Волков',
         title: 'CEO IT-компании',
-        photo: placeholder(800, 800, '#832C1A', 'ДВ'),
+        photo: placeholder(800, 800, '#DB2A00', 'ДВ'),
         bio: 'Дмитрий 10 лет развивает продуктовую IT-компанию с командой из 200 человек.',
         quote: 'Бизнес — это не про деньги. Это про людей и решения.',
         isPublished: true,

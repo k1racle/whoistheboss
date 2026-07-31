@@ -23,6 +23,8 @@
   <link rel="stylesheet" href="/css/main.css">
 </head>
 <body class="font-sans text-gray-900 bg-white antialiased">
+  <% const shouldHideSiteHeader = typeof hideSiteHeader !== 'undefined' && hideSiteHeader; %>
+  <% if (!shouldHideSiteHeader) { %>
   <header class="site-header header-solid" data-transparent="false">
     <div class="header-inner mx-auto max-w-7xl flex items-center justify-between">
       <% const headerLogoUrl = typeof headerLogo !== 'undefined' ? headerLogo : ''; %>
@@ -76,5 +78,6 @@
       </div>
     </div>
   </div>
+  <% } %>
 
   <main class="<%= typeof transparentHeader !== 'undefined' && transparentHeader ? 'pt-0' : 'pt-24 md:pt-28' %>">

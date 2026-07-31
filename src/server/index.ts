@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { logger } from './lib/logger.js';
 import { prisma } from './lib/prisma.js';
-import { getSetting } from './lib/settings.js';
+import { getSiteSettings } from './lib/settings.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { formatDate } from './lib/seo.js';
 import rateLimit from 'express-rate-limit';
@@ -89,10 +89,10 @@ app.use(async (req, res, next) => {
   const skipPaths = ['/admin', '/api', '/health', '/css', '/js', '/fonts', '/images', '/uploads', '/robots.txt', '/sitemap.xml', '/favicon.ico', '/logo.svg'];
   if (skipPaths.some((p) => req.path.startsWith(p))) return next();
   try {
-    const enabled = await getSetting('SPLASH_ENABLED');
-    if (enabled !== 'true') return next();
-    const logo = (await getSetting('SPLASH_LOGO')) || '/images/logo.svg';
-    const marquee = (await getSetting('SPLASH_MARQUEE')) || 'СКОРО ВЫ УЗНАЕТЕ КТО ЗДЕСЬ ГЛАВНЫЙ — ЛИЧНЫЕ ИСТОРИИ ПРЕДПРИНИМАТЕЛЕЙ ЧЕРЕЗ ИХ БИЗНЕС';
+    const settings = await getSiteSettings();
+    if (settings.SPLASH_ENABLED !== 'true') return next();
+    const logo = settings.SPLASH_LOGO || '/images/logo.svg';
+    const marquee = settings.SPLASH_MARQUEE || 'СКОРО ВЫ УЗНАЕТЕ КТО ЗДЕСЬ ГЛАВНЫЙ — ЛИЧНЫЕ ИСТОРИИ ПРЕДПРИНИМАТЕЛЕЙ ЧЕРЕЗ ИХ БИЗНЕС';
     return res.render('splash', {
       siteName: config.SITE_NAME,
       siteUrl: config.SITE_URL,
@@ -113,23 +113,27 @@ app.use((req, res, next) => {
 
 app.use(async (_req, res, next) => {
   try {
-    const keys = ['SOCIAL_TELEGRAM', 'SOCIAL_VK', 'SOCIAL_YOUTUBE', 'SOCIAL_INSTAGRAM', 'SOCIAL_X', 'SOCIAL_WHATSAPP'];
-    const rows = await prisma.siteSetting.findMany({ where: { key: { in: keys } } });
+    const rows = await prisma.siteSetting.findMany({
+      where: {
+        OR: [
+          { key: { startsWith: 'SOCIAL_' } },
+          { key: { in: ['HEADER_MENU', 'HEADER_LOGO', 'FOOTER_LOGO'] } },
+        ],
+      },
+    });
     const social: Record<string, string> = {};
     for (const row of rows) {
-      if (row.value) {
+      if (row.key.startsWith('SOCIAL_') && row.value) {
         social[row.key.replace('SOCIAL_', '').toLowerCase()] = row.value;
       }
     }
     res.locals.social = social;
 
-    const menuRows = await prisma.siteSetting.findMany({ where: { key: 'HEADER_MENU' } });
-    const menuRaw = menuRows.find((r) => r.key === 'HEADER_MENU')?.value || '';
+    const menuRaw = rows.find((row) => row.key === 'HEADER_MENU')?.value || '';
     res.locals.siteMenu = parseSiteMenu(menuRaw);
 
-    const logoRows = await prisma.siteSetting.findMany({ where: { key: { in: ['HEADER_LOGO', 'FOOTER_LOGO'] } } });
-    res.locals.headerLogo = logoRows.find((r) => r.key === 'HEADER_LOGO')?.value || '';
-    res.locals.footerLogo = logoRows.find((r) => r.key === 'FOOTER_LOGO')?.value || '';
+    res.locals.headerLogo = rows.find((row) => row.key === 'HEADER_LOGO')?.value || '';
+    res.locals.footerLogo = rows.find((row) => row.key === 'FOOTER_LOGO')?.value || '';
     next();
   } catch (err) {
     next(err);
@@ -141,7 +145,7 @@ function parseSiteMenu(raw: string): { path: string; label: string }[] {
     { path: '/interviews', label: 'Интервью' },
     { path: '/reels', label: 'Рилсы' },
     { path: '/entrepreneurs', label: 'Бизнесмены' },
-    { path: '/businesses', label: 'Бизнесы' },
+    { path: '/companies', label: 'Компании' },
     { path: '/blog', label: 'Блог' },
     { path: '/contacts', label: 'Контакты' },
   ];
@@ -163,7 +167,17 @@ function parseSiteMenu(raw: string): { path: string; label: string }[] {
       return null;
     })
     .filter((item): item is { path: string; label: string } => item !== null && item.path.startsWith('/'));
-  return parsed.length ? parsed : defaultMenu;
+  const menu = parsed.length ? parsed : defaultMenu;
+  return menu.map((item) => {
+    const isLegacyCompaniesItem =
+      item.path === '/businesses' ||
+      item.label.trim().toLocaleLowerCase('ru-RU') === 'бизнесы' ||
+      item.label.trim().toLocaleLowerCase('ru-RU') === 'бизнес';
+
+    return isLegacyCompaniesItem
+      ? { path: '/companies', label: 'Компании' }
+      : item;
+  });
 }
 
 const apiLimiter = rateLimit({
@@ -190,6 +204,7 @@ app.use('/api/shares', apiLimiter, sharesApi);
 app.use('/interviews', interviewsRoutes);
 app.use('/reels', reelsRoutes);
 app.use('/entrepreneurs', entrepreneursRoutes);
+app.use('/companies', businessesRoutes);
 app.use('/businesses', businessesRoutes);
 app.use('/blog', blogRoutes);
 app.use('/contacts', contactsRoutes);

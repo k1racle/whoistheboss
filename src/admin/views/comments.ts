@@ -51,7 +51,7 @@ function renderRow(item: Comment): string {
       <td class="px-4 py-3 text-sm text-gray-500">${formatDate(item.createdAt)}</td>
       <td class="px-4 py-3 text-sm text-right space-x-2">
         ${!item.isApproved ? `<button class="text-green-600 hover:underline approve-btn" data-id="${item.id}">Одобрить</button>` : `<button class="text-gray-600 hover:underline reject-btn" data-id="${item.id}">Скрыть</button>`}
-        <button class="text-red-600 hover:underline delete-btn" data-id="${item.id}">Удалить</button>
+        <button class="text-[#DB2A00] hover:underline delete-btn" data-id="${item.id}">Удалить</button>
       </td>
     </tr>
   `;

@@ -39,13 +39,13 @@ function renderRow(item: ShootingRequest): string {
   return `
     <tr data-id="${item.id}">
       <td class="px-4 py-3 text-sm font-medium text-gray-900">${escapeHtml(item.name)}</td>
-      <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.email)}<br>${escapeHtml(item.phone || '')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.email || '—')}<br>${escapeHtml(item.phone || '')}</td>
       <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.company || '—')}</td>
       <td class="px-4 py-3 text-sm text-gray-700 max-w-xs">${escapeHtml(item.message || '—')}</td>
       <td class="px-4 py-3 text-sm">${statusSelect(item)}</td>
       <td class="px-4 py-3 text-sm text-gray-500">${formatDate(item.createdAt)}</td>
       <td class="px-4 py-3 text-sm text-right">
-        <button class="text-red-600 hover:underline delete-btn" data-id="${item.id}">Удалить</button>
+        <button class="text-[#DB2A00] hover:underline delete-btn" data-id="${item.id}">Удалить</button>
       </td>
     </tr>
   `;

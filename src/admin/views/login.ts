@@ -15,7 +15,7 @@ export function loginView() {
           </div>
           <button type="submit" class="w-full bg-terracotta text-white py-2 rounded-sm hover:bg-terracotta-600 transition-colors">Войти</button>
         </form>
-        <p id="login-error" class="mt-4 text-sm text-red-600 hidden"></p>
+        <p id="login-error" class="mt-4 text-sm text-[#DB2A00] hidden"></p>
       </div>
     </div>
   `;

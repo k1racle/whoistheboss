@@ -15,13 +15,55 @@ export interface Entrepreneur {
   slug: string;
   name: string;
   title: string;
+  heroLeftTeaser?: string | null;
+  heroRightTeaser?: string | null;
+  heroBottomRightTeaser?: string | null;
+  heroMarquee?: string | null;
+  aboutIntroTitle?: string | null;
+  aboutIntroDescription?: string | null;
+  aboutMenuLabels?: string | null;
+  aboutMenuDescriptions?: string | null;
+  biographyTextOne?: string | null;
+  biographyTextTwo?: string | null;
+  biographyTextThree?: string | null;
+  biographyPhoto?: string | null;
+  childhoodTitle?: string | null;
+  childhoodTextOne?: string | null;
+  childhoodTextTwo?: string | null;
+  educationTitle?: string | null;
+  educationText?: string | null;
+  educationAsideText?: string | null;
+  educationPhoto?: string | null;
+  turnoverTitle?: string | null;
+  turnoverText?: string | null;
+  turnoverBottomText?: string | null;
+  turnoverPhoto?: string | null;
+  moreCardTitles?: string | null;
+  moreCardLinks?: string | null;
+  morePhoto?: string | null;
+  featuredInterviewVideoType?: 'EMBED' | 'SELF_HOSTED' | null;
+  featuredInterviewVideoUrl?: string | null;
+  featuredInterviewVideoFile?: string | null;
   photo?: string | null;
+  aboutGalleryPhotos?: string | null;
+  galleryPhotos?: string | null;
+  hoverPhoto?: string | null;
   bio?: string | null;
   quote?: string | null;
+  sectionVisibility?: string | null;
+  sectionOrder?: string | null;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
   _count?: { interviews: number; reels: number; articles: number };
+}
+
+export interface MediaFile {
+  name: string;
+  url: string;
+  type: 'image' | 'video' | 'file';
+  size: number;
+  updatedAt: string;
 }
 
 export interface Interview {
@@ -67,10 +109,17 @@ export interface Article {
   slug: string;
   title: string;
   subtitle?: string | null;
+  category?: string | null;
   entrepreneurId?: string | null;
   entrepreneur?: { id: string; name: string } | null;
   coverImage?: string | null;
   content: string;
+  secondaryImage?: string | null;
+  secondaryText?: string | null;
+  relatedTitle?: string | null;
+  relatedMaterials?: string | null;
+  sectionVisibility?: string | null;
+  sectionOrder?: string | null;
   isPublished: boolean;
   publishedAt?: string | null;
   metaTitle?: string | null;
@@ -84,6 +133,39 @@ export interface Business {
   slug: string;
   name: string;
   type: string;
+  heroTeaser?: string | null;
+  heroMarquee?: string | null;
+  manifestTitle?: string | null;
+  manifestTextOne?: string | null;
+  manifestTextTwo?: string | null;
+  manifestTextThree?: string | null;
+  manifestBackgroundImage?: string | null;
+  manifestSquareImage?: string | null;
+  aboutTitle?: string | null;
+  aboutText?: string | null;
+  aboutAsideText?: string | null;
+  aboutPhoto?: string | null;
+  founderPhoto?: string | null;
+  specsTitle?: string | null;
+  specsDescription?: string | null;
+  specsItems?: string | null;
+  mapEmbed?: string | null;
+  awardsEnabled?: boolean;
+  awardsTitle?: string | null;
+  awardsDescription?: string | null;
+  awardsItems?: string | null;
+  factsTitle?: string | null;
+  factsSubtitle?: string | null;
+  factsTextOne?: string | null;
+  factsTextTwo?: string | null;
+  factsPhoto?: string | null;
+  galleryImages?: string | null;
+  moreCardTitles?: string | null;
+  moreCardLinks?: string | null;
+  morePhoto?: string | null;
+  relatedTitle?: string | null;
+  sectionVisibility?: string | null;
+  sectionOrder?: string | null;
   description?: string | null;
   address?: string | null;
   city?: string | null;
@@ -94,6 +176,18 @@ export interface Business {
   isPublished: boolean;
   entrepreneurId: string;
   entrepreneur?: { id: string; name: string } | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AudienceCard {
+  id: string;
+  title: string;
+  description?: string | null;
+  hoverTitle?: string | null;
+  hoverDescription?: string | null;
+  sortOrder: number;
+  isPublished: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -120,7 +214,7 @@ export interface ShootingRequest {
   name: string;
   company?: string | null;
   phone?: string | null;
-  email: string;
+  email?: string | null;
   message?: string | null;
   status: 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
   createdAt: string;
@@ -150,7 +244,17 @@ async function fetchJson(input: string, init?: RequestInit) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Unknown error' }));
-    throw new Error(err.error || 'Request failed');
+    const issues = Array.isArray(err.issues)
+      ? err.issues
+        .map((issue: { path?: unknown; message?: unknown }) => {
+          const path = Array.isArray(issue.path) ? issue.path.join('.') : '';
+          const message = typeof issue.message === 'string' ? issue.message : '';
+          return [path, message].filter(Boolean).join(': ');
+        })
+        .filter(Boolean)
+      : [];
+    const details = issues.length ? ` (${issues.join(', ')})` : '';
+    throw new Error(`${err.error || 'Request failed'}${details}`);
   }
   return res.json();
 }
@@ -175,6 +279,9 @@ export const api = {
 
   uploadImage: (file: File) => uploadFile('image', file),
   uploadVideo: (file: File) => uploadFile('video', file),
+  media: {
+    list: (): Promise<MediaFile[]> => fetchJson('/admin/upload'),
+  },
 
   users: {
     list: (): Promise<User[]> => fetchJson('/admin/users'),
@@ -234,6 +341,14 @@ export const api = {
     update: (id: string, data: Partial<Business>) =>
       fetchJson(`/admin/businesses/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string) => fetchJson(`/admin/businesses/${id}`, { method: 'DELETE' }),
+  },
+
+  audienceCards: {
+    list: (): Promise<AudienceCard[]> => fetchJson('/admin/audience-cards'),
+    get: (id: string): Promise<AudienceCard> => fetchJson(`/admin/audience-cards/${id}`),
+    create: (data: Partial<AudienceCard>) => fetchJson('/admin/audience-cards', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: string, data: Partial<AudienceCard>) => fetchJson(`/admin/audience-cards/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id: string) => fetchJson(`/admin/audience-cards/${id}`, { method: 'DELETE' }),
   },
 
   comments: {

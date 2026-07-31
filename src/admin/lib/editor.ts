@@ -1,5 +1,6 @@
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+import { api } from '../api.js';
 
 const toolbarOptions = [
   [{ header: [1, 2, 3, false] }],
@@ -8,7 +9,7 @@ const toolbarOptions = [
   [{ list: 'ordered' }, { list: 'bullet' }],
   [{ indent: '-1' }, { indent: '+1' }],
   [{ align: [] }],
-  ['link'],
+  ['link', 'image'],
   ['clean'],
 ];
 
@@ -40,6 +41,30 @@ export function initQuill(name: string, content?: string): Quill {
   });
 
   editor.setContents(editor.clipboard.convert(initialContent));
+
+  const toolbar = editor.getModule('toolbar') as {
+    addHandler: (name: string, handler: () => void) => void;
+  } | undefined;
+  toolbar?.addHandler('image', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      try {
+        const uploaded = await api.uploadImage(file);
+        const range = editor.getSelection(true);
+        editor.insertEmbed(range.index, 'image', uploaded.url, 'user');
+        editor.setSelection(range.index + 1, 0, 'silent');
+      } catch (error) {
+        window.alert(error instanceof Error ? error.message : 'Не удалось загрузить изображение');
+      }
+    });
+    input.click();
+  });
+
   editors.set(name, { editor, container });
   return editor;
 }

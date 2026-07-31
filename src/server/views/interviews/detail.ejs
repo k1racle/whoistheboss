@@ -64,7 +64,7 @@
       <% related.forEach((item, index) => { %>
       <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
         <a href="/interviews/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
-          <img src="<%= item.entrepreneur?.photo || item.coverImage || '/images/placeholder.jpg' %>" alt="<%= item.entrepreneur?.name %>" class="w-full h-full object-cover">
+          <img src="<%= item.entrepreneur?.photo || item.coverImage || '/images/placeholder.svg' %>" alt="<%= item.entrepreneur?.name %>" class="w-full h-full object-cover">
         </a>
         <div class="p-6">
           <h3 class="font-bold text-lg mb-1 group-hover:text-terracotta transition-colors"><a href="/interviews/<%= item.slug %>"><%= item.entrepreneur?.name || item.title %></a></h3>

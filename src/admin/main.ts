@@ -7,7 +7,7 @@ let currentUser: UserInfo | null = null;
 
 async function init() {
   const path = location.pathname;
-  const isLoginPage = path === '/admin/login' || path === '/admin/';
+  const isLoginPage = path === '/admin/login';
 
   if (!isLoginPage) {
     try {
@@ -36,6 +36,12 @@ async function render(path: string) {
 }
 
 function attachGlobalListeners() {
+  const currentPath = location.pathname.replace(/\/$/, '') || '/admin';
+  document.querySelectorAll<HTMLAnchorElement>('.admin-nav__link').forEach((link) => {
+    const linkPath = new URL(link.href).pathname.replace(/\/$/, '') || '/admin';
+    const isHome = linkPath === '/admin' && currentPath === '/admin';
+    link.classList.toggle('is-active', isHome || (linkPath !== '/admin' && currentPath.startsWith(linkPath)));
+  });
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {

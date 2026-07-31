@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:admin\" \"npm run watch:css\"",
-    "dev:server": "tsx watch src/server/index.ts",
+    "dev:server": "npm run db:generate && tsx watch src/server/index.ts",
     "dev:admin": "vite --config vite.config.ts",
     "watch:css": "tailwindcss -i src/server/styles/main.css -o public/css/main.css --watch",
     "build": "npm run build:css && npm run build:admin && npm run build:server && npm run copy:views",
-    "copy:views": "rm -rf dist/server/views && cp -r src/server/views dist/server/views",
+    "copy:views": "node -e \"const fs=require('node:fs');fs.rmSync('dist/server/views',{recursive:true,force:true});fs.cpSync('src/server/views','dist/server/views',{recursive:true});\"",
     "build:server": "tsc -p tsconfig.json",
     "build:admin": "vite build --config vite.config.ts",
     "build:css": "tailwindcss -i src/server/styles/main.css -o public/css/main.css --minify",
@@ -19,7 +19,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:admin": "tsx prisma/seed-admin.ts",
     "db:studio": "prisma studio",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.15.0",

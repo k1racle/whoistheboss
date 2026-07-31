@@ -13,8 +13,8 @@ function isLocalRedirect(url: string | undefined): url is string {
 const schema = z.object({
   name: z.string().min(2),
   company: z.string().optional(),
-  email: z.string().email(),
-  phone: z.string().optional(),
+  email: z.string().email().optional(),
+  phone: z.string().min(5),
   message: z.string().optional(),
   redirect: z.string().optional(),
 });
@@ -37,11 +37,11 @@ router.post('/', async (req, res, next) => {
     const { redirect, ...requestData } = parsed.data;
     const data = await prisma.shootingRequest.create({ data: requestData });
     const emailHtml = `<p><strong>Имя:</strong> ${data.name}</p>
-       <p><strong>Email:</strong> ${data.email}</p>
+       <p><strong>Email:</strong> ${data.email || '—'}</p>
        <p><strong>Компания:</strong> ${data.company || '—'}</p>
        <p><strong>Телефон:</strong> ${data.phone || '—'}</p>
        <p><strong>Сообщение:</strong> ${data.message || '—'}</p>`;
-    const telegramText = `Новая заявка на съёмку\n\nИмя: ${data.name}\nEmail: ${data.email}\nКомпания: ${data.company || '—'}\nТелефон: ${data.phone || '—'}\nСообщение: ${data.message || '—'}`;
+    const telegramText = `Новая заявка на съёмку\n\nИмя: ${data.name}\nEmail: ${data.email || '—'}\nКомпания: ${data.company || '—'}\nТелефон: ${data.phone || '—'}\nСообщение: ${data.message || '—'}`;
 
     try {
       await notifyAdmin('Новая заявка на съёмку', emailHtml);

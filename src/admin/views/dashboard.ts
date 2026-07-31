@@ -1,5 +1,5 @@
 import { api } from '../api.js';
-import { layout, formatDate, escapeHtml, type UserInfo } from './layout.js';
+import { layout, escapeHtml, type UserInfo } from './layout.js';
 
 export async function dashboardView(user?: UserInfo | null) {
   const loadingHtml = layout('Дашборд', renderLoading(), user);
@@ -17,7 +17,7 @@ export async function dashboardView(user?: UserInfo | null) {
 
     const content = `
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        ${statCard('Бизнесмены', counts[0], '/admin/entrepreneurs')}
+        ${statCard('Предприниматели', counts[0], '/admin/entrepreneurs')}
         ${statCard('Интервью', counts[1], '/admin/interviews')}
         ${statCard('Рилсы', counts[2], '/admin/reels')}
         ${statCard('Статьи', counts[3], '/admin/articles')}
@@ -33,7 +33,7 @@ export async function dashboardView(user?: UserInfo | null) {
           <a href="/admin/interviews/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить интервью</a>
           <a href="/admin/reels/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить рилс</a>
           <a href="/admin/articles/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить статью</a>
-          <a href="/admin/entrepreneurs/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить бизнесмена</a>
+          <a href="/admin/entrepreneurs/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить предпринимателя</a>
         </div>
       </div>
     `;

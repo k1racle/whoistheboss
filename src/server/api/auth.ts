@@ -25,13 +25,31 @@ function wantsJson(req: import('express').Request): boolean {
   );
 }
 
+function getReturnTo(req: import('express').Request): string {
+  const fromBody = typeof req.body?.returnTo === 'string' ? req.body.returnTo : '';
+  const fromQuery = typeof req.query.returnTo === 'string' ? req.query.returnTo : '';
+  const returnTo = fromBody || fromQuery;
+  return returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '';
+}
+
 function redirectAfterLogin(req: import('express').Request, res: import('express').Response, role: string) {
-  const returnTo = typeof req.query.returnTo === 'string' ? req.query.returnTo : '';
-  if (returnTo && returnTo.startsWith('/')) {
+  const returnTo = getReturnTo(req);
+  if (returnTo) {
     res.redirect(303, returnTo);
     return;
   }
   res.redirect(303, role === 'ADMIN' || role === 'EDITOR' ? '/admin' : '/');
+}
+
+function finishLogout(req: import('express').Request, res: import('express').Response) {
+  req.session.destroy(() => {
+    res.clearCookie('sid');
+    if (wantsJson(req)) {
+      res.json({ ok: true });
+      return;
+    }
+    res.redirect(303, '/');
+  });
 }
 
 router.post('/login', async (req, res) => {
@@ -121,16 +139,8 @@ router.post('/register', async (req, res) => {
   res.redirect(303, '/');
 });
 
-router.post('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.clearCookie('sid');
-    if (wantsJson(req)) {
-      res.json({ ok: true });
-      return;
-    }
-    res.redirect(303, '/');
-  });
-});
+router.get('/logout', finishLogout);
+router.post('/logout', finishLogout);
 
 router.get('/me', (req, res) => {
   if (!req.session.userId) {

@@ -2,17 +2,19 @@ import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { config } from '../config.js';
 import { buildSEO } from '../lib/seo.js';
-import { getEngagement } from '../lib/engagement.js';
 
 const router = Router();
 
-router.get('/', async (_req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
+    const activeSlug = typeof req.query.play === 'string' ? req.query.play : '';
     const reels = await prisma.reel.findMany({
       where: { isPublished: true },
       include: { entrepreneur: true },
       orderBy: { createdAt: 'desc' },
     });
+
+    const activeReel = activeSlug ? reels.find((item) => item.slug === activeSlug) || null : null;
 
     const seo = buildSEO({
       title: 'Рилсы',
@@ -26,6 +28,7 @@ router.get('/', async (_req, res, next) => {
       siteName: config.SITE_NAME,
       siteUrl: config.SITE_URL,
       reels,
+      activeReel,
     });
   } catch (err) {
     next(err);
@@ -36,15 +39,7 @@ router.get('/:slug', async (req, res, next) => {
   try {
     const reel = await prisma.reel.findFirst({
       where: { slug: req.params.slug, isPublished: true },
-      include: {
-        entrepreneur: true,
-        comments: {
-          where: { isApproved: true },
-          include: { user: { select: { id: true, name: true } } },
-          orderBy: { createdAt: 'desc' },
-        },
-        _count: { select: { comments: true } },
-      },
+      select: { slug: true },
     });
 
     if (!reel) {
@@ -56,31 +51,7 @@ router.get('/:slug', async (req, res, next) => {
       });
     }
 
-    const related = await prisma.reel.findMany({
-      where: { isPublished: true, id: { not: reel.id } },
-      include: { entrepreneur: true },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-    });
-
-    const seo = buildSEO({
-      title: reel.title,
-      description: reel.description || '',
-      path: `/reels/${reel.slug}`,
-      type: 'video',
-    });
-
-    const engagement = await getEngagement('REEL', reel.id, req.session.userId);
-
-    res.render('reels/detail', {
-      ...seo,
-      siteDescription: config.SITE_DESCRIPTION,
-      siteName: config.SITE_NAME,
-      siteUrl: config.SITE_URL,
-      reel,
-      related,
-      engagement,
-    });
+    res.redirect(`/reels?play=${encodeURIComponent(reel.slug)}`);
   } catch (err) {
     next(err);
   }

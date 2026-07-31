@@ -1,7 +1,7 @@
 import { api, type Settings } from '../api.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 
-const KNOWN_KEYS: { key: string; label: string; type?: 'text' | 'textarea' | 'image' | 'select' }[] = [
+const KNOWN_KEYS: { key: string; label: string; type?: 'text' | 'textarea' | 'image' | 'video' | 'select' }[] = [
   { key: 'SITE_NAME', label: 'Название сайта' },
   { key: 'SITE_DESCRIPTION', label: 'Описание сайта' },
   { key: 'SITE_URL', label: 'URL сайта' },
@@ -18,6 +18,8 @@ const KNOWN_KEYS: { key: string; label: string; type?: 'text' | 'textarea' | 'im
   { key: 'SOCIAL_INSTAGRAM', label: 'Instagram' },
   { key: 'SOCIAL_X', label: 'X (Twitter)' },
   { key: 'SOCIAL_WHATSAPP', label: 'WhatsApp' },
+  { key: 'SOCIAL_PINTEREST', label: 'Pinterest' },
+  { key: 'SOCIAL_DZEN', label: 'Dzen' },
   { key: 'TELEGRAM_BOT_TOKEN', label: 'Telegram bot token' },
   { key: 'TELEGRAM_CHAT_ID', label: 'Telegram chat ID' },
   { key: 'HEADER_MENU', label: 'Меню в шапке (одна строка = /путь|Название)' },
@@ -36,6 +38,7 @@ export function settingsView(user?: UserInfo | null) {
       const settings = await api.settings.get();
       setContent(renderForm(settings));
       attachSubmit();
+      attachVideoUploads();
       attachLogoUploads();
     } catch (err) {
       setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
@@ -48,6 +51,16 @@ export function settingsView(user?: UserInfo | null) {
 function renderForm(settings: Settings): string {
   const inputs = KNOWN_KEYS.map(({ key, label, type }) => {
     const value = settings[key] || '';
+    if (type === 'video') {
+      return `
+        <div data-video-field="${key}">
+          <label class="block text-sm font-medium text-gray-700 mb-1">${escapeHtml(label)}</label>
+          <input type="hidden" name="${key}" value="${escapeHtml(value)}">
+          <input type="file" accept="video/*" data-video-upload="${key}" class="block w-full text-sm text-gray-500">
+          ${value ? `<a class="mt-2 inline-block text-sm text-terracotta hover:underline" href="${escapeHtml(value)}" target="_blank" rel="noopener">Открыть загруженное видео</a>` : ''}
+        </div>
+      `;
+    }
     if (type === 'image') {
       return `
         <div data-image-field="${key}">
@@ -118,6 +131,25 @@ function attachLogoUploads() {
         }
       } catch (err) {
         alert(err instanceof Error ? err.message : 'Ошибка загрузки изображения');
+      }
+    });
+  });
+}
+
+function attachVideoUploads() {
+  const inputs = document.querySelectorAll<HTMLInputElement>('[data-video-upload]');
+  inputs.forEach((input) => {
+    input.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const key = input.dataset.videoUpload;
+      const wrapper = input.closest('[data-video-field]') as HTMLElement | null;
+      const hidden = wrapper?.querySelector(`input[name="${key}"]`) as HTMLInputElement | null;
+      try {
+        const { url } = await api.uploadVideo(file);
+        if (hidden) hidden.value = url;
+      } catch (err) {
+        alert(err instanceof Error ? err.message : 'Ошибка загрузки видео');
       }
     });
   });

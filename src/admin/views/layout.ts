@@ -6,45 +6,59 @@ export interface UserInfo {
 
 export function layout(title: string, content: string, user?: UserInfo | null): string {
   const isAdmin = user?.role === 'ADMIN';
+  const navigation = [
+    ['/admin', 'Главная'],
+    ['/admin/pages/entrepreneurs', 'Страница «Предприниматели»'],
+    ['/admin/pages/companies', 'Страница «Компании»'],
+    ['/admin/pages/blog', 'Страница «Блог»'],
+    ['/admin/pages/shooting-request', 'Страница «Стать героем»'],
+    ['/admin/entrepreneurs', 'Предприниматели'],
+    ['/admin/businesses', 'Компании'],
+    ['/admin/interviews', 'Интервью'],
+    ['/admin/articles', 'Записи блога'],
+    ['/admin/reels', 'Рилсы'],
+    ['/admin/shooting-requests', 'Заявки'],
+    ['/admin/subscribers', 'Подписчики'],
+    ['/admin/comments', 'Комментарии'],
+    ...(isAdmin ? [['/admin/users', 'Пользователи']] : []),
+    ['/admin/banner', 'Баннер'],
+    ['/admin/audience-cards', 'Карточки «Для кого»'],
+    ['/admin/stages', 'Этапы'],
+    ['/admin/settings', 'Настройки'],
+  ];
+
   return `
-    <div class="min-h-screen flex">
-      <aside class="w-64 bg-white border-r border-gray-200 p-6 flex-shrink-0">
-        <h2 class="text-lg font-bold mb-1">Кто здесь главный?</h2>
-        <p class="text-xs text-gray-500 mb-8">Админ-панель</p>
-        <nav class="space-y-1" id="admin-nav">
-          <a href="/admin" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Главная</a>
-          <a href="/admin/interviews" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Интервью</a>
-          <a href="/admin/reels" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Рилсы</a>
-          <a href="/admin/articles" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Статьи</a>
-          <a href="/admin/entrepreneurs" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Бизнесмены</a>
-          <a href="/admin/businesses" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Бизнесы</a>
-          <a href="/admin/comments" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Комментарии</a>
-          <a href="/admin/shooting-requests" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Заявки</a>
-          <a href="/admin/subscribers" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Подписчики</a>
-          ${isAdmin ? `<a href="/admin/users" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Пользователи</a>` : ''}
-          <a href="/admin/settings" class="nav-link block px-4 py-2 rounded-sm hover:bg-gray-50 text-sm font-medium" data-link>Настройки</a>
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <a href="/admin" class="admin-brand" data-link>
+          <img src="/images/image-29.svg" alt="Кто здесь главный?">
+          <span>Админ-панель</span>
+        </a>
+        <nav class="admin-nav" id="admin-nav">
+          ${navigation.map(([href, label]) => `<a href="${href}" class="admin-nav__link" data-link>${label}</a>`).join('')}
         </nav>
+        <div class="admin-sidebar__footer">
+          <span>${escapeHtml(user?.name || user?.email || '')}</span>
+          <button id="logout-btn" type="button">Выйти</button>
+        </div>
       </aside>
-      <main class="flex-1 p-8 overflow-auto">
-        <div class="flex items-center justify-between mb-8">
-          <h1 class="text-2xl font-bold">${title}</h1>
-          <div class="flex items-center gap-4">
-            ${user ? `<span class="text-sm text-gray-600">${user.name || user.email}</span>` : ''}
-            <button id="logout-btn" class="text-sm text-gray-600 hover:text-terracotta">Выйти</button>
+      <main class="admin-main">
+        <header class="admin-topbar">
+          <div>
+            <span class="admin-topbar__eyebrow">Управление сайтом</span>
+            <h1>${title}</h1>
           </div>
-        </div>
-        <div id="page-content">
-          ${content}
-        </div>
+          <a href="/" target="_blank" rel="noopener" class="admin-site-link">Открыть сайт ↗</a>
+        </header>
+        <div id="page-content" class="admin-page-content">${content}</div>
       </main>
-    </div>
-  `;
+    </div>`;
 }
 
 export function formatDate(iso?: string | null | Date): string {
   if (!iso) return '—';
-  const d = typeof iso === 'string' ? new Date(iso) : iso;
-  return d.toLocaleDateString('ru-RU', {
+  const date = typeof iso === 'string' ? new Date(iso) : iso;
+  return date.toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -60,6 +74,5 @@ export function escapeHtml(text: string): string {
 }
 
 export function pageAlert(message: string, type: 'success' | 'error' = 'success'): string {
-  const color = type === 'error' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200';
-  return `<div class="${color} border px-4 py-3 rounded-sm mb-4" id="page-alert">${escapeHtml(message)}</div>`;
+  return `<div class="admin-alert admin-alert--${type}" id="page-alert">${escapeHtml(message)}</div>`;
 }

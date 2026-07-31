@@ -43,7 +43,7 @@ function renderRow(item: Subscriber): string {
       <td class="px-4 py-3 text-sm">${item.isActive ? 'Да' : 'Нет'}</td>
       <td class="px-4 py-3 text-sm text-gray-500">${formatDate(item.createdAt)}</td>
       <td class="px-4 py-3 text-sm text-right">
-        <button class="text-red-600 hover:underline delete-btn" data-id="${item.id}">Удалить</button>
+        <button class="text-[#DB2A00] hover:underline delete-btn" data-id="${item.id}">Удалить</button>
       </td>
     </tr>
   `;

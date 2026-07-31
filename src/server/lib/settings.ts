@@ -10,6 +10,9 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
 }
 
 export async function getSetting(key: string): Promise<string | null> {
-  const settings = await getSiteSettings();
-  return settings[key] || null;
+  const row = await prisma.siteSetting.findUnique({
+    where: { key },
+    select: { value: true },
+  });
+  return row?.value || null;
 }

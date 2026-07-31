@@ -1,9 +1,26 @@
 import { api, type Entrepreneur } from '../api.js';
 import { layout, formatDate, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
+import { bindAutoSlug } from '../lib/slug.js';
+
+const entrepreneurSectionOptions = [
+  ['hero', 'Херо'],
+  ['about', 'Меню и фотослайдер'],
+  ['biography', 'Биография'],
+  ['childhood', 'Детство'],
+  ['education', 'Образование и опыт'],
+  ['shorts', 'Короткие видео'],
+  ['turnover', 'Оборот / бизнес'],
+  ['more', 'Больше о герое'],
+  ['featuredInterview', 'Главное интервью'],
+  ['cta', 'Стать участником'],
+  ['banner', 'Баннер'],
+  ['interviewList', 'Список интервью'],
+  ['articles', 'Статьи'],
+] as const;
 
 export function entrepreneursView(user?: UserInfo | null) {
-  const html = layout('Бизнесмены', renderLoading(), user);
+  const html = layout('Предприниматели', renderLoading(), user);
 
   async function init() {
     try {
@@ -46,7 +63,7 @@ export function entrepreneursView(user?: UserInfo | null) {
         <td class="px-4 py-3 text-sm text-gray-500">${formatDate(item.createdAt)}</td>
         <td class="px-4 py-3 text-sm text-right space-x-2">
           <a href="/admin/entrepreneurs/${item.id}/edit" class="text-terracotta hover:underline" data-link>Изменить</a>
-          <button class="text-red-600 hover:underline delete-btn" data-id="${item.id}">Удалить</button>
+          <button class="text-[#DB2A00] hover:underline delete-btn" data-id="${item.id}">Удалить</button>
         </td>
       </tr>
     `;
@@ -74,10 +91,11 @@ export function entrepreneursView(user?: UserInfo | null) {
 
 export function entrepreneurFormView(id: string | null, user?: UserInfo | null) {
   const isEdit = id !== null;
-  const html = layout(isEdit ? 'Редактировать бизнесмена' : 'Новый бизнесмен', renderForm({}), user);
+  const html = layout(isEdit ? 'Редактировать предпринимателя' : 'Новый предприниматель', renderForm({}), user);
 
   async function init() {
     initQuill('bio');
+    attachFeaturedInterviewVideoTypeToggle();
     if (isEdit && id) {
       try {
         const item = await api.entrepreneurs.get(id);
@@ -86,6 +104,10 @@ export function entrepreneurFormView(id: string | null, user?: UserInfo | null) 
         setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
       }
     }
+    attachSectionNavigation();
+    attachSectionOrderEditor('entrepreneur-form');
+    attachMediaEditor();
+    bindAutoSlug('entrepreneur-form', 'name');
     attachSubmit(id);
   }
 
@@ -93,64 +115,497 @@ export function entrepreneurFormView(id: string | null, user?: UserInfo | null) 
 }
 
 function renderForm(item: Partial<Entrepreneur>): string {
-  return `
-    <form id="entrepreneur-form" class="bg-white border border-gray-200 rounded-sm p-6 max-w-2xl">
-      <div id="form-message"></div>
-      <div class="grid grid-cols-1 gap-4">
+  const sectionVisibility = parseVisibility(item.sectionVisibility);
+  const sectionOrder = parseSectionOrder(item.sectionOrder, entrepreneurSectionOptions.map(([key]) => key));
+  const orderedSectionOptions = sectionOrder.map((key) => entrepreneurSectionOptions.find(([optionKey]) => optionKey === key)!);
+  const field = (
+    label: string,
+    name: string,
+    value: string | null | undefined,
+    options: { textarea?: boolean; rows?: number; help?: string; required?: boolean; wide?: boolean; placeholder?: string } = {}
+  ) => `
+    <div class="editor-field${options.wide ? ' editor-field--wide' : ''}">
+      <label for="${name}" class="editor-field__label">${label}${options.required ? ' <span class="text-[#DB2A00]">*</span>' : ''}</label>
+      ${options.textarea
+        ? `<textarea id="${name}" name="${name}" rows="${options.rows || 4}" placeholder="${escapeHtml(options.placeholder || '')}" class="editor-control">${escapeHtml(value || '')}</textarea>`
+        : `<input id="${name}" type="text" name="${name}" value="${escapeHtml(value || '')}" placeholder="${escapeHtml(options.placeholder || '')}" ${options.required ? 'required' : ''} class="editor-control">`
+      }
+      ${options.help ? `<p class="editor-field__help">${options.help}</p>` : ''}
+    </div>
+  `;
+
+  const mediaField = (
+    label: string,
+    name: string,
+    fileName: string,
+    value: string | null | undefined,
+    help: string
+  ) => `
+    <div class="editor-field editor-field--wide media-field" data-media-field data-media-kind="image">
+      <div class="media-field__heading">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Имя <span class="text-red-500">*</span></label>
-          <input type="text" name="name" value="${escapeHtml(item.name || '')}" required class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
+          <span class="editor-field__label">${label}</span>
+          <p class="editor-field__help">${help}</p>
         </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Slug <span class="text-red-500">*</span></label>
-          <input type="text" name="slug" value="${escapeHtml(item.slug || '')}" required class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
+        <span class="media-field__status" data-media-status>${value ? 'Изображение выбрано' : 'Не выбрано'}</span>
+      </div>
+      <div class="media-field__body">
+        <div class="media-field__preview" data-media-preview>
+          ${value
+            ? `<img src="${escapeHtml(value)}" alt=""><span>Текущее изображение</span>`
+            : '<div class="media-field__empty"><strong>Нет изображения</strong><span>Загрузите новое или выберите из библиотеки</span></div>'}
         </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Должность / заголовок <span class="text-red-500">*</span></label>
-          <input type="text" name="title" value="${escapeHtml(item.title || '')}" required class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Фото (URL или загрузить)</label>
-          <input type="text" name="photo" value="${escapeHtml(item.photo || '')}" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta mb-2">
-          <input type="file" name="photoFile" accept="image/*" class="block w-full text-sm text-gray-600">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Биография</label>
-          <input type="hidden" name="bio">
-          <div id="editor-bio" class="bg-white">${item.bio || ''}</div>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Цитата</label>
-          <input type="text" name="quote" value="${escapeHtml(item.quote || '')}" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
-        </div>
-        <div class="flex items-center gap-2">
-          <input type="checkbox" name="isPublished" id="isPublished" ${item.isPublished ? 'checked' : ''} class="h-4 w-4 text-terracotta border-gray-300 rounded">
-          <label for="isPublished" class="text-sm text-gray-700">Опубликовано</label>
-        </div>
-        <div class="pt-4 flex gap-3">
-          <button type="submit" class="px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600">Сохранить</button>
-          <a href="/admin/entrepreneurs" class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-sm hover:bg-gray-50" data-link>Отмена</a>
+        <div class="media-field__controls">
+          <input type="hidden" name="${name}" value="${escapeHtml(value || '')}" data-media-url>
+          <input type="file" name="${fileName}" accept="image/*" class="sr-only" data-media-file>
+          <button type="button" class="editor-button editor-button--primary" data-media-upload>Загрузить фото</button>
+          <button type="button" class="editor-button" data-media-library>Выбрать загруженное</button>
+          <button type="button" class="editor-button editor-button--danger" data-media-clear>Убрать</button>
+          <details class="media-field__url">
+            <summary>Указать URL вручную</summary>
+            <input type="text" value="${escapeHtml(value || '')}" placeholder="/uploads/photo.jpg или https://…" class="editor-control" data-media-url-proxy>
+          </details>
         </div>
       </div>
+    </div>
+  `;
+
+  const galleryField = (
+    label: string,
+    name: string,
+    value: string | null | undefined,
+    help: string
+  ) => `
+    <div class="editor-field editor-field--wide gallery-field" data-gallery-field>
+      <span class="editor-field__label">${label}</span>
+      <p class="editor-field__help">${help}</p>
+      <textarea name="${name}" class="sr-only" data-gallery-value>${escapeHtml(value || '')}</textarea>
+      <div class="gallery-field__items" data-gallery-items></div>
+      <div class="gallery-field__actions">
+        <input type="file" accept="image/*" multiple class="sr-only" data-gallery-file>
+        <button type="button" class="editor-button editor-button--primary" data-gallery-upload>Добавить фото</button>
+        <button type="button" class="editor-button" data-gallery-library>Выбрать загруженное</button>
+      </div>
+    </div>
+  `;
+
+  const section = (id: string, number: string, title: string, description: string, content: string, open = false) => `
+    <details id="${id}" class="editor-section" ${open ? 'open' : ''}>
+      <summary class="editor-section__summary">
+        <span class="editor-section__number">${number}</span>
+        <span class="editor-section__heading">
+          <strong>${title}</strong>
+          <small>${description}</small>
+        </span>
+        <span class="editor-section__chevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div class="editor-section__content">
+        <div class="editor-grid">${content}</div>
+      </div>
+    </details>
+  `;
+
+  return `
+    <form id="entrepreneur-form" class="entrepreneur-editor">
+      <div id="form-message" class="entrepreneur-editor__message"></div>
+      <div class="entrepreneur-editor__layout">
+        <aside class="entrepreneur-editor__nav">
+          <p class="entrepreneur-editor__nav-title">Разделы страницы</p>
+          <a href="#editor-visibility">00. Видимость блоков</a>
+          <a href="#editor-main">01. Основное</a>
+          <a href="#editor-hero">02. Херо</a>
+          <a href="#editor-about">03. Меню и галерея</a>
+          <a href="#editor-biography">04. Биография</a>
+          <a href="#editor-childhood">05. Детство</a>
+          <a href="#editor-education">06. Образование</a>
+          <a href="#editor-turnover">07. Оборот</a>
+          <a href="#editor-more">08. Больше</a>
+          <a href="#editor-interview">09. Интервью</a>
+          <a href="#editor-extra">10. Дополнительно</a>
+        </aside>
+        <div class="entrepreneur-editor__sections">
+          ${section('editor-visibility', '00', 'Видимость блоков', 'Включайте только те блоки, которые должны отображаться на странице героя.', `
+            <div class="editor-field editor-field--wide">
+              <input type="hidden" name="sectionOrder" value="${escapeHtml(JSON.stringify(sectionOrder))}" data-section-order-value>
+              <div class="editor-visibility-grid editor-order-list" data-section-order-list>
+                ${orderedSectionOptions.map(([key, label]) => `
+                  <div class="editor-order-item" data-section-order-item data-section-key="${key}">
+                    <label class="editor-switch">
+                      <input type="checkbox" name="section_${key}" ${sectionVisibility[key] !== false ? 'checked' : ''}>
+                      <span class="editor-switch__track"></span>
+                      <span><strong>${label}</strong><small>Показывать блок на публичной странице</small></span>
+                    </label>
+                    <div class="editor-order-controls">
+                      <button type="button" class="editor-order-button" data-order-direction="up" aria-label="Поднять блок">↑</button>
+                      <button type="button" class="editor-order-button" data-order-direction="down" aria-label="Опустить блок">↓</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `, true)}
+
+          ${section('editor-main', '01', 'Основное', 'Имя героя, адрес страницы, должность и главная фотография.', `
+            ${field('Имя и фамилия', 'name', item.name, { required: true, help: 'Выводится в заголовках и карточках героя.' })}
+            ${field('Адрес страницы (формируется автоматически)', 'slug', item.slug, { required: true, help: 'Создаётся из имени латиницей. При совпадении адресов система добавит номер.' })}
+            ${field('Должность / подпись', 'title', item.title, { required: true, help: 'Короткая роль героя: «Управляющий партнер».' })}
+            ${field('Цитата', 'quote', item.quote, { help: 'Используется как запасной тизер в блоках страницы.' })}
+            ${mediaField('Главное фото героя', 'photo', 'photoFile', item.photo, 'Основной портрет для карточки героя и связанных блоков. Рекомендуется вертикальное изображение.')}
+          `, true)}
+
+          ${section('editor-hero', '02', 'Херо', 'Первый полноэкранный блок страницы. Имя берётся из раздела «Основное».', `
+            ${field('Текст слева', 'heroLeftTeaser', item.heroLeftTeaser, { textarea: true, rows: 3, help: 'Небольшая подпись слева от фамилии.' })}
+            ${field('Текст справа сверху', 'heroRightTeaser', item.heroRightTeaser, { textarea: true, rows: 3, help: 'Подпись справа от строки «КТО ЗДЕСЬ».' })}
+            ${field('Текст справа снизу', 'heroBottomRightTeaser', item.heroBottomRightTeaser, { textarea: true, rows: 3, help: 'Дополнительная подпись в правой нижней части херо.' })}
+            ${field('Бегущая строка', 'heroMarquee', item.heroMarquee, { textarea: true, rows: 3, help: 'Текст на красной полосе внизу херо. Если оставить пустым, соберётся автоматически.', wide: true })}
+          `)}
+
+          ${section('editor-about', '03', 'Меню и фотослайдер', 'Полноэкранный блок после херо: карточки навигации слева, фотографии справа.', `
+            ${field('Вступительное описание', 'aboutIntroDescription', item.aboutIntroDescription, { textarea: true, rows: 4, help: 'Поясняющий текст над блоком.', wide: true })}
+            ${field('Названия карточек меню', 'aboutMenuLabels', item.aboutMenuLabels, { textarea: true, rows: 7, help: 'Одно название в строке. Порядок соответствует пунктам меню.' })}
+            ${field('Описания карточек меню', 'aboutMenuDescriptions', item.aboutMenuDescriptions, { textarea: true, rows: 7, help: 'Одно описание в строке, в том же порядке, что названия.' })}
+            ${galleryField('Фотографии слайдера', 'aboutGalleryPhotos', item.aboutGalleryPhotos, 'Фото меняются при наведении на пункты меню. Расположите их в том же порядке, что карточки.')}
+          `)}
+
+          ${section('editor-biography', '04', 'Биография', 'Блок «БИОГРАФИЯ / КТО ЗДЕСЬ…»: заголовок формируется автоматически, справа три текста, слева фото.', `
+            ${field('Первый текст', 'biographyTextOne', item.biographyTextOne, { textarea: true, rows: 6, help: 'Верхний текст правой колонки.' })}
+            ${field('Второй текст', 'biographyTextTwo', item.biographyTextTwo, { textarea: true, rows: 6, help: 'Второй текст, расположен ниже первого.' })}
+            ${field('Третий текст', 'biographyTextThree', item.biographyTextThree, { textarea: true, rows: 6, help: 'Нижний текст, прижат к нижнему краю блока.' })}
+            ${mediaField('Фото блока «Биография»', 'biographyPhoto', 'biographyPhotoFile', item.biographyPhoto, 'Статичное фото под заголовком слева. Лучше использовать горизонтальный кадр.')}
+          `)}
+
+          ${section('editor-childhood', '05', 'Детство', 'Красный текстовый блок, связанный со вторым пунктом меню.', `
+            ${field('Заголовок', 'childhoodTitle', item.childhoodTitle, { textarea: true, rows: 3, help: 'Можно переносить строки вручную.' , wide: true })}
+            ${field('Первый текст', 'childhoodTextOne', item.childhoodTextOne, { textarea: true, rows: 7, help: 'Первый абзац под заголовком.' })}
+            ${field('Второй текст', 'childhoodTextTwo', item.childhoodTextTwo, { textarea: true, rows: 7, help: 'Второй отдельный абзац.' })}
+          `)}
+
+          ${section('editor-education', '06', 'Образование и опыт', 'Третий пункт меню: крупный заголовок и текст слева, фотография справа.', `
+            ${field('Заголовок', 'educationTitle', item.educationTitle, { textarea: true, rows: 4, help: 'Каждая строка выводится отдельно. Третья строка получает дизайнерский отступ.', wide: true })}
+            ${field('Основной текст', 'educationText', item.educationText, { textarea: true, rows: 8, help: 'Текст под крупным заголовком.' })}
+            ${field('Текст рядом с кнопкой', 'educationAsideText', item.educationAsideText, { textarea: true, rows: 5, help: 'Нижний текст справа от кнопки «Смотреть интервью».' })}
+            ${mediaField('Фото блока', 'educationPhoto', 'educationPhotoFile', item.educationPhoto, 'Фотография в правой колонке блока «Образование и опыт».')}
+          `)}
+
+          ${section('editor-turnover', '07', 'Оборот / бизнес', 'Четвёртый пункт меню: заголовок, интервью, фото и два текста.', `
+            ${field('Заголовок', 'turnoverTitle', item.turnoverTitle, { textarea: true, rows: 4, help: 'Каждая строка заголовка выводится отдельно.', wide: true })}
+            ${field('Верхний текст справа', 'turnoverText', item.turnoverText, { textarea: true, rows: 7, help: 'Размещается вверху правой колонки.' })}
+            ${field('Нижний текст справа', 'turnoverBottomText', item.turnoverBottomText, { textarea: true, rows: 7, help: 'Низ текста выравнивается по нижнему краю фотографии.' })}
+            ${mediaField('Фото блока', 'turnoverPhoto', 'turnoverPhotoFile', item.turnoverPhoto, 'Горизонтальное фото 16:9 под кнопкой «Смотреть интервью».')}
+          `)}
+
+          ${section('editor-more', '08', 'Больше о герое', 'Красные карточки ссылок и широкая фотография перед интервью.', `
+            ${field('Тексты четырёх карточек', 'moreCardTitles', item.moreCardTitles, { textarea: true, rows: 6, help: 'Ровно четыре строки: одна строка — одна карточка.' })}
+            ${field('Ссылки четырёх карточек', 'moreCardLinks', item.moreCardLinks, { textarea: true, rows: 6, help: 'Ровно четыре строки в том же порядке. Допустимы относительные и полные ссылки.' })}
+            ${mediaField('Широкая фотография', 'morePhoto', 'morePhotoFile', item.morePhoto, 'Фото во втором ряду, занимает ширину двух карточек.')}
+          `)}
+
+          ${section('editor-interview', '09', 'Главное интервью', 'Полноэкранный видеоблок «Смотреть интервью».', `
+            <div class="editor-field editor-field--wide">
+              <span class="editor-field__label">Источник видео</span>
+              <p class="editor-field__help">Вставьте ссылку VK / iframe или загрузите собственный видеофайл.</p>
+              <div class="editor-segmented">
+                <label><input type="radio" name="featuredInterviewVideoType" value="EMBED" ${(item.featuredInterviewVideoType || 'EMBED') === 'EMBED' ? 'checked' : ''}><span>Ссылка / VK</span></label>
+                <label><input type="radio" name="featuredInterviewVideoType" value="SELF_HOSTED" ${item.featuredInterviewVideoType === 'SELF_HOSTED' ? 'checked' : ''}><span>Загрузить файл</span></label>
+              </div>
+            </div>
+            <div id="featuredInterviewVideoUrl-field" class="editor-field editor-field--wide">
+              <label class="editor-field__label" for="featuredInterviewVideoUrl">Ссылка на видео</label>
+              <input id="featuredInterviewVideoUrl" type="text" name="featuredInterviewVideoUrl" value="${escapeHtml(item.featuredInterviewVideoUrl || '')}" placeholder="Ссылка VK Video, embed-код или URL" class="editor-control">
+              <p class="editor-field__help">Для VK можно вставить обычную ссылку на ролик или ссылку из кода для вставки.</p>
+            </div>
+            <div id="featuredInterviewVideoFile-field" class="editor-field editor-field--wide hidden">
+              <label class="editor-field__label">Загруженный видеофайл</label>
+              <input type="text" name="featuredInterviewVideoFile" value="${escapeHtml(item.featuredInterviewVideoFile || '')}" readonly class="editor-control">
+              <input type="file" name="featuredInterviewVideoFileUpload" accept="video/*" class="editor-file-input">
+              <p class="editor-field__help">Рекомендуется MP4 (H.264), горизонтальное видео 16:9.</p>
+            </div>
+          `)}
+
+          ${section('editor-extra', '10', 'Дополнительно', 'Резервные материалы и расширенное описание.', `
+            ${mediaField('Фото при наведении', 'hoverPhoto', 'hoverPhotoFile', item.hoverPhoto, 'Резервное изображение для состояний наведения на карточках героя.')}
+            ${galleryField('Дополнительная галерея', 'galleryPhotos', item.galleryPhotos, 'Общая галерея героя. Используйте её для дополнительных материалов, не входящих в фотослайдер меню.')}
+            <div class="editor-field editor-field--wide">
+              <label class="editor-field__label">Расширенная биография</label>
+              <p class="editor-field__help">Текст для дополнительных материалов и старых шаблонов. Форматирование сохраняется.</p>
+              <input type="hidden" name="bio">
+              <div id="editor-bio" class="bg-white">${item.bio || ''}</div>
+            </div>
+          `)}
+
+          <div class="entrepreneur-editor__publish">
+            <label class="editor-switch">
+              <input type="checkbox" name="isPublished" id="isPublished" ${item.isPublished ? 'checked' : ''}>
+              <span class="editor-switch__track"></span>
+              <span><strong>Опубликовать страницу</strong><small>Если выключено, герой останется черновиком.</small></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="entrepreneur-editor__actions">
+        <span class="entrepreneur-editor__save-note">Изменения появятся на странице после сохранения</span>
+        <a href="/admin/entrepreneurs" class="editor-button" data-link>Отмена</a>
+        <button type="submit" class="editor-button editor-button--primary editor-button--save">Сохранить</button>
+      </div>
     </form>
+    <div class="media-library" id="media-library" aria-hidden="true">
+      <button type="button" class="media-library__backdrop" data-media-close aria-label="Закрыть"></button>
+      <div class="media-library__dialog" role="dialog" aria-modal="true" aria-labelledby="media-library-title">
+        <div class="media-library__header">
+          <div>
+            <h2 id="media-library-title">Библиотека изображений</h2>
+            <p>Выберите ранее загруженное изображение</p>
+          </div>
+          <button type="button" class="media-library__close" data-media-close aria-label="Закрыть">×</button>
+        </div>
+        <div class="media-library__grid" data-media-library-grid></div>
+      </div>
+    </div>
   `;
 }
 
 function fillForm(item: Entrepreneur) {
   const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
   if (!form) return;
+
   form.querySelector<HTMLInputElement>('input[name="name"]')!.value = item.name;
   form.querySelector<HTMLInputElement>('input[name="slug"]')!.value = item.slug;
   form.querySelector<HTMLInputElement>('input[name="title"]')!.value = item.title;
+  form.querySelector<HTMLTextAreaElement>('textarea[name="heroLeftTeaser"]')!.value = item.heroLeftTeaser || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="heroRightTeaser"]')!.value = item.heroRightTeaser || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="heroBottomRightTeaser"]')!.value = item.heroBottomRightTeaser || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="heroMarquee"]')!.value = item.heroMarquee || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="aboutIntroDescription"]')!.value = item.aboutIntroDescription || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="aboutMenuLabels"]')!.value = item.aboutMenuLabels || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="aboutMenuDescriptions"]')!.value = item.aboutMenuDescriptions || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="biographyTextOne"]')!.value = item.biographyTextOne || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="biographyTextTwo"]')!.value = item.biographyTextTwo || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="biographyTextThree"]')!.value = item.biographyTextThree || '';
+  form.querySelector<HTMLInputElement>('input[name="biographyPhoto"]')!.value = item.biographyPhoto || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="childhoodTitle"]')!.value = item.childhoodTitle || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="childhoodTextOne"]')!.value = item.childhoodTextOne || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="childhoodTextTwo"]')!.value = item.childhoodTextTwo || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="educationTitle"]')!.value = item.educationTitle || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="educationText"]')!.value = item.educationText || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="educationAsideText"]')!.value = item.educationAsideText || '';
+  form.querySelector<HTMLInputElement>('input[name="educationPhoto"]')!.value = item.educationPhoto || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="turnoverTitle"]')!.value = item.turnoverTitle || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="turnoverText"]')!.value = item.turnoverText || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="turnoverBottomText"]')!.value = item.turnoverBottomText || '';
+  form.querySelector<HTMLInputElement>('input[name="turnoverPhoto"]')!.value = item.turnoverPhoto || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="moreCardTitles"]')!.value = item.moreCardTitles || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="moreCardLinks"]')!.value = item.moreCardLinks || '';
+  form.querySelector<HTMLInputElement>('input[name="morePhoto"]')!.value = item.morePhoto || '';
+  form.querySelector<HTMLInputElement>(`input[name="featuredInterviewVideoType"][value="${item.featuredInterviewVideoType || 'EMBED'}"]`)!.checked = true;
+  form.querySelector<HTMLInputElement>('input[name="featuredInterviewVideoUrl"]')!.value = item.featuredInterviewVideoUrl || '';
+  form.querySelector<HTMLInputElement>('input[name="featuredInterviewVideoFile"]')!.value = item.featuredInterviewVideoFile || '';
   form.querySelector<HTMLInputElement>('input[name="photo"]')!.value = item.photo || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="aboutGalleryPhotos"]')!.value = item.aboutGalleryPhotos || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="galleryPhotos"]')!.value = item.galleryPhotos || '';
+  form.querySelector<HTMLInputElement>('input[name="hoverPhoto"]')!.value = item.hoverPhoto || '';
   setHtml('bio', item.bio || '');
   form.querySelector<HTMLInputElement>('input[name="quote"]')!.value = item.quote || '';
+  const visibility = parseVisibility(item.sectionVisibility);
+  entrepreneurSectionOptions.forEach(([key]) => {
+    const input = form.querySelector<HTMLInputElement>(`input[name="section_${key}"]`);
+    if (input) input.checked = visibility[key] !== false;
+  });
+  const orderInput = form.querySelector<HTMLInputElement>('[data-section-order-value]');
+  if (orderInput) orderInput.value = JSON.stringify(parseSectionOrder(item.sectionOrder, entrepreneurSectionOptions.map(([key]) => key)));
   form.querySelector<HTMLInputElement>('input[name="isPublished"]')!.checked = item.isPublished;
+  syncFeaturedInterviewVideoFields(item.featuredInterviewVideoType || 'EMBED');
+}
+
+function attachFeaturedInterviewVideoTypeToggle() {
+  const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
+  if (!form) return;
+  form.querySelectorAll<HTMLInputElement>('input[name="featuredInterviewVideoType"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      const type = form.querySelector<HTMLInputElement>('input[name="featuredInterviewVideoType"]:checked')?.value as 'EMBED' | 'SELF_HOSTED';
+      syncFeaturedInterviewVideoFields(type || 'EMBED');
+    });
+  });
+  const initialType = form.querySelector<HTMLInputElement>('input[name="featuredInterviewVideoType"]:checked')?.value as 'EMBED' | 'SELF_HOSTED';
+  syncFeaturedInterviewVideoFields(initialType || 'EMBED');
+}
+
+function syncFeaturedInterviewVideoFields(type: 'EMBED' | 'SELF_HOSTED') {
+  const urlField = document.getElementById('featuredInterviewVideoUrl-field');
+  const fileField = document.getElementById('featuredInterviewVideoFile-field');
+  if (!urlField || !fileField) return;
+  if (type === 'EMBED') {
+    urlField.classList.remove('hidden');
+    fileField.classList.add('hidden');
+  } else {
+    urlField.classList.add('hidden');
+    fileField.classList.remove('hidden');
+  }
+}
+
+function attachSectionNavigation() {
+  document.querySelectorAll<HTMLAnchorElement>('.entrepreneur-editor__nav a').forEach((link) => {
+    link.addEventListener('click', () => {
+      const section = document.querySelector<HTMLDetailsElement>(link.hash);
+      if (section) section.open = true;
+    });
+  });
+}
+
+function attachMediaEditor() {
+  const modal = document.getElementById('media-library');
+  const libraryGrid = modal?.querySelector<HTMLElement>('[data-media-library-grid]');
+  let selectMedia: ((url: string) => void) | null = null;
+  let mediaPromise: ReturnType<typeof api.media.list> | null = null;
+
+  const renderPreview = (field: HTMLElement, url: string, localUrl?: string) => {
+    const preview = field.querySelector<HTMLElement>('[data-media-preview]');
+    const status = field.querySelector<HTMLElement>('[data-media-status]');
+    const proxy = field.querySelector<HTMLInputElement>('[data-media-url-proxy]');
+    if (!preview) return;
+    const displayUrl = localUrl || url;
+    preview.innerHTML = displayUrl
+      ? `<img src="${escapeHtml(displayUrl)}" alt=""><span>${localUrl ? 'Новое изображение' : 'Текущее изображение'}</span>`
+      : '<div class="media-field__empty"><strong>Нет изображения</strong><span>Загрузите новое или выберите из библиотеки</span></div>';
+    if (status) status.textContent = displayUrl ? 'Изображение выбрано' : 'Не выбрано';
+    if (proxy && proxy.value !== url) proxy.value = url;
+  };
+
+  const openLibrary = async (onSelect: (url: string) => void) => {
+    if (!modal || !libraryGrid) return;
+    selectMedia = onSelect;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('media-library-open');
+    libraryGrid.innerHTML = '<p class="media-library__loading">Загружаем изображения…</p>';
+    try {
+      mediaPromise ||= api.media.list();
+      const files = (await mediaPromise).filter((file) => file.type === 'image');
+      libraryGrid.innerHTML = files.length
+        ? files.map((file) => `
+            <button type="button" class="media-library__item" data-library-url="${escapeHtml(file.url)}">
+              <img src="${escapeHtml(file.url)}" alt="">
+              <span title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</span>
+            </button>
+          `).join('')
+        : '<p class="media-library__loading">Загруженных изображений пока нет.</p>';
+    } catch (error) {
+      libraryGrid.innerHTML = `<p class="media-library__loading media-library__loading--error">${escapeHtml(error instanceof Error ? error.message : 'Не удалось открыть библиотеку')}</p>`;
+    }
+  };
+
+  const closeLibrary = () => {
+    if (!modal) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('media-library-open');
+    selectMedia = null;
+  };
+
+  modal?.querySelectorAll<HTMLElement>('[data-media-close]').forEach((button) => button.addEventListener('click', closeLibrary));
+  libraryGrid?.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-library-url]');
+    if (!button || !selectMedia) return;
+    selectMedia(button.dataset.libraryUrl || '');
+    closeLibrary();
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-media-field]').forEach((field) => {
+    const urlInput = field.querySelector<HTMLInputElement>('[data-media-url]');
+    const fileInput = field.querySelector<HTMLInputElement>('[data-media-file]');
+    const proxy = field.querySelector<HTMLInputElement>('[data-media-url-proxy]');
+    if (!urlInput || !fileInput) return;
+
+    renderPreview(field, urlInput.value);
+    field.querySelector<HTMLElement>('[data-media-upload]')?.addEventListener('click', () => fileInput.click());
+    field.querySelector<HTMLElement>('[data-media-library]')?.addEventListener('click', () => {
+      openLibrary((url) => {
+        urlInput.value = url;
+        fileInput.value = '';
+        renderPreview(field, url);
+      });
+    });
+    field.querySelector<HTMLElement>('[data-media-clear]')?.addEventListener('click', () => {
+      urlInput.value = '';
+      fileInput.value = '';
+      renderPreview(field, '');
+    });
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      renderPreview(field, urlInput.value, file ? URL.createObjectURL(file) : undefined);
+    });
+    proxy?.addEventListener('input', () => {
+      urlInput.value = proxy.value.trim();
+      fileInput.value = '';
+      renderPreview(field, urlInput.value);
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-gallery-field]').forEach((field) => {
+    const valueInput = field.querySelector<HTMLTextAreaElement>('[data-gallery-value]');
+    const items = field.querySelector<HTMLElement>('[data-gallery-items]');
+    const fileInput = field.querySelector<HTMLInputElement>('[data-gallery-file]');
+    if (!valueInput || !items || !fileInput) return;
+
+    const readUrls = () => valueInput.value.split(/\r?\n/).map((url) => url.trim()).filter(Boolean);
+    const writeUrls = (urls: string[]) => {
+      valueInput.value = urls.join('\n');
+      renderItems();
+    };
+    const renderItems = () => {
+      const urls = readUrls();
+      items.innerHTML = urls.length
+        ? urls.map((url, index) => `
+            <div class="gallery-field__item">
+              <img src="${escapeHtml(url)}" alt="">
+              <button type="button" data-gallery-remove="${index}" aria-label="Удалить">×</button>
+              <span>${index + 1}</span>
+            </div>
+          `).join('')
+        : '<div class="gallery-field__empty">Фотографии ещё не добавлены</div>';
+    };
+
+    renderItems();
+    items.addEventListener('click', (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-gallery-remove]');
+      if (!button) return;
+      const urls = readUrls();
+      urls.splice(Number(button.dataset.galleryRemove), 1);
+      writeUrls(urls);
+    });
+    field.querySelector<HTMLElement>('[data-gallery-upload]')?.addEventListener('click', () => fileInput.click());
+    field.querySelector<HTMLElement>('[data-gallery-library]')?.addEventListener('click', () => {
+      openLibrary((url) => writeUrls([...readUrls(), url]));
+    });
+    fileInput.addEventListener('change', async () => {
+      const files = Array.from(fileInput.files || []);
+      if (!files.length) return;
+      const uploadButton = field.querySelector<HTMLButtonElement>('[data-gallery-upload]');
+      if (uploadButton) {
+        uploadButton.disabled = true;
+        uploadButton.textContent = 'Загрузка…';
+      }
+      try {
+        const uploaded = [];
+        for (const file of files) uploaded.push((await api.uploadImage(file)).url);
+        writeUrls([...readUrls(), ...uploaded]);
+        mediaPromise = null;
+      } catch (error) {
+        alert(error instanceof Error ? error.message : 'Не удалось загрузить изображения');
+      } finally {
+        fileInput.value = '';
+        if (uploadButton) {
+          uploadButton.disabled = false;
+          uploadButton.textContent = 'Добавить фото';
+        }
+      }
+    });
+  });
 }
 
 function attachSubmit(id: string | null) {
   const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
   if (!form) return;
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = document.getElementById('form-message');
@@ -175,21 +630,149 @@ function attachSubmit(id: string | null) {
 
 async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<Partial<Entrepreneur>> {
   const fd = new FormData(form);
+
   const photoFile = fd.get('photoFile') as File | null;
   let photo = (fd.get('photo') as string) || null;
   if (photoFile && photoFile.size > 0) {
     const uploaded = await api.uploadImage(photoFile);
     photo = uploaded.url;
   }
+
+  const hoverPhotoFile = fd.get('hoverPhotoFile') as File | null;
+  let hoverPhoto = (fd.get('hoverPhoto') as string) || null;
+  if (hoverPhotoFile && hoverPhotoFile.size > 0) {
+    const uploaded = await api.uploadImage(hoverPhotoFile);
+    hoverPhoto = uploaded.url;
+  }
+
+  const biographyPhotoFile = fd.get('biographyPhotoFile') as File | null;
+  let biographyPhoto = (fd.get('biographyPhoto') as string) || null;
+  if (biographyPhotoFile && biographyPhotoFile.size > 0) {
+    const uploaded = await api.uploadImage(biographyPhotoFile);
+    biographyPhoto = uploaded.url;
+  }
+
+  const educationPhotoFile = fd.get('educationPhotoFile') as File | null;
+  let educationPhoto = (fd.get('educationPhoto') as string) || null;
+  if (educationPhotoFile && educationPhotoFile.size > 0) {
+    const uploaded = await api.uploadImage(educationPhotoFile);
+    educationPhoto = uploaded.url;
+  }
+
+  const turnoverPhotoFile = fd.get('turnoverPhotoFile') as File | null;
+  let turnoverPhoto = (fd.get('turnoverPhoto') as string) || null;
+  if (turnoverPhotoFile && turnoverPhotoFile.size > 0) {
+    const uploaded = await api.uploadImage(turnoverPhotoFile);
+    turnoverPhoto = uploaded.url;
+  }
+
+  const morePhotoFile = fd.get('morePhotoFile') as File | null;
+  let morePhoto = (fd.get('morePhoto') as string) || null;
+  if (morePhotoFile && morePhotoFile.size > 0) {
+    const uploaded = await api.uploadImage(morePhotoFile);
+    morePhoto = uploaded.url;
+  }
+
+  const featuredInterviewVideoType = (fd.get('featuredInterviewVideoType') as 'EMBED' | 'SELF_HOSTED') || 'EMBED';
+  const featuredInterviewVideoFileUpload = fd.get('featuredInterviewVideoFileUpload') as File | null;
+  let featuredInterviewVideoFile = (fd.get('featuredInterviewVideoFile') as string) || null;
+  if (featuredInterviewVideoType === 'SELF_HOSTED' && featuredInterviewVideoFileUpload && featuredInterviewVideoFileUpload.size > 0) {
+    const uploaded = await api.uploadVideo(featuredInterviewVideoFileUpload);
+    featuredInterviewVideoFile = uploaded.url;
+  }
+
   return {
     name: fd.get('name') as string,
     slug: fd.get('slug') as string,
     title: fd.get('title') as string,
+    heroLeftTeaser: (fd.get('heroLeftTeaser') as string) || null,
+    heroRightTeaser: (fd.get('heroRightTeaser') as string) || null,
+    heroBottomRightTeaser: (fd.get('heroBottomRightTeaser') as string) || null,
+    heroMarquee: (fd.get('heroMarquee') as string) || null,
+    aboutIntroDescription: (fd.get('aboutIntroDescription') as string) || null,
+    aboutMenuLabels: (fd.get('aboutMenuLabels') as string) || null,
+    aboutMenuDescriptions: (fd.get('aboutMenuDescriptions') as string) || null,
+    biographyTextOne: (fd.get('biographyTextOne') as string) || null,
+    biographyTextTwo: (fd.get('biographyTextTwo') as string) || null,
+    biographyTextThree: (fd.get('biographyTextThree') as string) || null,
+    biographyPhoto,
+    childhoodTitle: (fd.get('childhoodTitle') as string) || null,
+    childhoodTextOne: (fd.get('childhoodTextOne') as string) || null,
+    childhoodTextTwo: (fd.get('childhoodTextTwo') as string) || null,
+    educationTitle: (fd.get('educationTitle') as string) || null,
+    educationText: (fd.get('educationText') as string) || null,
+    educationAsideText: (fd.get('educationAsideText') as string) || null,
+    educationPhoto,
+    turnoverTitle: (fd.get('turnoverTitle') as string) || null,
+    turnoverText: (fd.get('turnoverText') as string) || null,
+    turnoverBottomText: (fd.get('turnoverBottomText') as string) || null,
+    turnoverPhoto,
+    moreCardTitles: (fd.get('moreCardTitles') as string) || null,
+    moreCardLinks: (fd.get('moreCardLinks') as string) || null,
+    morePhoto,
+    featuredInterviewVideoType,
+    featuredInterviewVideoUrl: featuredInterviewVideoType === 'EMBED' ? (fd.get('featuredInterviewVideoUrl') as string) || null : null,
+    featuredInterviewVideoFile: featuredInterviewVideoType === 'SELF_HOSTED' ? featuredInterviewVideoFile : null,
     photo,
+    aboutGalleryPhotos: (fd.get('aboutGalleryPhotos') as string) || null,
+    galleryPhotos: (fd.get('galleryPhotos') as string) || null,
+    hoverPhoto,
     bio: bioHtml || null,
     quote: (fd.get('quote') as string) || null,
+    sectionVisibility: JSON.stringify(Object.fromEntries(
+      entrepreneurSectionOptions.map(([key]) => [key, fd.has(`section_${key}`)])
+    )),
+    sectionOrder: (fd.get('sectionOrder') as string) || JSON.stringify(entrepreneurSectionOptions.map(([key]) => key)),
     isPublished: fd.has('isPublished'),
   };
+}
+
+function parseVisibility(value: string | null | undefined): Record<string, boolean> {
+  if (!value) return {};
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function parseSectionOrder(value: string | null | undefined, defaults: readonly string[]): string[] {
+  let saved: string[] = [];
+  try {
+    const parsed = JSON.parse(value || '[]');
+    if (Array.isArray(parsed)) saved = parsed.map(String);
+  } catch {
+    saved = [];
+  }
+  return [...saved.filter((key, index) => defaults.includes(key) && saved.indexOf(key) === index), ...defaults.filter((key) => !saved.includes(key))];
+}
+
+function attachSectionOrderEditor(formId: string) {
+  const form = document.getElementById(formId) as HTMLFormElement | null;
+  const list = form?.querySelector<HTMLElement>('[data-section-order-list]');
+  const value = form?.querySelector<HTMLInputElement>('[data-section-order-value]');
+  if (!list || !value) return;
+
+  const sync = () => {
+    value.value = JSON.stringify(Array.from(list.querySelectorAll<HTMLElement>('[data-section-order-item]')).map((item) => item.dataset.sectionKey || ''));
+    list.querySelectorAll<HTMLElement>('[data-section-order-item]').forEach((item, index, items) => {
+      const up = item.querySelector<HTMLButtonElement>('[data-order-direction="up"]');
+      const down = item.querySelector<HTMLButtonElement>('[data-order-direction="down"]');
+      if (up) up.disabled = index === 0;
+      if (down) down.disabled = index === items.length - 1;
+    });
+  };
+
+  list.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-order-direction]');
+    const item = button?.closest<HTMLElement>('[data-section-order-item]');
+    if (!button || !item) return;
+    if (button.dataset.orderDirection === 'up' && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
+    if (button.dataset.orderDirection === 'down' && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
+    sync();
+  });
+  sync();
 }
 
 function setContent(html: string) {
@@ -205,8 +788,8 @@ function emptyRow(): string {
   return `<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">Нет записей</td></tr>`;
 }
 
-function statusBadge(isPublished: boolean): string {
-  return isPublished
-    ? `<span class="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Опубликовано</span>`
-    : `<span class="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Черновик</span>`;
+function statusBadge(published: boolean): string {
+  return published
+    ? '<span class="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Опубликовано</span>'
+    : '<span class="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Черновик</span>';
 }

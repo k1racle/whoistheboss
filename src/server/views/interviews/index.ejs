@@ -13,7 +13,7 @@
       <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
         <a href="/interviews/<%= item.slug %>" class="flex flex-col sm:flex-row h-full">
           <div class="w-full sm:w-48 md:w-56 h-56 sm:h-auto flex-shrink-0 bg-gray-100 overflow-hidden img-zoom">
-            <img src="<%= item.entrepreneur?.photo || item.coverImage || '/images/placeholder.jpg' %>" alt="<%= item.entrepreneur?.name %>" class="w-full h-full object-cover">
+            <img src="<%= item.entrepreneur?.photo || item.coverImage || '/images/placeholder.svg' %>" alt="<%= item.entrepreneur?.name %>" class="w-full h-full object-cover">
           </div>
           <div class="flex-1 p-6 flex flex-col justify-center">
             <h2 class="text-xl font-bold mb-2 group-hover:text-terracotta transition-colors"><%= item.entrepreneur?.name || item.title %></h2>

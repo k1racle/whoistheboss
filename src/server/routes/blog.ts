@@ -3,17 +3,44 @@ import { prisma } from '../lib/prisma.js';
 import { config } from '../config.js';
 import { buildSEO } from '../lib/seo.js';
 import { renderJsonLd } from '../lib/jsonld.js';
-import { getEngagement } from '../lib/engagement.js';
+import { getSiteSettings } from '../lib/settings.js';
 
 const router = Router();
 
 router.get('/', async (_req, res, next) => {
   try {
-    const articles = await prisma.article.findMany({
-      where: { isPublished: true },
-      include: { entrepreneur: true },
-      orderBy: { publishedAt: 'desc' },
-    });
+    const [articles, homeSettings, relatedEntrepreneurs, relatedBusinesses] = await Promise.all([
+      prisma.article.findMany({
+        where: { isPublished: true },
+        include: { entrepreneur: true },
+        orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+      }),
+      getSiteSettings(),
+      prisma.entrepreneur.findMany({
+        where: { isPublished: true },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+      }),
+      prisma.business.findMany({
+        where: { isPublished: true },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+      }),
+    ]);
+
+    let selectedIds: string[] = [];
+    try {
+      const parsed = JSON.parse(homeSettings.BLOG_PAGE_POPULAR_ARTICLE_IDS || '[]');
+      if (Array.isArray(parsed)) selectedIds = parsed.map(String);
+    } catch {}
+
+    const selected = selectedIds
+      .map((id) => articles.find((article) => article.id === id))
+      .filter((article): article is (typeof articles)[number] => Boolean(article));
+    const popularArticles = [
+      ...selected,
+      ...articles.filter((article) => !selectedIds.includes(article.id)),
+    ].slice(0, 6);
 
     const seo = buildSEO({
       title: 'Блог',
@@ -27,6 +54,11 @@ router.get('/', async (_req, res, next) => {
       siteName: config.SITE_NAME,
       siteUrl: config.SITE_URL,
       articles,
+      popularArticles,
+      relatedEntrepreneurs,
+      relatedBusinesses,
+      homeSettings,
+      hideSiteHeader: true,
     });
   } catch (err) {
     next(err);
@@ -37,15 +69,7 @@ router.get('/:slug', async (req, res, next) => {
   try {
     const article = await prisma.article.findFirst({
       where: { slug: req.params.slug, isPublished: true },
-      include: {
-        entrepreneur: true,
-        comments: {
-          where: { isApproved: true },
-          include: { user: { select: { id: true, name: true } } },
-          orderBy: { createdAt: 'desc' },
-        },
-        _count: { select: { comments: true } },
-      },
+      include: { entrepreneur: true },
     });
 
     if (!article) {
@@ -57,11 +81,44 @@ router.get('/:slug', async (req, res, next) => {
       });
     }
 
-    const related = await prisma.article.findMany({
-      where: { isPublished: true, id: { not: article.id } },
-      include: { entrepreneur: true },
-      orderBy: { publishedAt: 'desc' },
-      take: 3,
+    let selections: Array<{ type: 'entrepreneur' | 'business'; id: string }> = [];
+    try {
+      const parsed = JSON.parse(article.relatedMaterials || '[]');
+      if (Array.isArray(parsed)) {
+        selections = parsed.filter(
+          (item): item is { type: 'entrepreneur' | 'business'; id: string } =>
+            item
+            && (item.type === 'entrepreneur' || item.type === 'business')
+            && typeof item.id === 'string',
+        );
+      }
+    } catch {}
+
+    const entrepreneurIds = selections.filter((item) => item.type === 'entrepreneur').map((item) => item.id);
+    const businessIds = selections.filter((item) => item.type === 'business').map((item) => item.id);
+    const [selectedEntrepreneurs, selectedBusinesses, latestArticles, homeSettings] = await Promise.all([
+      entrepreneurIds.length
+        ? prisma.entrepreneur.findMany({ where: { id: { in: entrepreneurIds }, isPublished: true } })
+        : [],
+      businessIds.length
+        ? prisma.business.findMany({ where: { id: { in: businessIds }, isPublished: true } })
+        : [],
+      prisma.article.findMany({
+        where: { isPublished: true, id: { not: article.id } },
+        include: { entrepreneur: true },
+        orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+        take: 5,
+      }),
+      getSiteSettings(),
+    ]);
+
+    const entrepreneurMap = new Map(selectedEntrepreneurs.map((item) => [item.id, item]));
+    const businessMap = new Map(selectedBusinesses.map((item) => [item.id, item]));
+    const relatedMaterials = selections.flatMap((selection) => {
+      const item = selection.type === 'entrepreneur'
+        ? entrepreneurMap.get(selection.id)
+        : businessMap.get(selection.id);
+      return item ? [{ type: selection.type, item }] : [];
     });
 
     const seo = buildSEO({
@@ -87,17 +144,17 @@ router.get('/:slug', async (req, res, next) => {
         : undefined,
     });
 
-    const engagement = await getEngagement('ARTICLE', article.id, req.session.userId);
-
     res.render('blog/detail', {
       ...seo,
       siteDescription: config.SITE_DESCRIPTION,
       siteName: config.SITE_NAME,
       siteUrl: config.SITE_URL,
       article,
-      related,
+      relatedMaterials,
+      latestArticles,
+      homeSettings,
       jsonLd,
-      engagement,
+      hideSiteHeader: true,
     });
   } catch (err) {
     next(err);

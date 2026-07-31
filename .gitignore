@@ -10,3 +10,4 @@ public/uploads/*
 Thumbs.db
 .vscode/settings.json
 coverage/
+.tmp-*

@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../../lib/prisma.js';
+import { createUniqueSlug } from '../../lib/uniqueSlug.js';
 
 const router = Router();
 
 const schema = z.object({
-  slug: z.string().min(1),
+  slug: z.string().optional(),
   title: z.string().min(1),
   subtitle: z.string().optional().nullable(),
   entrepreneurId: z.string().min(1),
@@ -55,8 +56,11 @@ router.post('/', async (req, res, next) => {
       return;
     }
     const { publishedAt, ...rest } = parsed.data;
+    const slug = await createUniqueSlug(rest.title, async (candidate) => Boolean(
+      await prisma.interview.findUnique({ where: { slug: candidate }, select: { id: true } }),
+    ));
     const interview = await prisma.interview.create({
-      data: { ...rest, publishedAt: publishedAt ? new Date(publishedAt) : null },
+      data: { ...rest, slug, publishedAt: publishedAt ? new Date(publishedAt) : null },
       include: { entrepreneur: { select: { id: true, name: true } } },
     });
     res.status(201).json(interview);
@@ -93,9 +97,15 @@ router.put('/:id', async (req, res, next) => {
       return;
     }
     const { publishedAt, ...rest } = parsed.data;
+    const slug = await createUniqueSlug(rest.title, async (candidate) => Boolean(
+      await prisma.interview.findFirst({
+        where: { slug: candidate, id: { not: req.params.id } },
+        select: { id: true },
+      }),
+    ));
     const interview = await prisma.interview.update({
       where: { id: req.params.id },
-      data: { ...rest, publishedAt: publishedAt ? new Date(publishedAt) : null },
+      data: { ...rest, slug, publishedAt: publishedAt ? new Date(publishedAt) : null },
       include: { entrepreneur: { select: { id: true, name: true } } },
     });
     res.json(interview);

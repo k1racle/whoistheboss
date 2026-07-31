@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  initKonamiEasterEgg();
+
   // Mobile menu
   const menuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -87,6 +89,166 @@ document.addEventListener('DOMContentLoaded', () => {
   // Likes
   document.querySelectorAll('.engagement-bar').forEach(initEngagement);
 });
+
+function initKonamiEasterEgg() {
+  const sequence = [
+    'ArrowUp',
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'ArrowLeft',
+    'ArrowRight',
+    'b',
+    'a',
+  ];
+  const memePhrases = [
+    'А Я ДУМАЛА СОВА',
+    'СТРАШНО, ОЧЕНЬ СТРАШНО',
+    'НУ ВЫ ДЕРЖИТЕСЬ',
+    'ЭТО ФИАСКО, БРАТАН',
+    'ПОЛУЧАЕТСЯ, Я ГЕНИЙ',
+    'ВСЕ ИДЕТ ПО ПЛАНУ',
+    'А ЧТО С ЛИЦОМ',
+    'МЫ НА ДНЕ',
+    'НЕ БУДИ ЛИХО',
+    'Я УСТАЛ, Я УХОЖУ',
+    'РАБОТАЕМ, БРАТЬЯ',
+    'ГДЕ ДЕНЬГИ, ЛЕБОВСКИ',
+    'ЭТО УСПЕХ',
+    'ПОТРАЧЕНО',
+    'НУ ТАКОЕ',
+    'МЕМ ПОЛУЧИЛСЯ',
+    'ГОРШОЧЕК НЕ ВАРИ',
+    'ВЫ ВООБЩЕ ВИДЕЛИ',
+    'ПАНИКА ОТМЕНЯЕТСЯ',
+    'ДЕЛО ПАХНЕТ КРИНЖОМ',
+    'ЗДЕСЬ КТО-ТО ПЕРЕИГРАЛ',
+    'СИТУАЦИЯ ПОД КОНТРОЛЕМ',
+    'МЫСЛЬ МАТЕРИАЛЬНА',
+    'УРОН ПО РЕПУТАЦИИ',
+    'СЮДА МЫ БОЛЬШЕ НЕ ИДЕМ',
+    'НОРМАЛЬНО ЖЕ ОБЩАЛИСЬ',
+    'НАЧАЛОСЬ',
+    'ВСЕ, ПРИЕХАЛИ',
+    'ЭТО БАЗА',
+    'МЫ ВЫШЛИ ИЗ ЧАТА',
+    'ОНО САМО',
+    'ПОКАЖИ МНЕ КОД',
+    'НИЧЕГО НЕ ПОНЯТНО, НО ОЧЕНЬ ИНТЕРЕСНО',
+    'ЭТО УЖЕ МЕТА',
+    'СЕЙЧАС ВСЕ ПОЕДЕТ',
+    'КАК ТЕБЕ ТАКОЕ',
+    'ГЛАВНОЕ НЕ ПАНИКОВАТЬ',
+    'ТУТ НУЖЕН РЕСТАРТ',
+    'ПРОСТО НАЖМИ ALT F4',
+    'СЛИШКОМ МНОГО ВОПРОСОВ',
+  ];
+  const headingSelector = 'h1, h2, h3, .hero-title, .for-who-title, .stages-title, .section-title';
+  const buttonSelector = [
+    'a.red-button',
+    'button.red-button',
+    '.home-topbar__link',
+    '.home-topbar__shooting',
+    '.header-cta',
+    '.footer-hero-button',
+    '.site-banner__button',
+    '.shooting-form button',
+    '.shooting-form [type="submit"]',
+  ].join(', ');
+  let buffer = [];
+  let isActive = false;
+  let buttons = [];
+  let rafId = 0;
+  const pointer = { x: -9999, y: -9999 };
+
+  const setRandomHeadings = () => {
+    const headings = Array.from(document.querySelectorAll(headingSelector));
+    headings.forEach((heading, index) => {
+      const phrase = memePhrases[Math.floor(Math.random() * memePhrases.length)];
+      heading.textContent = headings.length > memePhrases.length
+        ? memePhrases[index % memePhrases.length]
+        : phrase;
+    });
+  };
+
+  const bindButtons = () => {
+    buttons = Array.from(document.querySelectorAll(buttonSelector)).map((button) => ({
+      node: button,
+      tx: 0,
+      ty: 0,
+    }));
+
+    buttons.forEach(({ node }) => {
+      node.style.willChange = 'transform';
+      node.style.transition = 'transform 0.18s ease-out, background-color 0.25s ease, color 0.25s ease';
+    });
+  };
+
+  const updateRunawayButtons = () => {
+    if (!isActive) {
+      rafId = 0;
+      return;
+    }
+
+    buttons.forEach((item) => {
+      const rect = item.node.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = cx - pointer.x;
+      const dy = cy - pointer.y;
+      const distance = Math.hypot(dx, dy);
+      const triggerRadius = 180;
+      const maxMove = 120;
+
+      if (distance < triggerRadius) {
+        const force = (triggerRadius - distance) / triggerRadius;
+        const safeDx = distance < 1 ? (Math.random() - 0.5) * 2 : dx / distance;
+        const safeDy = distance < 1 ? (Math.random() - 0.5) * 2 : dy / distance;
+        item.tx = safeDx * maxMove * force;
+        item.ty = safeDy * maxMove * force;
+      } else {
+        item.tx *= 0.84;
+        item.ty *= 0.84;
+        if (Math.abs(item.tx) < 0.5) item.tx = 0;
+        if (Math.abs(item.ty) < 0.5) item.ty = 0;
+      }
+
+      item.node.style.transform = `translate(${item.tx}px, ${item.ty}px)`;
+    });
+
+    rafId = window.requestAnimationFrame(updateRunawayButtons);
+  };
+
+  const activate = () => {
+    if (isActive) return;
+    isActive = true;
+    document.documentElement.classList.add('konami-mode');
+    setRandomHeadings();
+    bindButtons();
+
+    document.addEventListener('mousemove', (event) => {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+    }, { passive: true });
+
+    if (!rafId) {
+      rafId = window.requestAnimationFrame(updateRunawayButtons);
+    }
+  };
+
+  document.addEventListener('keydown', (event) => {
+    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    buffer.push(key);
+    buffer = buffer.slice(-sequence.length);
+
+    const isMatch = sequence.every((value, index) => buffer[index] === value);
+    if (isMatch) {
+      activate();
+    }
+  });
+}
 
 function initEngagement(bar) {
   const entityType = bar.dataset.entityType;

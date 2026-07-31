@@ -1,16 +1,24 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../../lib/prisma.js';
+import { createUniqueSlug } from '../../lib/uniqueSlug.js';
 
 const router = Router();
 
 const schema = z.object({
-  slug: z.string().min(1),
+  slug: z.string().optional(),
   title: z.string().min(1),
   subtitle: z.string().optional().nullable(),
+  category: z.string().optional().nullable(),
   entrepreneurId: z.string().optional().nullable(),
   coverImage: z.string().optional().nullable(),
   content: z.string().min(1),
+  secondaryImage: z.string().optional().nullable(),
+  secondaryText: z.string().optional().nullable(),
+  relatedTitle: z.string().optional().nullable(),
+  relatedMaterials: z.string().optional().nullable(),
+  sectionVisibility: z.string().optional().nullable(),
+  sectionOrder: z.string().optional().nullable(),
   isPublished: z.boolean().default(false),
   publishedAt: z.union([z.string().min(1), z.literal('')]).optional().nullable(),
   metaTitle: z.string().optional().nullable(),
@@ -50,8 +58,11 @@ router.post('/', async (req, res, next) => {
       return;
     }
     const { publishedAt, ...rest } = parsed.data;
+    const slug = await createUniqueSlug(rest.title, async (candidate) => Boolean(
+      await prisma.article.findUnique({ where: { slug: candidate }, select: { id: true } }),
+    ));
     const article = await prisma.article.create({
-      data: { ...rest, publishedAt: publishedAt ? new Date(publishedAt) : null },
+      data: { ...rest, slug, publishedAt: publishedAt ? new Date(publishedAt) : null },
       include: { entrepreneur: { select: { id: true, name: true } } },
     });
     res.status(201).json(article);
@@ -88,9 +99,15 @@ router.put('/:id', async (req, res, next) => {
       return;
     }
     const { publishedAt, ...rest } = parsed.data;
+    const slug = await createUniqueSlug(rest.title, async (candidate) => Boolean(
+      await prisma.article.findFirst({
+        where: { slug: candidate, id: { not: req.params.id } },
+        select: { id: true },
+      }),
+    ));
     const article = await prisma.article.update({
       where: { id: req.params.id },
-      data: { ...rest, publishedAt: publishedAt ? new Date(publishedAt) : null },
+      data: { ...rest, slug, publishedAt: publishedAt ? new Date(publishedAt) : null },
       include: { entrepreneur: { select: { id: true, name: true } } },
     });
     res.json(article);

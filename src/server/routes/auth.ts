@@ -15,6 +15,7 @@ router.get('/login', (req, res) => {
     siteName: config.SITE_NAME,
     siteDescription: config.SITE_DESCRIPTION,
     error: req.query.error === '1',
+    returnTo: typeof req.query.returnTo === 'string' ? req.query.returnTo : '',
   });
 });
 

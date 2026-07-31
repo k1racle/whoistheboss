@@ -44,7 +44,7 @@ export function usersView(user?: UserInfo | null) {
         <td class="px-4 py-3 text-sm text-gray-500">${formatDate(item.createdAt)}</td>
         <td class="px-4 py-3 text-sm text-right space-x-2">
           <a href="/admin/users/${item.id}/edit" class="text-terracotta hover:underline" data-link>Изменить</a>
-          <button class="text-red-600 hover:underline delete-btn" data-id="${item.id}">Удалить</button>
+          <button class="text-[#DB2A00] hover:underline delete-btn" data-id="${item.id}">Удалить</button>
         </td>
       </tr>
     `;
@@ -95,19 +95,19 @@ function renderForm(item: Partial<User>): string {
       <div id="form-message"></div>
       <div class="grid grid-cols-1 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Имя <span class="text-red-500">*</span></label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Имя <span class="text-[#DB2A00]">*</span></label>
           <input type="text" name="name" value="${escapeHtml(item.name || '')}" required class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-[#DB2A00]">*</span></label>
           <input type="email" name="email" value="${escapeHtml(item.email || '')}" required class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Пароль ${!item.id ? '<span class="text-red-500">*</span>' : '<span class="text-xs text-gray-500">(оставьте пустым, чтобы не менять)</span>'}</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Пароль ${!item.id ? '<span class="text-[#DB2A00]">*</span>' : '<span class="text-xs text-gray-500">(оставьте пустым, чтобы не менять)</span>'}</label>
           <input type="password" name="password" ${!item.id ? 'required' : ''} minlength="6" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Роль <span class="text-red-500">*</span></label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Роль <span class="text-[#DB2A00]">*</span></label>
           <select name="role" required class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
             <option value="ADMIN" ${item.role === 'ADMIN' ? 'selected' : ''}>Администратор</option>
             <option value="EDITOR" ${item.role === 'EDITOR' ? 'selected' : ''}>Редактор</option>

@@ -1,0 +1,293 @@
+import { api, type Settings } from '../api.js';
+import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
+
+const homeSections = [
+  ['hero', 'Херо'],
+  ['about', 'О проекте'],
+  ['audience', 'Для кого'],
+  ['heroes', 'Наши герои'],
+  ['places', 'Места'],
+  ['stages', 'Этапы'],
+  ['latestNews', 'Последние новости'],
+  ['cta', 'Стать участником'],
+  ['banner', 'Баннер'],
+] as const;
+
+export function homeView(user?: UserInfo | null) {
+  const html = layout('Главная', '<div class="admin-loading">Загрузка редактора…</div>', user);
+  async function init() {
+    try {
+      const settings = await api.settings.get();
+      setContent(renderHomeForm(settings));
+      attachOrderEditor();
+      attachMediaFields();
+      attachSubmit();
+    } catch (error) {
+      setContent(pageAlert(error instanceof Error ? error.message : 'Не удалось загрузить настройки главной', 'error'));
+    }
+  }
+  return { html, init };
+}
+
+function renderHomeForm(settings: Settings): string {
+  const visibility = parseObject(settings.HOME_SECTION_VISIBILITY);
+  const order = parseOrder(settings.HOME_SECTION_ORDER);
+  const orderedSections = order.map((key) => homeSections.find(([candidate]) => candidate === key)!);
+  const field = (label: string, name: string, help: string, textarea = false, rows = 4) => `
+    <label class="editor-field editor-field--wide">
+      <span class="editor-field__label">${label}</span>
+      ${textarea
+        ? `<textarea class="editor-control" name="${name}" rows="${rows}">${escapeHtml(settings[name] || '')}</textarea>`
+        : `<input class="editor-control" name="${name}" value="${escapeHtml(settings[name] || '')}">`}
+      <span class="editor-field__help">${help}</span>
+    </label>`;
+
+  const media = (label: string, name: string, kind: 'image' | 'video', help: string) => {
+    const value = settings[name] || '';
+    return `
+      <div class="editor-field editor-field--wide home-media-field" data-home-media data-media-kind="${kind}">
+        <div>
+          <span class="editor-field__label">${label}</span>
+          <span class="editor-field__help">${help}</span>
+        </div>
+        <div class="home-media-field__preview" data-home-media-preview>
+          ${value
+            ? kind === 'image'
+              ? `<img src="${escapeHtml(value)}" alt="">`
+              : `<video src="${escapeHtml(value)}" muted controls></video>`
+            : '<span>Файл не выбран</span>'}
+        </div>
+        <input type="hidden" name="${name}" value="${escapeHtml(value)}" data-home-media-value>
+        <input type="file" accept="${kind === 'image' ? 'image/*' : 'video/*'}" data-home-media-file>
+        <input class="editor-control" value="${escapeHtml(value)}" placeholder="/uploads/file или https://…" data-home-media-url>
+      </div>`;
+  };
+
+  const section = (id: string, number: string, title: string, hint: string, content: string, open = false) => `
+    <details id="${id}" class="editor-section" ${open ? 'open' : ''}>
+      <summary class="editor-section__summary">
+        <span class="editor-section__number">${number}</span>
+        <span class="editor-section__heading"><strong>${title}</strong><small>${hint}</small></span>
+        <span class="editor-section__chevron">⌄</span>
+      </summary>
+      <div class="editor-section__content"><div class="editor-grid">${content}</div></div>
+    </details>`;
+
+  return `
+    <form id="home-form" class="entrepreneur-editor home-editor">
+      <div id="form-message" class="entrepreneur-editor__message"></div>
+      <div class="entrepreneur-editor__layout">
+        <aside class="entrepreneur-editor__nav">
+          <p class="entrepreneur-editor__nav-title">Блоки главной</p>
+          <a href="#home-order">00. Порядок и видимость</a>
+          <a href="#home-hero">01. Херо</a>
+          <a href="#home-about">02. О проекте</a>
+          <a href="#home-audience">03. Для кого</a>
+          <a href="#home-heroes">04. Наши герои</a>
+          <a href="#home-places">05. Места</a>
+          <a href="#home-stages">06. Этапы</a>
+          <a href="#home-latest-news">07. Последние новости</a>
+          <a href="#home-cta">08. Заявка</a>
+          <a href="#home-banner">09. Баннер</a>
+        </aside>
+        <div class="entrepreneur-editor__sections">
+          ${section('home-order', '00', 'Порядок и видимость', 'Перемещайте блоки стрелками и отключайте ненужные секции.', `
+            <div class="editor-field editor-field--wide">
+              <input type="hidden" name="HOME_SECTION_ORDER" value="${escapeHtml(JSON.stringify(order))}" data-section-order-value>
+              <div class="editor-order-list" data-section-order-list>
+                ${orderedSections.map(([key, label]) => `
+                  <div class="editor-order-item" data-section-order-item data-section-key="${key}">
+                    <label class="editor-switch">
+                      <input type="checkbox" name="home_section_${key}" ${visibility[key] !== false ? 'checked' : ''}>
+                      <span class="editor-switch__track"></span>
+                      <span><strong>${label}</strong><small>Отображать на главной странице</small></span>
+                    </label>
+                    <div class="editor-order-controls">
+                      <button type="button" class="editor-order-button" data-order-direction="up">↑</button>
+                      <button type="button" class="editor-order-button" data-order-direction="down">↓</button>
+                    </div>
+                  </div>`).join('')}
+              </div>
+            </div>`, true)}
+
+          ${section('home-hero', '01', 'Херо', 'Первый полноэкранный блок главной.', `
+            ${field('Заголовок', 'HOME_HERO_TITLE', 'Перенос строки задает деление большого заголовка.', true, 3)}
+          `)}
+
+          ${section('home-about', '02', 'О проекте', 'Текст и два состояния видео.', `
+            ${field('Заголовок', 'HOME_ABOUT_TITLE', 'Заголовок слева от видео.')}
+            ${field('Основной текст', 'HOME_ABOUT_TEXT', 'Описание проекта слева.', true, 7)}
+            ${field('Нижний текст', 'HOME_ABOUT_BOTTOM_TEXT', 'Строка под основной частью блока.', true, 4)}
+            ${field('Ссылка на основное видео', 'HOME_ABOUT_VIDEO_URL', 'Используйте для VK Video или другого embed-источника.')}
+            ${media('Основное видео-файл', 'HOME_ABOUT_VIDEO_FILE', 'video', 'Загруженный файл имеет приоритет над ссылкой.')}
+            ${field('Ссылка на видео при наведении', 'HOME_ABOUT_HOVER_VIDEO_URL', 'Необязательное второе состояние видео.')}
+            ${media('Hover-видео-файл', 'HOME_ABOUT_HOVER_VIDEO_FILE', 'video', 'Необязательный загруженный файл для наведения.')}
+          `)}
+
+          ${section('home-audience', '03', 'Для кого', 'Заголовок секции и управление карточками аудитории.', `
+            ${field('Заголовок', 'HOME_AUDIENCE_TITLE', 'Большой заголовок блока.')}
+            <div class="editor-field editor-field--wide home-related-editor">
+              <strong>Карточки аудитории</strong>
+              <p>Названия, тексты при наведении, публикация и порядок карточек редактируются отдельно.</p>
+              <a href="/admin/audience-cards" class="editor-button editor-button--primary" data-link>Открыть карточки</a>
+            </div>
+          `)}
+
+          ${section('home-heroes', '04', 'Наши герои', 'Заголовок и вводный текст над карточками предпринимателей.', `
+            ${field('Заголовок', 'HOME_HEROES_TITLE', 'Большой заголовок блока.')}
+            ${field('Описание', 'HOME_HEROES_TEXT', 'Текст справа от заголовка.', true, 6)}
+          `)}
+
+          ${section('home-places', '05', 'Места', 'Карточки последних опубликованных компаний в дизайне раздела «Наши герои».', `
+            ${field('Заголовок', 'HOME_PLACES_TITLE', 'Большой заголовок блока компаний.')}
+            ${field('Описание', 'HOME_PLACES_TEXT', 'Текст справа от заголовка.', true, 6)}
+            <div class="editor-field editor-field--wide home-related-editor">
+              <strong>Карточки компаний</strong>
+              <p>В блок автоматически попадают последние опубликованные компании. Содержимое карточек редактируется в разделе «Компании».</p>
+              <a href="/admin/businesses" class="editor-button editor-button--primary" data-link>Открыть компании</a>
+            </div>
+          `)}
+
+          ${section('home-stages', '06', 'Этапы', 'Карточки процесса и заголовок блока.', `
+            <div class="editor-field editor-field--wide home-related-editor">
+              <strong>Редактор этапов</strong>
+              <p>Заголовок, содержимое, количество и порядок карточек настраиваются в отдельной вкладке.</p>
+              <a href="/admin/stages" class="editor-button editor-button--primary" data-link>Открыть этапы</a>
+            </div>
+          `)}
+
+          ${section('home-latest-news', '07', 'Последние новости', 'Блок использует дизайн последних новостей со страницы блога.', `
+            ${field('Заголовок', 'HOME_LATEST_NEWS_TITLE', 'Заголовок слева над списком новостей.')}
+            ${field('Описание', 'HOME_LATEST_NEWS_DESCRIPTION', 'Вводный текст справа от заголовка.', true, 4)}
+            <label class="editor-field editor-field--wide">
+              <span class="editor-field__label">Количество новостей</span>
+              <input class="editor-control" type="number" min="1" max="20" step="1" name="HOME_LATEST_NEWS_COUNT" value="${escapeHtml(settings.HOME_LATEST_NEWS_COUNT || '6')}">
+              <span class="editor-field__help">На главной выводятся последние опубликованные записи. Допустимо от 1 до 20 карточек.</span>
+            </label>
+          `)}
+
+          ${section('home-cta', '08', 'Стать участником', 'Заголовки и пояснение формы заявки.', `
+            ${field('Заголовок блока', 'HOME_CTA_TITLE', 'Белый заголовок на красном фоне.')}
+            ${field('Заголовок формы', 'HOME_CTA_FORM_TITLE', 'Красный заголовок внутри формы.')}
+            ${field('Описание формы', 'HOME_CTA_FORM_DESCRIPTION', 'Короткое пояснение под заголовком формы.', true, 3)}
+          `)}
+
+          ${section('home-banner', '09', 'Баннер', 'Изображение заключительного промоблока.', `
+            <div class="editor-field editor-field--wide home-related-editor">
+              <strong>Редактор баннера</strong>
+              <p>Изображение баннера используется на нескольких страницах и настраивается отдельно.</p>
+              <a href="/admin/banner" class="editor-button editor-button--primary" data-link>Открыть баннер</a>
+            </div>
+          `)}
+        </div>
+      </div>
+      <div class="entrepreneur-editor__actions">
+        <span>Изменения применятся после сохранения</span>
+        <button type="submit" class="editor-button editor-button--primary">Сохранить главную</button>
+      </div>
+    </form>`;
+}
+
+function attachOrderEditor() {
+  const list = document.querySelector<HTMLElement>('[data-section-order-list]');
+  const value = document.querySelector<HTMLInputElement>('[data-section-order-value]');
+  if (!list || !value) return;
+  const sync = () => {
+    const items = Array.from(list.querySelectorAll<HTMLElement>('[data-section-order-item]'));
+    value.value = JSON.stringify(items.map((item) => item.dataset.sectionKey || ''));
+    items.forEach((item, index) => {
+      const up = item.querySelector<HTMLButtonElement>('[data-order-direction="up"]');
+      const down = item.querySelector<HTMLButtonElement>('[data-order-direction="down"]');
+      if (up) up.disabled = index === 0;
+      if (down) down.disabled = index === items.length - 1;
+    });
+  };
+  list.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-order-direction]');
+    const item = button?.closest<HTMLElement>('[data-section-order-item]');
+    if (!button || !item) return;
+    if (button.dataset.orderDirection === 'up' && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
+    if (button.dataset.orderDirection === 'down' && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
+    sync();
+  });
+  sync();
+}
+
+function attachMediaFields() {
+  document.querySelectorAll<HTMLElement>('[data-home-media]').forEach((field) => {
+    const kind = field.dataset.mediaKind;
+    const fileInput = field.querySelector<HTMLInputElement>('[data-home-media-file]');
+    const hidden = field.querySelector<HTMLInputElement>('[data-home-media-value]');
+    const url = field.querySelector<HTMLInputElement>('[data-home-media-url]');
+    const preview = field.querySelector<HTMLElement>('[data-home-media-preview]');
+    const render = (src: string) => {
+      if (!preview) return;
+      preview.innerHTML = src ? kind === 'image' ? `<img src="${escapeHtml(src)}" alt="">` : `<video src="${escapeHtml(src)}" muted controls></video>` : '<span>Файл не выбран</span>';
+    };
+    url?.addEventListener('input', () => {
+      if (hidden) hidden.value = url.value.trim();
+      render(url.value.trim());
+    });
+    fileInput?.addEventListener('change', async () => {
+      const file = fileInput.files?.[0];
+      if (!file || !hidden) return;
+      try {
+        const uploaded = kind === 'image' ? await api.uploadImage(file) : await api.uploadVideo(file);
+        hidden.value = uploaded.url;
+        if (url) url.value = uploaded.url;
+        render(uploaded.url);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : 'Ошибка загрузки файла');
+      }
+    });
+  });
+}
+
+function attachSubmit() {
+  const form = document.getElementById('home-form') as HTMLFormElement | null;
+  if (!form) return;
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const fd = new FormData(form);
+    const data: Settings = {};
+    fd.forEach((value, key) => {
+      if (!key.startsWith('home_section_')) data[key] = String(value);
+    });
+    data.HOME_SECTION_VISIBILITY = JSON.stringify(Object.fromEntries(homeSections.map(([key]) => [key, fd.has(`home_section_${key}`)])));
+    data.HOME_ABOUT_VIDEO_TYPE = data.HOME_ABOUT_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED';
+    data.HOME_ABOUT_HOVER_VIDEO_TYPE = data.HOME_ABOUT_HOVER_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED';
+    const message = document.getElementById('form-message');
+    try {
+      await api.settings.update(data);
+      if (message) message.innerHTML = pageAlert('Главная страница сохранена');
+    } catch (error) {
+      if (message) message.innerHTML = pageAlert(error instanceof Error ? error.message : 'Ошибка сохранения', 'error');
+    }
+  });
+}
+
+function parseObject(value?: string): Record<string, boolean> {
+  try {
+    const parsed = JSON.parse(value || '{}');
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function parseOrder(value?: string): string[] {
+  const defaults = homeSections.map(([key]) => key);
+  try {
+    const parsed = JSON.parse(value || '[]');
+    if (!Array.isArray(parsed)) return defaults;
+    const valid = parsed.map(String).filter((key, index, values) => defaults.includes(key) && values.indexOf(key) === index);
+    return [...valid, ...defaults.filter((key) => !valid.includes(key))];
+  } catch {
+    return defaults;
+  }
+}
+
+function setContent(html: string) {
+  const content = document.getElementById('page-content');
+  if (content) content.innerHTML = html;
+}
