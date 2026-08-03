@@ -479,6 +479,16 @@
 <% } %>
 
 <footer class="redesign-footer" id="contacts">
+  <%- include('../partials/redesign-mobile-footer', {
+    social: links,
+    pageLinks: [
+      { href: '/companies', label: 'КОМПАНИИ', mobileLabel: 'МЕСТА' },
+      { href: '#biography', label: 'БИОГРАФИЯ', mobileLabel: 'БИОГРАФИЯ' },
+      { href: '#interviews', label: 'ИНТЕРВЬЮ', mobileLabel: 'ИНТЕРВЬЮ' },
+      { href: '/blog', label: 'СТАТЬИ', mobileLabel: 'СТАТЬИ' },
+      { href: '/blog', label: 'БЛОГ', mobileLabel: 'БЛОГ' },
+    ]
+  }) %>
   <div class="footer-top">
     <div class="footer-links footer-links--pages">
       <a href="/companies">КОМПАНИИ</a>

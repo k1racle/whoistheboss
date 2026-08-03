@@ -82,15 +82,30 @@
         </a>
         <div class="mobile-home__hero-side">
           <a href="/shooting-request" class="mobile-home__hero-cta">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
-          <nav class="mobile-home__nav" aria-label="Навигация по разделам">
-            <a href="/entrepreneurs">предприниматели</a>
-            <a href="/companies">компании</a>
-            <a href="/blog">блог</a>
-            <a href="/shooting-request">съемка</a>
-          </nav>
-          <div class="mobile-home__hero-lines" aria-hidden="true">
+          <button
+            type="button"
+            class="mobile-home__menu-toggle"
+            data-mobile-menu-toggle
+            aria-expanded="false"
+            aria-controls="mobile-home-menu"
+            aria-label="Открыть меню"
+          >
             <span></span>
             <span></span>
+          </button>
+        </div>
+        <div class="mobile-home__menu" id="mobile-home-menu" data-mobile-menu hidden>
+          <div class="mobile-home__menu-backdrop" data-mobile-menu-close></div>
+          <div class="mobile-home__menu-panel">
+            <nav class="mobile-home__nav" aria-label="Навигация по разделам">
+              <a href="/entrepreneurs">предприниматели</a>
+              <a href="/companies">компании</a>
+              <a href="/blog">блог</a>
+              <a href="/shooting-request">съемка</a>
+            </nav>
+            <div class="mobile-home__menu-social">
+              <%- include('partials/social-text-links', { social: links }) %>
+            </div>
           </div>
         </div>
       </div>
@@ -134,18 +149,22 @@
         <p><%= homeHeroesText %></p>
         <a class="mobile-home__button mobile-home__button--ghost" href="/entrepreneurs">ЕЩЕ <span class="arrow-mark" aria-hidden="true"></span></a>
       </div>
-      <div class="mobile-home__cards-row">
-        <% mobileHeroCards.forEach((item, index) => { %>
-          <a class="hero-card mobile-home__hero-card<%= item.hoverPhoto ? ' hero-card--has-hover-image' : '' %>" href="/entrepreneurs/<%= item.slug %>" style="--delay: <%= index * 90 %>ms; --offset: <%= (index % 3 - 1) * 5 %>%">
-            <span class="hero-card-name"><%= item.name %></span>
-            <span class="hero-card-arrow" aria-hidden="true"></span>
-            <img src="<%= item.photo || '/images/placeholder.svg' %>" alt="<%= item.name %>" loading="lazy">
-            <% if (item.hoverPhoto) { %>
-              <img class="hero-card-hover" src="<%= item.hoverPhoto %>" alt="" loading="lazy">
-            <% } %>
-            <span class="hero-card-meta"><%= item.title || '' %></span>
-          </a>
-        <% }) %>
+      <div class="mobile-heroes-slider">
+        <div class="mobile-home__cards-row">
+          <% mobileHeroCards.forEach((item, index) => { %>
+            <a class="hero-card mobile-home__hero-card<%= item.hoverPhoto ? ' hero-card--has-hover-image' : '' %>" href="/entrepreneurs/<%= item.slug %>">
+              <img src="<%= item.photo || '/images/placeholder.svg' %>" alt="<%= item.name %>" loading="lazy">
+              <% if (item.hoverPhoto) { %>
+                <img class="hero-card-hover" src="<%= item.hoverPhoto %>" alt="" loading="lazy">
+              <% } %>
+            </a>
+          <% }) %>
+        </div>
+        <div class="mobile-heroes-dots" role="tablist" aria-label="Герои">
+          <% mobileHeroCards.forEach((item, i) => { %>
+            <button class="mobile-heroes-dot<% if (i === 0) { %> is-active<% } %>" type="button" data-index="<%= i %>" aria-label="Слайд <%= i + 1 %>" aria-selected="<%= i === 0 ? 'true' : 'false' %>"></button>
+          <% }) %>
+        </div>
       </div>
     </section>
 
@@ -433,34 +452,8 @@
 </div>
 </main>
 
-<footer class="mobile-home__footer">
-  <div class="mobile-home__footer-top">
-    <div class="mobile-home__footer-pages">
-      <a href="/companies">КОМПАНИИ</a>
-      <a href="/entrepreneurs">БИОГРАФИИ</a>
-      <a href="/interviews">ИНТЕРВЬЮ</a>
-      <a href="/blog">СТАТЬИ</a>
-      <a href="/blog">БЛОГ</a>
-    </div>
-    <div class="mobile-home__footer-social">
-      <%- include('partials/social-text-links', { social: links }) %>
-    </div>
-  </div>
-  <div class="mobile-home__footer-bottom">
-    <div class="mobile-home__footer-cta-row">
-      <span>ГОТОВЫ</span><span>К</span><span>ОБСУЖДЕНИЮ</span><span>ПРОЕКТА</span><span>?</span>
-    </div>
-    <a class="mobile-home__footer-button" href="/shooting-request">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
-    <div class="mobile-home__footer-meta">
-      <span>ИП</span>
-      <span>БАТАГОВ А.А.</span>
-      <span>TILDA EXPERTS</span>
-      <span>ПОЛИТИКА КОНФ-ТИ</span>
-    </div>
-  </div>
-</footer>
-
 <footer class="redesign-footer home-desktop-footer" id="contacts">
+  <%- include('partials/redesign-mobile-footer', { social: links }) %>
   <div class="footer-top">
     <div class="footer-links footer-links--pages">
       <a href="/companies">КОМПАНИИ</a>
@@ -499,6 +492,62 @@
 </footer>
 <script src="/js/main.js" defer></script>
 <script>
+  (() => {
+    const menu = document.querySelector('[data-mobile-menu]');
+    const toggle = document.querySelector('[data-mobile-menu-toggle]');
+    if (!menu || !toggle) return;
+    let closeTimer = null;
+
+    const finishClose = () => {
+      menu.hidden = true;
+      menu.classList.remove('is-open');
+    };
+
+    const closeMenu = () => {
+      if (closeTimer) window.clearTimeout(closeTimer);
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('mobile-menu-open');
+      menu.classList.remove('is-open');
+      closeTimer = window.setTimeout(() => {
+        finishClose();
+        closeTimer = null;
+      }, 360);
+    };
+
+    const openMenu = () => {
+      if (closeTimer) {
+        window.clearTimeout(closeTimer);
+        closeTimer = null;
+      }
+      menu.hidden = false;
+      window.requestAnimationFrame(() => {
+        menu.classList.add('is-open');
+      });
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('mobile-menu-open');
+    };
+
+    toggle.addEventListener('click', () => {
+      if (menu.classList.contains('is-open')) {
+        closeMenu();
+        return;
+      }
+      openMenu();
+    });
+
+    menu.querySelectorAll('[data-mobile-menu-close], .mobile-home__nav a, .mobile-home__menu-social a').forEach((node) => {
+      node.addEventListener('click', closeMenu);
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMenu();
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) closeMenu();
+    });
+  })();
+
   (() => {
     const page = document.querySelector('.home-desktop');
     if (!page) return;
@@ -712,6 +761,105 @@
     window.addEventListener('scroll', updateAudience, { passive: true });
     window.addEventListener('resize', updateAudience);
   }
+
+  const initMobileHeroesSlider = () => {
+    const slider = document.querySelector('.mobile-heroes-slider');
+    if (!slider || !window.matchMedia('(max-width: 768px)').matches) return;
+
+    const track = slider.querySelector('.mobile-home__cards-row');
+    const dotsWrap = slider.querySelector('.mobile-heroes-dots');
+    if (!track || !dotsWrap) return;
+
+    const slides = Array.from(track.children);
+    const dots = Array.from(dotsWrap.children);
+    if (!slides.length || !dots.length) return;
+
+    let index = 0;
+    let currentOffset = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startOffset = 0;
+    let movedValue = 0;
+
+    const step = () => slides[0].getBoundingClientRect().width + 32;
+    const maxOffset = () => -step() * (slides.length - 1);
+    const clamp = (i) => Math.max(0, Math.min(i, slides.length - 1));
+
+    const render = (i = index, instant = true) => {
+      index = clamp(i);
+      currentOffset = -index * step();
+      track.classList.toggle('is-snapping', !instant);
+      track.classList.remove('is-dragging');
+      track.style.transform = `translate3d(${currentOffset}px, 0, 0)`;
+      dots.forEach((dot, di) => {
+        const active = di === index;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    };
+
+    const onPointerDown = (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      isDragging = true;
+      movedValue = 0;
+      startX = e.clientX;
+      startOffset = currentOffset;
+      track.classList.add('is-dragging');
+      track.classList.remove('is-snapping');
+      track.setPointerCapture(e.pointerId);
+    };
+
+    const onPointerMove = (e) => {
+      if (!isDragging) return;
+      const delta = e.clientX - startX;
+      movedValue = Math.max(Math.abs(delta), movedValue);
+      currentOffset = Math.min(0, Math.max(maxOffset(), startOffset + delta));
+      track.style.transform = `translate3d(${currentOffset}px, 0, 0)`;
+    };
+
+    const onPointerUp = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      if (movedValue > step() * 0.4) {
+        render(currentOffset < startOffset ? index + 1 : index - 1, false);
+      } else {
+        render(Math.round(-currentOffset / step()), false);
+      }
+    };
+
+    if (slider.dataset.mobileSliderInit) {
+      render(index);
+      return { render };
+    }
+    slider.dataset.mobileSliderInit = '1';
+
+    track.addEventListener('pointerdown', onPointerDown);
+    track.addEventListener('pointermove', onPointerMove);
+    track.addEventListener('pointerup', onPointerUp);
+    track.addEventListener('pointercancel', onPointerUp);
+
+    track.addEventListener('click', (e) => {
+      if (movedValue > 8) {
+        e.preventDefault();
+        e.stopPropagation();
+        movedValue = 0;
+      }
+    });
+
+    dotsWrap.addEventListener('click', (e) => {
+      const dot = e.target.closest('.mobile-heroes-dot');
+      if (!dot) return;
+      render(parseInt(dot.dataset.index, 10));
+    });
+
+    render(0);
+    return { render };
+  };
+
+  let heroesSlider = initMobileHeroesSlider();
+  window.addEventListener('resize', () => {
+    heroesSlider = initMobileHeroesSlider();
+  });
 </script>
 </body>
 </html>

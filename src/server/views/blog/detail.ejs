@@ -32,7 +32,7 @@
   <header class="home-header">
     <nav class="home-topbar">
       <div class="home-topbar__left">
-        <a href="/" class="home-topbar__project-logo is-visible" aria-label="Кто здесь главный?">
+        <a href="/" class="home-topbar__project-logo is-docked" data-header-project-logo aria-label="Кто здесь главный?">
           <img src="/images/image-29.svg" alt="Кто здесь главный?">
         </a>
         <a href="/entrepreneurs" class="home-topbar__link">ПРЕДПРИНИМАТЕЛИ</a>
@@ -161,6 +161,7 @@
   <% } %>
 
   <footer class="redesign-footer" id="contacts">
+    <%- include('../partials/redesign-mobile-footer', { social: projectLinks }) %>
     <div class="footer-top">
       <div class="footer-links footer-links--pages">
         <a href="/companies">КОМПАНИИ</a>
