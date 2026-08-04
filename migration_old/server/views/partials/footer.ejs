@@ -1,0 +1,42 @@
+  </main>
+  <footer class="bg-gray-900 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div>
+          <% const footerLogoUrl = typeof footerLogo !== 'undefined' ? footerLogo : ''; %>
+          <p class="footer-logo text-2xl font-extrabold tracking-tight mb-4 uppercase">
+            <% if (footerLogoUrl) { %>
+              <img src="<%= footerLogoUrl %>" alt="<%= siteName.toUpperCase() %>" class="h-10 w-auto object-contain">
+            <% } else { %>
+              <%= siteName %>
+            <% } %>
+          </p>
+          <p class="text-gray-400 text-sm leading-relaxed"><%= siteDescription %></p>
+        </div>
+        <div>
+          <p class="font-bold mb-4 text-white">Разделы</p>
+          <ul class="space-y-3 text-sm text-gray-400">
+            <% const footerMenu = typeof siteMenu !== 'undefined' ? siteMenu : []; %>
+            <% footerMenu.forEach((item) => { %>
+            <li><a href="<%= item.path %>" class="footer-nav-link hover:text-terracotta transition-colors"><%= item.label %></a></li>
+            <% }) %>
+          </ul>
+        </div>
+        <div class="lg:col-span-2">
+          <p class="font-bold mb-4 text-white">Подписка</p>
+          <p class="text-sm text-gray-400 mb-4">Раз в неделю — лучшие истории и инсайты.</p>
+          <form action="/api/subscribe" method="POST" class="flex flex-col lg:flex-row gap-2 flex-wrap">
+            <input type="email" name="email" required placeholder="Ваш email" class="w-full lg:flex-1 min-w-0 px-4 py-2.5 bg-white/10 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-terracotta text-sm text-white placeholder-gray-500">
+            <button type="submit" class="btn-primary text-sm whitespace-nowrap w-full lg:w-auto">Подписаться</button>
+          </form>
+        </div>
+      </div>
+      <div class="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+        <p>© <%= new Date().getFullYear() %> <%= siteName %>. Все права защищены.</p>
+        <%- include('social-links', { social: typeof social !== 'undefined' ? social : {}, iconClass: 'text-gray-400 hover:text-terracotta transition-colors' }) %>
+      </div>
+    </div>
+  </footer>
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

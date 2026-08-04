@@ -1,0 +1,639 @@
+<%- include('../partials/header', { title, description, siteName, siteDescription, transparentHeader: true, hideSiteHeader: true }) %>
+<%
+  const home = homeSettings || {};
+  const bannerImage = home.HOME_BANNER_IMAGE || '';
+  const bannerMobileImage = home.HOME_BANNER_MOBILE_IMAGE || '';
+  const bannerLink = home.HOME_BANNER_LINK || '/entrepreneurs';
+  const hasBannerImage = Boolean(bannerImage || bannerMobileImage);
+  const projectLinks = typeof social !== 'undefined' ? social : {};
+  let sectionVisibility = {};
+  try {
+    const parsedVisibility = JSON.parse(business.sectionVisibility || '{}');
+    if (parsedVisibility && typeof parsedVisibility === 'object' && !Array.isArray(parsedVisibility)) sectionVisibility = parsedVisibility;
+  } catch {}
+  const showSection = (key) => Object.prototype.hasOwnProperty.call(sectionVisibility, key)
+    ? sectionVisibility[key] !== false
+    : key === 'awards' ? business.awardsEnabled !== false : true;
+  const sectionClass = (key) => showSection(key) ? '' : ' is-section-hidden';
+  const defaultSectionOrder = ['hero', 'manifest', 'titleBand', 'about', 'founder', 'ownerBiography', 'specs', 'addresses', 'awards', 'facts', 'gallery', 'more', 'related', 'cta', 'banner'];
+  let sectionOrder = defaultSectionOrder;
+  try {
+    const parsedOrder = JSON.parse(business.sectionOrder || '[]');
+    if (Array.isArray(parsedOrder)) {
+      const valid = parsedOrder.filter((key, index) => defaultSectionOrder.includes(key) && parsedOrder.indexOf(key) === index);
+      sectionOrder = [...valid, ...defaultSectionOrder.filter((key) => !valid.includes(key))];
+    }
+  } catch {}
+  const nameParts = business.name.trim().split(/\s+/).filter(Boolean);
+  const heroTop = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : business.name;
+  const heroBottom = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+  const heroTeaser = business.heroTeaser || business.type;
+  const heroMarquee = business.heroMarquee || `${business.name} — ЭТО ЭКСПЕРИМЕНТ, КОТОРЫЙ УДАЛСЯ С ПЕРВОГО РАЗА. ${business.type}`;
+  const manifestTitle = business.manifestTitle || 'ЭКСПЕРИМЕНТ, КОТОРЫЙ УДАЛСЯ';
+  const manifestTextTwo = business.manifestTextTwo || 'Правильная идея может стать самостоятельным проектом, продуктом и местом, вокруг которого собираются люди.';
+  const manifestTextThree = business.manifestTextThree || 'Компания развивается вместе со своей аудиторией, сохраняя характер и внимание к деталям.';
+  const aboutTitleRaw = business.aboutTitle || 'О КОМПАНИИ\nС ЧЕГО ВСЕ НАЧИНАЛОСЬ\nИСТОРИЯ СОЗДАНИЯ';
+  const aboutTitleLines = aboutTitleRaw.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const aboutText = business.aboutText || `${business.name} — компания, выросшая из сильной идеи, последовательной работы и внимания к деталям.`;
+  const aboutAsideText = business.aboutAsideText || 'Компания строится не только вокруг продукта. Ее основа — люди, последовательность решений и способность сохранять замысел при росте.';
+  const aboutPhoto = business.aboutPhoto || business.coverImage || null;
+  const owner = business.entrepreneur;
+  const founderPhoto = business.founderPhoto || owner?.photo || null;
+  const ownerNameParts = owner?.name?.trim().split(/\s+/).filter(Boolean) || [];
+  const ownerLastName = ownerNameParts[0] || '';
+  const ownerFirstName = ownerNameParts.slice(1).join(' ') || '';
+  const ownerBiographyTitle = owner?.name?.toUpperCase() || '';
+  const ownerBiographyPhoto = owner?.biographyPhoto || owner?.photo || null;
+  const ownerBiographyBlocks = owner ? [
+    owner.biographyTextOne
+      || owner.aboutIntroTitle
+      || owner.quote
+      || `${owner.name} — предприниматель и основатель компании ${business.name}.`,
+    owner.biographyTextTwo
+      || owner.aboutIntroDescription
+      || `История ${owner.name} помогает понять, как появилась компания, какие решения определили ее характер и направление развития.`,
+    owner.biographyTextThree
+      || (owner.bio ? owner.bio.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '')
+      || `${owner.name} продолжает развивать компанию, формировать команду и сохранять ценности проекта.`
+  ].map((item) => (item || '').trim()).filter(Boolean) : [];
+  const plainDescription = (business.description || '')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const leadText = plainDescription || `${business.name} — компания, выросшая из идеи соединить сильный продукт, честный сервис и узнаваемый характер.`;
+  const manifestTextOne = business.manifestTextOne || leadText;
+  const factsTitle = business.factsTitle || 'КОМАНДА ИЛИ\nИНТЕРЕСНЫЕ ФАКТЫ';
+  const factsSubtitle = business.factsSubtitle || 'ЛЮДИ, РЕШЕНИЯ И ДЕТАЛИ, КОТОРЫЕ ФОРМИРУЮТ КОМПАНИЮ';
+  const factsTextOne = business.factsTextOne || leadText;
+  const factsTextTwo = business.factsTextTwo || 'Здесь собраны детали, которые обычно остаются за кадром: привычки команды, особенности продукта и решения, повлиявшие на развитие проекта.';
+  const factsPhoto = business.factsPhoto || business.coverImage || null;
+  let galleryImages = [];
+  if (business.galleryImages) {
+    try {
+      const parsedGallery = JSON.parse(business.galleryImages);
+      if (Array.isArray(parsedGallery)) {
+        galleryImages = parsedGallery
+          .map((item) => typeof item === 'string' ? item : item?.image)
+          .filter(Boolean);
+      }
+    } catch {
+      galleryImages = business.galleryImages.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+    }
+  } else {
+    galleryImages = Array.from(new Set([
+      business.coverImage,
+      owner?.photo,
+      ...related.map((item) => item.coverImage)
+    ].filter(Boolean)));
+  }
+  const moreCardTitles = (business.moreCardTitles || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const moreCardLinks = (business.moreCardLinks || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const moreFallbackTitles = ['OPEN BAR ZANOZA', 'КАФЕ-БАР СЕЛЬДЕРЕЙ', 'ДРУГИЕ УЧАСТНИКИ', 'СТАТЬ УЧАСТНИКОМ\nПРОЕКТА'];
+  const moreFallbackLinks = ['', '', '', '/shooting-request'];
+  const moreItems = Array.from({ length: 4 }, (_, index) => ({
+    title: moreCardTitles[index] || moreFallbackTitles[index],
+    href: moreCardLinks[index] || moreFallbackLinks[index] || '',
+  }));
+  const morePhoto = business.morePhoto || business.coverImage || null;
+  const specsTitle = business.specsTitle || 'ОСНОВНЫЕ ХАРАКТЕРИСТИКИ';
+  const specsDescription = business.specsDescription || 'КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ И ФАКТЫ О КОМПАНИИ';
+  const defaultCompanyFacts = [
+    { title: '12 000 000 ГОДОВОЙ ОБОРОТ', note: 'КАКАЯ-ТО ПРИПИСКА ПРО ЭТО' },
+    { title: '40 МИЛЛИАРДОВ КРУАССАНОВ В ДЕНЬ', note: 'КАКАЯ-ТО ПРИПИСКА ПРО ЭТО' },
+    { title: 'ВЫРУЧКА', note: 'КАКАЯ-ТО ПРИПИСКА ПРО ЭТО' },
+    { title: 'ОЦЕНКА КОМПАНИИ', note: 'КАКАЯ-ТО ПРИПИСКА ПРО ЭТО' },
+    { title: 'ОБЪЕМ ПРИВЛЕЧЕННЫХ ИНВЕСТИЦИЙ', note: 'КАКАЯ-ТО ПРИПИСКА ПРО ЭТО' }
+  ];
+  let companyFacts = defaultCompanyFacts;
+  if (business.specsItems) {
+    try {
+      const parsedFacts = JSON.parse(business.specsItems);
+      if (Array.isArray(parsedFacts)) {
+        companyFacts = parsedFacts
+          .map((item) => ({
+            title: String(item?.title || '').trim(),
+            note: String(item?.note || '').trim(),
+            icon: String(item?.icon || '').trim()
+          }))
+          .filter((item) => item.title || item.note || item.icon);
+      }
+    } catch {}
+  }
+  const mapEmbedValue = String(business.mapEmbed || '').trim();
+  const mapSrcMatch = mapEmbedValue.match(/src\s*=\s*["']([^"']+)["']/i);
+  const mapSrcCandidate = (mapSrcMatch ? mapSrcMatch[1] : mapEmbedValue).replace(/&amp;/g, '&');
+  const mapSrc = /^https:\/\/([a-z0-9-]+\.)*yandex\.(ru|com)\//i.test(mapSrcCandidate)
+    ? mapSrcCandidate
+    : '';
+  const awardsEnabled = showSection('awards');
+  const awardsTitle = business.awardsTitle || 'ДОСТИЖЕНИЯ И НАГРАДЫ';
+  const awardsDescription = business.awardsDescription || 'Главные награды, номинации и признание компании.';
+  const defaultAwards = [
+    { nominations: 'НАЗВАНИЕ КОНКУРСА\nНОМИНАЦИЯ', place: 'ПЕРВОЕ\nМЕСТО', icon: '' },
+    { nominations: 'НАЗВАНИЕ РЕЙТИНГА\nНОМИНАЦИЯ', place: 'ПЕРВОЕ\nМЕСТО', icon: '' },
+    { nominations: 'ПРОФЕССИОНАЛЬНАЯ ПРЕМИЯ\nНОМИНАЦИЯ', place: 'ПЕРВОЕ\nМЕСТО', icon: '' }
+  ];
+  let awards = defaultAwards;
+  if (business.awardsItems) {
+    try {
+      const parsedAwards = JSON.parse(business.awardsItems);
+      if (Array.isArray(parsedAwards)) {
+        awards = parsedAwards
+          .map((item) => ({
+            nominations: String(item?.nominations || '').trim(),
+            place: String(item?.place || '').trim(),
+            icon: String(item?.icon || '').trim()
+          }))
+          .filter((item) => item.nominations || item.place || item.icon);
+      }
+    } catch {}
+  }
+%>
+
+<div class="redesign-page company-profile-page">
+  <section class="company-profile-hero<%= showSection('hero') ? '' : ' is-hero-content-hidden' %>" id="top">
+    <header class="home-header">
+      <nav class="home-topbar">
+        <div class="home-topbar__left">
+          <a href="/" class="home-topbar__project-logo" data-header-project-logo aria-label="Кто здесь главный?">
+            <img src="/images/image-29.svg" alt="Кто здесь главный?">
+          </a>
+          <a href="/entrepreneurs" class="home-topbar__link">ПРЕДПРИНИМАТЕЛИ</a>
+          <a href="/companies" class="home-topbar__link">КОМПАНИИ</a>
+          <a href="/blog" class="home-topbar__link">БЛОГ</a>
+        </div>
+        <div class="home-topbar__right">
+          <a href="/shooting-request" class="home-topbar__shooting">СЪЕМКИ</a>
+          <a href="/shooting-request" class="home-topbar__cta">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
+        </div>
+      </nav>
+    </header>
+
+    <div class="company-profile-hero__body">
+      <div class="company-profile-hero__title">
+        <h1>
+          <span><%= heroTop %></span>
+          <% if (heroBottom) { %><span><%= heroBottom %></span><% } %>
+        </h1>
+        <p><%= heroTeaser %></p>
+      </div>
+    </div>
+    <div class="company-profile-marquee marquee" aria-label="<%= business.name %>">
+      <div class="marquee-track">
+        <% for (let group = 0; group < 2; group += 1) { %>
+          <div class="marquee-group">
+            <% for (let i = 0; i < 4; i += 1) { %>
+              <span class="marquee-item company-profile-marquee__item"><%= heroMarquee %></span>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <section class="company-profile-manifest<%= sectionClass('manifest') %>" id="interview">
+    <div class="company-profile-manifest__backdrop"<% if (business.manifestBackgroundImage) { %> style="background-image: url('<%= business.manifestBackgroundImage %>')"<% } %>>
+      <div class="company-profile-manifest__media">
+        <% if (business.manifestSquareImage || business.coverImage) { %>
+          <img src="<%= business.manifestSquareImage || business.coverImage %>" alt="<%= business.name %>">
+        <% } %>
+      </div>
+    </div>
+    <div class="company-profile-manifest__content">
+      <h2><%= manifestTitle %></h2>
+      <p class="company-profile-manifest__lead"><%= manifestTextOne %></p>
+      <div class="company-profile-manifest__notes">
+        <p><%= manifestTextTwo %></p>
+        <a href="/" class="company-profile-manifest__logo" aria-label="Кто здесь главный?">
+          <img src="/images/image-29.svg" alt="Кто здесь главный?">
+        </a>
+        <p><%= manifestTextThree %></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="company-profile-title-band<%= sectionClass('titleBand') %>" data-red-header-theme>
+    <h2>О КОМПАНИИ</h2>
+  </section>
+
+  <section class="company-profile-about<%= sectionClass('about') %>" id="about">
+    <div class="entrepreneur-education__inner">
+      <div class="entrepreneur-education__left">
+        <h2 class="entrepreneur-education__title">
+          <% aboutTitleLines.forEach((line, index) => { %>
+            <span class="entrepreneur-education__title-line<%= index === 2 ? ' entrepreneur-education__title-line--offset' : '' %>"><%= line %></span>
+          <% }) %>
+        </h2>
+        <p class="entrepreneur-education__text"><%= aboutText %></p>
+        <div class="entrepreneur-education__bottom">
+          <a href="#interview" class="entrepreneur-biography__button entrepreneur-education__button">СМОТРЕТЬ ИНТЕРВЬЮ</a>
+          <p class="entrepreneur-education__aside"><%= aboutAsideText %></p>
+        </div>
+      </div>
+      <div class="entrepreneur-education__right">
+        <% if (aboutPhoto) { %>
+          <figure class="entrepreneur-education__photo">
+            <img src="<%= aboutPhoto %>" alt="<%= business.name %>">
+          </figure>
+        <% } %>
+      </div>
+    </div>
+    <% if (false) { %>
+    <div class="company-profile-about__copy">
+      <h2>О КОМПАНИИ<br>С ЧЕГО ВСЕ НАЧИНАЛОСЬ<br><span>ИСТОРИЯ СОЗДАНИЯ</span></h2>
+      <div class="company-profile-about__description">
+        <% if (plainDescription) { %>
+          <%- business.description %>
+        <% } else { %>
+          <p><%= leadText %></p>
+          <p>Проект рос постепенно: от первой гипотезы до понятной модели, команды и постоянной аудитории.</p>
+        <% } %>
+      </div>
+      <a href="#interview" class="red-button">СМОТРЕТЬ ИНТЕРВЬЮ <span class="arrow-mark" aria-hidden="true"></span></a>
+      <p class="company-profile-about__aside">Компания строится не только вокруг продукта. Ее основа — люди, последовательность решений и способность сохранять замысел при росте.</p>
+    </div>
+    <div class="company-profile-about__media">
+      <% if (business.coverImage) { %><img src="<%= business.coverImage %>" alt=""><% } %>
+    </div>
+    <% } %>
+  </section>
+
+  <% if (owner) { %>
+  <section class="company-profile-founder<%= sectionClass('founder') %>">
+    <div class="company-profile-founder__portrait">
+      <% if (founderPhoto) { %><img src="<%= founderPhoto %>" alt="<%= owner.name %>"><% } %>
+    </div>
+    <div class="company-profile-founder__name">
+      <div class="company-profile-founder__line company-profile-founder__line--last">
+        <p><%= owner.heroRightTeaser || owner.quote || owner.title %></p>
+        <h2><%= ownerLastName %></h2>
+      </div>
+      <div class="company-profile-founder__line company-profile-founder__line--first">
+        <h2><%= ownerFirstName %></h2>
+        <p><%= owner.heroBottomRightTeaser || owner.title %></p>
+      </div>
+    </div>
+    <% if (false) { %>
+    <div class="company-profile-founder__portrait">
+      <% if (owner.photo) { %><img src="<%= owner.photo %>" alt="<%= owner.name %>"><% } %>
+    </div>
+    <div class="company-profile-founder__name">
+      <p><%= owner.title %></p>
+      <h2>
+        <span><%= ownerLastName %></span>
+        <span><%= ownerFirstName %></span>
+      </h2>
+      <p><%= owner.quote || `Основатель и человек, который определяет характер ${business.name}.` %></p>
+    </div>
+    <% } %>
+  </section>
+
+  <section class="entrepreneur-biography<%= sectionClass('ownerBiography') %>" id="owner-biography">
+    <div class="entrepreneur-biography__inner">
+      <div class="entrepreneur-biography__left">
+        <div class="entrepreneur-biography__heading">
+          <p class="entrepreneur-biography__eyebrow">БИОГРАФИЯ</p>
+          <h2 class="entrepreneur-biography__title">
+            <span class="entrepreneur-biography__who">WHO'S THE</span>
+            <span class="entrepreneur-biography__name"><%= ownerBiographyTitle %>?</span>
+          </h2>
+        </div>
+        <a href="/entrepreneurs/<%= owner.slug %>" class="entrepreneur-biography__button">ЧИТАТЬ ПОДРОБНЕЕ</a>
+        <% if (ownerBiographyPhoto) { %>
+          <figure class="entrepreneur-biography__photo">
+            <img src="<%= ownerBiographyPhoto %>" alt="<%= owner.name %>">
+          </figure>
+        <% } %>
+      </div>
+      <div class="entrepreneur-biography__right">
+        <% ownerBiographyBlocks.forEach((block) => { %>
+          <article class="entrepreneur-biography__text-block">
+            <p><%= block %></p>
+          </article>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <section class="company-profile-specs<%= sectionClass('specs') %>">
+    <h2><%= specsTitle %></h2>
+    <p><%= specsDescription %></p>
+    <div class="company-profile-specs__list">
+      <% companyFacts.forEach((item) => { %>
+        <article class="company-profile-spec">
+          <div class="company-profile-spec__content">
+            <% if (item.icon) { %>
+              <img class="company-profile-spec__icon" src="<%= item.icon %>" alt="">
+            <% } %>
+            <span>
+              <strong><%= item.title %></strong>
+              <% if (item.note) { %><small><%= item.note %></small><% } %>
+            </span>
+          </div>
+          <span class="company-profile-spec__mark" aria-hidden="true"></span>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+
+  <section class="company-profile-addresses<%= sectionClass('addresses') %>">
+    <h2>АДРЕСА</h2>
+    <div class="company-profile-addresses__map">
+      <% if (mapSrc) { %>
+        <iframe
+          src="<%= mapSrc %>"
+          title="Адреса <%= business.name %>"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      <% } %>
+    </div>
+  </section>
+
+  <% if (awardsEnabled) { %>
+  <section class="company-profile-awards<%= sectionClass('awards') %>">
+    <div class="company-profile-section-heading">
+      <h2><%= awardsTitle %></h2>
+      <% if (awardsDescription) { %><p><%= awardsDescription %></p><% } %>
+    </div>
+    <div class="company-profile-awards__grid">
+      <% awards.forEach((award) => { %>
+        <article class="company-profile-award">
+          <div class="company-profile-award__top">
+            <p><%= award.nominations %></p>
+            <% if (award.icon) { %><img src="<%= award.icon %>" alt=""><% } %>
+          </div>
+          <strong><%= award.place %></strong>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+  <% } %>
+
+  <section class="company-profile-facts<%= sectionClass('facts') %>">
+    <div class="company-profile-facts__left">
+      <h2><%= factsTitle %></h2>
+      <% if (factsSubtitle) { %><p class="company-profile-facts__subtitle"><%= factsSubtitle %></p><% } %>
+      <div class="company-profile-facts__media">
+        <% if (factsPhoto) { %><img src="<%= factsPhoto %>" alt=""><% } %>
+      </div>
+    </div>
+    <div class="company-profile-facts__copy">
+      <p><%= factsTextOne %></p>
+      <p><%= factsTextTwo %></p>
+    </div>
+  </section>
+
+  <section class="stages company-profile-gallery<%= sectionClass('gallery') %>" id="company-gallery">
+    <div class="stages-pin" data-company-gallery-pin>
+      <div class="stages-scene company-profile-gallery__scene" data-company-gallery-scene>
+        <div class="stages-head">
+          <h2 class="giant-center-title">ГАЛЕРЕЯ</h2>
+        </div>
+        <div class="stages-viewport">
+          <div class="stages-track" data-company-gallery-track>
+            <% galleryImages.forEach((image, index) => { %>
+              <figure class="stage-card <%= index % 2 === 0 ? 'stage-card--summary' : 'stage-card--detail' %> company-profile-gallery__card" style="--stage-order: <%= index %>">
+                <img src="<%= image %>" alt="<%= business.name %> — фото <%= index + 1 %>">
+              </figure>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="entrepreneur-more<%= sectionClass('more') %>">
+    <div class="entrepreneur-more__inner">
+      <div class="entrepreneur-more__content">
+        <div class="entrepreneur-more__cards">
+          <div class="entrepreneur-more__row entrepreneur-more__row--top">
+            <% moreItems.slice(0, 3).forEach((item, index) => { %>
+              <% if (item.href) { %>
+                <a
+                  href="<%= item.href %>"
+                  class="entrepreneur-more__card entrepreneur-more__card--<%= index + 1 %>"
+                >
+                  <span class="entrepreneur-more__card-arrow" aria-hidden="true"></span>
+                  <strong class="entrepreneur-more__card-title"><%= item.title %></strong>
+                </a>
+              <% } else { %>
+                <div class="entrepreneur-more__card entrepreneur-more__card--<%= index + 1 %>" aria-disabled="true">
+                  <span class="entrepreneur-more__card-arrow" aria-hidden="true"></span>
+                  <strong class="entrepreneur-more__card-title"><%= item.title %></strong>
+                </div>
+              <% } %>
+            <% }) %>
+          </div>
+          <div class="entrepreneur-more__row entrepreneur-more__row--bottom">
+            <% if (moreItems[3].href) { %>
+              <a
+                href="<%= moreItems[3].href %>"
+                class="entrepreneur-more__card entrepreneur-more__card--4"
+              >
+                <span class="entrepreneur-more__card-arrow" aria-hidden="true"></span>
+                <strong class="entrepreneur-more__card-title"><%= moreItems[3].title %></strong>
+              </a>
+            <% } else { %>
+              <div class="entrepreneur-more__card entrepreneur-more__card--4" aria-disabled="true">
+                <span class="entrepreneur-more__card-arrow" aria-hidden="true"></span>
+                <strong class="entrepreneur-more__card-title"><%= moreItems[3].title %></strong>
+              </div>
+            <% } %>
+            <div class="entrepreneur-more__photo">
+              <% if (morePhoto) { %>
+                <img src="<%= morePhoto %>" alt="<%= business.name %>">
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="entrepreneur-more__side" aria-hidden="true">БОЛЬШЕ</div>
+    </div>
+  </section>
+
+  <% if (related.length) { %>
+  <section class="company-profile-related<%= sectionClass('related') %>">
+    <h2><%= business.relatedTitle || 'ЧИТАЙТЕ ТАКЖЕ' %></h2>
+    <div class="companies-grid company-profile-related__grid">
+      <% related.forEach((item) => { %>
+        <a class="company-card" href="/companies/<%= item.slug %>">
+          <div class="company-card__media">
+            <h3 class="company-card__title"><%= item.name %></h3>
+            <% if (item.coverImage) { %>
+              <img src="<%= item.coverImage %>" alt="<%= item.name %>">
+            <% } %>
+          </div>
+          <div class="company-card__footer">
+            <span class="company-card__arrow" aria-hidden="true">
+              <img src="/images/company-card-arrow.svg" alt="">
+            </span>
+            <p><%= item.type %></p>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </section>
+  <% } %>
+
+  <%- include('../partials/shooting-cta', {
+    sectionClass: sectionClass('cta'),
+    redirect: '/companies/' + business.slug + '#shooting',
+    formTitle: 'ЗАПОЛНИТЕ ВАШИ ДАННЫЕ\nДЛЯ СВЯЗИ',
+    redHeaderTheme: true
+  }) %>
+
+  <section class="site-banner redesign-section<%= hasBannerImage ? ' site-banner--has-image' : '' %><%= sectionClass('banner') %>">
+    <a href="<%= bannerLink %>" class="site-banner-frame" aria-label="Открыть материал баннера">
+      <% if (hasBannerImage) { %>
+        <picture class="site-banner-media">
+          <% if (bannerMobileImage) { %>
+            <source media="(max-width: 768px)" srcset="<%= bannerMobileImage %>">
+          <% } %>
+          <img src="<%= bannerImage || bannerMobileImage %>" alt="" class="banner-image">
+        </picture>
+      <% } else { %>
+        <div class="banner-title">ЗДЕСЬ БУДЕТ<br>БАННЕР О ТОМ<br>ЧТО ВЫШЛО<br>ИНТЕРВЬЮ<br>С НОВЫМ<br>ГЕРОЕМ</div>
+      <% } %>
+    </a>
+  </section>
+</div>
+</main>
+
+<footer class="redesign-footer" id="contacts">
+  <%- include('../partials/redesign-mobile-footer', { social: projectLinks }) %>
+  <div class="footer-top">
+    <div class="footer-links footer-links--pages">
+      <a href="/companies">КОМПАНИИ</a>
+      <a href="/entrepreneurs">БИОГРАФИИ</a>
+      <a href="/interviews">ИНТЕРВЬЮ</a>
+      <a href="/blog">СТАТЬИ</a>
+      <a href="/blog">БЛОГ</a>
+    </div>
+    <div class="footer-links footer-links--social">
+      <%- include('../partials/social-text-links', { social: projectLinks }) %>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-left">
+      <div class="footer-cta-row"><span>ГОТОВЫ</span><span>К</span><span>ОБСУЖДЕНИЮ</span><span>ПРОЕКТА</span><span>?</span></div>
+      <div class="footer-action"><a class="footer-hero-button" href="/shooting-request">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a></div>
+    </div>
+    <div class="footer-meta"><span>ИП</span><span>БАТАГОВ А.А.</span><span>TILDA EXPERTS</span><span>ПОЛИТИКА КОНФ-ТИ</span></div>
+  </div>
+</footer>
+
+<script src="/js/main.js" defer></script>
+<script>
+  const companyDetailHeader = document.querySelector('.home-header');
+  const companyDetailHero = document.querySelector('.company-profile-hero');
+  const companyDetailLogo = document.querySelector('[data-header-project-logo]');
+  const companyDetailRedSections = Array.from(document.querySelectorAll('[data-red-header-theme]'));
+
+  const updateCompanyDetailHeader = () => {
+    if (!companyDetailHeader) return;
+    const probeY = companyDetailHeader.getBoundingClientRect().bottom + 8;
+    const isOnRed = companyDetailRedSections.some((section) => {
+      const rect = section.getBoundingClientRect();
+      return rect.top <= probeY && rect.bottom >= probeY;
+    });
+    companyDetailHeader.classList.toggle('is-on-red', isOnRed);
+
+    if (companyDetailHero && companyDetailLogo) {
+      companyDetailLogo.classList.toggle(
+        'is-docked',
+        companyDetailHero.getBoundingClientRect().bottom <= companyDetailHeader.getBoundingClientRect().bottom + 12
+      );
+    }
+  };
+
+  updateCompanyDetailHeader();
+  window.addEventListener('scroll', updateCompanyDetailHeader, { passive: true });
+  window.addEventListener('resize', updateCompanyDetailHeader);
+
+  const companyGallerySection = document.querySelector('#company-gallery');
+  const companyGalleryPin = document.querySelector('[data-company-gallery-pin]');
+  const companyGalleryScene = document.querySelector('[data-company-gallery-scene]');
+  const companyGalleryTrack = document.querySelector('[data-company-gallery-track]');
+  const companyMoreCards = document.querySelector('.entrepreneur-more__cards');
+  const companyMoreTopCard = document.querySelector('.entrepreneur-more__row--top .entrepreneur-more__card');
+
+  if (
+    companyGallerySection
+    && companyGalleryPin
+    && companyGalleryScene
+    && companyGalleryTrack
+    && !companyGallerySection.classList.contains('is-section-hidden')
+  ) {
+    const updateCompanyGallery = () => {
+      const sectionRect = companyGallerySection.getBoundingClientRect();
+      const sectionTop = sectionRect.top + window.scrollY;
+      const sectionBottom = sectionTop + companyGallerySection.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const start = sectionTop;
+      const end = sectionBottom - viewportHeight;
+      const pinStart = start + 24;
+      const y = window.scrollY;
+      const progress = Math.min(Math.max((y - start) / Math.max(end - start, 1), 0), 1);
+      const isActive = y >= pinStart && y <= end;
+      const isComplete = y > end;
+
+      companyGalleryScene.classList.toggle('is-fixed', isActive);
+      companyGalleryScene.classList.toggle('is-complete', isComplete);
+      if (isComplete) {
+        companyGalleryScene.style.transform = `translate3d(0, ${companyGalleryPin.offsetHeight - viewportHeight}px, 0)`;
+      } else {
+        companyGalleryScene.style.transform = '';
+      }
+
+      const startOffset = window.innerWidth;
+      const endOffset = -Math.max(companyGalleryTrack.scrollWidth, 0);
+      const currentOffset = startOffset + (endOffset - startOffset) * progress;
+      companyGalleryTrack.style.transform = `translate3d(${currentOffset}px, 0, 0)`;
+    };
+
+    updateCompanyGallery();
+    window.addEventListener('scroll', updateCompanyGallery, { passive: true });
+    window.addEventListener('resize', updateCompanyGallery);
+  }
+
+  const syncCompanyMoreSquareSize = () => {
+    if (!companyMoreCards || !companyMoreTopCard) return;
+    const squareHeight = Math.round(companyMoreTopCard.getBoundingClientRect().height);
+    companyMoreCards.style.setProperty('--entrepreneur-more-square-size', `${squareHeight}px`);
+  };
+
+  syncCompanyMoreSquareSize();
+  window.addEventListener('resize', syncCompanyMoreSquareSize);
+
+  const companyPage = document.querySelector('.company-profile-page');
+  if (companyPage) {
+    const selectors = {
+      hero: '.company-profile-hero',
+      manifest: '.company-profile-manifest',
+      titleBand: '.company-profile-title-band',
+      about: '.company-profile-about',
+      founder: '.company-profile-founder',
+      ownerBiography: '#owner-biography',
+      specs: '.company-profile-specs',
+      addresses: '.company-profile-addresses',
+      awards: '.company-profile-awards',
+      facts: '.company-profile-facts',
+      gallery: '.company-profile-gallery',
+      more: '.entrepreneur-more',
+      related: '.company-profile-related',
+      cta: '.shooting-cta',
+      banner: '.site-banner'
+    };
+    const order = <%- JSON.stringify(sectionOrder) %>;
+    order.forEach((key) => {
+      const section = companyPage.querySelector(selectors[key]);
+      if (section) companyPage.appendChild(section);
+    });
+  }
+</script>
+</body>
+</html>

@@ -36,5 +36,4 @@ coverage/
 !.env.example
 
 # Temporary files
-migration_old/*
 src/server/*

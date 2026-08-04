@@ -1,0 +1,307 @@
+<%- include('../partials/header', { title, description, siteName, siteDescription, transparentHeader: true, hideSiteHeader: true }) %>
+<%
+  const pageSettings = typeof homeSettings !== 'undefined' ? homeSettings : {};
+  const featuredArticles = typeof popularArticles !== 'undefined' ? popularArticles : articles.slice(0, 6);
+  const mainNewsCards = [
+    {
+      title: pageSettings.BLOG_PAGE_MAIN_ONE_TITLE || 'ЭЛЕНИКА КОРЕЛОВА В НОВОМ ВЫПУСКЕ ПРОЕКТА!',
+      text: pageSettings.BLOG_PAGE_MAIN_ONE_TEXT || 'Последние новости, биографии, истории успеха и годовой оборот',
+      image: pageSettings.BLOG_PAGE_MAIN_ONE_IMAGE || '',
+      url: pageSettings.BLOG_PAGE_MAIN_ONE_URL || '',
+    },
+    {
+      title: pageSettings.BLOG_PAGE_MAIN_TWO_TITLE || 'ЭЛЕНИКА КОРЕЛОВА В НОВОМ ВЫПУСКЕ ПРОЕКТА!',
+      text: pageSettings.BLOG_PAGE_MAIN_TWO_TEXT || 'Последние новости, биографии, истории успеха и годовой оборот',
+      image: pageSettings.BLOG_PAGE_MAIN_TWO_IMAGE || '',
+      url: pageSettings.BLOG_PAGE_MAIN_TWO_URL || '',
+    },
+  ];
+  const latestCountValue = Number.parseInt(pageSettings.BLOG_PAGE_LATEST_COUNT || '8', 10);
+  const latestCount = Number.isFinite(latestCountValue) ? Math.min(20, Math.max(1, latestCountValue)) : 8;
+  const latestArticles = articles.slice(0, latestCount);
+  const latestTitle = pageSettings.BLOG_PAGE_LATEST_TITLE || 'ПОСЛЕДНИЕ НОВОСТИ';
+  const latestDescription = pageSettings.BLOG_PAGE_LATEST_DESCRIPTION || 'Новости проекта, истории предпринимателей и материалы о компаниях.';
+  const relatedTitle = pageSettings.BLOG_PAGE_RELATED_TITLE || 'ЧИТАЙТЕ ТАКЖЕ';
+  const relatedHeroes = typeof relatedEntrepreneurs !== 'undefined' ? relatedEntrepreneurs : [];
+  const relatedCompanies = typeof relatedBusinesses !== 'undefined' ? relatedBusinesses : [];
+  const blogDefaults = ['hero', 'popular', 'mainNews', 'latestNews', 'related', 'cta'];
+  let blogVisibility = {};
+  let blogOrder = blogDefaults;
+  try {
+    const parsed = JSON.parse(pageSettings.BLOG_PAGE_SECTION_VISIBILITY || '{}');
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) blogVisibility = parsed;
+  } catch {}
+  try {
+    const parsed = JSON.parse(pageSettings.BLOG_PAGE_SECTION_ORDER || '[]');
+    if (Array.isArray(parsed)) {
+      const valid = parsed.filter((key, index) => blogDefaults.includes(key) && parsed.indexOf(key) === index);
+      blogOrder = [...valid, ...blogDefaults.filter((key) => !valid.includes(key))];
+    }
+  } catch {}
+  const sectionClass = (key) => blogVisibility[key] === false ? ' is-section-hidden' : '';
+  const heroLines = (pageSettings.BLOG_PAGE_HERO_TITLE || 'ГЛАВНЫЕ\nНОВОСТИ').split(/\r?\n/).filter(Boolean);
+  const popularTitle = pageSettings.BLOG_PAGE_POPULAR_TITLE || 'ПОПУЛЯРНОЕ';
+  const projectLinks = typeof social !== 'undefined' ? social : {};
+%>
+
+<div class="redesign-page blog-page">
+  <section class="companies-hero blog-hero<%= sectionClass('hero') %>" id="top">
+    <header class="home-header">
+      <nav class="home-topbar companies-topbar">
+        <div class="home-topbar__left">
+          <a href="/" class="home-topbar__project-logo" data-header-project-logo aria-label="Кто здесь главный?">
+            <img src="/images/image-29.svg" alt="Кто здесь главный?">
+          </a>
+          <a href="/entrepreneurs" class="home-topbar__link">ПРЕДПРИНИМАТЕЛИ</a>
+          <a href="/companies" class="home-topbar__link">КОМПАНИИ</a>
+          <a href="/blog" class="home-topbar__link">БЛОГ</a>
+        </div>
+        <div class="home-topbar__right">
+          <a href="/shooting-request" class="home-topbar__shooting">СЪЕМКИ</a>
+          <a href="/shooting-request" class="home-topbar__cta">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
+        </div>
+      </nav>
+    </header>
+
+    <div class="companies-hero__copy">
+      <h1>
+        <span><%= heroLines[0] || 'ГЛАВНЫЕ' %></span>
+        <span><%= heroLines.slice(1).join(' ') || 'НОВОСТИ' %></span>
+      </h1>
+    </div>
+  </section>
+
+  <section class="blog-popular<%= sectionClass('popular') %>" id="popular">
+    <div class="companies-container">
+      <h2 class="blog-popular__title"><%= popularTitle %></h2>
+      <% if (featuredArticles.length) { %>
+        <div class="blog-popular__grid">
+          <% featuredArticles.forEach((item, index) => { %>
+            <a class="blog-popular-card<%= index === 2 || index === 3 ? ' blog-popular-card--red' : '' %>" href="/blog/<%= item.slug %>">
+              <span class="blog-popular-card__arrow" aria-hidden="true">
+                <span class="arrow-mark"></span>
+              </span>
+              <div class="blog-popular-card__copy">
+                <h3><%= item.title %></h3>
+                <% if (item.subtitle) { %><p><%= item.subtitle %></p><% } %>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="blog-popular__empty">Записи блога скоро появятся.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="blog-main-news<%= sectionClass('mainNews') %>" id="main-news">
+    <div class="companies-container">
+      <div class="blog-main-news__list">
+        <% mainNewsCards.forEach((item, index) => { %>
+          <article class="blog-main-card<%= index % 2 === 1 ? ' blog-main-card--reverse' : '' %>">
+            <div class="blog-main-card__copy">
+              <h2><%= item.title %></h2>
+              <div class="blog-main-card__footer">
+                <% if (item.url) { %>
+                  <a class="blog-main-card__arrow" href="<%= item.url %>" aria-label="Открыть материал «<%= item.title %>»">
+                    <span class="arrow-mark" aria-hidden="true"></span>
+                  </a>
+                <% } else { %>
+                  <span class="blog-main-card__arrow" aria-hidden="true">
+                    <span class="arrow-mark"></span>
+                  </span>
+                <% } %>
+                <% if (item.text) { %><p><%= item.text %></p><% } %>
+              </div>
+            </div>
+            <% if (item.url) { %>
+              <a class="blog-main-card__media" href="<%= item.url %>" aria-label="Открыть материал «<%= item.title %>»">
+                <% if (item.image) { %>
+                  <img src="<%= item.image %>" alt="<%= item.title %>" loading="lazy">
+                <% } else { %>
+                  <span class="blog-main-card__placeholder" aria-hidden="true"></span>
+                <% } %>
+              </a>
+            <% } else { %>
+              <div class="blog-main-card__media" aria-hidden="true">
+                <% if (item.image) { %>
+                  <img src="<%= item.image %>" alt="<%= item.title %>" loading="lazy">
+                <% } else { %>
+                  <span class="blog-main-card__placeholder" aria-hidden="true"></span>
+                <% } %>
+              </div>
+            <% } %>
+          </article>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <section class="blog-latest<%= sectionClass('latestNews') %>" id="latest-news">
+    <div class="companies-container">
+      <div class="blog-latest__header">
+        <h2><%= latestTitle %></h2>
+        <p><%= latestDescription %></p>
+      </div>
+      <% if (latestArticles.length) { %>
+        <div class="blog-latest__list">
+          <% latestArticles.forEach((item) => { %>
+            <a class="blog-latest-card" href="/blog/<%= item.slug %>">
+              <strong class="blog-latest-card__subject blog-latest-card__heading"><%= item.entrepreneur?.name || 'КТО ЗДЕСЬ ГЛАВНЫЙ?' %></strong>
+              <span class="blog-latest-card__copy">
+                <strong class="blog-latest-card__heading"><%= item.title %></strong>
+                <% if (item.subtitle) { %><span><%= item.subtitle %></span><% } %>
+              </span>
+              <span class="blog-latest-card__media" aria-hidden="true">
+                <% if (item.coverImage) { %><img src="<%= item.coverImage %>" alt="" loading="lazy"><% } %>
+              </span>
+              <span class="blog-latest-card__arrow" aria-hidden="true"><span class="arrow-mark"></span></span>
+            </a>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p class="blog-popular__empty">Опубликованные новости скоро появятся.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="blog-related<%= sectionClass('related') %>" id="related">
+    <div class="companies-container">
+      <h2 class="blog-related__title"><%= relatedTitle %></h2>
+
+      <% if (relatedHeroes.length) { %>
+        <div class="heroes-list blog-related__heroes">
+          <% relatedHeroes.forEach((item, index) => { %>
+            <a class="hero-card<%= item.hoverPhoto ? ' hero-card--has-hover-image' : '' %>" href="/entrepreneurs/<%= item.slug %>" style="--delay: <%= index * 90 %>ms; --offset: <%= (index % 3 - 1) * 5 %>%">
+              <span class="hero-card-name"><%= item.name %></span>
+              <span class="hero-card-arrow" aria-hidden="true"></span>
+              <img src="<%= item.photo || '/images/placeholder.svg' %>" alt="<%= item.name %>" loading="lazy">
+              <% if (item.hoverPhoto) { %>
+                <img class="hero-card-hover" src="<%= item.hoverPhoto %>" alt="" loading="lazy">
+              <% } %>
+              <span class="hero-card-meta"><%= item.title %></span>
+            </a>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <% if (relatedCompanies.length) { %>
+        <div class="companies-grid blog-related__companies">
+          <% relatedCompanies.forEach((item) => { %>
+            <a class="company-card" href="/companies/<%= item.slug %>">
+              <div class="company-card__media">
+                <h3 class="company-card__title"><%= item.name %></h3>
+                <% if (item.coverImage) { %>
+                  <img src="<%= item.coverImage %>" alt="<%= item.name %>" loading="lazy">
+                <% } %>
+              </div>
+              <div class="company-card__footer">
+                <span class="company-card__arrow" aria-hidden="true">
+                  <img src="/images/company-card-arrow.svg" alt="">
+                </span>
+                <p><%= item.type %></p>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <%- include('../partials/shooting-cta', {
+    sectionClass: sectionClass('cta'),
+    redirect: '/blog#shooting',
+    formTitle: 'ЗАПОЛНИТЕ ВАШИ ДАННЫЕ\nДЛЯ СВЯЗИ',
+    redHeaderTheme: false
+  }) %>
+</div>
+</main>
+
+<footer class="redesign-footer" id="contacts">
+  <%- include('../partials/redesign-mobile-footer', { social: projectLinks }) %>
+  <div class="footer-top">
+    <div class="footer-links footer-links--pages">
+      <a href="/companies">КОМПАНИИ</a>
+      <a href="/entrepreneurs">БИОГРАФИИ</a>
+      <a href="/interviews">ИНТЕРВЬЮ</a>
+      <a href="/blog">ЗАПИСИ БЛОГА</a>
+    </div>
+    <div class="footer-links footer-links--social">
+      <%- include('../partials/social-text-links', { social: projectLinks }) %>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-left">
+      <div class="footer-cta-row">
+        <span>ГОТОВЫ</span><span>К</span><span>ОБСУЖДЕНИЮ</span><span>ПРОЕКТА</span><span>?</span>
+      </div>
+      <div class="footer-action">
+        <a class="footer-hero-button" href="/shooting-request">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>ИП</span><span>БАТАГОВ А.А.</span><span>TILDA EXPERTS</span><span>ПОЛИТИКА КОНФ-ТИ</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/main.js" defer></script>
+<script>
+  (() => {
+    const page = document.querySelector('.blog-page');
+    if (!page) return;
+    const selectors = {
+      hero: '.blog-hero',
+      popular: '.blog-popular',
+      mainNews: '.blog-main-news',
+      latestNews: '.blog-latest',
+      related: '.blog-related',
+      cta: '.shooting-cta'
+    };
+    const order = <%- JSON.stringify(blogOrder) %>;
+    order.forEach((key) => {
+      const section = page.querySelector(selectors[key]);
+      if (section) page.appendChild(section);
+    });
+  })();
+
+  const blogHeader = document.querySelector('.blog-page .home-header');
+  const blogHero = document.querySelector('.blog-hero');
+  const blogLogo = document.querySelector('.blog-page [data-header-project-logo]');
+  if (blogHero && blogLogo) {
+    const updateBlogLogo = () => {
+      const headerBottom = blogHeader ? blogHeader.getBoundingClientRect().bottom : 0;
+      blogLogo.classList.toggle('is-docked', blogHero.getBoundingClientRect().bottom <= headerBottom + 12);
+    };
+    updateBlogLogo();
+    window.addEventListener('scroll', updateBlogLogo, { passive: true });
+    window.addEventListener('resize', updateBlogLogo);
+  }
+
+  const randomizeLatestCardImage = (card) => {
+    if (window.matchMedia('(max-width: 900px)').matches) return;
+    const media = card.querySelector('.blog-latest-card__media:not(:empty)');
+    if (!media) return;
+
+    const cardWidth = card.getBoundingClientRect().width;
+    const mediaWidth = media.getBoundingClientRect().width || 180;
+    const zoneStart = cardWidth * 0.6;
+    const zoneEnd = cardWidth * 0.9;
+    const maxLeft = Math.max(zoneStart, zoneEnd - mediaWidth);
+    const left = zoneStart + Math.random() * (maxLeft - zoneStart);
+    const top = -30 + Math.random() * 40;
+    let rotation = -10 + Math.random() * 20;
+    if (Math.abs(rotation) < 2) rotation = rotation < 0 ? -2 : 2;
+
+    card.style.setProperty('--hover-image-left', `${left}px`);
+    card.style.setProperty('--hover-image-top', `${top}px`);
+    card.style.setProperty('--hover-image-rotation', `${rotation.toFixed(2)}deg`);
+  };
+
+  document.querySelectorAll('.blog-latest-card').forEach((card) => {
+    card.addEventListener('mouseenter', () => randomizeLatestCardImage(card));
+    card.addEventListener('focus', () => randomizeLatestCardImage(card));
+  });
+</script>
+</body>
+</html>

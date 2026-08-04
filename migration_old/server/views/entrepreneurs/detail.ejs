@@ -1,0 +1,722 @@
+<%- include('../partials/header', { title, description, siteName, siteUrl, transparentHeader: true, hideSiteHeader: true }) %>
+
+<%
+  const links = typeof social !== 'undefined' ? social : {};
+  const bannerImage = homeSettings?.HOME_BANNER_IMAGE || '';
+  const bannerMobileImage = homeSettings?.HOME_BANNER_MOBILE_IMAGE || '';
+  const bannerLink = homeSettings?.HOME_BANNER_LINK || '/entrepreneurs';
+  const hasBannerImage = Boolean(bannerImage || bannerMobileImage);
+  let sectionVisibility = {};
+  try {
+    const parsedVisibility = JSON.parse(entrepreneur.sectionVisibility || '{}');
+    if (parsedVisibility && typeof parsedVisibility === 'object' && !Array.isArray(parsedVisibility)) sectionVisibility = parsedVisibility;
+  } catch {}
+  const showSection = (key) => sectionVisibility[key] !== false;
+  const sectionClass = (key) => showSection(key) ? '' : ' is-section-hidden';
+  const defaultSectionOrder = ['hero', 'about', 'biography', 'childhood', 'education', 'shorts', 'turnover', 'more', 'featuredInterview', 'cta', 'banner', 'interviewList', 'articles'];
+  let sectionOrder = defaultSectionOrder;
+  try {
+    const parsedOrder = JSON.parse(entrepreneur.sectionOrder || '[]');
+    if (Array.isArray(parsedOrder)) {
+      const valid = parsedOrder.filter((key, index) => defaultSectionOrder.includes(key) && parsedOrder.indexOf(key) === index);
+      sectionOrder = [...valid, ...defaultSectionOrder.filter((key) => !valid.includes(key))];
+    }
+  } catch {}
+  const heroNameParts = entrepreneur.name.split(/\s+/).filter(Boolean);
+  const heroLastName = heroNameParts[0] || entrepreneur.name;
+  const heroFirstName = heroNameParts.slice(1).join(' ') || entrepreneur.name;
+  const heroLeftTeaser = entrepreneur.heroLeftTeaser || entrepreneur.title || '';
+  const heroRightTeaser = entrepreneur.heroRightTeaser || entrepreneur.quote || entrepreneur.title || '';
+  const heroBottomRightTeaser = entrepreneur.heroBottomRightTeaser || entrepreneur.title || '';
+  const heroMarquee = entrepreneur.heroMarquee || `${entrepreneur.name} • ${entrepreneur.title} • КТО ЗДЕСЬ ГЛАВНЫЙ`;
+  const aboutGalleryPhotosRaw = entrepreneur.aboutGalleryPhotos || entrepreneur.galleryPhotos || '';
+  const aboutGalleryPhotos = Array.from(new Set([
+    entrepreneur.photo,
+    ...aboutGalleryPhotosRaw.split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean)
+  ].filter(Boolean)));
+
+  const defaultLabels = [
+    `WHO'S THE ${entrepreneur.name.toUpperCase()}?`,
+    'КРАТКАЯ БИОГРАФИЯ',
+    'НАЧАЛО КАРЬЕРЫ',
+    'ПЕРВЫЕ УСПЕХИ В БИЗНЕСЕ',
+    'МИССИЯ ЗАНОЗЫ',
+    'ДНК БРЕНДА'
+  ];
+
+  const defaultDescriptions = [
+    'КРАТКАЯ ИНФОРМАЦИЯ И ПРЕДСТАВЛЕНИЕ ПРОЕКТОВ',
+    'ДЕТСТВО, ВЕЧНОСТЬ, ПУТЕШЕСТВИЯ И ИНТЕРЕСЫ',
+    'ВОЕНКОР, ГОСУДАРСТВЕННОЕ УПРАВЛЕНИЕ И ПЕДАГОГ-ПСИХОЛОГ',
+    'ИЗ 800 ТЫСЯЧ СДЕЛАТЬ 200 МИЛЛИОНОВ',
+    'В ЧЕМ МИССИЯ ЗАНОЗЫ',
+    `ДНК БРЕНДА ${entrepreneur.name.toUpperCase()}`
+  ];
+
+  const menuLinks = ['#biography', '#childhood', '#education', '#turnover', '#articles', '#contacts'];
+  const menuSectionKeys = ['biography', 'childhood', 'education', 'turnover', 'articles', null];
+  const customLabels = (entrepreneur.aboutMenuLabels || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const customDescriptions = (entrepreneur.aboutMenuDescriptions || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const aboutMenuItems = menuLinks.map((href, index) => ({
+    href,
+    label: customLabels[index] || defaultLabels[index],
+    note: customDescriptions[index] || defaultDescriptions[index],
+    originalIndex: index
+  })).filter((item) => {
+    const key = menuSectionKeys[item.originalIndex];
+    return !key || showSection(key);
+  });
+
+  const aboutIntroDescription = entrepreneur.aboutIntroDescription || entrepreneur.quote || '';
+
+  const biographyTitle = entrepreneur.name.toUpperCase();
+  const biographyPhoto = entrepreneur.biographyPhoto || entrepreneur.photo || aboutGalleryPhotos[0] || null;
+  const biographyTextBlocks = [
+    entrepreneur.biographyTextOne,
+    entrepreneur.biographyTextTwo,
+    entrepreneur.biographyTextThree
+  ].map((item) => (item || '').trim()).filter(Boolean);
+  const biographyFallbackBlocks = (entrepreneur.bio || entrepreneur.quote || '')
+    .split(/\n\s*\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const biographyContentBlocks = biographyTextBlocks.length ? biographyTextBlocks : biographyFallbackBlocks;
+
+  const childhoodTitle = entrepreneur.childhoodTitle || 'ДЕТСТВО: БЕДНОСТЬ, ПУТЕШЕСТВИЕ И КРЕДО';
+  const childhoodTextOne = entrepreneur.childhoodTextOne || entrepreneur.bio || entrepreneur.quote || '';
+  const childhoodTextTwo = entrepreneur.childhoodTextTwo || '';
+
+  const educationTitleRaw = entrepreneur.educationTitle || 'ОБРАЗОВАНИЕ\nИ ОПЫТ\nРАБОТЫ';
+  const educationTitleLines = educationTitleRaw.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const educationText = entrepreneur.educationText || entrepreneur.bio || entrepreneur.quote || '';
+  const educationAsideText = entrepreneur.educationAsideText || '';
+  const educationPhoto = entrepreneur.educationPhoto || entrepreneur.photo || aboutGalleryPhotos[0] || null;
+  const turnoverTitleRaw = entrepreneur.turnoverTitle || 'ПЕРВЫЕ УСПЕХИ\nВ БИЗНЕСЕ';
+  const turnoverTitleLines = turnoverTitleRaw.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const turnoverText = entrepreneur.turnoverText || entrepreneur.bio || entrepreneur.quote || '';
+  const turnoverBottomText = entrepreneur.turnoverBottomText || '';
+  const turnoverPhoto = entrepreneur.turnoverPhoto || entrepreneur.photo || aboutGalleryPhotos[0] || null;
+  const moreCardTitles = (entrepreneur.moreCardTitles || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const moreCardLinks = (entrepreneur.moreCardLinks || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+  const moreFallbackTitles = ['OPEN BAR ZANOZA', 'КАФЕ-БАР СЕЛЬДЕРЕЙ', 'ДРУГИЕ УЧАСТНИКИ', 'СТАТЬ УЧАСТНИКОМ\nПРОЕКТА'];
+  const moreFallbackLinks = ['', '', '', '/shooting-request'];
+  const moreItems = Array.from({ length: 4 }, (_, index) => ({
+    title: moreCardTitles[index] || moreFallbackTitles[index],
+    href: moreCardLinks[index] || moreFallbackLinks[index] || '',
+  }));
+  const morePhoto = entrepreneur.morePhoto || entrepreneur.photo || aboutGalleryPhotos[0] || null;
+  const fallbackInterview = interviews[0] || null;
+  const featuredInterviewVideoType = entrepreneur.featuredInterviewVideoType || (fallbackInterview ? fallbackInterview.videoType : null) || 'EMBED';
+  const featuredInterviewVideoUrl = entrepreneur.featuredInterviewVideoUrl || (fallbackInterview ? fallbackInterview.videoUrl : null) || null;
+  const featuredInterviewVideoFile = entrepreneur.featuredInterviewVideoFile || (fallbackInterview ? fallbackInterview.videoFile : null) || null;
+  const shortsItems = reels.slice(0, 3);
+%>
+
+<div class="redesign-page entrepreneur-profile-page">
+  <section class="entrepreneur-profile-hero<%= showSection('hero') ? '' : ' is-hero-content-hidden' %>" id="top">
+    <header class="home-header">
+      <nav class="home-topbar">
+        <div class="home-topbar__left">
+          <a href="/" class="home-topbar__project-logo" data-header-project-logo aria-label="Кто здесь главный?">
+            <img src="/images/image-29.svg" alt="Кто здесь главный?">
+          </a>
+          <a href="/entrepreneurs" class="home-topbar__link">ПРЕДПРИНИМАТЕЛИ</a>
+          <a href="/companies" class="home-topbar__link">КОМПАНИИ</a>
+        <a href="/blog" class="home-topbar__link">БЛОГ</a>
+        </div>
+        <div class="home-topbar__right">
+          <a href="/shooting-request" class="home-topbar__shooting">СЪЕМКИ</a>
+          <a href="/shooting-request" class="home-topbar__cta">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
+        </div>
+      </nav>
+    </header>
+
+    <div class="entrepreneur-profile-hero__body">
+      <div class="entrepreneur-profile-hero__copy">
+        <div class="entrepreneur-profile-hero__line entrepreneur-profile-hero__line--who">
+          <span class="entrepreneur-profile-hero__eyebrow">WHO'S THE</span>
+          <% if (heroRightTeaser) { %>
+            <p class="entrepreneur-profile-hero__teaser entrepreneur-profile-hero__teaser--top"><%= heroRightTeaser %></p>
+          <% } %>
+        </div>
+        <div class="entrepreneur-profile-hero__line entrepreneur-profile-hero__line--last">
+          <% if (heroLeftTeaser) { %>
+            <p class="entrepreneur-profile-hero__teaser entrepreneur-profile-hero__teaser--left"><%= heroLeftTeaser %></p>
+          <% } %>
+          <h1 class="entrepreneur-profile-hero__name entrepreneur-profile-hero__name--last"><%= heroLastName %></h1>
+        </div>
+        <div class="entrepreneur-profile-hero__line entrepreneur-profile-hero__line--first">
+          <h1 class="entrepreneur-profile-hero__name entrepreneur-profile-hero__name--first"><%= heroFirstName %></h1>
+          <% if (heroBottomRightTeaser) { %>
+            <p class="entrepreneur-profile-hero__teaser entrepreneur-profile-hero__teaser--bottom"><%= heroBottomRightTeaser %></p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="entrepreneur-profile-hero__marquee marquee" aria-label="О герое">
+      <div class="marquee-track">
+        <% for (let group = 0; group < 2; group++) { %>
+          <div class="marquee-group">
+            <% for (let i = 0; i < 4; i++) { %>
+              <span class="marquee-item entrepreneur-profile-hero__marquee-item"><%= heroMarquee %></span>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+<section class="entrepreneur-about<%= sectionClass('about') %>" id="about">
+  <div class="entrepreneur-about__intro">
+    <% if (aboutIntroDescription) { %>
+      <p><%= aboutIntroDescription %></p>
+    <% } %>
+  </div>
+
+  <div class="entrepreneur-about__inner">
+    <aside class="entrepreneur-about__nav">
+      <nav class="entrepreneur-about__nav-list" aria-label="Навигация по странице">
+        <% aboutMenuItems.forEach((item, index) => { %>
+          <a
+            href="<%= item.href %>"
+            class="entrepreneur-about__nav-card<%= index === 1 ? ' is-active' : '' %>"
+            data-about-nav-link
+            data-photo-index="<%= aboutGalleryPhotos.length ? item.originalIndex % aboutGalleryPhotos.length : 0 %>"
+          >
+            <% if (item.originalIndex === 0) { %>
+              <strong class="entrepreneur-about__nav-title entrepreneur-about__nav-title--who">
+                <span class="entrepreneur-about__nav-title-line">WHO'S THE</span>
+                <span class="entrepreneur-about__nav-title-line"><%= entrepreneur.name.toUpperCase() %></span>
+              </strong>
+            <% } else { %>
+              <strong class="entrepreneur-about__nav-title"><%= item.label %></strong>
+            <% } %>
+            <small><%= item.note %></small>
+            <span class="entrepreneur-about__nav-arrow" aria-hidden="true"></span>
+          </a>
+        <% }) %>
+      </nav>
+    </aside>
+
+    <div class="entrepreneur-about__gallery">
+      <% if (aboutGalleryPhotos.length) { %>
+        <div class="entrepreneur-about__gallery-viewport" data-about-gallery-viewport>
+          <% aboutGalleryPhotos.forEach((photo, index) => { %>
+            <figure class="entrepreneur-about__gallery-frame<%= index === 1 ? ' is-active' : index === 0 ? ' is-active' : '' %>" data-about-gallery-slide>
+              <img src="<%= photo %>" alt="<%= entrepreneur.name %>">
+            </figure>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="entrepreneur-about__gallery-empty">Добавьте фотографии для блока «О герое» в админке.</div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<section class="entrepreneur-biography<%= sectionClass('biography') %>" id="biography">
+  <div class="entrepreneur-biography__inner">
+    <div class="entrepreneur-biography__left">
+      <div class="entrepreneur-biography__heading">
+        <p class="entrepreneur-biography__eyebrow">БИОГРАФИЯ</p>
+        <h2 class="entrepreneur-biography__title">
+          <span class="entrepreneur-biography__who">WHO'S THE</span>
+          <span class="entrepreneur-biography__name"><%= biographyTitle %>?</span>
+        </h2>
+      </div>
+      <a href="#interviews" class="entrepreneur-biography__button">СМОТРЕТЬ ИНТЕРВЬЮ</a>
+      <% if (biographyPhoto) { %>
+        <figure class="entrepreneur-biography__photo">
+          <img src="<%= biographyPhoto %>" alt="<%= entrepreneur.name %>">
+        </figure>
+      <% } %>
+    </div>
+    <div class="entrepreneur-biography__right">
+      <% biographyContentBlocks.forEach((block) => { %>
+        <article class="entrepreneur-biography__text-block">
+          <p><%= block %></p>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="entrepreneur-childhood<%= sectionClass('childhood') %>" id="childhood" data-red-header-theme>
+  <div class="entrepreneur-childhood__inner">
+    <h2 class="entrepreneur-childhood__title"><%= childhoodTitle %></h2>
+    <p class="entrepreneur-childhood__text entrepreneur-childhood__text--first"><%= childhoodTextOne %></p>
+    <p class="entrepreneur-childhood__text entrepreneur-childhood__text--second"><%= childhoodTextTwo %></p>
+  </div>
+</section>
+
+<section class="entrepreneur-education<%= sectionClass('education') %>" id="education">
+  <div class="entrepreneur-education__inner">
+    <div class="entrepreneur-education__left">
+      <h2 class="entrepreneur-education__title">
+        <% educationTitleLines.forEach((line, index) => { %>
+          <span class="entrepreneur-education__title-line<%= index === 2 ? ' entrepreneur-education__title-line--offset' : '' %>"><%= line %></span>
+        <% }) %>
+      </h2>
+      <p class="entrepreneur-education__text"><%= educationText %></p>
+      <div class="entrepreneur-education__bottom">
+        <a href="#interviews" class="entrepreneur-biography__button entrepreneur-education__button">СМОТРЕТЬ ИНТЕРВЬЮ</a>
+        <p class="entrepreneur-education__aside"><%= educationAsideText %></p>
+      </div>
+    </div>
+    <div class="entrepreneur-education__right">
+      <% if (educationPhoto) { %>
+        <figure class="entrepreneur-education__photo">
+          <img src="<%= educationPhoto %>" alt="<%= entrepreneur.name %>">
+        </figure>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<section class="entrepreneur-shorts<%= sectionClass('shorts') %>">
+  <div class="entrepreneur-shorts__inner">
+    <% if (shortsItems.length) { %>
+      <% shortsItems.forEach((item) => { %>
+        <button
+          type="button"
+          class="entrepreneur-shorts__card"
+          data-reel-trigger
+          data-reel-title="<%= item.title %>"
+          data-reel-video-type="<%= item.videoType %>"
+          data-reel-video-url="<%= item.videoUrl || '' %>"
+          data-reel-video-file="<%= item.videoFile || '' %>"
+        >
+          <% if (item.coverImage) { %>
+            <img src="<%= item.coverImage %>" alt="<%= item.title %>" class="entrepreneur-shorts__image">
+          <% } %>
+          <span class="video-play" aria-hidden="true"></span>
+        </button>
+      <% }) %>
+      <% for (let i = shortsItems.length; i < 3; i++) { %>
+        <div class="entrepreneur-shorts__card entrepreneur-shorts__card--empty">
+          <span class="video-play" aria-hidden="true"></span>
+        </div>
+      <% } %>
+    <% } else { %>
+      <% for (let i = 0; i < 3; i++) { %>
+        <div class="entrepreneur-shorts__card entrepreneur-shorts__card--empty">
+          <span class="video-play" aria-hidden="true"></span>
+        </div>
+      <% } %>
+    <% } %>
+  </div>
+</section>
+
+<div data-reel-modal hidden style="position:fixed;inset:0;z-index:100;background:rgba(7,7,7,.72);padding:24px;align-items:center;justify-content:center;">
+  <div style="position:relative;width:min(100%,420px);max-height:100%;">
+    <button type="button" data-reel-close style="position:absolute;top:-44px;right:0;padding:0;border:0;background:none;color:#fff;font:400 16px/16px 'DexaPro',sans-serif;text-transform:uppercase;cursor:pointer;">Закрыть</button>
+    <div style="background:#111;aspect-ratio:9/16;overflow:hidden;">
+      <div data-reel-modal-media style="width:100%;height:100%;"></div>
+    </div>
+  </div>
+</div>
+
+<section class="entrepreneur-turnover<%= sectionClass('turnover') %>" id="turnover">
+  <div class="entrepreneur-turnover__inner">
+    <div class="entrepreneur-turnover__left">
+      <h2 class="entrepreneur-turnover__title">
+        <% turnoverTitleLines.forEach((line) => { %>
+          <span class="entrepreneur-turnover__title-line"><%= line %></span>
+        <% }) %>
+      </h2>
+      <a href="#interviews" class="entrepreneur-biography__button entrepreneur-turnover__button">СМОТРЕТЬ ИНТЕРВЬЮ</a>
+      <% if (turnoverPhoto) { %>
+        <figure class="entrepreneur-turnover__photo">
+          <img src="<%= turnoverPhoto %>" alt="<%= entrepreneur.name %>">
+        </figure>
+      <% } %>
+    </div>
+    <div class="entrepreneur-turnover__right">
+      <p class="entrepreneur-turnover__text"><%= turnoverText %></p>
+      <p class="entrepreneur-turnover__bottom-text"><%= turnoverBottomText %></p>
+    </div>
+  </div>
+</section>
+
+<section class="entrepreneur-more<%= sectionClass('more') %>">
+  <div class="entrepreneur-more__inner">
+    <div class="entrepreneur-more__content">
+      <div class="entrepreneur-more__cards">
+        <div class="entrepreneur-more__row entrepreneur-more__row--top">
+          <% moreItems.slice(0, 3).forEach((item, index) => { %>
+            <% if (item.href) { %>
+              <a
+                href="<%= item.href %>"
+                class="entrepreneur-more__card entrepreneur-more__card--<%= index + 1 %>"
+              >
+                <span class="entrepreneur-more__card-arrow" aria-hidden="true"></span>
+                <strong class="entrepreneur-more__card-title"><%= item.title %></strong>
+              </a>
+            <% } else { %>
+              <div class="entrepreneur-more__card entrepreneur-more__card--<%= index + 1 %>" aria-disabled="true">
+                <span class="entrepreneur-more__card-arrow" aria-hidden="true"></span>
+                <strong class="entrepreneur-more__card-title"><%= item.title %></strong>
+              </div>
+            <% } %>
+          <% }) %>
+        </div>
+        <div class="entrepreneur-more__row entrepreneur-more__row--bottom">
+          <% if (moreItems[3].href) { %>
+            <a
+              href="<%= moreItems[3].href %>"
+              class="entrepreneur-more__card entrepreneur-more__card--4"
+            >
+              <span class="entrepreneur-more__card-arrow" aria-hidden="true"></span>
+              <strong class="entrepreneur-more__card-title"><%= moreItems[3].title %></strong>
+            </a>
+          <% } else { %>
+            <div class="entrepreneur-more__card entrepreneur-more__card--4" aria-disabled="true">
+              <span class="entrepreneur-more__card-arrow" aria-hidden="true"></span>
+              <strong class="entrepreneur-more__card-title"><%= moreItems[3].title %></strong>
+            </div>
+          <% } %>
+          <div class="entrepreneur-more__photo">
+            <% if (morePhoto) { %>
+              <img src="<%= morePhoto %>" alt="<%= entrepreneur.name %>">
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="entrepreneur-more__side" aria-hidden="true">БОЛЬШЕ</div>
+  </div>
+</section>
+
+<section class="entrepreneur-featured-interview<%= sectionClass('featuredInterview') %>" id="interviews">
+  <div class="entrepreneur-featured-interview__inner">
+    <h2 class="entrepreneur-featured-interview__title">СМОТРЕТЬ<br>ИНТЕРВЬЮ</h2>
+    <div class="entrepreneur-featured-interview__media">
+      <% if (featuredInterviewVideoType === 'EMBED' && featuredInterviewVideoUrl) { %>
+        <iframe
+          src="<%= featuredInterviewVideoUrl %>"
+          class="entrepreneur-featured-interview__embed"
+          frameborder="0"
+          allowfullscreen
+          title="Интервью <%= entrepreneur.name %>"
+        ></iframe>
+      <% } else if (featuredInterviewVideoFile) { %>
+        <video
+          src="<%= featuredInterviewVideoFile %>"
+          class="entrepreneur-featured-interview__video"
+          controls
+          playsinline
+          preload="metadata"
+        ></video>
+      <% } else { %>
+        <div class="entrepreneur-featured-interview__placeholder"></div>
+      <% } %>
+      <span class="video-play entrepreneur-featured-interview__play" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>
+
+<%- include('../partials/shooting-cta', {
+  sectionClass: sectionClass('cta'),
+  redirect: '/entrepreneurs/' + entrepreneur.slug + '#shooting',
+  formTitle: 'ЗАПОЛНИТЕ ВАШИ ДАННЫЕ\nДЛЯ СВЯЗИ',
+  redHeaderTheme: false
+}) %>
+
+<section class="site-banner redesign-section<%= hasBannerImage ? ' site-banner--has-image' : '' %><%= sectionClass('banner') %>">
+  <a href="<%= bannerLink %>" class="site-banner-frame" aria-label="Открыть материал баннера">
+    <% if (hasBannerImage) { %>
+      <picture class="site-banner-media">
+        <% if (bannerMobileImage) { %>
+          <source media="(max-width: 768px)" srcset="<%= bannerMobileImage %>">
+        <% } %>
+        <img src="<%= bannerImage || bannerMobileImage %>" alt="" class="banner-image">
+      </picture>
+    <% } else { %>
+      <div class="banner-title">ЗДЕСЬ БУДЕТ<br>БАННЕР ДЛЯ<br>ВЫПУСКА С<br>НОВЫМ ГЕРОЕМ</div>
+    <% } %>
+  </a>
+</section>
+</div>
+
+<% if (interviews.length) { %>
+<section class="py-20 bg-gray-50 border-t border-gray-100<%= sectionClass('interviewList') %>" id="interview-list">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl md:text-3xl font-extrabold mb-10 animate-on-scroll section-title">Интервью</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% interviews.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/interviews/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || entrepreneur.photo || '/images/placeholder.svg' %>" alt="<%= item.title %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <h3 class="font-bold text-lg group-hover:text-terracotta transition-colors"><a href="/interviews/<%= item.slug %>"><%= item.title %></a></h3>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (articles.length) { %>
+<section class="py-20 bg-gray-50 border-t border-gray-100<%= sectionClass('articles') %>" id="articles">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl md:text-3xl font-extrabold mb-10 animate-on-scroll section-title">Статьи</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% articles.forEach((item, index) => { %>
+      <article class="animate-on-scroll card overflow-hidden group" style="transition-delay: <%= index * 100 %>ms">
+        <a href="/blog/<%= item.slug %>" class="block aspect-video bg-gray-100 overflow-hidden img-zoom">
+          <img src="<%= item.coverImage || entrepreneur.photo || '/images/placeholder.svg' %>" alt="<%= item.title %>" class="w-full h-full object-cover">
+        </a>
+        <div class="p-6">
+          <h3 class="font-bold text-lg group-hover:text-terracotta transition-colors"><a href="/blog/<%= item.slug %>"><%= item.title %></a></h3>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<footer class="redesign-footer" id="contacts">
+  <%- include('../partials/redesign-mobile-footer', {
+    social: links,
+    pageLinks: [
+      { href: '/companies', label: 'КОМПАНИИ', mobileLabel: 'МЕСТА' },
+      { href: '#biography', label: 'БИОГРАФИЯ', mobileLabel: 'БИОГРАФИЯ' },
+      { href: '#interviews', label: 'ИНТЕРВЬЮ', mobileLabel: 'ИНТЕРВЬЮ' },
+      { href: '/blog', label: 'СТАТЬИ', mobileLabel: 'СТАТЬИ' },
+      { href: '/blog', label: 'БЛОГ', mobileLabel: 'БЛОГ' },
+    ]
+  }) %>
+  <div class="footer-top">
+    <div class="footer-links footer-links--pages">
+      <a href="/companies">КОМПАНИИ</a>
+      <a href="#biography">БИОГРАФИЯ</a>
+      <a href="#interviews">ИНТЕРВЬЮ</a>
+      <a href="/blog">СТАТЬИ</a>
+      <a href="/blog">БЛОГ</a>
+    </div>
+    <div class="footer-links footer-links--social">
+      <%- include('../partials/social-text-links', { social: links }) %>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-left">
+      <div class="footer-cta-row">
+        <span>ГОТОВЫ</span>
+        <span>К</span>
+        <span>ОБСУЖДЕНИЮ</span>
+        <span>ПРОЕКТА</span>
+        <span>?</span>
+      </div>
+      <div class="footer-action">
+        <a class="footer-hero-button" href="/shooting-request">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>ИП</span>
+      <span>БАТАГОВ А.А.</span>
+      <span>TILDA EXPERTS</span>
+      <span>ПОЛИТИКА КОНФ-ТИ</span>
+    </div>
+  </div>
+</footer>
+<script src="/js/main.js" defer></script>
+<script>
+  const detailHomeHeader = document.querySelector('.home-header');
+  const detailHeroSection = document.querySelector('.entrepreneur-profile-hero');
+  const detailHeaderProjectLogo = document.querySelector('[data-header-project-logo]');
+  const detailRedThemeSections = Array.from(document.querySelectorAll('[data-red-header-theme]'));
+
+  if (detailHomeHeader && detailRedThemeSections.length) {
+    let detailHeaderOnRed = false;
+
+    const updateDetailHeaderTheme = () => {
+      const probeY = detailHomeHeader.getBoundingClientRect().bottom + 8;
+      const overlapThreshold = 32;
+      const activeRedSection = detailRedThemeSections.some((section) => {
+        const rect = section.getBoundingClientRect();
+        return rect.top <= probeY - overlapThreshold && rect.bottom >= probeY + overlapThreshold;
+      });
+
+      if (activeRedSection !== detailHeaderOnRed) {
+        detailHeaderOnRed = activeRedSection;
+        detailHomeHeader.classList.toggle('is-on-red', detailHeaderOnRed);
+      }
+    };
+
+    updateDetailHeaderTheme();
+    window.addEventListener('scroll', updateDetailHeaderTheme, { passive: true });
+    window.addEventListener('resize', updateDetailHeaderTheme);
+  }
+
+  if (detailHeroSection && detailHeaderProjectLogo) {
+    const updateDetailProjectLogoVisibility = () => {
+      const heroBottom = detailHeroSection.getBoundingClientRect().bottom;
+      const headerBottom = detailHomeHeader ? detailHomeHeader.getBoundingClientRect().bottom : 0;
+      detailHeaderProjectLogo.classList.toggle('is-docked', heroBottom <= headerBottom + 12);
+    };
+
+    updateDetailProjectLogoVisibility();
+    window.addEventListener('scroll', updateDetailProjectLogoVisibility, { passive: true });
+    window.addEventListener('resize', updateDetailProjectLogoVisibility);
+  }
+
+  const aboutNavLinks = Array.from(document.querySelectorAll('[data-about-nav-link]'));
+  const aboutGallerySlides = Array.from(document.querySelectorAll('[data-about-gallery-slide]'));
+  const aboutGalleryViewport = document.querySelector('[data-about-gallery-viewport]');
+  const defaultAboutIndex = aboutNavLinks.length > 1 ? 1 : 0;
+  const turnoverRight = document.querySelector('.entrepreneur-turnover__right');
+  const turnoverPhoto = document.querySelector('.entrepreneur-turnover__photo');
+  const turnoverBottomText = document.querySelector('.entrepreneur-turnover__bottom-text');
+  const moreCardsWrap = document.querySelector('.entrepreneur-more__cards');
+  const moreTopCard = document.querySelector('.entrepreneur-more__row--top .entrepreneur-more__card');
+  const moreSide = document.querySelector('.entrepreneur-more__side');
+
+  const setAboutGallerySlide = (nextIndex) => {
+    if (!aboutGallerySlides.length) return;
+    const safeIndex = ((nextIndex % aboutGallerySlides.length) + aboutGallerySlides.length) % aboutGallerySlides.length;
+    aboutGallerySlides.forEach((slide, index) => {
+      slide.classList.toggle('is-active', index === safeIndex);
+    });
+  };
+
+  const setAboutActiveLink = (nextIndex) => {
+    aboutNavLinks.forEach((link, index) => {
+      link.classList.toggle('is-active', index === nextIndex);
+    });
+  };
+
+  setAboutActiveLink(defaultAboutIndex);
+  setAboutGallerySlide(defaultAboutIndex);
+
+  aboutNavLinks.forEach((link) => {
+    const photoIndex = Number(link.getAttribute('data-photo-index') || 0);
+    const linkIndex = aboutNavLinks.indexOf(link);
+    link.addEventListener('mouseenter', () => {
+      setAboutActiveLink(linkIndex);
+      setAboutGallerySlide(photoIndex);
+    });
+    link.addEventListener('focus', () => {
+      setAboutActiveLink(linkIndex);
+      setAboutGallerySlide(photoIndex);
+    });
+  });
+
+  const aboutNavList = document.querySelector('.entrepreneur-about__nav-list');
+  const syncAboutGalleryHeight = () => {
+    if (!aboutNavList || !aboutGalleryViewport) return;
+    const navHeight = Math.ceil(aboutNavList.getBoundingClientRect().height);
+    aboutGalleryViewport.style.height = `${navHeight}px`;
+    aboutGalleryViewport.style.minHeight = `${navHeight}px`;
+  };
+
+  const syncTurnoverBottomText = () => {
+    if (!turnoverRight || !turnoverPhoto || !turnoverBottomText) return;
+    const rightRect = turnoverRight.getBoundingClientRect();
+    const photoRect = turnoverPhoto.getBoundingClientRect();
+    const textRect = turnoverBottomText.getBoundingClientRect();
+    const top = Math.max(0, photoRect.bottom - rightRect.top - textRect.height);
+    turnoverRight.style.setProperty('--turnover-bottom-text-top', `${top}px`);
+  };
+
+  const syncMoreSquareSize = () => {
+    if (!moreCardsWrap || !moreTopCard) return;
+    const squareHeight = Math.round(moreTopCard.getBoundingClientRect().height);
+    moreCardsWrap.style.setProperty('--entrepreneur-more-square-size', `${squareHeight}px`);
+  };
+
+  syncAboutGalleryHeight();
+  syncTurnoverBottomText();
+  syncMoreSquareSize();
+  window.addEventListener('resize', syncAboutGalleryHeight);
+  window.addEventListener('resize', syncTurnoverBottomText);
+  window.addEventListener('resize', syncMoreSquareSize);
+
+  if (aboutNavList) {
+    aboutNavList.addEventListener('mouseleave', () => {
+      setAboutActiveLink(defaultAboutIndex);
+      setAboutGallerySlide(defaultAboutIndex);
+    });
+  }
+
+  window.addEventListener('load', syncTurnoverBottomText);
+  window.addEventListener('load', syncMoreSquareSize);
+
+  const reelModal = document.querySelector('[data-reel-modal]');
+  const reelModalMedia = document.querySelector('[data-reel-modal-media]');
+  const reelModalClose = document.querySelector('[data-reel-close]');
+
+  if (reelModal && reelModalMedia) {
+    const renderReel = (dataset) => {
+      const type = dataset.reelVideoType || '';
+      const url = dataset.reelVideoUrl || '';
+      const file = dataset.reelVideoFile || '';
+
+      if (type === 'EMBED' && url) {
+        reelModalMedia.innerHTML = `<iframe src="${url}" style="width:100%;height:100%;border:0;" allowfullscreen title="${dataset.reelTitle || 'Рилс'}"></iframe>`;
+        return;
+      }
+
+      if (file) {
+        reelModalMedia.innerHTML = `<video src="${file}" style="width:100%;height:100%;display:block;" controls autoplay playsinline preload="metadata"></video>`;
+        return;
+      }
+
+      reelModalMedia.innerHTML = '';
+    };
+
+    const openReelModal = (dataset) => {
+      renderReel(dataset);
+      reelModal.hidden = false;
+      reelModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeReelModal = () => {
+      reelModal.hidden = true;
+      reelModal.style.display = 'none';
+      reelModalMedia.innerHTML = '';
+      document.body.style.overflow = '';
+    };
+
+    document.querySelectorAll('[data-reel-trigger]').forEach((trigger) => {
+      trigger.addEventListener('click', () => openReelModal(trigger.dataset));
+    });
+
+    reelModalClose?.addEventListener('click', closeReelModal);
+    reelModal.addEventListener('click', (event) => {
+      if (event.target === reelModal) closeReelModal();
+    });
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !reelModal.hidden) closeReelModal();
+    });
+  }
+</script>
+<script>
+  (() => {
+    const page = document.querySelector('.entrepreneur-profile-page');
+    if (!page) return;
+    const selectors = {
+      hero: '.entrepreneur-profile-hero',
+      about: '.entrepreneur-about',
+      biography: '.entrepreneur-biography',
+      childhood: '.entrepreneur-childhood',
+      education: '.entrepreneur-education',
+      shorts: '.entrepreneur-shorts',
+      turnover: '.entrepreneur-turnover',
+      more: '.entrepreneur-more',
+      featuredInterview: '.entrepreneur-featured-interview',
+      cta: '.shooting-cta',
+      banner: '.site-banner',
+      interviewList: '#interview-list',
+      articles: '#articles'
+    };
+    const order = <%- JSON.stringify(sectionOrder) %>;
+    order.forEach((key) => {
+      const section = page.querySelector(selectors[key]);
+      if (section) page.appendChild(section);
+    });
+  })();
+</script>

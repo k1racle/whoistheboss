@@ -1,0 +1,14 @@
+<%
+  const footerSocial = typeof social !== 'undefined' ? social : {};
+  const socialItems = [
+    ['telegram', 'TELEGRAM'],
+    ['instagram', 'INSTAGRAM*'],
+    ['vk', 'VK'],
+    ['youtube', 'YOUTUBE'],
+    ['pinterest', 'PINTEREST'],
+    ['dzen', 'DZEN'],
+  ].filter(([key]) => Boolean(footerSocial[key]));
+%>
+<% socialItems.forEach(([key, label]) => { %>
+  <a href="<%= footerSocial[key] %>" target="_blank" rel="noopener"><%= label %></a>
+<% }) %>

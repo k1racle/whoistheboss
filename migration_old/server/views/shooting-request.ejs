@@ -1,0 +1,242 @@
+<%- include('partials/header', {
+  title,
+  description,
+  siteName,
+  siteDescription,
+  transparentHeader: true,
+  hideSiteHeader: true
+}) %>
+<%
+  const shooting = typeof pageSettings !== 'undefined' ? pageSettings : {};
+  const heroLines = (shooting.SHOOTING_PAGE_HERO_TITLE || 'КАК ПРИНЯТЬ\nУЧАСТИЕ')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const aboutTitle = shooting.SHOOTING_PAGE_ABOUT_TITLE || 'О ПРОЕКТЕ';
+  const aboutText = shooting.SHOOTING_PAGE_ABOUT_TEXT || 'Мы рассказываем личные истории предпринимателей через их дело. Показываем честно и без прикрас, кто стоит за компаниями, продуктами и решениями.';
+  const aboutBottomText = shooting.SHOOTING_PAGE_ABOUT_BOTTOM_TEXT || 'Проект помогает увидеть не только успешный бизнес, но и человека, который его создал.';
+  const aboutVideoType = shooting.SHOOTING_PAGE_ABOUT_VIDEO_TYPE || (shooting.SHOOTING_PAGE_ABOUT_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED');
+  const aboutVideo = shooting.SHOOTING_PAGE_ABOUT_VIDEO_FILE || shooting.SHOOTING_PAGE_ABOUT_VIDEO_URL || '';
+  const stagesTitle = shooting.HOME_STAGES_TITLE || 'ЭТАПЫ';
+  const defaultStages = [
+    { index: '01', title: 'Подготовка', subtitle: 'и сбор материалов', eyebrow: '[ как начинается проект ]', description: 'На первом этапе мы знакомимся с героем, изучаем его историю и собираем материалы для будущего выпуска.' },
+    { index: '02', title: 'Съемочный', subtitle: 'процесс', eyebrow: '[ фундамент проекта ]', description: 'Проводим съемку интервью, портретов и дополнительных материалов в согласованной локации.' },
+    { index: '03', title: 'Создание', subtitle: 'материалов', eyebrow: '[ визуализация ]', description: 'После съемок собираем историю, готовим тексты, фотографии и видео для публикации.' },
+    { index: '04', title: 'Публикация', subtitle: 'и продвижение', eyebrow: '[ реализация проекта ]', description: 'Готовый материал выходит на площадках проекта и получает поддержку в наших каналах.' }
+  ];
+  let stageCards = defaultStages;
+  try {
+    const parsedStages = JSON.parse(shooting.HOME_STAGES_JSON || '[]');
+    if (Array.isArray(parsedStages) && parsedStages.length) stageCards = parsedStages;
+  } catch {}
+  const defaultFaq = [
+    { question: 'Кто может стать героем проекта?', answer: 'Предприниматели, руководители и создатели проектов, которым есть что рассказать о своем пути, решениях и опыте.' },
+    { question: 'Как проходит отбор?', answer: 'После заявки команда знакомится с вашей историей и связывается, чтобы обсудить формат и следующие шаги.' },
+    { question: 'Сколько времени занимает участие?', answer: 'Срок зависит от формата материала. Все этапы и даты мы согласуем до начала работы.' }
+  ];
+  let faqItems = defaultFaq;
+  try {
+    const parsedFaq = JSON.parse(shooting.SHOOTING_PAGE_FAQ_JSON || '[]');
+    if (Array.isArray(parsedFaq) && parsedFaq.length) faqItems = parsedFaq;
+  } catch {}
+  const faqTitle = shooting.SHOOTING_PAGE_FAQ_TITLE || 'FAQ';
+  const defaultOrder = ['hero', 'about', 'stages', 'faq', 'cta'];
+  let sectionOrder = defaultOrder;
+  let sectionVisibility = {};
+  try {
+    const parsedOrder = JSON.parse(shooting.SHOOTING_PAGE_SECTION_ORDER || '[]');
+    if (Array.isArray(parsedOrder)) {
+      const valid = parsedOrder.filter((key, index, all) => defaultOrder.includes(key) && all.indexOf(key) === index);
+      sectionOrder = [...valid, ...defaultOrder.filter((key) => !valid.includes(key))];
+    }
+  } catch {}
+  try {
+    const parsedVisibility = JSON.parse(shooting.SHOOTING_PAGE_SECTION_VISIBILITY || '{}');
+    if (parsedVisibility && typeof parsedVisibility === 'object') sectionVisibility = parsedVisibility;
+  } catch {}
+  const sectionClass = (key) => sectionVisibility[key] === false ? ' is-section-hidden' : '';
+  const socialLinks = typeof links !== 'undefined' ? links : {};
+%>
+
+<div class="redesign-page shooting-request-page" data-page-order>
+  <section class="redesign-hero<%= sectionClass('hero') %>" id="top" data-page-section="hero">
+    <header class="home-header">
+      <nav class="home-topbar">
+        <div class="home-topbar__left">
+          <a href="/" class="home-topbar__project-logo" data-header-project-logo aria-label="Кто здесь главный?">
+            <img src="/images/image-29.svg" alt="Кто здесь главный?">
+          </a>
+          <a href="/entrepreneurs" class="home-topbar__link">ПРЕДПРИНИМАТЕЛИ</a>
+          <a href="/companies" class="home-topbar__link">КОМПАНИИ</a>
+          <a href="/blog" class="home-topbar__link">БЛОГ</a>
+        </div>
+        <div class="home-topbar__right">
+          <a href="#about" class="home-topbar__shooting">СЪЕМКИ</a>
+          <a href="/shooting-request" class="home-topbar__cta">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
+        </div>
+      </nav>
+    </header>
+    <div class="hero-copy">
+      <h1><%= heroLines[0] || '' %><% if (heroLines.length > 1) { %><br><em><%= heroLines.slice(1).join(' ') %></em><% } %></h1>
+    </div>
+  </section>
+
+  <section class="about-project redesign-section<%= sectionClass('about') %>" id="about" data-page-section="about">
+    <a href="/" class="section-corner-logo" aria-label="Кто здесь главный?">
+      <img src="/images/image-29.svg" alt="Кто здесь главный?">
+    </a>
+    <div class="about-project__inner">
+      <div class="about-copy">
+        <h2><%= aboutTitle %></h2>
+        <p><%- aboutText.replace(/\r?\n\r?\n/g, '<br><br>').replace(/\r?\n/g, '<br>') %></p>
+        <a class="red-button" href="#stages">КАК ЭТО РАБОТАЕТ <span class="arrow-mark" aria-hidden="true"></span></a>
+      </div>
+      <div class="about-video">
+        <% if (aboutVideo && aboutVideoType === 'EMBED') { %>
+          <iframe src="<%= aboutVideo %>" title="<%= aboutTitle %>" loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <% } else if (aboutVideo) { %>
+          <video src="<%= aboutVideo %>" controls preload="metadata" playsinline></video>
+        <% } else { %>
+          <span class="video-placeholder">Видео появится после загрузки в админке</span>
+        <% } %>
+        <span class="video-play" aria-hidden="true"></span>
+      </div>
+    </div>
+    <p class="about-project__bottom"><%= aboutBottomText %></p>
+  </section>
+
+  <section class="stages redesign-section<%= sectionClass('stages') %>" id="stages" data-page-section="stages">
+    <div class="stages-pin" data-stages-pin>
+      <div class="stages-scene" data-stages-scene>
+        <div class="stages-head">
+          <h2 class="giant-center-title"><%= stagesTitle %></h2>
+        </div>
+        <div class="stages-viewport">
+          <div class="stages-track" data-stages-track>
+            <% stageCards.forEach((stage, index) => { %>
+              <article class="stage-card stage-card--summary" style="--stage-order: <%= index * 2 %>">
+                <span class="card-index">[ <%= stage.index %> ]</span>
+                <strong><%= stage.title %></strong>
+                <small><%= stage.subtitle %></small>
+              </article>
+              <article class="stage-card stage-card--detail" style="--stage-order: <%= index * 2 + 1 %>">
+                <span class="stage-eyebrow"><%= stage.eyebrow %></span>
+                <p><%= stage.description %></p>
+              </article>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shooting-faq<%= sectionClass('faq') %>" id="faq" data-page-section="faq">
+    <div class="shooting-faq__inner">
+      <h2 class="shooting-faq__title"><%= faqTitle %></h2>
+      <div class="shooting-faq__list">
+        <% faqItems.forEach((item, index) => { %>
+          <details class="shooting-faq__item">
+            <summary>
+              <span class="shooting-faq__number">[ <%= String(index + 1).padStart(2, '0') %> ]</span>
+              <strong><%= item.question %></strong>
+              <span class="shooting-faq__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="shooting-faq__answer"><p><%- String(item.answer || '').replace(/\r?\n/g, '<br>') %></p></div>
+          </details>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/shooting-cta', {
+    sectionClass: sectionClass('cta'),
+    dataPageSection: 'cta',
+    redHeaderTheme: true,
+    redirect: '/shooting-request#shooting'
+  }) %>
+</div>
+</main>
+
+<footer class="redesign-footer" id="contacts">
+  <%- include('partials/redesign-mobile-footer', { social: socialLinks, ctaHref: '#top' }) %>
+  <div class="footer-top">
+    <div class="footer-links footer-links--pages">
+      <a href="/companies">КОМПАНИИ</a>
+      <a href="/entrepreneurs">БИОГРАФИИ</a>
+      <a href="/interviews">ИНТЕРВЬЮ</a>
+      <a href="/blog">СТАТЬИ</a>
+      <a href="/blog">БЛОГ</a>
+    </div>
+    <div class="footer-links footer-links--social">
+      <%- include('partials/social-text-links', { social: socialLinks }) %>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-left">
+      <div class="footer-cta-row">
+        <span>ГОТОВЫ</span><span>К</span><span>ОБСУЖДЕНИЮ</span><span>ПРОЕКТА</span><span>?</span>
+      </div>
+      <div class="footer-action">
+        <a class="footer-hero-button" href="#top">СТАТЬ ГЕРОЕМ <span class="arrow-mark" aria-hidden="true"></span></a>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>ИП</span><span>БАТАГОВ А.А.</span><span>TILDA EXPERTS</span><span>ПОЛИТИКА КОНФ-ТИ</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const page = document.querySelector('[data-page-order]');
+  const order = <%- JSON.stringify(sectionOrder) %>;
+  if (page) {
+    order.forEach((key) => {
+      const section = page.querySelector(`[data-page-section="${key}"]`);
+      if (section) page.appendChild(section);
+    });
+  }
+
+  const headerProjectLogo = document.querySelector('[data-header-project-logo]');
+  const sectionProjectLogo = document.querySelector('.section-corner-logo');
+  const headerLeftSlot = document.querySelector('.home-topbar__left');
+  if (headerProjectLogo && sectionProjectLogo && headerLeftSlot) {
+    const updateProjectLogoDock = () => {
+      const shouldDock = sectionProjectLogo.getBoundingClientRect().top <= headerLeftSlot.getBoundingClientRect().top + 6;
+      headerProjectLogo.classList.toggle('is-docked', shouldDock);
+      sectionProjectLogo.classList.toggle('is-docked-away', shouldDock);
+    };
+    updateProjectLogoDock();
+    window.addEventListener('scroll', updateProjectLogoDock, { passive: true });
+    window.addEventListener('resize', updateProjectLogoDock);
+  }
+
+  const stageSection = document.querySelector('#stages');
+  const stagesPin = document.querySelector('[data-stages-pin]');
+  const stagesScene = document.querySelector('[data-stages-scene]');
+  const stageTrack = document.querySelector('[data-stages-track]');
+  if (stageSection && stagesPin && stagesScene && stageTrack) {
+    const updateTrack = () => {
+      const sectionRect = stageSection.getBoundingClientRect();
+      const sectionTop = sectionRect.top + window.scrollY;
+      const sectionBottom = sectionTop + stageSection.offsetHeight;
+      const end = sectionBottom - window.innerHeight;
+      const progress = Math.min(Math.max((window.scrollY - sectionTop) / Math.max(end - sectionTop, 1), 0), 1);
+      const isActive = window.scrollY >= sectionTop + 24 && window.scrollY <= end;
+      const isComplete = window.scrollY > end;
+      stagesScene.classList.toggle('is-fixed', isActive);
+      stagesScene.classList.toggle('is-complete', isComplete);
+      stagesScene.style.transform = isComplete
+        ? `translate3d(0, ${stagesPin.offsetHeight - window.innerHeight}px, 0)`
+        : '';
+      const offset = window.innerWidth + (-Math.max(stageTrack.scrollWidth, 0) - window.innerWidth) * progress;
+      stageTrack.style.transform = `translate3d(${offset}px, 0, 0)`;
+    };
+    updateTrack();
+    window.addEventListener('scroll', updateTrack, { passive: true });
+    window.addEventListener('resize', updateTrack);
+  }
+})();
+</script>
+</body>
+</html>

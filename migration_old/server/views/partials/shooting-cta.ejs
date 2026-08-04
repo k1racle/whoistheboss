@@ -1,0 +1,39 @@
+<%
+  const ctaSectionClass = typeof sectionClass === 'string' ? sectionClass : '';
+  const ctaRedirect = typeof redirect === 'string' ? redirect : '/#shooting';
+  const ctaFormTitleSource = typeof formTitle === 'string' && formTitle.trim()
+    ? formTitle
+    : 'ЗАПОЛНИТЕ ВАШИ ДАННЫЕ\nДЛЯ СВЯЗИ';
+  const ctaFormTitle = ctaFormTitleSource.trim().replace(/[.\s]+$/, '');
+  const ctaDataAttribute = typeof redHeaderTheme !== 'undefined' && redHeaderTheme
+    ? ' data-red-header-theme'
+    : '';
+  const ctaPageSectionAttribute = typeof dataPageSection === 'string' && dataPageSection
+    ? ` data-page-section="${dataPageSection}"`
+    : '';
+%>
+<section class="shooting-cta<%= ctaSectionClass %>" id="shooting"<%- ctaDataAttribute %><%- ctaPageSectionAttribute %>>
+  <div class="shooting-cta__inner">
+    <h2 class="shooting-cta__form-title"><%= ctaFormTitle %></h2>
+
+    <form action="/api/shooting-request" method="POST" class="shooting-form">
+      <input type="hidden" name="redirect" value="<%= ctaRedirect %>">
+      <label>
+        <span>Ваше имя*</span>
+        <input type="text" name="name" autocomplete="name" required>
+      </label>
+      <label>
+        <span>Номер телефона*</span>
+        <input type="tel" name="phone" autocomplete="tel" required>
+      </label>
+      <button type="submit">Отправить</button>
+    </form>
+
+    <div class="shooting-cta__headline" aria-label="Стать участником">
+      <span>СТАТЬ</span>
+      <span>УЧАСТНИКОМ</span>
+    </div>
+
+    <a class="shooting-cta__more" href="/shooting-request">Узнать подробнее</a>
+  </div>
+</section>
