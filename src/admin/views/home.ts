@@ -13,6 +13,8 @@ const homeSections = [
   ['banner', 'Баннер'],
 ] as const;
 
+type HomeSectionKey = typeof homeSections[number][0];
+
 export function homeView(user?: UserInfo | null) {
   const html = layout('Главная', '<div class="admin-loading">Загрузка редактора…</div>', user);
   async function init() {
@@ -275,12 +277,14 @@ function parseObject(value?: string): Record<string, boolean> {
   }
 }
 
-function parseOrder(value?: string): string[] {
-  const defaults = homeSections.map(([key]) => key);
+function parseOrder(value?: string): HomeSectionKey[] {
+  const defaults = homeSections.map(([key]) => key) as HomeSectionKey[];
   try {
     const parsed = JSON.parse(value || '[]');
     if (!Array.isArray(parsed)) return defaults;
-    const valid = parsed.map(String).filter((key, index, values) => defaults.includes(key) && values.indexOf(key) === index);
+    const valid = parsed
+      .map(String)
+      .filter((key, index, values): key is HomeSectionKey => defaults.includes(key as HomeSectionKey) && values.indexOf(key) === index);
     return [...valid, ...defaults.filter((key) => !valid.includes(key))];
   } catch {
     return defaults;

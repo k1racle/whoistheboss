@@ -1,5 +1,5 @@
 import { api, type Business, type Entrepreneur } from '../api.js';
-import { layout, formatDate, escapeHtml, pageAlert, type UserInfo } from './layout.js';
+import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
 import { bindAutoSlug } from '../lib/slug.js';
 

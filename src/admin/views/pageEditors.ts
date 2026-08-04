@@ -218,6 +218,8 @@ function legacyShootingPageView(user?: UserInfo | null) {
   return { html, init };
 }
 
+void legacyShootingPageView;
+
 function pageEditorView(config: PageEditorConfig, user?: UserInfo | null) {
   const html = layout(config.title, '<div class="admin-loading">Загрузка редактора…</div>', user);
   async function init() {
@@ -375,7 +377,9 @@ function renderPopularArticleSelection(settings: Settings, articles: Article[]):
   try {
     const parsed = JSON.parse(settings.BLOG_PAGE_POPULAR_ARTICLE_IDS || '[]');
     if (Array.isArray(parsed)) selectedIds = parsed.map(String).slice(0, 6);
-  } catch {}
+  } catch {
+    selectedIds = [];
+  }
 
   const options = (selectedId = '') => articles
     .filter((article) => article.isPublished || article.id === selectedId)

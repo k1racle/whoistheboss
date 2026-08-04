@@ -12,7 +12,7 @@ function placeholder(width: number, height: number, bg: string, text: string) {
 async function main() {
   const password = await bcrypt.hash(adminPassword, 10);
 
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@guessboss.local' },
     update: {},
     create: {

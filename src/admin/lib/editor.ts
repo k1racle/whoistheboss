@@ -25,7 +25,7 @@ export function initQuill(name: string, content?: string): Quill {
 
   const existing = editors.get(name);
   if (existing && existing.container.isConnected && existing.container === container) {
-    existing.editor.setContents(existing.editor.clipboard.convert(initialContent));
+    existing.editor.setContents(existing.editor.clipboard.convert({ html: initialContent }));
     return existing.editor;
   }
 
@@ -40,7 +40,7 @@ export function initQuill(name: string, content?: string): Quill {
     },
   });
 
-  editor.setContents(editor.clipboard.convert(initialContent));
+  editor.setContents(editor.clipboard.convert({ html: initialContent }));
 
   const toolbar = editor.getModule('toolbar') as {
     addHandler: (name: string, handler: () => void) => void;
@@ -78,6 +78,6 @@ export function getHtml(name: string): string {
 export function setHtml(name: string, content: string) {
   const entry = editors.get(name);
   if (entry && entry.container.isConnected) {
-    entry.editor.setContents(entry.editor.clipboard.convert(content));
+    entry.editor.setContents(entry.editor.clipboard.convert({ html: content }));
   }
 }
