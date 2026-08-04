@@ -5,6 +5,7 @@ import {
   type LandingAudienceCard,
 } from '@features/landing/model/landing.data'
 import { ROUTES } from '@shared/navigation'
+import AudienceCard from '@features/landing/ui/audience/AudienceCard.vue'
 
 const SLOT_POSITIONS = [
   [0, 0],
@@ -21,7 +22,6 @@ const LIGHT_SLOTS = new Set([1, 2, 5, 7])
 const sectionRef = ref<HTMLElement | null>(null)
 const sceneRef = ref<HTMLElement | null>(null)
 const stageRef = ref<HTMLElement | null>(null)
-const mobileTrackRef = ref<HTMLElement | null>(null)
 
 const isDesktop = useMediaQuery('(min-width: 1024px)')
 
@@ -31,7 +31,6 @@ const cards: LandingAudienceCard[] = [...landingAudienceFallback]
 
 const desktopCards = computed(() => cards.slice(0, SLOT_POSITIONS.length))
 
-const activeIndex = ref(0)
 const isPinned = ref(false)
 const isComplete = ref(false)
 const isFinal = ref(false)
@@ -53,7 +52,7 @@ const sceneStyle = computed(() =>
 )
 
 const stageStyle = computed(() => ({
-  '--audience-col-width': '25vw',
+  '--audience-col-width': 'calc((100vw - 80px) / 4)',
   transform: `translate3d(0, ${stageOffset.value}px, 0)`,
 }))
 
@@ -65,11 +64,9 @@ const slotStyle = (index: number) => {
   }
 }
 
-const slotTone = (index: number) => {
+const slotVariant = (index: number): 'light' | 'accent' => {
   const slot = (index % SLOT_POSITIONS.length) + 1
-  return LIGHT_SLOTS.has(slot)
-    ? 'border-border bg-surface/50 text-text hover:bg-accent hover:text-text-on-accent'
-    : 'border-accent bg-accent text-text-on-accent hover:bg-surface/50 hover:text-text'
+  return LIGHT_SLOTS.has(slot) ? 'light' : 'accent'
 }
 
 const updateAudience = () => {
@@ -106,30 +103,16 @@ const scheduleUpdate = () => {
   })
 }
 
-const updateMobileIndex = () => {
-  const track = mobileTrackRef.value
-  if (!track) return
-  const step = track.clientWidth
-  if (!step) return
-  activeIndex.value = Math.min(
-    cards.length - 1,
-    Math.max(0, Math.round(track.scrollLeft / step)),
-  )
-}
-
 onMounted(() => {
   updateAudience()
-  updateMobileIndex()
   window.addEventListener('scroll', scheduleUpdate, { passive: true })
   window.addEventListener('resize', scheduleUpdate)
-  mobileTrackRef.value?.addEventListener('scroll', updateMobileIndex, { passive: true })
 })
 
 onBeforeUnmount(() => {
   if (rafId !== null) window.cancelAnimationFrame(rafId)
   window.removeEventListener('scroll', scheduleUpdate)
   window.removeEventListener('resize', scheduleUpdate)
-  mobileTrackRef.value?.removeEventListener('scroll', updateMobileIndex)
 })
 </script>
 
@@ -157,47 +140,21 @@ onBeforeUnmount(() => {
             </h2>
           </div>
 
-          <div class="space-y-5">
-            <div
-              ref="mobileTrackRef"
-              class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              role="region"
-              aria-label="Карточки аудитории"
-            >
-              <article
-                v-for="card in cards"
-                :key="card.id"
-                class="flex min-w-[85%] snap-center flex-col justify-between border border-border bg-surface p-5"
-              >
-                <h3 class="font-display text-[clamp(2rem,8vw,3rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] text-text">
-                  {{ card.title }}
-                </h3>
-                <p
-                  v-if="card.description"
-                  class="mt-4 font-sans text-sm leading-5 text-text/72"
-                >
-                  {{ card.description }}
-                </p>
-              </article>
-            </div>
-
-            <div
-              class="flex items-center gap-2"
-              aria-hidden="true"
-            >
-              <span
-                v-for="(card, index) in cards"
-                :key="card.id"
-                class="h-1.5 rounded-full bg-border-strong transition-all duration-300"
-                :class="activeIndex === index ? 'w-10 bg-accent' : 'w-4'"
-              />
-            </div>
+          <div class="flex flex-col gap-5">
+          <AudienceCard
+            v-for="(card, index) in cards"
+            :key="card.id"
+            :card="card"
+            :variant="index % 2 === 0 ? 'accent' : 'light'"
+            class="aspect-square w-[85%]"
+            :class="index % 2 === 0 ? 'ml-auto' : 'mr-auto'"
+          />
           </div>
         </div>
 
         <div class="pointer-events-none absolute inset-0 z-0 hidden items-center justify-center lg:flex">
           <h2
-            class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94] tracking-[-0.045em] text-text transition-[opacity,transform] duration-300"
+            class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94]  tracking-[-3%] text-text transition-[opacity,transform] duration-300"
             :class="isFinal ? 'opacity-0 -translate-y-6' : 'opacity-100 translate-y-0'"
           >
             ДЛЯ КОГО
@@ -206,46 +163,18 @@ onBeforeUnmount(() => {
 
         <div
           ref="stageRef"
-          class="absolute inset-x-0 top-0 z-10 hidden h-[150vw] w-full will-change-transform transition-opacity duration-200 lg:block"
+          class="absolute left-10 right-10 top-0 z-10 hidden h-[150vw] will-change-transform transition-opacity duration-200 lg:block"
           :class="isActiveFlow ? 'opacity-100' : 'opacity-0'"
           :style="stageStyle"
         >
-          <article
+          <AudienceCard
             v-for="(card, index) in desktopCards"
             :key="card.id"
-            class="group absolute flex h-[var(--audience-col-width)] w-[var(--audience-col-width)] flex-col justify-between overflow-hidden border p-4 backdrop-blur-[6px] transition-colors duration-300"
-            :class="slotTone(index)"
+            :card="card"
+            :variant="slotVariant(index)"
+            class="absolute aspect-square w-[var(--audience-col-width)]"
             :style="slotStyle(index)"
-          >
-            <span
-              aria-hidden="true"
-              class="pointer-events-none relative z-10 ml-auto block h-7 w-12 shrink-0 bg-current [-webkit-mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat] [mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat]"
-            />
-
-            <div class="absolute inset-4 flex flex-col justify-end transition-[opacity,transform] duration-300 group-hover:-translate-y-2.5 group-hover:opacity-0">
-              <strong class="font-display text-[clamp(2rem,2.8vw,2.8rem)] font-black uppercase leading-[0.88] tracking-[-0.05em]">
-                {{ card.title }}
-              </strong>
-              <small
-                v-if="card.description"
-                class="mt-2 font-sans text-sm leading-5"
-              >
-                {{ card.description }}
-              </small>
-            </div>
-
-            <div class="absolute inset-4 flex translate-y-2.5 flex-col justify-end opacity-0 transition-[opacity,transform] duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-              <strong class="font-display text-base uppercase leading-4">
-                {{ card.hoverTitle ?? card.title }}
-              </strong>
-              <small
-                v-if="card.hoverDescription || card.description"
-                class="mt-2 font-sans text-sm leading-5"
-              >
-                {{ card.hoverDescription ?? card.description }}
-              </small>
-            </div>
-          </article>
+          />
         </div>
 
         <div
@@ -257,7 +186,7 @@ onBeforeUnmount(() => {
           </h2>
           <NuxtLink
             :to="ROUTES.SHOOTING_REQUEST"
-            class="inline-flex min-h-11 items-center justify-center border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text hover:bg-text"
+            class="inline-flex min-h-11 items-center justify-center border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text"
           >
             Стать участником
           </NuxtLink>

@@ -49,8 +49,8 @@ onBeforeUnmount(() => {
       <span
         v-for="index in itemsCount"
         :key="index"
-        class="h-1.5 rounded-full bg-border-strong transition-all duration-300"
-        :class="activeIndex === index - 1 ? 'w-10 bg-accent' : 'w-4'"
+        class="h-1.5 rounded-full transition-all duration-300"
+        :class="activeIndex === index - 1 ? 'w-10 bg-accent' : 'w-4 bg-border-strong'"
       />
     </div>
   </div>

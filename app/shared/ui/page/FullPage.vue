@@ -1,16 +1,15 @@
 <script setup lang="ts">
+
 const props = withDefaults(defineProps<{
   as?: string
   nextLabel?: string
   offsetSelector?: string
   minHeight?: number
-  iconName?: string
 }>(), {
   as: 'section',
   nextLabel: 'Перейти к следующему блоку',
   offsetSelector: 'header',
   minHeight: 560,
-  iconName: 'lucide:chevrons-down',
 })
 
 const rootRef = ref<HTMLElement | null>(null)
@@ -109,25 +108,12 @@ onBeforeUnmount(() => {
   <component
     :is="as"
     ref="rootRef"
-    class="relative flex flex-col justify-between overflow-hidden border-b border-border-strong"
+    class="relative flex flex-col justify-between overflow-hidden"
     :style="sectionStyle"
     @touchend="handleTouchEnd"
     @touchstart.passive="handleTouchStart"
     @wheel="handleWheel"
   >
     <slot />
-
-    <button
-      v-if="nextSection"
-      type="button"
-      class="absolute bottom-5 left-1/2 inline-flex -translate-x-1/2 items-center justify-center rounded-full border border-accent/20 bg-surface/85 p-3 text-accent shadow-[0_12px_28px_rgba(7,7,7,0.08)] backdrop-blur transition-transform hover:translate-y-1/2 hover:scale-105"
-      :aria-label="nextLabel"
-      @click="scrollToNext"
-    >
-      <Icon
-        :name="iconName"
-        class="h-7 w-7 sm:h-8 sm:w-8"
-      />
-    </button>
   </component>
 </template>

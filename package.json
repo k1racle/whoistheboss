@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "dev:site": "nuxt dev --port 3001",
+    "dev:site": "nuxt dev --port 3001 --host 127.0.0.1",
     "generate": "nuxt generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

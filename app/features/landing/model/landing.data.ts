@@ -4,6 +4,7 @@ export type LandingHeroCard = {
   role: string
   company: string
   image: string
+  imageHover: string
   imageAlt: string
 }
 
@@ -15,6 +16,23 @@ export type LandingArticle = {
   entrepreneurName: string | null
 }
 
+export type LandingAudienceCard = {
+  id: string
+  title: string
+  description?: string
+  hoverTitle?: string
+  hoverDescription?: string
+}
+
+export type LandingPlaceCard = {
+  slug: string
+  name: string
+  type: string
+  coverImage: string | null
+  description: string | null
+}
+
+
 export const landingAboutParagraphs = [
   'Мы рассказываем личные истории предпринимателей через их дело. За каждым рестораном, магазином, студией, производством или компанией стоит человек со своим путем, идеями, победами и трудностями. Именно эти истории мы показываем честно и без прикрас.',
   'Наши интервью, биографии, статьи и репортажи помогают увидеть не только успешный бизнес, но и людей, которые стоят за ним. Потому что главное не вывеска, а человек, который ее создал.',
@@ -25,17 +43,11 @@ export const landingHeroesDescription = 'Главные герои проект�
 export const landingFeaturedHero = {
   name: 'Андрей Шевченко',
   role: 'Мидийное место',
-  image: '/uploads/frame-1321315980-1785315691463.jpg',
+  image: '/uploads/frame-1321315980-1785315691463.png',
+  imageHover: undefined,
   imageAlt: 'Промо-баннер с Андреем Шевченко',
 } as const
 
-export type LandingAudienceCard = {
-  id: string
-  title: string
-  description?: string
-  hoverTitle?: string
-  hoverDescription?: string
-}
 
 export const landingAudienceIntro =
   'Мы убеждены, что каждый успешный бизнес начинается с человека. Поэтому рассказываем не только о компаниях и проектах, но прежде всего о людях, которые их создали.'
@@ -57,6 +69,7 @@ export const landingHeroes: LandingHeroCard[] = [
     role: 'Управляющий партнер',
     company: 'Мидийное место',
     image: '/uploads/property-1-default-1784802691081.png',
+    imageHover: '/uploads/property-1-hover-1784802691081.png',
     imageAlt: 'Карточка героя Андрея Шевченко',
   },
   {
@@ -65,6 +78,7 @@ export const landingHeroes: LandingHeroCard[] = [
     role: 'Управляющий партнер',
     company: 'Zanoza Open Bar',
     image: '/uploads/property-1-default-1-1784803027388.png',
+    imageHover: '/uploads/property-1-hover-1-1784803027388.png',
     imageAlt: 'Карточка героя Эленики Кореловой',
   },
   {
@@ -73,6 +87,33 @@ export const landingHeroes: LandingHeroCard[] = [
     role: 'Управляющий партнер',
     company: 'Big Baby Burger',
     image: '/uploads/property-1-default-2-1784803092347.png',
+    imageHover: '/uploads/property-1-hover-2-1784803092347.png',
     imageAlt: 'Карточка героя Вячеслава Морковского',
   },
 ] as const
+
+export const landingPlacesDescription = 'Компании и проекты наших героев: места, бренды и команды, за которыми стоят реальные предпринимательские истории.'
+
+export const landingPlacesFallback: LandingPlaceCard[] = [
+  {
+    slug: 'selderey',
+    name: 'СЕЛЬДЕРЕЙ',
+    type: 'КАФЕ-БАР',
+    coverImage: null,
+    description: 'Салат-бар здоровых привычек в самом центре города',
+  },
+  {
+    slug: 'zanoza-open-bar',
+    name: 'ZANOZA OPEN BAR',
+    type: 'БАР',
+    coverImage: null,
+    description: 'Открытый бар с авторской кухней и атмосферой',
+  },
+  {
+    slug: 'big-baby-burger',
+    name: 'BIG BABY BURGER',
+    type: 'БУРГЕРНАЯ',
+    coverImage: null,
+    description: 'Лучшие бургеры в городе от шеф-повара',
+  },
+]

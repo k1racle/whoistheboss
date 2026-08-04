@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { landingAboutParagraphs } from '@features/landing/model/landing.data'
 import { ROUTES } from '@shared/navigation'
-import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
+import ArrowText from '@shared/ui/icons/ArrowText.vue'
 </script>
 
 <template>
   <section
     id="landing-about-section"
-    class="border-b border-border-strong bg-bg"
+    class="relative bg-bg"
   >
+    <img
+      src="/images/image-29.svg"
+      alt="Кто здесь главный?"
+      class="absolute left-4 top-4 h-9 w-auto sm:left-6 sm:top-6 sm:h-10 lg:left-10 lg:top-16 lg:h-11"
+    >
     <div class="mx-auto flex w-full max-w-[1920px] flex-col gap-10 px-4 py-12 sm:px-6 lg:flex-row lg:gap-12 lg:px-10 lg:py-16">
-      <div class="flex flex-col gap-8 lg:w-1/3">
+      <div class="flex flex-col justify-end gap-8 lg:w-1/3">
         <div class="space-y-6">
-          <img
-            src="/images/image-29.svg"
-            alt="Кто здесь главный?"
-            class="h-8 w-auto"
-          >
 
           <div class="space-y-5">
-            <h2 class="font-display text-[clamp(3rem,6vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-text">
+            <h2 class="font-display text-[clamp(3rem,6vw,5rem)] font-black uppercase leading-[0.9] tracking-[-3%] text-text">
               О проекте
             </h2>
             <div class="space-y-4 font-sans text-sm leading-6 text-text/78">
@@ -35,10 +35,10 @@ import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
 
         <NuxtLink
           :to="ROUTES.SHOOTING_REQUEST"
-          class="inline-flex w-fit min-h-11 items-center justify-center gap-2 border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text hover:bg-text"
+          class="inline-flex w-fit min-h-11 items-center justify-center gap-2 border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text"
         >
           Стать героем
-          <ArrowMark class="h-auto w-auto" />
+          <ArrowText />
         </NuxtLink>
       </div>
 

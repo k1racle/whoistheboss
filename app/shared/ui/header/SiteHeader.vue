@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
 import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
-import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
+import ArrowText from '@shared/ui/icons/ArrowText.vue'
 
 withDefaults(defineProps<{
   logoSrc?: string
@@ -100,10 +100,10 @@ onBeforeUnmount(() => {
       <div class="flex shrink-0 items-center gap-2 sm:gap-3">
         <NuxtLink
           :to="ROUTES.SHOOTING_REQUEST"
-          class="inline-flex min-h-9 items-center justify-center gap-2 bg-accent px-3 py-2 font-sans text-[13px] uppercase leading-4 text-text-on-accent transition-colors hover:bg-text sm:min-h-10 sm:px-4 sm:text-sm lg:text-base"
+          class="inline-flex min-h-9 items-center justify-center gap-2 bg-accent px-3 py-2 font-sans text-[13px] uppercase leading-4 text-text-on-accent transition-colors sm:min-h-10 sm:px-4 sm:text-sm lg:text-base"
         >
           Стать героем
-          <ArrowMark class="max-sm:hidden" />
+          <ArrowText />
         </NuxtLink>
 
         <button

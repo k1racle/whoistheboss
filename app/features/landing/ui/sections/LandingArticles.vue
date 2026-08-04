@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { LandingArticle } from '@features/landing/model/landing.data'
-import LandingArticleCard from '@features/landing/ui/LandingArticle.vue'
+import LandingArticleCard from '@features/landing/ui/LandingArticleCard.vue'
 
 const { data } = await useFetch<{ articles: LandingArticle[] }>('/api/articles/latest')
 
@@ -8,9 +8,9 @@ const articles = computed(() => data.value?.articles ?? [])
 </script>
 
 <template>
-  <section class="border-b border-border-strong bg-bg">
+  <section class="bg-bg">
     <div class="mx-auto w-full max-w-[1920px] px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
-      <h2 class="mb-10 font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88] tracking-[-0.05em] text-text lg:mb-12">
+      <h2 class="mb-10 font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88]  tracking-[-3%] text-text lg:mb-12">
         Главные статьи
       </h2>
 

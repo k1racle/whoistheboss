@@ -2,9 +2,11 @@
 import LandingAboutSection from '@features/landing/ui/sections/LandingAboutSection.vue'
 import LandingArticles from '@features/landing/ui/sections/LandingArticles.vue'
 import LandingAudienceSection from '@features/landing/ui/sections/LandingAudienceSection.vue'
+import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import LandingFeaturedHeroSection from '@features/landing/ui/sections/LandingFeaturedHeroSection.vue'
 import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection.vue'
 import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHeroesSection.vue'
+import LandingPlacesSection from '@features/landing/ui/sections/LandingPlacesSection.vue'
 import { useSiteHeader } from '@shared/ui/header/useSiteHeader'
 
 const { logoVisible } = useSiteHeader()
@@ -12,7 +14,14 @@ logoVisible.value = false
 
 const aboutSectionRef = ref<HTMLElement | null>(null)
 
+const isDesktop = useMediaQuery('(min-width: 1024px)')
+
 const updateHeaderLogoVisibility = () => {
+  if (!isDesktop.value) {
+    logoVisible.value = true
+    return
+  }
+
   const about = aboutSectionRef.value
   if (!about) return
 
@@ -41,7 +50,9 @@ onBeforeUnmount(() => {
     </div>
     <LandingFeaturedHeroSection />
     <LandingOurHeroesSection />
+    <LandingPlacesSection />
     <LandingArticles />
     <LandingAudienceSection />
+    <LandingContactSection />
   </div>
 </template>
