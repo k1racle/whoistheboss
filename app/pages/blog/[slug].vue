@@ -14,13 +14,13 @@ if (error.value || !data.value) {
   throw createError({ statusCode: 404, statusMessage: 'Article not found' })
 }
 
-useSeoMeta(() => ({
-  title: `${data.value?.article.metaTitle || data.value?.article.title || 'Статья'} — ${config.public.siteName}`,
-  description: data.value?.article.metaDesc || data.value?.article.subtitle || config.public.siteDescription,
-  ogTitle: `${data.value?.article.metaTitle || data.value?.article.title || 'Статья'} — ${config.public.siteName}`,
-  ogDescription: data.value?.article.metaDesc || data.value?.article.subtitle || config.public.siteDescription,
+useSeoMeta({
+  title: () => `${data.value?.article.metaTitle || data.value?.article.title || 'Статья'} — ${config.public.siteName}`,
+  description: () => data.value?.article.metaDesc || data.value?.article.subtitle || config.public.siteDescription,
+  ogTitle: () => `${data.value?.article.metaTitle || data.value?.article.title || 'Статья'} — ${config.public.siteName}`,
+  ogDescription: () => data.value?.article.metaDesc || data.value?.article.subtitle || config.public.siteDescription,
   ogType: 'article',
-}))
+})
 </script>
 
 <template>

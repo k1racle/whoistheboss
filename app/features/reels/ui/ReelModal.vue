@@ -2,7 +2,7 @@
 import type { ReelItem } from '@features/reels/model/reel.types'
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 
-defineProps<{
+const props = defineProps<{
   reel: ReelItem | null
 }>()
 
@@ -10,29 +10,46 @@ const emit = defineEmits<{
   close: []
 }>()
 
-watch(
-  () => !!defineModel,
-  () => {},
-)
+const onKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && props.reel) {
+    emit('close')
+  }
+}
+
+onMounted(() => {
+  if (!import.meta.client) {
+    return
+  }
+
+  window.addEventListener('keydown', onKeydown)
+})
+
+onBeforeUnmount(() => {
+  if (!import.meta.client) {
+    return
+  }
+
+  window.removeEventListener('keydown', onKeydown)
+})
 </script>
 
 <template>
   <Teleport to="body">
     <div
       v-if="reel"
-      class="fixed inset-0 z-[60] flex items-center justify-center bg-text/82 px-4 py-6 backdrop-blur-sm"
+      class="fixed inset-0 z-[60] flex items-center justify-center bg-black/72 px-4 py-6 backdrop-blur-sm"
       @click.self="emit('close')"
     >
-      <div class="flex w-full max-w-[460px] flex-col gap-4">
+      <div class="flex w-full max-w-[420px] flex-col gap-4">
         <button
           type="button"
-          class="self-end font-sans text-sm uppercase leading-4 text-text-on-accent transition-colors hover:text-white/70"
+          class="self-end text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:text-white/70"
           @click="emit('close')"
         >
           Закрыть
         </button>
 
-        <div class="overflow-hidden border border-white/20 bg-surface">
+        <div class="overflow-hidden rounded-[28px] shadow-[0_24px_64px_rgba(0,0,0,0.28)]">
           <VideoFrame
             :title="reel.title"
             :video-type="reel.videoType"
@@ -42,15 +59,15 @@ watch(
           />
         </div>
 
-        <div class="border border-white/20 bg-text/18 p-4 text-text-on-accent">
-          <h3 class="font-display text-[clamp(2rem,6vw,3rem)] font-black uppercase leading-[0.94] tracking-[-0.03em]">
+        <div class="rounded-[24px] bg-surface p-5 shadow-[0_18px_40px_rgba(0,0,0,0.18)]">
+          <h3 class="text-2xl font-bold leading-tight tracking-tight text-text">
             {{ reel.title }}
           </h3>
           <p
             v-if="reel.entrepreneur?.name"
-            class="mt-2 font-sans text-sm uppercase leading-5 text-text-on-accent/78"
+            class="mt-2 text-sm font-medium uppercase tracking-[0.12em] text-text/44"
           >
-            {{ reel.entrepreneur.name }}<span v-if="reel.entrepreneur.title"> · {{ reel.entrepreneur.title }}</span>
+            {{ reel.entrepreneur.name }}<span v-if="reel.entrepreneur.title"> • {{ reel.entrepreneur.title }}</span>
           </p>
         </div>
       </div>

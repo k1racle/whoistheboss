@@ -101,17 +101,17 @@ function parseMoreItems(titlesRaw: string | null | undefined, linksRaw: string |
     'Интервью героев',
     'Читать блог',
     'Стать участником\nпроекта',
-  ]
+  ] as const
   const fallbackLinks = [
     ROUTES.COMPANIES,
     ROUTES.INTERVIEWS,
     ROUTES.BLOG,
     ROUTES.SHOOTING_REQUEST,
-  ]
+  ] as const
 
   return Array.from({ length: 4 }, (_, index) => ({
-    title: titles[index] || fallbackTitles[index],
-    href: links[index] || fallbackLinks[index],
+    title: titles[index] || fallbackTitles[index] || '',
+    href: links[index] || fallbackLinks[index] || ROUTES.COMPANIES,
   }))
 }
 
@@ -120,7 +120,7 @@ function extractMapSrc(raw: string | null | undefined): string {
   if (!value) return ''
 
   const srcMatch = value.match(/src\s*=\s*["']([^"']+)["']/i)
-  const candidate = (srcMatch ? srcMatch[1] : value).replace(/&amp;/g, '&')
+  const candidate = (srcMatch?.[1] ?? value).replace(/&amp;/g, '&')
 
   return /^https:\/\/([a-z0-9-]+\.)*yandex\.(ru|com)\//i.test(candidate) ? candidate : ''
 }
@@ -217,7 +217,7 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
     type: business.type,
     description: plainDescription || null,
     heroTitleTop: nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : business.name,
-    heroTitleBottom: nameParts.length > 1 ? nameParts[nameParts.length - 1] : '',
+    heroTitleBottom: nameParts.length > 1 ? (nameParts[nameParts.length - 1] || '') : '',
     heroTeaser: business.heroTeaser || business.type,
     heroMarquee: business.heroMarquee || `${business.name} • ${business.type} • История компании`,
     manifestTitle: business.manifestTitle || 'Эксперимент, который сработал',

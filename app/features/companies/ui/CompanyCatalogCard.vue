@@ -2,8 +2,6 @@
 import type { CompanyCatalogItem } from '@features/companies/model/companies-page.types'
 import { ROUTES } from '@shared/navigation'
 
-
-// TODO исправть стрелку на корректный компонент
 defineProps<{
   company: CompanyCatalogItem
 }>()
@@ -12,26 +10,41 @@ defineProps<{
 <template>
   <NuxtLink
     :to="ROUTES.COMPANY(company.slug)"
-    class="group overflow-hidden border border-border-strong bg-surface transition-transform duration-300 hover:-translate-y-1"
+    class="group flex h-full flex-col overflow-hidden rounded-[28px] border border-black/10 bg-surface shadow-[0_24px_64px_rgba(7,7,7,0.06)] transition-transform duration-300 hover:-translate-y-1"
   >
-    <div class="relative aspect-[4/5] overflow-hidden bg-bg">
-      <img
-        :src="company.coverImage || '/images/placeholder.svg'"
-        :alt="company.name"
-        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-      >
-      <div class="absolute inset-0 bg-linear-to-t from-text/75 via-transparent to-transparent" />
-      <h2 class="absolute bottom-5 left-5 right-5 font-display text-[clamp(2rem,5vw,3.4rem)] font-black uppercase leading-[0.94] tracking-[-0.03em] text-text-on-accent">
+    <div class="flex flex-1 flex-col p-6 sm:p-7">
+      <h2 class="font-display text-[clamp(2.2rem,5vw,3.6rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] text-text">
         {{ company.name }}
       </h2>
+
+      <div class="mt-6 overflow-hidden rounded-[24px] bg-[#f1f1ec]">
+        <img
+          :src="company.coverImage || '/images/placeholder.svg'"
+          :alt="company.name"
+          class="aspect-[4/3] h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+        >
+      </div>
     </div>
 
-    <div class="flex items-center justify-between gap-4 border-t border-border-strong px-5 py-4">
-      <p class="font-sans text-sm uppercase leading-5 text-text-muted">
+    <div class="flex items-center justify-between gap-4 border-t border-black/10 px-6 py-4">
+      <p class="text-sm font-medium uppercase tracking-[0.12em] text-text/46">
         {{ company.type }}
       </p>
-      <span class="font-sans text-sm uppercase leading-4 text-accent">
-        [ ↗ ]
+
+      <span class="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-text-on-accent transition-transform duration-300 group-hover:scale-110">
+        <svg
+          class="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 17 17 7M9 7h8v8"
+          />
+        </svg>
       </span>
     </div>
   </NuxtLink>

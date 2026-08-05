@@ -17,13 +17,13 @@ if (error.value || !data.value) {
 const success = computed(() => route.query.success === '1')
 const errorFlag = computed(() => route.query.error === '1')
 
-useSeoMeta(() => ({
-  title: `${data.value?.name || 'Предприниматель'} — ${config.public.siteName}`,
-  description: data.value?.quote || data.value?.title || config.public.siteDescription,
-  ogTitle: `${data.value?.name || 'Предприниматель'} — ${config.public.siteName}`,
-  ogDescription: data.value?.quote || data.value?.title || config.public.siteDescription,
+useSeoMeta({
+  title: () => `${data.value?.name || 'Предприниматель'} — ${config.public.siteName}`,
+  description: () => data.value?.quote || data.value?.title || config.public.siteDescription,
+  ogTitle: () => `${data.value?.name || 'Предприниматель'} — ${config.public.siteName}`,
+  ogDescription: () => data.value?.quote || data.value?.title || config.public.siteDescription,
   ogType: 'profile',
-}))
+})
 </script>
 
 <template>

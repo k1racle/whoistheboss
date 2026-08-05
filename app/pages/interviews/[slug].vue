@@ -14,13 +14,13 @@ if (error.value || !data.value) {
   throw createError({ statusCode: 404, statusMessage: 'Interview not found' })
 }
 
-useSeoMeta(() => ({
-  title: `${data.value?.interview.metaTitle || data.value?.interview.title || 'Интервью'} — ${config.public.siteName}`,
-  description: data.value?.interview.metaDesc || data.value?.interview.summary || config.public.siteDescription,
-  ogTitle: `${data.value?.interview.metaTitle || data.value?.interview.title || 'Интервью'} — ${config.public.siteName}`,
-  ogDescription: data.value?.interview.metaDesc || data.value?.interview.summary || config.public.siteDescription,
+useSeoMeta({
+  title: () => `${data.value?.interview.metaTitle || data.value?.interview.title || 'Интервью'} — ${config.public.siteName}`,
+  description: () => data.value?.interview.metaDesc || data.value?.interview.summary || config.public.siteDescription,
+  ogTitle: () => `${data.value?.interview.metaTitle || data.value?.interview.title || 'Интервью'} — ${config.public.siteName}`,
+  ogDescription: () => data.value?.interview.metaDesc || data.value?.interview.summary || config.public.siteDescription,
   ogType: 'video.other',
-}))
+})
 </script>
 
 <template>

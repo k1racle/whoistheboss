@@ -49,17 +49,17 @@ function parseMoreItems(titlesRaw: string | null | undefined, linksRaw: string |
     'Смотреть интервью',
     'Читать блог',
     'Стать участником\nпроекта',
-  ]
+  ] as const
   const fallbackLinks = [
     ROUTES.COMPANIES,
     ROUTES.INTERVIEWS,
     ROUTES.BLOG,
     ROUTES.SHOOTING_REQUEST,
-  ]
+  ] as const
 
   return Array.from({ length: 4 }, (_, index) => ({
-    title: titles[index] || fallbackTitles[index],
-    href: links[index] || fallbackLinks[index],
+    title: titles[index] || fallbackTitles[index] || '',
+    href: links[index] || fallbackLinks[index] || ROUTES.ENTREPRENEURS,
   }))
 }
 
@@ -141,7 +141,7 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     'Первые успехи в бизнесе',
     'Миссия и масштаб',
     'Контакты и материалы',
-  ]
+  ] as const
   const defaultDescriptions = [
     'Краткая информация и навигация по странице героя.',
     'Детство, интересы и обстоятельства, которые сформировали взгляд на дело.',
@@ -149,7 +149,7 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     'Решения, которые привели к первым заметным результатам.',
     'Подход к масштабу, продукту и развитию.',
     'Разделы со статьями, интервью и дополнительными материалами.',
-  ]
+  ] as const
   const menuLinks = ['#biography', '#childhood', '#education', '#turnover', '#articles', '#contacts']
   const menuSectionKeys = ['biography', 'childhood', 'education', 'turnover', 'articles', null]
   const customLabels = (entrepreneur.aboutMenuLabels || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean)
@@ -158,8 +158,8 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
   const aboutMenuItems = menuLinks
     .map((href, index) => ({
       href,
-      label: customLabels[index] || defaultLabels[index],
-      note: customDescriptions[index] || defaultDescriptions[index],
+      label: customLabels[index] || defaultLabels[index] || '',
+      note: customDescriptions[index] || defaultDescriptions[index] || '',
       sectionKey: menuSectionKeys[index],
     }))
     .filter((item) => !item.sectionKey || sectionVisibility[item.sectionKey] !== false)
