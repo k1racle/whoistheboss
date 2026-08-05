@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { landingAboutParagraphs } from '@features/landing/model/landing.data'
 import { ROUTES } from '@shared/navigation'
 import ArrowText from '@shared/ui/icons/ArrowText.vue'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 
+const props = defineProps<{
+  title: string
+  text: string
+}>()
+
 const logoRef = ref<HTMLElement | null>(null)
 
 defineExpose({ logoRef })
+
+const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
 </script>
 
 <template>
@@ -16,7 +22,7 @@ defineExpose({ logoRef })
   >
     <span
       ref="logoRef"
-      class="absolute left-4 top-4 sm:left-6 sm:top-6 lg:left-10 lg:top-16 hidden sm:block"
+      class="absolute left-4 top-4 sm:left-6 sm:top-6 lg:left-10 lg:top-16 hidden xl:block"
     >
       <SiteLogo />
     </span>
@@ -26,11 +32,11 @@ defineExpose({ logoRef })
 
           <div class="space-y-5">
             <h2 class="font-display text-[clamp(3rem,6vw,5rem)] font-black uppercase leading-[0.9] tracking-[-3%] text-text">
-              О проекте
+              {{ title }}
             </h2>
             <div class="space-y-4 font-sans text-sm leading-6 text-text/78">
               <p
-                v-for="paragraph in landingAboutParagraphs"
+                v-for="paragraph in paragraphs"
                 :key="paragraph"
               >
                 {{ paragraph }}

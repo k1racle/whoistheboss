@@ -2,6 +2,10 @@
 import type { LandingArticle } from '@features/landing/model/landing.data'
 import LandingArticleCard from '@features/landing/ui/LandingArticleCard.vue'
 
+defineProps<{
+  title: string
+}>()
+
 const { data } = await useFetch<{ articles: LandingArticle[] }>('/api/articles/latest')
 
 const articles = computed(() => data.value?.articles ?? [])
@@ -11,7 +15,7 @@ const articles = computed(() => data.value?.articles ?? [])
   <section class="bg-bg">
     <div class="mx-auto w-full max-w-[1920px]">
       <h2 class="mb-10 px-4 pt-12 font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88]  tracking-[-3%] text-text sm:px-6 lg:mb-12 lg:px-10 lg:pt-16">
-        Главные статьи
+        {{ title }}
       </h2>
 
       <div class="border border-border-strong bg-surface">

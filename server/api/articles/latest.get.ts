@@ -32,6 +32,7 @@ export default defineEventHandler(async (event) => {
       title: article.title,
       subtitle: article.subtitle,
       entrepreneurName: article.entrepreneur?.name ?? null,
+      coverImage: article.coverImage,
     })),
   }
 })

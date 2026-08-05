@@ -2,10 +2,19 @@
 import { ROUTES } from '@shared/navigation'
 import InputBasic from '@shared/ui/forms/InputBasic.vue'
 
+const props = defineProps<{
+  ctaTitle: string
+  formTitle: string
+  formDescription: string
+}>()
+
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
 const form = reactive({ name: '', phone: '' })
 const status = ref<FormStatus>('idle')
+
+const formTitleLines = computed(() => props.formTitle.split('\n'))
+const mobileFormTitle = computed(() => props.formTitle.replace(/\n/g, ' '))
 
 const canSubmit = computed(
   () => form.name.trim().length >= 2 && form.phone.trim().length >= 5,
@@ -35,13 +44,16 @@ const onSubmit = async () => {
     class="relative isolate overflow-hidden bg-accent text-text-on-accent"
   >
     <div class="flex min-h-[600px] flex-col px-6 pb-12 pt-7 lg:hidden">
-      <h2 class="font-display text-[66px] font-black uppercase leading-[66px] tracking-[-0.03em]">
+      <h2 class="font-display text-[clamp(66px,16vw,110px)] font-black uppercase leading-none tracking-[-0.03em]">
         Стать
         <br>
         участником
       </h2>
       <p class="mt-2 font-sans text-[15.82px] font-bold uppercase leading-[13.84px]">
-        Заполните ваши данные для связи
+        {{ mobileFormTitle }}
+      </p>
+      <p class="mt-1 font-sans text-xs leading-5 text-text-on-accent/80">
+        {{ formDescription }}
       </p>
 
       <form
@@ -103,9 +115,13 @@ const onSubmit = async () => {
     <div class="mx-auto hidden w-full max-w-[1920px] flex-col gap-14 px-10 pb-10 pt-10 lg:flex lg:min-h-[888px] lg:justify-between lg:gap-0">
       <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
         <h2 class="max-w-[520px] font-sans text-[26px] font-bold uppercase leading-8 tracking-[-0.04em] lg:text-[32px]">
-          Заполните ваши данные
-          <br>
-          для связи
+          <span
+            v-for="(line, index) in formTitleLines"
+            :key="index"
+            class="block"
+          >
+            {{ line }}
+          </span>
         </h2>
 
         <form
@@ -158,11 +174,10 @@ const onSubmit = async () => {
 
       <div class="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
         <p
-          class="font-display text-[clamp(4.25rem,20vw,13.62rem)] font-black uppercase leading-[0.78] tracking-[-0.03em]"
+          class="font-display text-[clamp(4.25rem,20vw,13.62rem)] font-black uppercase leading-[0.78] tracking-[-0.03em] whitespace-pre-line"
           aria-label="Стать участником"
         >
-          <span class="block">Стать</span>
-          <span class="block">участником</span>
+          {{ ctaTitle }}
         </p>
 
         <NuxtLink

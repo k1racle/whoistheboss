@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { LandingPageData } from '@features/landing/model/landing.data'
 import LandingAboutSection from '@features/landing/ui/sections/LandingAboutSection.vue'
 import LandingArticles from '@features/landing/ui/sections/LandingArticles.vue'
 import LandingAudienceSection from '@features/landing/ui/sections/LandingAudienceSection.vue'
@@ -8,6 +9,10 @@ import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection
 import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHeroesSection.vue'
 import LandingPlacesSection from '@features/landing/ui/sections/LandingPlacesSection.vue'
 import { useSiteHeader } from '@shared/ui/header/useSiteHeader'
+
+defineProps<{
+  page: LandingPageData
+}>()
 
 const { logoVisible } = useSiteHeader()
 
@@ -38,13 +43,34 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="flex flex-col">
-    <LandingHeroSection />
-    <LandingAboutSection ref="aboutSectionRef" />
-    <LandingFeaturedHeroSection />
-    <LandingOurHeroesSection />
-    <LandingPlacesSection />
-    <LandingArticles />
-    <LandingAudienceSection />
-    <LandingContactSection />
+    <LandingHeroSection :title="page.heroTitle" />
+    <LandingAboutSection
+      ref="aboutSectionRef"
+      :title="page.aboutTitle"
+      :text="page.aboutText"
+    />
+    <LandingFeaturedHeroSection
+      :image="page.bannerImage"
+      :mobile-image="page.bannerMobileImage"
+      :link="page.bannerLink"
+    />
+    <LandingOurHeroesSection
+      :title="page.heroesTitle"
+      :description="page.heroesText"
+    />
+    <LandingPlacesSection
+      :title="page.placesTitle"
+      :description="page.placesText"
+    />
+    <LandingArticles :title="page.latestNewsTitle" />
+    <LandingAudienceSection
+      :title="page.audienceTitle"
+      :intro="page.aboutBottomText"
+    />
+    <LandingContactSection
+      :cta-title="page.ctaTitle"
+      :form-title="page.ctaFormTitle"
+      :form-description="page.ctaFormDescription"
+    />
   </div>
 </template>

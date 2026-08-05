@@ -14,6 +14,7 @@ export type LandingArticle = {
   title: string
   subtitle: string | null
   entrepreneurName: string | null
+  coverImage: string | null
 }
 
 export type LandingAudienceCard = {
@@ -38,7 +39,7 @@ export const landingAboutParagraphs = [
   'Наши интервью, биографии, статьи и репортажи помогают увидеть не только успешный бизнес, но и людей, которые стоят за ним. Потому что главное не вывеска, а человек, который ее создал.',
 ] as const
 
-export const landingHeroesDescription = 'Главные герои проекта — предприниматели, которые своим трудом, идеями и решениями создают бизнес и меняют окружение. Мы знакомим с людьми, которые стоят за компаниями, пространствами и сильными локальными брендами.'
+export const landingHeroesDescription = 'Главные герои проекта — предприниматели, которые своим трудом, идеями и решениями создают бизнес и меняют окружающий мир. У каждого из них свой путь, свои ценности и своя история. Мы знакомим вас с людьми, которые стоят за известными компаниями, предприятиями, ресторанами, магазинами и другими успешными проектами.'
 
 export const landingFeaturedHero = {
   name: 'Андрей Шевченко',
@@ -47,6 +48,25 @@ export const landingFeaturedHero = {
   imageHover: undefined,
   imageAlt: 'Промо-баннер с Андреем Шевченко',
 } as const
+
+export type LandingPageData = {
+  heroTitle: string
+  aboutTitle: string
+  aboutText: string
+  aboutBottomText: string
+  audienceTitle: string
+  heroesTitle: string
+  heroesText: string
+  placesTitle: string
+  placesText: string
+  latestNewsTitle: string
+  ctaTitle: string
+  ctaFormTitle: string
+  ctaFormDescription: string
+  bannerImage: string
+  bannerMobileImage: string
+  bannerLink: string
+}
 
 
 export const landingAudienceIntro =
@@ -93,3 +113,22 @@ export const landingHeroes: LandingHeroCard[] = [
 ] as const
 
 export const landingPlacesDescription = 'Компании и проекты наших героев: места, бренды и команды, за которыми стоят реальные предпринимательские истории.'
+
+export const landingPageFallback: LandingPageData = {
+  heroTitle: 'Кто здесь\nглавный?',
+  aboutTitle: 'О проекте',
+  aboutText: landingAboutParagraphs.join('\n\n'),
+  aboutBottomText: landingAudienceIntro,
+  audienceTitle: 'ДЛЯ\nКОГО',
+  heroesTitle: 'Наши герои',
+  heroesText: landingHeroesDescription,
+  placesTitle: 'Места',
+  placesText: landingPlacesDescription,
+  latestNewsTitle: 'Главные статьи',
+  ctaTitle: 'Стать\nучастником',
+  ctaFormTitle: 'Заполните ваши данные\nдля связи',
+  ctaFormDescription: 'Отправьте нам заявку и мы перезвоним.',
+  bannerImage: landingFeaturedHero.image,
+  bannerMobileImage: '',
+  bannerLink: '/entrepreneurs',
+}

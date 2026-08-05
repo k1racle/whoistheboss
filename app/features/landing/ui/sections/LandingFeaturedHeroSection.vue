@@ -1,30 +1,48 @@
 <script setup lang="ts">
 import { landingFeaturedHero } from '@features/landing/model/landing.data'
-import { ROUTES } from '@shared/navigation'
 
-const hoverSrc = landingFeaturedHero.imageHover || landingFeaturedHero.image
+defineProps<{
+  image: string
+  mobileImage?: string
+  link: string
+}>()
 </script>
 
 <template>
   <section class="bg-bg">
     <div class="mx-auto w-full max-w-[1920px] px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
       <NuxtLink
-        :to="ROUTES.ENTREPRENEURS"
-        class="group block overflow-hidden border border-accent/20 bg-accent shadow-[0_30px_80px_rgba(219,42,0,0.18)] transition-transform duration-300 hover:-translate-y-1"
+        :to="link"
+        class="group block overflow-hidden border border-accent/20 bg-accent shadow-[0_30px_80px_rgba(219,42,0,0.18)]"
+        :aria-label="`Открыть материал баннера: ${landingFeaturedHero.name}`"
       >
-        <div class="grid">
+        <picture v-if="image">
+          <source
+            v-if="mobileImage"
+            media="(max-width: 768px)"
+            :srcset="mobileImage"
+          >
           <NuxtImg
-            :src="landingFeaturedHero.image"
+            :src="image"
             :alt="landingFeaturedHero.imageAlt"
-            class="col-start-1 row-start-1 h-full w-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+            class="h-full w-full object-cover"
             densities="x1 x2"
           />
-          <NuxtImg
-            :src="hoverSrc"
-            :alt="landingFeaturedHero.imageAlt"
-            class="col-start-1 row-start-1 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-            densities="x1 x2"
-          />
+        </picture>
+
+        <div
+          v-else
+          class="flex min-h-[280px] items-center justify-center bg-text px-8 py-12 text-center sm:min-h-[340px]"
+        >
+          <p class="font-display text-[clamp(2rem,7vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] text-text-on-accent whitespace-pre-line">
+            Здесь будет
+            <br>
+            баннер для
+            <br>
+            выпуска с
+            <br>
+            новым героем
+          </p>
         </div>
       </NuxtLink>
     </div>

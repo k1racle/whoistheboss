@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { landingHeroes, landingHeroesDescription } from '@features/landing/model/landing.data'
+import { landingHeroes } from '@features/landing/model/landing.data'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
 import SlideImage from '@features/landing/ui/slider/SlideImage.vue'
 import ArrowText from '@shared/ui/icons/ArrowText.vue'
 import { ROUTES } from '@shared/navigation'
+
+defineProps<{
+  title: string
+  description: string
+}>()
 </script>
 
 <template>
@@ -12,10 +17,10 @@ import { ROUTES } from '@shared/navigation'
       <div class="mb-8 flex flex-col gap-5 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
         <div class="max-w-[980px] space-y-4">
           <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88]  tracking-[-3%] text-text">
-            Наши герои
+            {{ title }}
           </h2>
           <p class="max-w-[860px] font-sans text-sm leading-6 text-text/78 sm:text-base">
-            {{ landingHeroesDescription }}
+            {{ description }}
           </p>
         </div>
 

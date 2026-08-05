@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import type { LandingPlaceCard } from '@features/landing/model/landing.data'
-import { landingPlacesDescription } from '@features/landing/model/landing.data'
 import LandingPlaceCardComponent from '@features/landing/ui/sections/components/LandingPlaceCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
 import ArrowText from '@shared/ui/icons/ArrowText.vue'
 import { ROUTES } from '@shared/navigation'
+
+defineProps<{
+  title: string
+  description: string
+}>()
 
 const { data } = await useFetch<{ businesses: LandingPlaceCard[] }>('/api/businesses')
 
@@ -17,10 +21,10 @@ const places = computed(() => data.value?.businesses ?? [])
       <div class="mb-8 flex flex-col gap-5 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
         <div class="max-w-[980px] space-y-4">
           <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88] tracking-[-3%] text-text">
-            Места
+            {{ title }}
           </h2>
           <p class="max-w-[860px] font-sans text-sm leading-6 text-text/78 sm:text-base">
-            {{ landingPlacesDescription }}
+            {{ description }}
           </p>
         </div>
 

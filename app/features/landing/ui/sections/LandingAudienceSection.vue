@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import {
   landingAudienceFallback,
-  landingAudienceIntro,
   type LandingAudienceCard,
 } from '@features/landing/model/landing.data'
 import { ROUTES } from '@shared/navigation'
 import AudienceCard from '@features/landing/ui/audience/AudienceCard.vue'
+
+const props = defineProps<{
+  title: string
+  intro: string
+}>()
+
+const titleLines = computed(() => props.title.split('\n'))
+const desktopTitle = computed(() => props.title.replace(/\n/g, ' '))
 
 const SLOT_POSITIONS = [
   [0, 0],
@@ -56,7 +63,8 @@ const sceneStyle = computed(() =>
 const stageStyle = computed(() =>
   isDesktop.value
     ? {
-        '--audience-col-width': 'calc((100vw - 80px) / 4)',
+        gridTemplateColumns: 'repeat(4, 25vw)',
+        gridAutoRows: '25vw',
         transform: `translate3d(0, ${stageOffset.value}px, 0)`,
       }
     : {},
@@ -65,8 +73,8 @@ const stageStyle = computed(() =>
 const slotStyle = (index: number) => {
   const [column, row] = SLOT_POSITIONS[index % SLOT_POSITIONS.length]!
   return {
-    left: `calc(var(--audience-col-width) * ${column})`,
-    top: `calc(var(--audience-col-width) * ${row})`,
+    gridColumn: `${column + 1} / ${column + 2}`,
+    gridRow: `${row + 1} / ${row + 2}`,
   }
 }
 
@@ -103,7 +111,7 @@ const updateAudience = () => {
   isPinned.value = active
   isComplete.value = complete
   isActiveFlow.value = active || complete
-  isFinal.value = progress >= 0.94
+  isFinal.value = progress >= 0.98
   sceneOffset.value = section.offsetHeight - viewportHeight
   stageOffset.value = viewportHeight - (stage.offsetHeight + viewportHeight) * progress
 }
@@ -134,7 +142,7 @@ onBeforeUnmount(() => {
   <section
     id="for-whom"
     ref="sectionRef"
-    class="relative bg-bg lg:min-h-[260vh]"
+    class="relative bg-bg lg:min-h-[320vh]"
   >
     <div class="relative lg:h-screen lg:min-h-screen">
       <div
@@ -146,11 +154,15 @@ onBeforeUnmount(() => {
         <div class="mx-auto flex w-full max-w-[1920px] flex-col gap-10 px-4 py-14 sm:px-6 lg:hidden">
           <div class="max-w-[620px] space-y-8">
             <p class="font-sans text-sm leading-6 text-text/78 sm:text-base">
-              {{ landingAudienceIntro }}
+              {{ intro }}
             </p>
             <h2 class="mx-auto flex w-fit flex-col items-center text-center font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text">
-              <span>ДЛЯ</span>
-              <span>КОГО</span>
+              <span
+                v-for="line in titleLines"
+                :key="line"
+              >
+                {{ line }}
+              </span>
             </h2>
           </div>
 
@@ -171,13 +183,13 @@ onBeforeUnmount(() => {
             class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94]  tracking-[-3%] text-text transition-[opacity,transform] duration-300"
             :class="isFinal ? 'opacity-0 -translate-y-6' : 'opacity-100 translate-y-0'"
           >
-            ДЛЯ КОГО
+            {{ desktopTitle }}
           </h2>
         </div>
 
         <div
           ref="stageRef"
-          class="absolute left-10 right-10 top-0 z-10 hidden h-[150vw] will-change-transform transition-opacity duration-200 lg:block"
+          class="absolute inset-x-0 top-0 z-10 hidden h-[150vw] will-change-transform transition-opacity duration-200 lg:grid"
           :class="isActiveFlow ? 'opacity-100' : 'opacity-0'"
           :style="stageStyle"
         >
@@ -186,7 +198,7 @@ onBeforeUnmount(() => {
             :key="card.id"
             :card="card"
             :variant="slotVariant(index)"
-            class="absolute aspect-square w-[var(--audience-col-width)]"
+            class="h-full w-full"
             :style="slotStyle(index)"
           />
         </div>
