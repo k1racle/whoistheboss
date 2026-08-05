@@ -16,7 +16,7 @@ const phone = defineModel<string>('phone', { required: true })
 
 <template>
   <form
-    class="flex w-full flex-col lg:w-[471px] lg:shrink-0 xl:h-full"
+    class="flex w-full flex-col lg:w-[471px] lg:shrink-0"
     :aria-busy="status === 'loading'"
     @submit.prevent="emit('submit')"
   >

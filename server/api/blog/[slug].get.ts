@@ -127,6 +127,36 @@ export default defineEventHandler(async (event): Promise<BlogArticleDetailRespon
 
   const entrepreneurMap = new Map(selectedEntrepreneurs.map((item) => [item.id, item]))
   const businessMap = new Map(selectedBusinesses.map((item) => [item.id, item]))
+  const relatedMaterials: BlogArticleDetailResponse['relatedMaterials'] = []
+
+  selections.forEach((selection) => {
+    if (selection.type === 'entrepreneur') {
+      const relatedEntrepreneur = entrepreneurMap.get(selection.id)
+      if (!relatedEntrepreneur) return
+
+      relatedMaterials.push({
+        type: 'entrepreneur' as const,
+        slug: relatedEntrepreneur.slug,
+        name: relatedEntrepreneur.name,
+        title: relatedEntrepreneur.title,
+        coverImage: relatedEntrepreneur.photo,
+        hoverPhoto: relatedEntrepreneur.hoverPhoto,
+      })
+      return
+    }
+
+    const relatedBusiness = businessMap.get(selection.id)
+    if (!relatedBusiness) return
+
+    relatedMaterials.push({
+      type: 'business' as const,
+      slug: relatedBusiness.slug,
+      name: relatedBusiness.name,
+      title: relatedBusiness.type,
+      coverImage: relatedBusiness.coverImage,
+      hoverPhoto: null,
+    })
+  })
 
   return {
     article: {
@@ -140,33 +170,7 @@ export default defineEventHandler(async (event): Promise<BlogArticleDetailRespon
       sectionOrder: parseSectionOrder(article.sectionOrder, DEFAULT_SECTION_ORDER),
       sectionVisibility: parseSectionVisibility(article.sectionVisibility),
     },
-    relatedMaterials: selections.flatMap((selection) => {
-      if (selection.type === 'entrepreneur') {
-        const relatedEntrepreneur = entrepreneurMap.get(selection.id)
-        if (!relatedEntrepreneur) return []
-
-        return [{
-          type: 'entrepreneur' as const,
-          slug: relatedEntrepreneur.slug,
-          name: relatedEntrepreneur.name,
-          title: relatedEntrepreneur.title,
-          coverImage: relatedEntrepreneur.photo,
-          hoverPhoto: relatedEntrepreneur.hoverPhoto,
-        }]
-      }
-
-      const relatedBusiness = businessMap.get(selection.id)
-      if (!relatedBusiness) return []
-
-      return [{
-        type: 'business' as const,
-        slug: relatedBusiness.slug,
-        name: relatedBusiness.name,
-        title: relatedBusiness.type,
-        coverImage: relatedBusiness.coverImage,
-        hoverPhoto: null,
-      }]
-    }),
+    relatedMaterials,
     latestArticles: latestArticles.map(mapArticleSummary),
     bannerImage: getSiteSetting(settings, 'HOME_BANNER_IMAGE'),
     bannerMobileImage: getSiteSetting(settings, 'HOME_BANNER_MOBILE_IMAGE'),
