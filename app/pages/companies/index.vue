@@ -1,0 +1,47 @@
+<script setup lang="ts">
+import type { CompaniesPageData } from '@features/companies/model/companies-page.types'
+import CompaniesPage from '@features/companies/ui/CompaniesPage.vue'
+
+const route = useRoute()
+const config = useRuntimeConfig()
+
+const fallbackPage: CompaniesPageData = {
+  heroTitle: 'ГЛАВНЫЕ\nКОМПАНИИ',
+  aboutTitle: 'О ПРОЕКТЕ',
+  aboutText: 'Мы рассказываем личные истории предпринимателей через их дело.',
+  companies: [],
+  bannerImage: '',
+  bannerMobileImage: '',
+  bannerLink: '/',
+  sectionOrder: ['hero', 'about', 'catalog', 'cta', 'banner'],
+  sectionVisibility: {},
+}
+
+const { data } = await useAsyncData('companies-page', async () => {
+  try {
+    return await $fetch<CompaniesPageData>('/api/companies-page')
+  }
+  catch {
+    return fallbackPage
+  }
+})
+
+const page = computed(() => data.value ?? fallbackPage)
+const success = computed(() => route.query.success === '1')
+const error = computed(() => route.query.error === '1')
+
+useSeoMeta({
+  title: `Компании — ${config.public.siteName}`,
+  description: 'Компании, рестораны, магазины и другие проекты героев «Кто здесь главный?».',
+  ogTitle: `Компании — ${config.public.siteName}`,
+  ogDescription: 'Компании, рестораны, магазины и другие проекты героев «Кто здесь главный?».',
+})
+</script>
+
+<template>
+  <CompaniesPage
+    :page="page"
+    :success="success"
+    :error="error"
+  />
+</template>
