@@ -8,20 +8,20 @@ defineProps<{
 </script>
 
 <template>
-  <section class="bg-bg px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
-    <div class="mx-auto flex w-full max-w-[1920px] flex-col gap-10">
-      <div class="max-w-[52rem] space-y-4">
-        <h1 class="font-display text-[clamp(3.5rem,9vw,7rem)] font-black uppercase leading-[0.88] tracking-[-0.04em] text-text">
-          Интервью
+  <section class="bg-surface px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <div class="mx-auto flex w-full max-w-7xl flex-col gap-12">
+      <div class="max-w-3xl">
+        <h1 class="text-4xl font-extrabold tracking-tight text-text sm:text-5xl lg:text-6xl">
+          Разговоры с основателями
         </h1>
-        <p class="font-sans text-base leading-7 text-text-muted sm:text-lg">
-          Разговоры с основателями и руководителями о решениях, команде и лидерстве.
+        <p class="mt-4 text-xl leading-relaxed text-text/68">
+          Разговоры с основателями бизнеса о решениях, команде и лидерстве.
         </p>
       </div>
 
       <div
         v-if="interviews.length"
-        class="grid gap-5"
+        class="grid grid-cols-1 gap-8 lg:grid-cols-2"
       >
         <InterviewCard
           v-for="interview in interviews"
@@ -32,7 +32,7 @@ defineProps<{
 
       <p
         v-else
-        class="border border-border-strong bg-surface px-5 py-10 font-sans text-base leading-6 text-text-muted"
+        class="rounded-[28px] border border-black/10 bg-[#f7f7f4] px-6 py-10 text-base leading-7 text-text/54"
       >
         Пока нет опубликованных интервью.
       </p>

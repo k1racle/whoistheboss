@@ -61,9 +61,9 @@ const factsTitleLines = computed(() =>
     >
       <section
         v-if="sectionKey === 'hero'"
-        class="bg-text px-4 py-12 text-text-on-accent sm:px-6 lg:px-10 lg:py-18"
+        class="bg-text px-4 py-16 text-text-on-accent sm:px-6 lg:px-8 lg:py-24"
       >
-        <div class="mx-auto flex w-full max-w-[1920px] flex-col gap-10">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-10">
           <NuxtLink
             :to="ROUTES.COMPANIES"
             class="font-sans text-sm uppercase leading-4 text-text-on-accent/72 transition-colors hover:text-text-on-accent sm:text-base"
@@ -316,10 +316,10 @@ const factsTitleLines = computed(() =>
 
       <section
         v-else-if="sectionKey === 'addresses'"
-        class="border-t border-border-strong bg-bg px-4 py-12 sm:px-6 lg:px-10 lg:py-16"
+        class="border-t border-border-strong bg-bg px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
       >
-        <div class="mx-auto grid w-full max-w-[1920px] gap-6 lg:grid-cols-[0.92fr_1fr]">
-          <div class="border border-border-strong bg-surface p-6 sm:p-8">
+        <div class="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[0.92fr_1fr]">
+          <div class="rounded-[30px] border border-black/10 bg-surface p-6 shadow-[0_24px_64px_rgba(7,7,7,0.06)] sm:p-8">
             <h2 class="font-display text-[clamp(2.4rem,6vw,4rem)] font-black uppercase leading-[0.92] tracking-[-0.03em] text-text">
               Адреса и контакты
             </h2>
@@ -380,7 +380,7 @@ const factsTitleLines = computed(() =>
 
           <div
             v-if="company.mapSrc"
-            class="min-h-[320px] overflow-hidden border border-border-strong bg-surface"
+            class="min-h-[320px] overflow-hidden rounded-[30px] border border-black/10 bg-surface shadow-[0_24px_64px_rgba(7,7,7,0.06)]"
           >
             <iframe
               :src="company.mapSrc"
@@ -393,7 +393,7 @@ const factsTitleLines = computed(() =>
 
           <div
             v-else
-            class="flex min-h-[320px] items-center justify-center border border-border-strong bg-surface p-8 text-center"
+            class="flex min-h-[320px] items-center justify-center rounded-[30px] border border-black/10 bg-surface p-8 text-center shadow-[0_24px_64px_rgba(7,7,7,0.06)]"
           >
             <p class="max-w-[24rem] font-sans text-base leading-7 text-text-muted sm:text-lg">
               Интерактивная карта для этой компании пока не добавлена.
@@ -404,9 +404,9 @@ const factsTitleLines = computed(() =>
 
       <section
         v-else-if="sectionKey === 'awards'"
-        class="border-t border-border-strong bg-surface px-4 py-12 sm:px-6 lg:px-10 lg:py-16"
+        class="border-t border-border-strong bg-surface px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
       >
-        <div class="mx-auto flex w-full max-w-[1920px] flex-col gap-8">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-8">
           <div class="grid gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] lg:items-end">
             <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88] tracking-[-0.04em] text-text">
               {{ company.awardsTitle }}
@@ -416,7 +416,7 @@ const factsTitleLines = computed(() =>
             </p>
           </div>
 
-          <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             <article
               v-for="award in company.awards"
               :key="`${award.nominations}-${award.place}`"
