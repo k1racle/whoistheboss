@@ -12,16 +12,16 @@ defineProps<{
   <NuxtLink
     :to="ROUTES.COMPANY(item.slug)"
     class="group relative flex h-[400px] flex-col bg-accent p-4 text-text-on-accent transition-colors duration-300 hover:bg-[#b52200]"
-    :class="asSlide ? 'min-w-[85%] shrink-0 snap-center' : ''"
+    :class="asSlide ? 'max-w-[70%] shrink-0 snap-center' : ''"
     :aria-label="`${item.name}, ${item.type}`"
   >
-    <div class="mb-4 flex items-center justify-between">
-      <h3 class="text-lg font-bold uppercase tracking-wide">
+    <div class="relative flex-1 overflow-hidden bg-white/90">
+      <h3
+        class="absolute left-0 top-0 z-1 bg-accent px-2 py-1.5 text-lg font-bold uppercase leading-none tracking-wide text-text-on-accent"
+      >
         {{ item.name }} [ {{ item.type }} ]
       </h3>
-    </div>
 
-    <div class="relative flex-1 overflow-hidden bg-white/90">
       <NuxtImg
         v-if="item.coverImage"
         :src="item.coverImage"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { LandingPlaceCard } from '@features/landing/model/landing.data'
-import { landingPlacesDescription, landingPlacesFallback } from '@features/landing/model/landing.data'
+import { landingPlacesDescription } from '@features/landing/model/landing.data'
 import LandingPlaceCardComponent from '@features/landing/ui/sections/components/LandingPlaceCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
 import ArrowText from '@shared/ui/icons/ArrowText.vue'
@@ -8,7 +8,7 @@ import { ROUTES } from '@shared/navigation'
 
 const { data } = await useFetch<{ businesses: LandingPlaceCard[] }>('/api/businesses')
 
-const places = computed(() => data.value?.businesses ?? landingPlacesFallback)
+const places = computed(() => data.value?.businesses ?? [])
 </script>
 
 <template>
@@ -33,25 +33,34 @@ const places = computed(() => data.value?.businesses ?? landingPlacesFallback)
         </NuxtLink>
       </div>
 
-      <LandingSlider
-        :items-count="places.length"
-        aria-label="Мобильный слайдер секции Места"
-      >
-        <LandingPlaceCardComponent
-          v-for="place in places"
-          :key="place.slug"
-          :item="place"
-          as-slide
-        />
-      </LandingSlider>
+      <div v-if="places.length">
+        <LandingSlider
+          :items-count="places.length"
+          aria-label="Мобильный слайдер секции Места"
+        >
+          <LandingPlaceCardComponent
+            v-for="place in places"
+            :key="place.slug"
+            :item="place"
+            as-slide
+          />
+        </LandingSlider>
 
-      <div class="hidden gap-6 md:grid md:grid-cols-3">
-        <LandingPlaceCardComponent
-          v-for="place in places"
-          :key="place.slug"
-          :item="place"
-        />
+        <div class="hidden gap-6 md:grid md:grid-cols-3">
+          <LandingPlaceCardComponent
+            v-for="place in places"
+            :key="place.slug"
+            :item="place"
+          />
+        </div>
       </div>
+
+      <p
+        v-else
+        class="px-2 py-12 font-sans text-sm uppercase tracking-[0.14em] text-text/55"
+      >
+        Места появятся после первой публикации
+      </p>
     </div>
   </section>
 </template>

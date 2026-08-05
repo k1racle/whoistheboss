@@ -93,27 +93,3 @@ export const landingHeroes: LandingHeroCard[] = [
 ] as const
 
 export const landingPlacesDescription = 'Компании и проекты наших героев: места, бренды и команды, за которыми стоят реальные предпринимательские истории.'
-
-export const landingPlacesFallback: LandingPlaceCard[] = [
-  {
-    slug: 'selderey',
-    name: 'СЕЛЬДЕРЕЙ',
-    type: 'КАФЕ-БАР',
-    coverImage: null,
-    description: 'Салат-бар здоровых привычек в самом центре города',
-  },
-  {
-    slug: 'zanoza-open-bar',
-    name: 'ZANOZA OPEN BAR',
-    type: 'БАР',
-    coverImage: null,
-    description: 'Открытый бар с авторской кухней и атмосферой',
-  },
-  {
-    slug: 'big-baby-burger',
-    name: 'BIG BABY BURGER',
-    type: 'БУРГЕРНАЯ',
-    coverImage: null,
-    description: 'Лучшие бургеры в городе от шеф-повара',
-  },
-]

@@ -48,13 +48,19 @@ const scenePositionClass = computed(() => {
 })
 
 const sceneStyle = computed(() =>
-  isComplete.value ? { transform: `translate3d(0, ${sceneOffset.value}px, 0)` } : {},
+  isDesktop.value && isComplete.value
+    ? { transform: `translate3d(0, ${sceneOffset.value}px, 0)` }
+    : {},
 )
 
-const stageStyle = computed(() => ({
-  '--audience-col-width': 'calc((100vw - 80px) / 4)',
-  transform: `translate3d(0, ${stageOffset.value}px, 0)`,
-}))
+const stageStyle = computed(() =>
+  isDesktop.value
+    ? {
+        '--audience-col-width': 'calc((100vw - 80px) / 4)',
+        transform: `translate3d(0, ${stageOffset.value}px, 0)`,
+      }
+    : {},
+)
 
 const slotStyle = (index: number) => {
   const [column, row] = SLOT_POSITIONS[index % SLOT_POSITIONS.length]!
@@ -73,7 +79,15 @@ const updateAudience = () => {
   const section = sectionRef.value
   const scene = sceneRef.value
   const stage = stageRef.value
-  if (!isDesktop.value || !section || !scene || !stage) return
+  if (!isDesktop.value || !section || !scene || !stage) {
+    isPinned.value = false
+    isComplete.value = false
+    isActiveFlow.value = false
+    isFinal.value = false
+    sceneOffset.value = 0
+    stageOffset.value = 0
+    return
+  }
 
   const sectionRect = section.getBoundingClientRect()
   const sectionTop = sectionRect.top + window.scrollY
@@ -134,9 +148,9 @@ onBeforeUnmount(() => {
             <p class="font-sans text-sm leading-6 text-text/78 sm:text-base">
               {{ landingAudienceIntro }}
             </p>
-            <h2 class="font-display text-[clamp(3.5rem,16vw,6rem)] font-black uppercase leading-[0.9] tracking-[-0.05em] text-text">
-              <span class="block w-1/2 text-right">ДЛЯ</span>
-              <span class="block w-1/2 pl-2 text-left">КОГО</span>
+            <h2 class="mx-auto flex w-fit flex-col items-center text-center font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text">
+              <span>ДЛЯ</span>
+              <span>КОГО</span>
             </h2>
           </div>
 

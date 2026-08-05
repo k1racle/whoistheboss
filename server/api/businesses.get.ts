@@ -1,4 +1,5 @@
 import prisma from '~~/lib/prisma'
+import { stripHtml } from '../utils/stripHtml'
 
 const DEFAULT_BUSINESSES_COUNT = 3
 const MAX_BUSINESSES_COUNT = 20
@@ -26,5 +27,13 @@ export default defineEventHandler(async (event) => {
     take: limit,
   })
 
-  return { businesses }
+  return {
+    businesses: businesses.map((business) => ({
+      slug: business.slug,
+      name: business.name,
+      type: business.type,
+      coverImage: business.coverImage,
+      description: stripHtml(business.description),
+    })),
+  }
 })

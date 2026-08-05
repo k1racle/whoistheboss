@@ -29,6 +29,7 @@ coverage/
 .tmp-*
 .nuxt/
 .output/
+.agents/
 
 # Local env files
 .env

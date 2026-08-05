@@ -2,6 +2,7 @@
 import { ROUTES } from '@shared/navigation'
 import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
 import ArrowText from '@shared/ui/icons/ArrowText.vue'
+import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 
 withDefaults(defineProps<{
   logoSrc?: string
@@ -70,16 +71,12 @@ onBeforeUnmount(() => {
         <NuxtLink
           :to="ROUTES.LANDING"
           aria-label="Кто здесь главный?"
-          class="shrink-0 transition-[opacity,transform,visibility] duration-[120ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+          class="shrink-0 visible translate-y-0 scale-100 opacity-100 transition-[opacity,transform,visibility] duration-[120ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
           :class="logoVisible
-            ? 'visible translate-y-0 scale-100 opacity-100'
-            : 'invisible -translate-y-1 scale-95 opacity-0 pointer-events-none'"
+            ? 'lg:visible lg:translate-y-0 lg:scale-100 lg:opacity-100'
+            : 'lg:invisible lg:-translate-y-1 lg:scale-95 lg:opacity-0 lg:pointer-events-none'"
         >
-          <img
-            :src="logoSrc"
-            alt="Кто здесь главный?"
-            class="h-9 w-auto sm:h-10 lg:h-11"
-          >
+          <SiteLogo :src="logoSrc" />
         </NuxtLink>
 
         <nav

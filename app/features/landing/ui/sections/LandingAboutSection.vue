@@ -2,6 +2,11 @@
 import { landingAboutParagraphs } from '@features/landing/model/landing.data'
 import { ROUTES } from '@shared/navigation'
 import ArrowText from '@shared/ui/icons/ArrowText.vue'
+import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
+
+const logoRef = ref<HTMLElement | null>(null)
+
+defineExpose({ logoRef })
 </script>
 
 <template>
@@ -9,11 +14,12 @@ import ArrowText from '@shared/ui/icons/ArrowText.vue'
     id="landing-about-section"
     class="relative bg-bg"
   >
-    <img
-      src="/images/image-29.svg"
-      alt="Кто здесь главный?"
-      class="absolute left-4 top-4 h-9 w-auto sm:left-6 sm:top-6 sm:h-10 lg:left-10 lg:top-16 lg:h-11"
+    <span
+      ref="logoRef"
+      class="absolute left-4 top-4 sm:left-6 sm:top-6 lg:left-10 lg:top-16 hidden sm:block"
     >
+      <SiteLogo />
+    </span>
     <div class="mx-auto flex w-full max-w-[1920px] flex-col gap-10 px-4 py-12 sm:px-6 lg:flex-row lg:gap-12 lg:px-10 lg:py-16">
       <div class="flex flex-col justify-end gap-8 lg:w-1/3">
         <div class="space-y-6">

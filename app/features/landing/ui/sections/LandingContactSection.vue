@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
+import InputBasic from '@shared/ui/forms/InputBasic.vue'
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
@@ -33,7 +34,73 @@ const onSubmit = async () => {
     id="shooting"
     class="relative isolate overflow-hidden bg-accent text-text-on-accent"
   >
-    <div class="mx-auto flex min-h-[760px] w-full max-w-[1920px] flex-col gap-14 px-5 pb-32 pt-7 lg:min-h-[888px] lg:justify-between lg:gap-0 lg:px-10 lg:pb-10 lg:pt-10">
+    <div class="flex min-h-[600px] flex-col px-6 pb-12 pt-7 lg:hidden">
+      <h2 class="font-display text-[66px] font-black uppercase leading-[66px] tracking-[-0.03em]">
+        Стать
+        <br>
+        участником
+      </h2>
+      <p class="mt-2 font-sans text-[15.82px] font-bold uppercase leading-[13.84px]">
+        Заполните ваши данные для связи
+      </p>
+
+      <form
+        class="mt-20 lg:mt-8 space-y-6"
+        @submit.prevent="onSubmit"
+      >
+        <InputBasic
+          v-model="form.name"
+          label="Ваше имя*"
+          name="name"
+          type="text"
+          autocomplete="name"
+          required
+          :minlength="2"
+          placeholder="Имя"
+        />
+        <div class="mb-40 lg:mb-8">
+          <InputBasic
+            v-model="form.phone"
+            label="Номер телефона*"
+            name="phone"
+            type="tel"
+            autocomplete="tel"
+            required
+            :minlength="5"
+            placeholder="+7"
+          />
+        </div>
+        <button
+          type="submit"
+          :disabled="status === 'loading'"
+          class="w-full border border-white py-3 font-sans text-[14px] font-normal uppercase leading-[14px] text-text-on-accent transition-colors hover:border-white hover:bg-white hover:text-accent disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Отправить
+        </button>
+        <NuxtLink
+          :to="ROUTES.SHOOTING_REQUEST"
+          class="mt-2 block w-full bg-surface py-3 text-center font-sans text-[14px] font-normal uppercase leading-[14px] text-accent transition-colors hover:bg-gray-100"
+        >
+          Узнать подробнее
+        </NuxtLink>
+        <p
+          v-if="status === 'success'"
+          class="font-sans text-sm leading-5"
+          role="status"
+        >
+          Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.
+        </p>
+        <p
+          v-else-if="status === 'error'"
+          class="font-sans text-sm leading-5"
+          role="alert"
+        >
+          Не удалось отправить заявку. Попробуйте ещё раз.
+        </p>
+      </form>
+    </div>
+
+    <div class="mx-auto hidden w-full max-w-[1920px] flex-col gap-14 px-10 pb-10 pt-10 lg:flex lg:min-h-[888px] lg:justify-between lg:gap-0">
       <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
         <h2 class="max-w-[520px] font-sans text-[26px] font-bold uppercase leading-8 tracking-[-0.04em] lg:text-[32px]">
           Заполните ваши данные
@@ -45,32 +112,26 @@ const onSubmit = async () => {
           class="flex w-full max-w-[471px] flex-col gap-[30px] lg:gap-[54px]"
           @submit.prevent="onSubmit"
         >
-          <label class="flex flex-col gap-2">
-            <span class="font-sans text-base leading-4">Ваше имя*</span>
-            <input
-              v-model="form.name"
-              name="name"
-              type="text"
-              autocomplete="name"
-              required
-              minlength="2"
-              class="h-[22px] w-full border-0 border-b-2 border-white bg-transparent p-0 font-sans text-base leading-4 text-text-on-accent outline-none placeholder:text-text-on-accent/50"
-              placeholder="Имя"
-            >
-          </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-sans text-base leading-4">Номер телефона*</span>
-            <input
-              v-model="form.phone"
-              name="phone"
-              type="tel"
-              autocomplete="tel"
-              required
-              minlength="5"
-              class="h-[22px] w-full border-0 border-b-2 border-white bg-transparent p-0 font-sans text-base leading-4 text-text-on-accent outline-none placeholder:text-text-on-accent/50"
-              placeholder="+7"
-            >
-          </label>
+          <InputBasic
+            v-model="form.name"
+            label="Ваше имя*"
+            name="name"
+            type="text"
+            autocomplete="name"
+            required
+            :minlength="2"
+            placeholder="Имя"
+          />
+          <InputBasic
+            v-model="form.phone"
+            label="Номер телефона*"
+            name="phone"
+            type="tel"
+            autocomplete="tel"
+            required
+            :minlength="5"
+            placeholder="+7"
+          />
           <button
             type="submit"
             :disabled="status === 'loading'"

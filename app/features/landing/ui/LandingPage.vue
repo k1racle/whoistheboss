@@ -10,34 +10,28 @@ import LandingPlacesSection from '@features/landing/ui/sections/LandingPlacesSec
 import { useSiteHeader } from '@shared/ui/header/useSiteHeader'
 
 const { logoVisible } = useSiteHeader()
-logoVisible.value = false
 
-const aboutSectionRef = ref<HTMLElement | null>(null)
+const aboutSectionRef = ref<InstanceType<typeof LandingAboutSection> | null>(null)
 
-const isDesktop = useMediaQuery('(min-width: 1024px)')
-
-const updateHeaderLogoVisibility = () => {
-  if (!isDesktop.value) {
-    logoVisible.value = true
-    return
-  }
-
-  const about = aboutSectionRef.value
-  if (!about) return
+const updateLogoVisibility = () => {
+  const logoEl = aboutSectionRef.value?.logoRef
+  if (!logoEl) return
 
   const headerHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0
-  logoVisible.value = about.getBoundingClientRect().top <= headerHeight
+  const logoTop = logoEl.getBoundingClientRect().top
+
+  logoVisible.value = logoTop < headerHeight
 }
 
 onMounted(() => {
-  updateHeaderLogoVisibility()
-  window.addEventListener('scroll', updateHeaderLogoVisibility, { passive: true })
-  window.addEventListener('resize', updateHeaderLogoVisibility)
+  updateLogoVisibility()
+  window.addEventListener('scroll', updateLogoVisibility, { passive: true })
+  window.addEventListener('resize', updateLogoVisibility)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', updateHeaderLogoVisibility)
-  window.removeEventListener('resize', updateHeaderLogoVisibility)
+  window.removeEventListener('scroll', updateLogoVisibility)
+  window.removeEventListener('resize', updateLogoVisibility)
   logoVisible.value = true
 })
 </script>
@@ -45,9 +39,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="flex flex-col">
     <LandingHeroSection />
-    <div ref="aboutSectionRef">
-      <LandingAboutSection />
-    </div>
+    <LandingAboutSection ref="aboutSectionRef" />
     <LandingFeaturedHeroSection />
     <LandingOurHeroesSection />
     <LandingPlacesSection />
