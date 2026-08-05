@@ -2,7 +2,6 @@
 import type { ShootingPageData } from '@features/shooting-request/model/shooting-page.types'
 import ShootingRequestPage from '@features/shooting-request/ui/ShootingRequestPage.vue'
 
-const route = useRoute()
 const config = useRuntimeConfig()
 
 const fallbackPage: ShootingPageData = {
@@ -33,9 +32,6 @@ const { data } = await useAsyncData('shooting-page', async () => {
 })
 
 const page = computed(() => data.value ?? fallbackPage)
-const success = computed(() => route.query.success === '1')
-const error = computed(() => route.query.error === '1')
-
 useSeoMeta({
   title: `${page.value.seoTitle} — ${config.public.siteName}`,
   description: page.value.seoDescription || config.public.siteDescription,
@@ -45,9 +41,5 @@ useSeoMeta({
 </script>
 
 <template>
-  <ShootingRequestPage
-    :page="page"
-    :success="success"
-    :error="error"
-  />
+  <ShootingRequestPage :page="page" />
 </template>

@@ -26,6 +26,18 @@ export default defineNuxtPlugin((nuxtApp) => {
   const router = useRouter()
 
   /*
+   * Не грузим Метрику в development-режиме: не загружаем tag.js,
+   * не инициализируем счётчик и не отправляем просмотры.
+   */
+  if (import.meta.dev) {
+    return {
+      provide: {
+        ym: () => {},
+      },
+    }
+  }
+
+  /*
    * Создаём очередь команд Метрики.
    *
    * Пока внешний tag.js загружается, вызовы init/hit/reachGoal

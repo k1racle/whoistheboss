@@ -1,84 +1,59 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
 import type { ShootingPageData } from '@features/shooting-request/model/shooting-page.types'
 import ShootingAboutSection from '@features/shooting-request/ui/ShootingAboutSection.vue'
 import ShootingFaqSection from '@features/shooting-request/ui/ShootingFaqSection.vue'
-import ShootingHeroSection from '@features/shooting-request/ui/ShootingHeroSection.vue'
-import ShootingLeadSection from '@features/shooting-request/ui/ShootingLeadSection.vue'
 import ShootingStagesSection from '@features/shooting-request/ui/ShootingStagesSection.vue'
-import { isSectionVisible } from '@shared/lib/section-config'
+import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
+import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection.vue'
 
 const props = defineProps<{
   page: ShootingPageData
-  success?: boolean
-  error?: boolean
 }>()
 
-interface SectionEntry {
-  key: string
-  component: Component
-  props: Record<string, unknown>
-}
-
-const sectionMap = computed<Record<string, SectionEntry>>(() => ({
-  hero: {
-    key: 'hero',
-    component: ShootingHeroSection,
-    props: { title: props.page.heroTitle },
-  },
-  about: {
-    key: 'about',
-    component: ShootingAboutSection,
-    props: {
-      title: props.page.aboutTitle,
-      text: props.page.aboutText,
-      bottomText: props.page.aboutBottomText,
-      videoType: props.page.aboutVideoType,
-      videoUrl: props.page.aboutVideoUrl,
-      videoFile: props.page.aboutVideoFile,
-    },
-  },
-  stages: {
-    key: 'stages',
-    component: ShootingStagesSection,
-    props: {
-      title: props.page.stagesTitle,
-      stages: props.page.stages,
-    },
-  },
-  faq: {
-    key: 'faq',
-    component: ShootingFaqSection,
-    props: {
-      title: props.page.faqTitle,
-      items: props.page.faqItems,
-    },
-  },
-  cta: {
-    key: 'cta',
-    component: ShootingLeadSection,
-    props: {
-      success: props.success,
-      error: props.error,
-    },
-  },
-}))
-
-const orderedSections = computed(() =>
-  props.page.sectionOrder
-    .map((key) => sectionMap.value[key])
-    .filter((section): section is SectionEntry => Boolean(section))
-    .filter((section) => isSectionVisible(props.page.sectionVisibility, section.key))
-)
+const sectionOrder = computed(() => new Map(props.page.sectionOrder.map((key, index) => [key, index])))
+const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
+const isVisible = (key: string) => props.page.sectionVisibility[key] !== false
 </script>
 
 <template>
-  <div class="flex flex-col">
-    <component
-      :is="section.component"
-      v-for="section in orderedSections"
-      :key="section.key"
-      v-bind="section.props"
+  <div class="flex flex-col overflow-hidden bg-bg">
+    <LandingHeroSection
+      v-if="isVisible('hero')"
+      :style="sectionStyle('hero')"
+      title="Как принять участие"
+    />
+
+    <ShootingAboutSection
+      v-if="isVisible('about')"
+      :style="sectionStyle('about')"
+      :title="page.aboutTitle"
+      :text="page.aboutText"
+      :bottom-text="page.aboutBottomText"
+      :video-type="page.aboutVideoType"
+      :video-url="page.aboutVideoUrl"
+      :video-file="page.aboutVideoFile"
+    />
+
+    <ShootingStagesSection
+      v-if="isVisible('stages')"
+      :style="sectionStyle('stages')"
+      :title="page.stagesTitle"
+      :stages="page.stages"
+    />
+
+    <ShootingFaqSection
+      v-if="isVisible('faq')"
+      :style="sectionStyle('faq')"
+      :title="page.faqTitle"
+      :items="page.faqItems"
+    />
+
+    <LandingContactSection
+      v-if="isVisible('cta')"
+      :style="sectionStyle('cta')"
+      cta-title="Стать участником"
+      form-title="Заполните ваши данные для связи"
+      form-description="Отправьте заявку, и мы свяжемся с вами."
     />
   </div>
 </template>

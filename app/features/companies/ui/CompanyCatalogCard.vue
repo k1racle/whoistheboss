@@ -2,50 +2,40 @@
 import type { CompanyCatalogItem } from '@features/companies/model/companies-page.types'
 import { ROUTES } from '@shared/navigation'
 
-defineProps<{
+const props = defineProps<{
   company: CompanyCatalogItem
 }>()
+
+const imageSrc = computed(() => props.company.coverImage || '/images/placeholder.svg')
 </script>
 
 <template>
   <NuxtLink
     :to="ROUTES.COMPANY(company.slug)"
-    class="group flex h-full flex-col overflow-hidden rounded-[28px] border border-black/10 bg-surface shadow-[0_24px_64px_rgba(7,7,7,0.06)] transition-transform duration-300 hover:-translate-y-1"
+    class="group grid aspect-square min-w-0 grid-rows-[minmax(0,1fr)_104px] overflow-hidden bg-accent text-text-on-accent no-underline md:grid-rows-[minmax(0,1fr)_132px]"
+    :aria-label="`${company.name}, ${company.type}`"
   >
-    <div class="flex flex-1 flex-col p-6 sm:p-7">
-      <h2 class="font-display text-[clamp(2.2rem,5vw,3.6rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] text-text">
+    <div class="relative m-[17px] mb-0 min-h-0 overflow-hidden bg-border-strong">
+      <h3 class="absolute left-0 top-0 z-[1] max-w-full overflow-hidden bg-accent px-2.5 py-2 font-sans text-[25px] font-normal uppercase leading-[27px] tracking-normal text-text-on-accent md:px-3 md:text-[32px] md:leading-8">
         {{ company.name }}
-      </h2>
+      </h3>
 
-      <div class="mt-6 overflow-hidden rounded-[24px] bg-[#f1f1ec]">
-        <img
-          :src="company.coverImage || '/images/placeholder.svg'"
-          :alt="company.name"
-          class="aspect-[4/3] h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-        >
-      </div>
+      <img
+        :src="imageSrc"
+        :alt="company.name"
+        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025] group-focus-visible:scale-[1.025]"
+        loading="lazy"
+      >
     </div>
 
-    <div class="flex items-center justify-between gap-4 border-t border-black/10 px-6 py-4">
-      <p class="text-sm font-medium uppercase tracking-[0.12em] text-text/46">
+    <div class="flex items-end justify-between gap-6 px-3 pb-4 pt-3.5 md:px-4 md:pb-5 md:pt-[18px]">
+      <span class="inline-flex h-[46px] w-[82px] shrink-0" aria-hidden="true">
+        <img src="/images/company-card-arrow.svg" alt="">
+      </span>
+
+      <p class="m-0 w-3/5 text-right font-sans text-[13px] font-normal uppercase leading-[13px] tracking-normal md:text-base md:leading-4">
         {{ company.type }}
       </p>
-
-      <span class="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-text-on-accent transition-transform duration-300 group-hover:scale-110">
-        <svg
-          class="h-4 w-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M7 17 17 7M9 7h8v8"
-          />
-        </svg>
-      </span>
     </div>
   </NuxtLink>
 </template>

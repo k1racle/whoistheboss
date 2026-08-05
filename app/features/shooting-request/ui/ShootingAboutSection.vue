@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import ArrowText from '@shared/ui/icons/ArrowText.vue'
+import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 
-defineProps<{
+const props = defineProps<{
   title: string
   text: string
   bottomText: string
@@ -9,53 +11,47 @@ defineProps<{
   videoUrl: string
   videoFile: string
 }>()
+
+const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
 </script>
 
 <template>
-  <section class="bg-[#f7f7f4] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-    <div class="mx-auto flex w-full max-w-7xl flex-col gap-10">
-      <div class="grid gap-8 rounded-[32px] border border-black/10 bg-surface p-6 shadow-[0_24px_64px_rgba(7,7,7,0.06)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:p-8 xl:p-10">
-        <div class="flex flex-col gap-6">
-          <img
-            src="/images/image-29.svg"
-            alt="Кто здесь главный?"
-            class="h-10 w-auto"
-          >
-          <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88] tracking-[-0.04em] text-text">
+  <section id="about" class="relative bg-bg px-4 py-14 sm:px-6 lg:px-10 lg:py-20">
+    <span class="absolute left-10 top-16 hidden xl:block">
+      <SiteLogo />
+    </span>
+
+    <div class="mx-auto grid w-full max-w-[1920px] gap-10 lg:grid-cols-[1fr_2fr] lg:gap-12">
+      <div class="flex flex-col justify-end gap-8">
+        <div>
+          <h2 class="font-display text-[clamp(3rem,6vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.03em] text-text">
             {{ title }}
           </h2>
-          <div class="space-y-4 text-base leading-7 text-text/78 sm:text-lg">
-            <p
-              v-for="paragraph in text.split(/\n\s*\n/).filter(Boolean)"
-              :key="paragraph"
-              class="whitespace-pre-line"
-            >
-              {{ paragraph }}
-            </p>
+          <div class="mt-6 space-y-4 font-sans text-sm leading-6 text-text/78 sm:text-base">
+            <p v-for="paragraph in paragraphs" :key="paragraph">{{ paragraph }}</p>
           </div>
-          <a
-            href="#stages"
-            class="inline-flex min-h-12 w-fit items-center justify-center rounded-full bg-accent px-6 text-sm font-semibold uppercase tracking-[0.14em] text-text-on-accent transition-colors hover:bg-[#b82600]"
-          >
-            Как это работает
-          </a>
         </div>
 
-        <div class="flex flex-col gap-6">
-          <div class="overflow-hidden rounded-[28px] shadow-[0_20px_48px_rgba(7,7,7,0.12)]">
-            <VideoFrame
-              :title="title"
-              :video-type="videoType"
-              :video-url="videoUrl"
-              :video-file="videoFile"
-              aspect-class="aspect-video"
-            />
-          </div>
-          <p class="text-sm leading-6 text-text/56 sm:text-base">
-            {{ bottomText }}
-          </p>
-        </div>
+        <a
+          href="#stages"
+          class="inline-flex min-h-11 w-fit items-center justify-center gap-2 border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text"
+        >
+          Как это работает
+          <ArrowText />
+        </a>
       </div>
+
+      <VideoFrame
+        :title="title"
+        :video-type="videoType"
+        :video-url="videoUrl"
+        :video-file="videoFile"
+        aspect-class="aspect-video"
+      />
     </div>
+
+    <p class="mx-auto mt-16 w-full max-w-[1920px] font-display text-[clamp(3.5rem,9vw,10rem)] font-black uppercase leading-[0.8] tracking-[-0.04em] text-accent lg:mt-24">
+      {{ bottomText }}
+    </p>
   </section>
 </template>

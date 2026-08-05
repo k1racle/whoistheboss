@@ -11,11 +11,11 @@ withDefaults(defineProps<{
 
 <template>
   <article
-    class="group relative overflow-hidden border border-border p-4 backdrop-blur-[6px] transition-colors duration-350"
+    class="group relative overflow-hidden border border-border p-4 backdrop-blur-[12px] transition-colors duration-350"
     :class="
       variant === 'accent'
-        ? 'bg-accent text-text-on-accent hover:bg-surface/50 hover:text-text'
-        : 'bg-surface/50 text-text hover:bg-accent hover:text-text-on-accent'
+        ? 'bg-accent/85 text-text-on-accent hover:bg-surface/70 hover:text-text'
+        : 'bg-surface/60 text-text hover:bg-accent/85 hover:text-text-on-accent'
     "
   >
     <span

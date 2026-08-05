@@ -9,6 +9,8 @@ import AudienceCard from '@features/landing/ui/audience/AudienceCard.vue'
 const props = defineProps<{
   title: string
   intro: string
+  cards?: LandingAudienceCard[]
+  sectionId?: string
 }>()
 
 const titleLines = computed(() => props.title.split('\n'))
@@ -32,11 +34,11 @@ const stageRef = ref<HTMLElement | null>(null)
 
 const isDesktop = useMediaQuery('(min-width: 1024px)')
 
-// TODO: загружать карточки аудитории с бэка (server/api/landing/audience-cards.get.ts → prisma.audienceCard).
-// Пока возвращаем статический fallback, повторяющий legacy forWhoCards из migration_old/server/views/index.ejs.
-const cards: LandingAudienceCard[] = [...landingAudienceFallback]
+const cards = computed<LandingAudienceCard[]>(() =>
+  props.cards?.length ? props.cards : [...landingAudienceFallback],
+)
 
-const desktopCards = computed(() => cards.slice(0, SLOT_POSITIONS.length))
+const desktopCards = computed(() => cards.value.slice(0, SLOT_POSITIONS.length))
 
 const isPinned = ref(false)
 const isComplete = ref(false)
@@ -140,7 +142,7 @@ onBeforeUnmount(() => {
 
 <template>
   <section
-    id="for-whom"
+    :id="sectionId || 'for-whom'"
     ref="sectionRef"
     class="relative bg-bg lg:min-h-[320vh]"
   >
@@ -167,20 +169,20 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="flex flex-col gap-5">
-          <AudienceCard
-            v-for="(card, index) in cards"
-            :key="card.id"
-            :card="card"
-            :variant="index % 2 === 0 ? 'accent' : 'light'"
-            class="aspect-square w-[85%]"
-            :class="index % 2 === 0 ? 'ml-auto' : 'mr-auto'"
-          />
+            <AudienceCard
+              v-for="(card, index) in cards"
+              :key="card.id"
+              :card="card"
+              :variant="index % 2 === 0 ? 'accent' : 'light'"
+              class="aspect-square w-[85%]"
+              :class="index % 2 === 0 ? 'ml-auto' : 'mr-auto'"
+            />
           </div>
         </div>
 
         <div class="pointer-events-none absolute inset-0 z-0 hidden items-center justify-center lg:flex">
           <h2
-            class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94]  tracking-[-3%] text-text transition-[opacity,transform] duration-300"
+            class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94] tracking-[-0.03em] text-text transition-[opacity,transform] duration-300"
             :class="isFinal ? 'opacity-0 -translate-y-6' : 'opacity-100 translate-y-0'"
           >
             {{ desktopTitle }}

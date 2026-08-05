@@ -25,6 +25,10 @@ app/plugins/yandex-metrika.client.ts
 - защищает от дублей просмотров (один URL учитывается один раз);
 - предоставляет `$ym` для отправки целей.
 
+### Пропуск в development
+
+В dev-режиме (`import.meta.dev`) Метрика не грузится: `tag.js` не загружается, счётчик не инициализируется и просмотры не отправляются. `$ym` остаётся доступным, но является no-op. В production (`npm run build` / `npm run dev` с `NODE_ENV=production`) счётчик работает.
+
 ### `<noscript>` fallback
 
 Для пользователей с отключённым JavaScript в `app/app.vue` (единая точка входа Nuxt) через `useHead` добавляется `<noscript>`-пиксель:

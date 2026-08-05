@@ -6,6 +6,7 @@ export type LandingHeroCard = {
   image: string
   imageHover: string
   imageAlt: string
+  href?: string
 }
 
 export type LandingArticle = {

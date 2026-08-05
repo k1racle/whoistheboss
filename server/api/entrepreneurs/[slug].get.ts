@@ -20,10 +20,10 @@ const DEFAULT_SECTION_ORDER = [
   'turnover',
   'more',
   'featuredInterview',
+  'articles',
   'cta',
   'banner',
   'interviewList',
-  'articles',
 ] as const
 
 function stripHtml(value: string | null | undefined): string {
@@ -45,21 +45,21 @@ function parseMoreItems(titlesRaw: string | null | undefined, linksRaw: string |
   const titles = (titlesRaw || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean)
   const links = (linksRaw || '').split(/\r?\n/).map((item) => item.trim())
   const fallbackTitles = [
-    'Компании героя',
-    'Смотреть интервью',
-    'Читать блог',
+    'OPEN BAR ZANOZA',
+    'КАФЕ-БАР СЕЛЬДЕРЕЙ',
+    'ДРУГИЕ УЧАСТНИКИ',
     'Стать участником\nпроекта',
   ] as const
   const fallbackLinks = [
-    ROUTES.COMPANIES,
-    ROUTES.INTERVIEWS,
-    ROUTES.BLOG,
+    '',
+    '',
+    '',
     ROUTES.SHOOTING_REQUEST,
   ] as const
 
   return Array.from({ length: 4 }, (_, index) => ({
     title: titles[index] || fallbackTitles[index] || '',
-    href: links[index] || fallbackLinks[index] || ROUTES.ENTREPRENEURS,
+    href: links[index] || fallbackLinks[index] || '',
   }))
 }
 

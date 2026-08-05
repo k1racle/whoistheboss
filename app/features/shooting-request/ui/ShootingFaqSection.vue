@@ -8,33 +8,30 @@ defineProps<{
 </script>
 
 <template>
-  <section class="bg-[#f7f7f4] px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-    <div class="mx-auto flex w-full max-w-5xl flex-col gap-8">
-      <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88] tracking-[-0.04em] text-text">
+  <section id="faq" class="bg-bg px-4 py-20 sm:px-6 lg:px-10 lg:py-32">
+    <div class="mx-auto w-full max-w-[1920px]">
+      <h2 class="font-display text-[clamp(5rem,12vw,13rem)] font-black uppercase leading-[0.8] tracking-[-0.03em] text-text">
         {{ title }}
       </h2>
 
-      <div class="grid gap-4">
+      <div class="mt-16 grid gap-2 lg:mt-28">
         <details
           v-for="(item, index) in items"
           :key="`${index}-${item.question}`"
-          class="group overflow-hidden rounded-[26px] border border-black/10 bg-surface shadow-[0_20px_52px_rgba(7,7,7,0.05)]"
+          class="group border border-border-strong bg-surface"
         >
-          <summary class="flex cursor-pointer list-none items-start gap-4 px-6 py-5 sm:px-7">
-            <span class="text-xs font-medium uppercase tracking-[0.16em] text-accent sm:text-sm">
-              [ {{ String(index + 1).padStart(2, '0') }} ]
-            </span>
-            <span class="flex-1 text-base font-bold uppercase leading-6 text-text sm:text-lg">
+          <summary class="grid min-h-28 cursor-pointer list-none grid-cols-[64px_minmax(0,1fr)_48px] items-center gap-4 px-4 py-6 sm:min-h-36 sm:grid-cols-[110px_minmax(0,1fr)_72px] sm:gap-6 sm:px-8">
+            <span class="font-sans text-sm sm:text-base">[ {{ String(index + 1).padStart(2, '0') }} ]</span>
+            <strong class="font-sans text-lg font-bold uppercase leading-5 tracking-[-0.03em] sm:text-3xl sm:leading-8">
               {{ item.question }}
-            </span>
-            <span class="text-xl leading-none text-text transition-transform group-open:rotate-45">
-              +
+            </strong>
+            <span class="relative size-10 justify-self-end sm:size-14" aria-hidden="true">
+              <span class="absolute left-1/2 top-1/2 h-px w-full -translate-x-1/2 bg-text" />
+              <span class="absolute left-1/2 top-1/2 h-full w-px -translate-y-1/2 bg-text transition-transform group-open:rotate-90 group-open:scale-y-0" />
             </span>
           </summary>
-          <div class="px-6 pb-6 sm:px-7">
-            <p class="max-w-[52rem] whitespace-pre-line text-sm leading-6 text-text/76 sm:text-base">
-              {{ item.answer }}
-            </p>
+          <div class="border-t border-border-strong px-4 py-7 sm:pl-[164px] sm:pr-8">
+            <p class="max-w-[900px] whitespace-pre-line font-sans text-base leading-5">{{ item.answer }}</p>
           </div>
         </details>
       </div>

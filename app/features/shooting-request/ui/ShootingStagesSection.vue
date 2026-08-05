@@ -1,54 +1,143 @@
 <script setup lang="ts">
 import type { ShootingStageItem } from '@features/shooting-request/model/shooting-page.types'
+import ShootingStageCard from '@features/shooting-request/ui/ShootingStageCard.vue'
+import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
 
 defineProps<{
   title: string
   stages: ShootingStageItem[]
 }>()
+
+const sectionRef = useTemplateRef<HTMLElement>('section')
+const pinRef = useTemplateRef<HTMLElement>('pin')
+const trackRef = useTemplateRef<HTMLElement>('track')
+
+const isPinned = shallowRef(false)
+const isComplete = shallowRef(false)
+const isReducedMotion = shallowRef(false)
+const sceneOffset = shallowRef(0)
+const trackOffset = shallowRef(0)
+
+const sceneClass = computed(() => {
+  if (isPinned.value) return 'md:fixed md:inset-0 md:z-20'
+  if (isComplete.value) return 'md:absolute md:inset-x-0 md:top-0'
+  return 'md:relative'
+})
+
+const sceneStyle = computed(() => isComplete.value
+  ? { transform: `translate3d(0, ${sceneOffset.value}px, 0)` }
+  : undefined)
+
+const trackStyle = computed(() => ({ transform: `translate3d(${trackOffset.value}px, 0, 0)` }))
+
+const updateStages = () => {
+  const section = sectionRef.value
+  const pin = pinRef.value
+  const track = trackRef.value
+  if (!section || !pin || !track || window.innerWidth < 768 || isReducedMotion.value) {
+    isPinned.value = false
+    isComplete.value = false
+    sceneOffset.value = 0
+    trackOffset.value = 0
+    return
+  }
+
+  const sectionTop = section.getBoundingClientRect().top + window.scrollY
+  const sectionBottom = sectionTop + section.offsetHeight
+  const end = sectionBottom - window.innerHeight
+  const progress = Math.min(Math.max((window.scrollY - sectionTop) / Math.max(end - sectionTop, 1), 0), 1)
+
+  isPinned.value = window.scrollY >= sectionTop && window.scrollY <= end
+  isComplete.value = window.scrollY > end
+  sceneOffset.value = Math.max(pin.offsetHeight - window.innerHeight, 0)
+  trackOffset.value = window.innerWidth + (-track.scrollWidth - window.innerWidth) * progress
+}
+
+let frameId: number | undefined
+const scheduleUpdate = () => {
+  if (frameId !== undefined) return
+  frameId = window.requestAnimationFrame(() => {
+    frameId = undefined
+    updateStages()
+  })
+}
+
+let motionQuery: MediaQueryList | undefined
+const updateMotionPreference = () => {
+  isReducedMotion.value = motionQuery?.matches ?? false
+  scheduleUpdate()
+}
+
+onMounted(() => {
+  motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  isReducedMotion.value = motionQuery.matches
+  updateStages()
+  window.addEventListener('scroll', scheduleUpdate, { passive: true })
+  window.addEventListener('resize', scheduleUpdate)
+  motionQuery.addEventListener('change', updateMotionPreference)
+})
+
+onBeforeUnmount(() => {
+  if (frameId !== undefined) window.cancelAnimationFrame(frameId)
+  window.removeEventListener('scroll', scheduleUpdate)
+  window.removeEventListener('resize', scheduleUpdate)
+  motionQuery?.removeEventListener('change', updateMotionPreference)
+})
 </script>
 
 <template>
   <section
     id="stages"
-    class="bg-surface px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
+    ref="section"
+    class="relative bg-bg md:h-[420vh] md:min-h-[420vh]"
+    :class="{ 'md:h-auto md:min-h-0': isReducedMotion }"
   >
-    <div class="mx-auto flex w-full max-w-7xl flex-col gap-10">
-      <div class="grid gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] lg:items-end">
-        <h2 class="font-display text-[clamp(3rem,10vw,7rem)] font-black uppercase leading-[0.88] tracking-[-0.04em] text-text">
-          {{ title }}
-        </h2>
-        <p class="max-w-[36rem] text-base leading-7 text-text/72 sm:text-lg">
-          Процесс разбит на понятные этапы: от первого знакомства до публикации готового материала.
-        </p>
+    <div ref="pin" class="relative h-full min-h-0 md:min-h-screen">
+      <div
+        v-if="!isReducedMotion"
+        class="relative hidden h-screen w-full overflow-hidden bg-bg md:block"
+        :class="sceneClass"
+        :style="sceneStyle"
+      >
+        <div class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
+          <h2 class="font-display text-[clamp(8rem,20vw,24rem)] font-black uppercase leading-none tracking-[-0.03em] text-text">
+            {{ title }}
+          </h2>
+        </div>
+
+        <div class="absolute inset-x-0 bottom-0 top-32 z-10 overflow-hidden">
+          <div
+            ref="track"
+            class="flex h-[calc(100%_-_2rem)] w-max items-start gap-7 px-1.5 pb-8 will-change-transform"
+            :style="trackStyle"
+          >
+            <template v-for="stage in stages" :key="stage.index">
+              <ShootingStageCard :stage="stage" variant="summary" />
+              <ShootingStageCard :stage="stage" variant="detail" />
+            </template>
+          </div>
+        </div>
       </div>
 
-      <div class="grid gap-6">
-        <article
-          v-for="stage in stages"
-          :key="`${stage.index}-${stage.title}`"
-          class="grid overflow-hidden rounded-[30px] border border-black/10 shadow-[0_24px_64px_rgba(7,7,7,0.06)] lg:grid-cols-[260px_minmax(0,1fr)]"
-        >
-          <div class="bg-text p-6 text-text-on-accent sm:p-7">
-            <span class="text-sm font-medium uppercase tracking-[0.16em] text-text-on-accent/50">
-              [ {{ stage.index }} ]
-            </span>
-            <h3 class="mt-6 font-display text-[clamp(2.2rem,5vw,3.4rem)] font-black uppercase leading-[0.9] tracking-[-0.04em]">
-              {{ stage.title }}
-            </h3>
-            <p class="mt-3 text-sm font-medium uppercase tracking-[0.12em] text-text-on-accent/70">
-              {{ stage.subtitle }}
-            </p>
-          </div>
+      <div class="px-4 py-16 sm:px-6 md:hidden">
+        <h2 class="mb-10 text-center font-display text-[clamp(80px,20vw,130px)] font-black uppercase leading-none tracking-[-0.03em] text-text">
+          {{ title }}
+        </h2>
+        <LandingSlider :items-count="stages.length * 2" aria-label="Этапы участия в проекте">
+          <template v-for="stage in stages" :key="stage.index">
+            <ShootingStageCard :stage="stage" variant="summary" />
+            <ShootingStageCard :stage="stage" variant="detail" />
+          </template>
+        </LandingSlider>
+      </div>
 
-          <div class="bg-[#f7f7f4] p-6 sm:p-7">
-            <p class="text-xs font-medium uppercase tracking-[0.16em] text-accent">
-              {{ stage.eyebrow }}
-            </p>
-            <p class="mt-4 text-base leading-7 text-text/76 sm:text-lg">
-              {{ stage.description }}
-            </p>
-          </div>
-        </article>
+      <div v-if="isReducedMotion" class="hidden overflow-x-auto px-10 py-20 md:block">
+        <div class="flex w-max gap-7">
+          <template v-for="stage in stages" :key="stage.index">
+            <ShootingStageCard :stage="stage" variant="summary" />
+            <ShootingStageCard :stage="stage" variant="detail" />
+          </template>
+        </div>
       </div>
     </div>
   </section>
