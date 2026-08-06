@@ -54,5 +54,5 @@ export function getPostLoginRedirect(
   const returnTo = getReturnToPath(event, body)
   if (returnTo) return returnTo
 
-  return role === 'ADMIN' || role === 'EDITOR' ? '/admin' : '/'
+  return role === 'ADMIN' || role === 'EDITOR' ? '/admin/' : '/'
 }

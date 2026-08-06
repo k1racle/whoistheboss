@@ -29,7 +29,7 @@ export function loginView() {
       const errorEl = document.getElementById('login-error');
       try {
         await api.login((form.querySelector('input[name="email"]') as HTMLInputElement).value, (form.querySelector('input[name="password"]') as HTMLInputElement).value);
-        location.href = '/admin';
+        location.href = '/admin/';
       } catch (err) {
         if (errorEl) {
           errorEl.textContent = err instanceof Error ? err.message : 'Ошибка входа';
