@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { BlogArticleSummary } from '@features/blog/model/blog.types'
 import BlogPopularCard from '@features/blog/ui/BlogPopularCard.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 defineProps<{
   title: string
@@ -11,9 +12,9 @@ defineProps<{
 <template>
   <section id="popular" class="bg-bg py-[60px] lg:py-[72px] lg:pb-[130px]">
     <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
-      <h2 class="mb-16 font-display text-[56px] font-black uppercase leading-none tracking-[-0.03em] text-text lg:mb-[120px] lg:text-[80px]">
+      <SectionTitle class="mb-16 lg:mb-[120px]">
         {{ title }}
-      </h2>
+      </SectionTitle>
 
       <div
         v-if="articles.length"

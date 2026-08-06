@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
 import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
-import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
+import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 
 withDefaults(defineProps<{
   socialLinks?: SocialLink[]
@@ -68,13 +68,15 @@ const metaItems = ['ИП', 'Батагов А.А.', 'Пошта Почта', 'П
               :key="word"
             >{{ word }}</span>
           </p>
-          <NuxtLink
+          <ButtonLink
             :to="ROUTES.SHOOTING_REQUEST"
-            class="inline-flex min-h-11 items-center justify-center gap-2 bg-accent px-4 py-2.5 font-sans text-sm uppercase leading-4 text-text-on-accent transition-colors sm:text-base"
+            arrow="mark"
+            variant="flat"
+            :emphasis="false"
+            class="sm:text-base"
           >
             Стать героем
-            <ArrowMark />
-          </NuxtLink>
+          </ButtonLink>
         </div>
 
         <div class="flex flex-wrap items-center gap-x-8 gap-y-2 font-sans text-xs uppercase leading-4 text-text-muted sm:text-sm lg:justify-end lg:text-base">

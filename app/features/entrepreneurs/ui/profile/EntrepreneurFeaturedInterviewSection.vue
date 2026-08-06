@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 defineProps<{
   name: string
@@ -12,9 +13,9 @@ defineProps<{
 <template>
   <section id="interviews" class="min-h-svh bg-bg py-[130px] max-lg:min-h-0 max-lg:px-5 max-lg:py-20">
     <div class="mx-auto flex min-h-[calc(100svh-260px)] w-[min(calc(100%_-_80px),1920px)] flex-col max-lg:min-h-0 max-lg:w-full">
-      <h2 class="mb-[70px] mt-0 font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-lg:mb-10 max-lg:text-[clamp(43px,10vw,74px)] max-lg:leading-[0.92]">
+      <SectionTitle class="mb-[70px] mt-0 max-lg:mb-10">
         СМОТРЕТЬ<br>ИНТЕРВЬЮ
-      </h2>
+      </SectionTitle>
       <VideoFrame
         class="flex-1"
         :title="`Интервью — ${name}`"

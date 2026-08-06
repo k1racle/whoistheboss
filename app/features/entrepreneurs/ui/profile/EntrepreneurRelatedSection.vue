@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { BlogArticleSummary } from '@features/blog/model/blog.types'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 import EntrepreneurRelatedArticleCard from './EntrepreneurRelatedArticleCard.vue'
 
 defineProps<{
@@ -11,9 +12,9 @@ defineProps<{
 <template>
   <section id="articles" class="bg-bg py-24 max-md:px-5 max-md:py-[72px]">
     <div class="mx-auto w-[min(calc(100%_-_80px),1920px)] max-md:w-full">
-      <h2 class="mb-14 mt-0 text-center font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-md:mb-8 max-md:text-[clamp(48px,16vw,80px)] max-md:leading-[0.92]">
+      <SectionTitle class="mb-14 mt-0 text-center max-md:mb-8">
         Читайте также
-      </h2>
+      </SectionTitle>
 
       <LandingSlider :items-count="articles.length" aria-label="Читайте также">
         <EntrepreneurRelatedArticleCard

@@ -2,6 +2,7 @@
 import type { BlogArticleRelatedMaterial } from '@features/blog/model/blog.types'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
 import BlogRelatedMaterialCard from '@features/blog/ui/BlogRelatedMaterialCard.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 withDefaults(defineProps<{
   title?: string | null
@@ -14,9 +15,9 @@ withDefaults(defineProps<{
 <template>
   <section class="bg-bg py-20 lg:py-32">
     <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
-      <h2 class="mb-12 text-center font-display text-[clamp(48px,8vw,80px)] font-black uppercase leading-none tracking-[-0.03em] text-text lg:mb-[86px]">
+      <SectionTitle class="mb-12 text-center lg:mb-[86px]">
         {{ title || 'МАТЕРИАЛЫ ПО ТЕМЕ' }}
-      </h2>
+      </SectionTitle>
 
       <LandingSlider :items-count="materials.length" aria-label="Материалы по теме">
         <BlogRelatedMaterialCard

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
+import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 
 const props = withDefaults(defineProps<{
   title: string
@@ -42,13 +42,16 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
         </p>
 
         <div class="mt-auto flex items-end gap-[120px] pt-10 max-lg:flex-col max-lg:items-start max-lg:gap-6">
-          <a
-            :href="buttonHref"
-            class="inline-flex min-h-[42px] shrink-0 items-center justify-center gap-3 border border-accent bg-accent px-4 py-2 font-sans text-base uppercase leading-4 text-text-on-accent no-underline max-md:w-full"
+          <ButtonLink
+            :to="buttonHref"
+            arrow="mark"
+            size="story"
+            variant="flat"
+            :emphasis="false"
+            class="shrink-0 border border-accent max-md:w-full"
           >
             {{ buttonLabel }}
-            <ArrowMark />
-          </a>
+          </ButtonLink>
           <p v-if="asideText" class="m-0 w-[min(520px,100%)] whitespace-pre-line font-sans text-base leading-4 text-text">
             {{ asideText }}
           </p>

@@ -2,6 +2,7 @@
 import type { BlogRelatedCompany, BlogRelatedEntrepreneur } from '@features/blog/model/blog.types'
 import CompanyCatalogCard from '@features/companies/ui/CompanyCatalogCard.vue'
 import BlogRelatedEntrepreneurCard from '@features/blog/ui/BlogRelatedEntrepreneurCard.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 defineProps<{
   title: string
@@ -13,9 +14,9 @@ defineProps<{
 <template>
   <section id="related" class="bg-bg pb-[110px] pt-40 lg:pb-[196px] lg:pt-[320px]">
     <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
-      <h2 class="text-center font-display text-[clamp(48px,12vw,80px)] font-black uppercase leading-[0.92] tracking-[-0.03em] text-text lg:leading-none">
+      <SectionTitle class="text-center">
         {{ title }}
-      </h2>
+      </SectionTitle>
 
       <div
         v-if="entrepreneurs.length"

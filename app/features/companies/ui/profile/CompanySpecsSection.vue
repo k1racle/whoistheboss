@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CompanySpecItem } from '@features/companies/model/companies-page.types'
 import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 defineProps<{
   title: string
@@ -12,9 +13,9 @@ defineProps<{
 <template>
   <section class="bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:py-[130px]">
     <div class="mx-auto w-full max-w-[1920px]">
-      <h2 class="m-0 whitespace-pre-line font-display text-[clamp(48px,10vw,80px)] font-black uppercase leading-none tracking-[-0.03em] text-text lg:leading-[80px]">
+      <SectionTitle class="m-0 whitespace-pre-line">
         {{ title }}
-      </h2>
+      </SectionTitle>
       <p class="mt-3 whitespace-pre-line font-sans text-base uppercase leading-4 text-text">
         {{ description }}
       </p>

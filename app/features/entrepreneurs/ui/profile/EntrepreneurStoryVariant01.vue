@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
+import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 
 withDefaults(defineProps<{
   eyebrow: string
@@ -26,13 +26,16 @@ withDefaults(defineProps<{
           <span>WHO'S THE</span>
           <span>{{ title }}?</span>
         </h2>
-        <a
-          :href="buttonHref"
-          class="inline-flex min-h-[42px] items-center justify-center gap-3 border border-accent bg-accent px-4 py-2 font-sans text-base uppercase leading-4 text-text-on-accent no-underline transition-colors duration-200 hover:border-text hover:bg-surface hover:text-text focus-visible:border-text focus-visible:bg-surface focus-visible:text-text max-md:w-full"
+        <ButtonLink
+          :to="buttonHref"
+          arrow="mark"
+          size="story"
+          variant="invert"
+          :emphasis="false"
+          class="max-md:w-full"
         >
           {{ buttonLabel }}
-          <ArrowMark />
-        </a>
+        </ButtonLink>
         <img v-if="image" :src="image" :alt="imageAlt" class="mt-4 w-[min(100%,33rem)] object-cover">
       </div>
 

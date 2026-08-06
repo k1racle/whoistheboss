@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
-import ArrowText from '@shared/ui/icons/ArrowText.vue'
+import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 const props = defineProps<{
   title: string
@@ -31,9 +32,9 @@ const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
         <div class="space-y-6">
 
           <div class="space-y-5">
-            <h2 class="font-display text-[clamp(3rem,6vw,5rem)] font-black uppercase leading-[0.9] tracking-[-3%] text-text">
+            <SectionTitle>
               {{ title }}
-            </h2>
+            </SectionTitle>
             <div class="space-y-4 font-sans text-sm leading-6 text-text/78">
               <p
                 v-for="paragraph in paragraphs"
@@ -45,13 +46,12 @@ const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
           </div>
         </div>
 
-        <NuxtLink
+        <ButtonLink
           :to="ROUTES.SHOOTING_REQUEST"
-          class="inline-flex w-fit min-h-11 items-center justify-center gap-2 border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text"
+          class="w-fit"
         >
           Стать героем
-          <ArrowText />
-        </NuxtLink>
+        </ButtonLink>
       </div>
 
       <div class="relative aspect-video border border-border-strong bg-surface lg:w-2/3">

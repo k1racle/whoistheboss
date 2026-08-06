@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
+
 defineProps<{
   title: string
   subtitle: string
@@ -13,9 +15,9 @@ defineProps<{
   <section class="bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:py-[130px]">
     <div class="mx-auto grid w-full max-w-[1920px] grid-cols-1 gap-10 lg:grid-cols-[minmax(0,60%)_minmax(0,40%)]">
       <div>
-        <h2 class="m-0 whitespace-pre-line font-display text-[48px] font-black uppercase leading-[48px] tracking-[-0.03em] text-text lg:text-[80px] lg:leading-[0.9]">
+        <SectionTitle class="m-0 whitespace-pre-line">
           {{ title }}
-        </h2>
+        </SectionTitle>
         <p v-if="subtitle" class="mt-5 max-w-[760px] whitespace-pre-line font-sans text-base font-bold uppercase leading-4 text-text">
           {{ subtitle }}
         </p>

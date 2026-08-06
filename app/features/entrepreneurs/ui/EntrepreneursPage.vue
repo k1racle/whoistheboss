@@ -7,6 +7,7 @@ import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection
 import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHeroesSection.vue'
 import { ROUTES } from '@shared/navigation'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 const props = defineProps<{
   page: EntrepreneursPageData
@@ -52,9 +53,9 @@ const heroes = computed<LandingHeroCard[]>(() => props.page.entrepreneurs.map(en
       :cards="audienceCards"
     >
       <template #intro>
-        <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.82] tracking-[-0.03em] text-text">
+        <SectionTitle>
           Наши герои
-        </h2>
+        </SectionTitle>
         <p class="mt-6 max-w-[680px] font-sans text-base leading-6 text-text/80 sm:text-xl sm:leading-7">
           Здесь собраны предприниматели, руководители и основатели компаний, которые создают проекты и развивают бизнес через личное участие.
         </p>

@@ -2,6 +2,7 @@
 import type { CompanyCatalogItem } from '@features/companies/model/companies-page.types'
 import CompanyCatalogCard from '@features/companies/ui/CompanyCatalogCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 defineProps<{
   title: string
@@ -12,9 +13,9 @@ defineProps<{
 <template>
   <section class="bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:py-[130px]">
     <div class="mx-auto w-full max-w-[1920px]">
-      <h2 class="m-0 text-center font-display text-[clamp(48px,12vw,80px)] font-black uppercase leading-[0.92] tracking-[-0.03em] text-text lg:leading-none">
+      <SectionTitle class="m-0 text-center">
         {{ title }}
-      </h2>
+      </SectionTitle>
 
       <div v-if="companies.length" class="mt-12 md:hidden">
         <LandingSlider :items-count="companies.length" aria-label="Читайте также">

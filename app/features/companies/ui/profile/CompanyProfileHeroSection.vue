@@ -12,7 +12,7 @@ defineProps<{
 
 <template>
   <section id="top" class="flex min-h-svh flex-col overflow-hidden bg-bg">
-    <div class="mx-auto flex w-full max-w-[1920px] flex-1 items-end px-5 pb-8 pt-24 sm:px-6 lg:px-10 lg:pb-[72px]">
+    <div class="mx-auto flex w-full max-w-[1920px] flex-1 items-end px-5 pb-8 pt-24 sm:px-6 lg:px-10 lg:pb-6">
       <div class="relative flex w-full flex-col">
         <p
           v-if="teaser"

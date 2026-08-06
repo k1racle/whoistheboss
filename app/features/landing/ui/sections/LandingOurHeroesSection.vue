@@ -2,8 +2,9 @@
 import { landingHeroes, type LandingHeroCard } from '@features/landing/model/landing.data'
 import LandingHeroCardItem from '@features/landing/ui/cards/LandingHeroCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
-import ArrowText from '@shared/ui/icons/ArrowText.vue'
+import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import { ROUTES } from '@shared/navigation'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 const props = withDefaults(defineProps<{
   title: string
@@ -31,18 +32,18 @@ const visibleHeroes = computed(() => {
     <div class="mx-auto w-full max-w-[1920px] px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
       <div class="mb-8 flex flex-col gap-5 lg:mb-10">
         <div class="flex items-center justify-between gap-6">
-          <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88] tracking-[-3%] text-text">
+          <SectionTitle>
             {{ title }}
-          </h2>
+          </SectionTitle>
 
-          <NuxtLink
+          <ButtonLink
             v-if="showMore"
             :to="ROUTES.ENTREPRENEURS"
-            class="hidden min-h-11 w-fit shrink-0 items-center justify-center gap-2 border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text lg:inline-flex"
+            desktop-only
+            class="w-fit shrink-0"
           >
             Еще
-            <ArrowText />
-          </NuxtLink>
+          </ButtonLink>
         </div>
 
         <p v-if="description" class="max-w-[860px] font-sans text-sm leading-6 text-text/78 sm:text-base">

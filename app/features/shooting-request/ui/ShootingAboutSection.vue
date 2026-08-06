@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import ArrowText from '@shared/ui/icons/ArrowText.vue'
+import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 const props = defineProps<{
   title: string
@@ -27,21 +28,20 @@ defineExpose({ logoRef })
     <div class="mx-auto grid w-full max-w-[1920px] gap-10 lg:grid-cols-[1fr_2fr] lg:gap-12">
       <div class="flex flex-col justify-end gap-8">
         <div>
-          <h2 class="font-display text-[clamp(3rem,6vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.03em] text-text">
+          <SectionTitle>
             {{ title }}
-          </h2>
+          </SectionTitle>
           <div class="mt-6 space-y-4 font-sans text-sm leading-6 text-text/78 sm:text-base">
             <p v-for="paragraph in paragraphs" :key="paragraph">{{ paragraph }}</p>
           </div>
         </div>
 
-        <a
-          href="#stages"
-          class="inline-flex min-h-11 w-fit items-center justify-center gap-2 border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text"
+        <ButtonLink
+          to="#stages"
+          class="w-fit"
         >
           Как это работает
-          <ArrowText />
-        </a>
+        </ButtonLink>
       </div>
 
       <VideoFrame

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CompanyAwardItem } from '@features/companies/model/companies-page.types'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 defineProps<{
   title: string
@@ -12,9 +13,9 @@ defineProps<{
   <section class="bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:py-[130px]">
     <div class="mx-auto w-full max-w-[1920px]">
       <div class="max-w-[970px]">
-        <h2 class="m-0 font-display text-[48px] font-black uppercase leading-[48px] tracking-[-0.03em] text-text lg:text-[80px] lg:leading-[0.9]">
+        <SectionTitle class="m-0">
           {{ title }}
-        </h2>
+        </SectionTitle>
         <p v-if="description" class="mt-4 max-w-[640px] whitespace-pre-line font-sans text-base leading-4 text-text">
           {{ description }}
         </p>

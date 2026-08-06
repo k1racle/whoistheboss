@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ArticleRowItem } from '@shared/types/article-row'
 import ArticleRowCard from '@shared/ui/cards/ArticleRowCard.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 withDefaults(defineProps<{
   title: string
@@ -14,9 +15,9 @@ withDefaults(defineProps<{
 <template>
   <section class="bg-bg">
     <div class="mx-auto w-full max-w-[1920px]">
-      <h2 class="mb-10 px-4 pt-12 font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-text sm:px-6 lg:mb-12 lg:px-10 lg:pt-16">
+      <SectionTitle class="mb-10 px-4 pt-12 sm:px-6 lg:mb-12 lg:px-10 lg:pt-16">
         {{ title }}
-      </h2>
+      </SectionTitle>
 
       <div class="bg-bg md:border md:border-border-strong md:bg-surface">
         <ul

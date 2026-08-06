@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 const props = defineProps<{
   title: string
@@ -18,7 +19,7 @@ const backdropStyle = computed(() => props.backgroundImage
 </script>
 
 <template>
-  <section id="interview" class="min-h-svh bg-bg pt-36 lg:pt-[180px]">
+  <section id="interview" class="min-h-svh bg-bg pt-36 lg:pt-[160px]">
     <div
       class="relative mb-36 h-[clamp(420px,50svh,620px)] bg-border-strong bg-cover bg-center lg:mb-[170px]"
       :style="backdropStyle"
@@ -34,9 +35,9 @@ const backdropStyle = computed(() => props.backgroundImage
     </div>
 
     <div class="mx-auto w-full max-w-[1920px] px-5 pb-24 pt-10 text-center sm:px-6 lg:px-10 lg:pb-[116px]">
-      <h2 class="mx-auto max-w-[980px] font-display text-[clamp(48px,4.17vw,80px)] font-black uppercase leading-[0.92] tracking-[-0.03em] text-text">
+      <SectionTitle class="mx-auto max-w-[980px]">
         {{ title }}
-      </h2>
+      </SectionTitle>
 
       <p class="mx-auto mt-6 w-[min(520px,100%)] whitespace-pre-line font-sans text-base leading-4 text-text lg:w-[min(520px,42vw)]">
         {{ textOne }}

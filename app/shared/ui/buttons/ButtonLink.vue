@@ -1,0 +1,80 @@
+<script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
+
+/**
+ * Shared CTA link for the public Nuxt site.
+ *
+ * Use this component for button-looking navigation actions built on NuxtLink:
+ * header/footer CTAs, section "more" links, and compact in-page CTA links.
+ * Do not use it for full-card links or decorative card arrows; those layouts
+ * usually need local composition and positioning.
+ *
+ * Arrow modes:
+ * - `badge`: compact arrow in an accent badge, replacing the removed ArrowText.vue.
+ * - `mark`: standalone bracket arrow, matching ArrowMark.vue visual language.
+ * - `none`: text-only CTA button.
+ */
+type ButtonLinkArrow = 'badge' | 'mark' | 'none'
+type ButtonLinkSize = 'md' | 'header' | 'story'
+type ButtonLinkVariant = 'flat' | 'border' | 'invert'
+
+const props = withDefaults(defineProps<{
+  to: RouteLocationRaw
+  arrow?: ButtonLinkArrow
+  size?: ButtonLinkSize
+  variant?: ButtonLinkVariant
+  desktopOnly?: boolean
+  emphasis?: boolean
+}>(), {
+  arrow: 'badge',
+  size: 'md',
+  variant: 'border',
+  desktopOnly: false,
+  emphasis: true,
+})
+
+const displayClass = computed(() => props.desktopOnly ? 'hidden lg:inline-flex' : 'inline-flex')
+
+const sizeClasses: Record<ButtonLinkSize, string> = {
+  md: 'min-h-11 gap-2 px-4 py-2.5 text-sm leading-4',
+  header: 'min-h-9 gap-2 px-3 py-2 text-[13px] leading-4 sm:min-h-10 sm:px-4 sm:text-sm lg:text-base',
+  story: 'min-h-[42px] gap-3 px-4 py-2 text-base leading-4',
+}
+
+const variantClasses: Record<ButtonLinkVariant, string> = {
+  flat: '',
+  border: 'border border-accent hover:border-text',
+  invert: 'border border-accent duration-200 hover:border-text hover:bg-surface hover:text-text focus-visible:border-text focus-visible:bg-surface focus-visible:text-text',
+}
+
+const weightClass = computed(() => props.emphasis ? 'font-bold tracking-[0.12em]' : 'font-normal tracking-normal')
+
+const buttonClasses = computed(() => [
+  displayClass.value,
+  'items-center justify-center bg-accent font-sans uppercase text-text-on-accent no-underline transition-colors',
+  sizeClasses[props.size],
+  variantClasses[props.variant],
+  weightClass.value,
+])
+</script>
+
+<template>
+  <NuxtLink
+    :to="to"
+    :class="buttonClasses"
+  >
+    <slot />
+    <span
+      v-if="arrow === 'badge'"
+      aria-hidden="true"
+      class="inline-flex items-center justify-center bg-accent px-2 py-1"
+    >
+      <span class="block h-[19px] w-[34px] shrink-0 bg-current [-webkit-mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat] [mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat]" />
+    </span>
+    <span
+      v-else-if="arrow === 'mark'"
+      aria-hidden="true"
+      class="inline-block h-[1.35rem] w-[2.15rem] shrink-0 bg-current [-webkit-mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat] [mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat]"
+    />
+  </NuxtLink>
+</template>

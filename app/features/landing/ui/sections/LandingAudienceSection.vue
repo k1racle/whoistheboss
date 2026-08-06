@@ -4,6 +4,7 @@ import {
   type LandingAudienceCard,
 } from '@features/landing/model/landing.data'
 import { ROUTES } from '@shared/navigation'
+import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import AudienceCard from '@features/landing/ui/audience/AudienceCard.vue'
 
 const props = defineProps<{
@@ -62,15 +63,11 @@ const sceneStyle = computed(() =>
     : {},
 )
 
-const stageStyle = computed(() =>
-  isDesktop.value
-    ? {
-        gridTemplateColumns: 'repeat(4, 25vw)',
-        gridAutoRows: '25vw',
-        transform: `translate3d(0, ${stageOffset.value}px, 0)`,
-      }
-    : {},
-)
+const stageStyle = computed(() => ({
+  gridTemplateColumns: 'repeat(4, 25vw)',
+  gridAutoRows: '25vw',
+  transform: `translate3d(0, ${stageOffset.value}px, 0)`,
+}))
 
 const slotStyle = (index: number) => {
   const [column, row] = SLOT_POSITIONS[index % SLOT_POSITIONS.length]!
@@ -217,12 +214,12 @@ onBeforeUnmount(() => {
           <h2 class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94] tracking-[-0.045em] text-text">
             Это про меня
           </h2>
-          <NuxtLink
+          <ButtonLink
             :to="ROUTES.SHOOTING_REQUEST"
-            class="inline-flex min-h-11 items-center justify-center border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text"
+            arrow="none"
           >
             Стать участником
-          </NuxtLink>
+          </ButtonLink>
         </div>
       </div>
     </div>

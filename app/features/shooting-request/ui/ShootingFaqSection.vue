@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ShootingFaqItem } from '@features/shooting-request/model/shooting-page.types'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 defineProps<{
   title: string
@@ -10,9 +11,9 @@ defineProps<{
 <template>
   <section id="faq" class="bg-bg px-4 py-20 sm:px-6 lg:px-10 lg:py-32">
     <div class="mx-auto w-full max-w-[1920px]">
-      <h2 class="font-display text-[clamp(5rem,12vw,13rem)] font-black uppercase leading-[0.8] tracking-[-0.03em] text-text">
+      <SectionTitle>
         {{ title }}
-      </h2>
+      </SectionTitle>
 
       <div class="mt-16 grid gap-2 lg:mt-28">
         <details
