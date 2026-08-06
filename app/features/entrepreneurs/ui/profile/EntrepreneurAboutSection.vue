@@ -8,15 +8,29 @@ const props = defineProps<{
   gallery: string[]
 }>()
 
-const activeIndex = shallowRef(props.items.length > 1 ? 1 : 0)
+const defaultImageIndex = computed(() => props.items.length > 1 ? 1 : 0)
+const hoveredIndex = shallowRef<number | null>(null)
 
 const activeImage = computed(() => {
   if (!props.gallery.length) return '/images/placeholder.svg'
-  return props.gallery[activeIndex.value % props.gallery.length] || props.gallery[0] || '/images/placeholder.svg'
+  const imageIndex = hoveredIndex.value ?? defaultImageIndex.value
+  return props.gallery[imageIndex % props.gallery.length] || props.gallery[0] || '/images/placeholder.svg'
 })
 
 const setActive = (index: number) => {
-  activeIndex.value = index
+  hoveredIndex.value = index
+}
+
+const clearActive = () => {
+  hoveredIndex.value = null
+}
+
+const itemClass = (index: number) => {
+  if (index === 1) {
+    return 'border-accent bg-accent text-text-on-accent hover:border-text/10 hover:bg-surface hover:text-text focus-visible:border-text/10 focus-visible:bg-surface focus-visible:text-text'
+  }
+
+  return 'border-text/10 bg-surface text-text hover:border-accent hover:bg-accent hover:text-text-on-accent focus-visible:border-accent focus-visible:bg-accent focus-visible:text-text-on-accent'
 }
 </script>
 
@@ -38,9 +52,11 @@ const setActive = (index: number) => {
           v-for="(item, index) in items"
           :key="item.href"
           :to="item.href"
-          class="relative flex min-h-[10.75rem] flex-col justify-between border border-text/10 bg-surface p-4 text-text no-underline transition-colors duration-200 hover:border-accent hover:bg-accent hover:text-text-on-accent focus-visible:border-accent focus-visible:bg-accent focus-visible:text-text-on-accent max-md:min-h-28"
-          :class="{ 'border-accent bg-accent text-text-on-accent': activeIndex === index }"
+          class="relative flex min-h-[10.75rem] flex-col justify-between border p-4 no-underline transition-colors duration-200 max-md:min-h-28"
+          :class="itemClass(index)"
+          @blur="clearActive"
           @mouseenter="setActive(index)"
+          @mouseleave="clearActive"
           @focus="setActive(index)"
         >
           <strong class="block w-[64%] self-end text-right font-sans text-[32px] font-bold uppercase leading-8 tracking-[-1.25px] max-md:text-2xl max-md:leading-6">

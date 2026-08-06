@@ -12,7 +12,6 @@ withDefaults(defineProps<{
 const pageLinks = [
   { label: 'Компании', to: ROUTES.COMPANIES },
   { label: 'Биография', to: ROUTES.ENTREPRENEURS },
-  { label: 'Интервью', to: ROUTES.INTERVIEWS },
   { label: 'Статьи', to: ROUTES.BLOG },
   { label: 'Блог', to: ROUTES.BLOG },
 ] as const

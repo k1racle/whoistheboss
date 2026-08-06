@@ -18,23 +18,24 @@ const places = computed(() => data.value?.businesses ?? [])
 <template>
   <section class="border-b border-border-strong bg-bg">
     <div class="mx-auto w-full max-w-[1920px] px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
-      <div class="mb-8 flex flex-col gap-5 lg:mb-10 lg:flex-row lg:items-end lg:justify-between">
-        <div class="max-w-[980px] space-y-4">
+      <div class="mb-8 flex flex-col gap-5 lg:mb-10">
+        <div class="flex items-center justify-between gap-6">
           <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88] tracking-[-3%] text-text">
             {{ title }}
           </h2>
-          <p class="max-w-[860px] font-sans text-sm leading-6 text-text/78 sm:text-base">
-            {{ description }}
-          </p>
+
+          <NuxtLink
+            :to="ROUTES.COMPANIES"
+            class="hidden min-h-11 w-fit shrink-0 items-center justify-center gap-2 border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text lg:inline-flex"
+          >
+            Еще
+            <ArrowText />
+          </NuxtLink>
         </div>
 
-        <NuxtLink
-          :to="ROUTES.COMPANIES"
-          class="inline-flex w-fit min-h-11 items-center justify-center gap-2 border border-accent bg-accent px-4 py-2.5 font-sans text-sm font-bold uppercase tracking-[0.12em] text-text-on-accent transition-colors hover:border-text"
-        >
-          Еще
-          <ArrowText />
-        </NuxtLink>
+        <p class="max-w-[860px] font-sans text-sm leading-6 text-text/78 sm:text-base">
+          {{ description }}
+        </p>
       </div>
 
       <div v-if="places.length">

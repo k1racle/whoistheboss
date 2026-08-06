@@ -1,5 +1,5 @@
 import type { Role } from '@prisma/client'
-import type { H3Event } from 'h3'
+import { clearSession, useSession, type H3Event, type SessionConfig } from 'h3'
 import { getReturnToPath } from '@server/utils/request-flow'
 
 export interface PublicSessionUser {
@@ -11,21 +11,39 @@ export interface PublicSessionUser {
 
 interface SessionShape {
   user?: PublicSessionUser | null
+  loggedInAt?: string
+  [key: string]: unknown
+}
+
+function getPublicSessionConfig(): SessionConfig {
+  const config = useRuntimeConfig()
+  const password = config.session.password || config.sessionSecret
+
+  return {
+    password,
+    name: 'nuxt-session',
+  }
 }
 
 export async function setPublicUserSession(
   event: H3Event,
   user: PublicSessionUser,
 ): Promise<void> {
-  await setUserSession(event, {
+  const session = await useSession<SessionShape>(event, getPublicSessionConfig())
+
+  await session.update({
     user,
     loggedInAt: new Date().toISOString(),
   })
 }
 
 export async function getPublicSessionUser(event: H3Event): Promise<PublicSessionUser | null> {
-  const session = await getUserSession(event) as SessionShape
-  return session.user ?? null
+  const session = await useSession<SessionShape>(event, getPublicSessionConfig())
+  return session.data.user ?? null
+}
+
+export async function clearPublicUserSession(event: H3Event): Promise<void> {
+  await clearSession(event, getPublicSessionConfig())
 }
 
 export function getPostLoginRedirect(

@@ -20,7 +20,7 @@ defineProps<{
           v-for="article in articles"
           :key="article.id"
           :article="article"
-          class="min-w-[82%] shrink-0 snap-center sm:min-w-[420px]"
+          class="min-w-[70%] max-w-[70%] shrink-0 snap-center sm:min-w-[420px] sm:max-w-none"
         />
       </LandingSlider>
 

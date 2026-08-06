@@ -70,7 +70,7 @@ const phone = defineModel<string>('phone', { required: true })
 
     <NuxtLink
       :to="ROUTES.SHOOTING_REQUEST"
-      class="mt-4 inline-flex min-h-11 w-full items-center justify-center bg-surface px-4 py-3 text-center font-sans text-sm font-normal uppercase leading-none text-accent transition-colors hover:bg-surface-invert hover:text-text-on-accent lg:mt-5 lg:min-h-[49px] lg:py-2 lg:text-[22px] lg:leading-[22px] lg:tracking-[-0.88px] xl:mt-auto"
+      class="mt-4 inline-flex min-h-11 w-full items-center justify-center bg-surface px-4 py-3 text-center font-sans text-sm font-normal uppercase leading-none text-accent transition-colors hover:bg-surface-invert hover:text-text-on-accent lg:mt-5 lg:min-h-[49px] lg:py-2 lg:text-[22px] lg:leading-[22px] lg:tracking-[-0.88px] xl:mb-[1.5625rem] xl:mt-auto"
     >
       Узнать подробнее
     </NuxtLink>

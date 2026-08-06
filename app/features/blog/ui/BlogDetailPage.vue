@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { BlogArticleDetailResponse, BlogArticleRelatedMaterial } from '@features/blog/model/blog.types'
+import type { BlogArticleDetailResponse } from '@features/blog/model/blog.types'
 import type { ArticleRowItem } from '@shared/types/article-row'
-import BlogRelatedEntrepreneurCard from '@features/blog/ui/BlogRelatedEntrepreneurCard.vue'
-import CompanyCatalogCard from '@features/companies/ui/CompanyCatalogCard.vue'
-import { formatRussianDate } from '@shared/lib/date'
-import ArticleRowCard from '@shared/ui/cards/ArticleRowCard.vue'
+import BlogRelatedMaterialsSection from '@features/blog/ui/BlogRelatedMaterialsSection.vue'
+import { formatNumericRussianDate } from '@shared/lib/date'
+import ArticleRowsSection from '@shared/ui/articles/ArticleRowsSection.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import TrustedRichText from '@shared/ui/page/TrustedRichText.vue'
 
@@ -14,9 +13,7 @@ const sectionOrder = computed(() => new Map(props.article.sectionOrder.map((key,
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => props.article.sectionVisibility[key] !== false
 
-const publishedDate = computed(() => formatRussianDate(props.article.publishedAt))
-const relatedEntrepreneurs = computed(() => props.relatedMaterials.filter((item): item is BlogArticleRelatedMaterial & { type: 'entrepreneur' } => item.type === 'entrepreneur'))
-const relatedCompanies = computed(() => props.relatedMaterials.filter((item): item is BlogArticleRelatedMaterial & { type: 'business' } => item.type === 'business'))
+const publishedDate = computed(() => formatNumericRussianDate(props.article.publishedAt))
 const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(article => ({
   id: article.id,
   slug: article.slug,
@@ -40,9 +37,14 @@ const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(art
             {{ article.title }}
           </h1>
           <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-sans text-sm uppercase leading-5 text-text/70">
-            <time v-if="publishedDate">{{ publishedDate }}</time>
+            <time v-if="publishedDate">Дата: {{ publishedDate }}</time>
             <span v-if="article.entrepreneur">Автор: {{ article.entrepreneur.name }}</span>
-            <span v-if="article.category">{{ article.category }}</span>
+            <span
+              v-if="article.category"
+              class="inline-flex min-h-8 items-center bg-accent px-4 py-2 text-text-on-accent"
+            >
+              {{ article.category }}
+            </span>
           </div>
         </header>
 
@@ -88,61 +90,19 @@ const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(art
       </div>
     </section>
 
-    <section
+    <BlogRelatedMaterialsSection
       v-if="isVisible('related') && relatedMaterials.length"
       :style="sectionStyle('related')"
-      class="bg-bg py-20 lg:py-32"
-    >
-      <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
-        <h2 class="mb-12 text-center font-display text-[clamp(48px,8vw,96px)] font-black uppercase leading-none tracking-[-0.03em]">
-          {{ article.relatedTitle || 'Материалы по теме' }}
-        </h2>
-        <div v-if="relatedEntrepreneurs.length" class="grid grid-cols-1 gap-5 md:grid-cols-3 lg:gap-8">
-          <BlogRelatedEntrepreneurCard
-            v-for="item in relatedEntrepreneurs"
-            :key="item.slug"
-            :entrepreneur="{
-              slug: item.slug,
-              name: item.name,
-              title: item.title || '',
-              photo: item.coverImage,
-              hoverPhoto: item.hoverPhoto,
-            }"
-          />
-        </div>
-        <div v-if="relatedCompanies.length" class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
-          <CompanyCatalogCard
-            v-for="item in relatedCompanies"
-            :key="item.slug"
-            :company="{
-              slug: item.slug,
-              name: item.name,
-              type: item.title || '',
-              coverImage: item.coverImage,
-            }"
-          />
-        </div>
-      </div>
-    </section>
+      :title="article.relatedTitle"
+      :materials="relatedMaterials"
+    />
 
-    <section
+    <ArticleRowsSection
       v-if="isVisible('latest') && latestRows.length"
       :style="sectionStyle('latest')"
-      class="bg-bg py-20 lg:py-32"
-    >
-      <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
-        <h2 class="mb-12 font-display text-[clamp(48px,8vw,96px)] font-black uppercase leading-none tracking-[-0.03em]">
-          Читать дальше
-        </h2>
-        <ul class="grid gap-5">
-          <ArticleRowCard
-            v-for="articleRow in latestRows"
-            :key="articleRow.id"
-            :article="articleRow"
-          />
-        </ul>
-      </div>
-    </section>
+      title="Читать дальше"
+      :articles="latestRows"
+    />
 
     <PageBannerSection
       v-if="isVisible('banner')"

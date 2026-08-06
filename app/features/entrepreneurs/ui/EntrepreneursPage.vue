@@ -52,7 +52,7 @@ const heroes = computed<LandingHeroCard[]>(() => props.page.entrepreneurs.map(en
       :cards="audienceCards"
     >
       <template #intro>
-        <h2 class="font-display text-[clamp(64px,9vw,160px)] font-black uppercase leading-[0.82] tracking-[-0.03em] text-text">
+        <h2 class="font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.82] tracking-[-0.03em] text-text">
           Наши герои
         </h2>
         <p class="mt-6 max-w-[680px] font-sans text-base leading-6 text-text/80 sm:text-xl sm:leading-7">

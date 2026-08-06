@@ -9,6 +9,7 @@ import { parseSectionOrder, parseSectionVisibility } from '@shared/lib/section-c
 import { ROUTES } from '@shared/navigation'
 import { safeJsonParse } from '@server/utils/json'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+import { getYandexMapCoordinates } from '@server/utils/yandex-map'
 
 const COMPANY_DETAIL_SETTINGS_KEYS = [
   'HOME_BANNER_IMAGE',
@@ -113,16 +114,6 @@ function parseMoreItems(titlesRaw: string | null | undefined, linksRaw: string |
     title: titles[index] || fallbackTitles[index] || '',
     href: links[index] || fallbackLinks[index] || ROUTES.COMPANIES,
   }))
-}
-
-function extractMapSrc(raw: string | null | undefined): string {
-  const value = String(raw || '').trim()
-  if (!value) return ''
-
-  const srcMatch = value.match(/src\s*=\s*["']([^"']+)["']/i)
-  const candidate = (srcMatch?.[1] ?? value).replace(/&amp;/g, '&')
-
-  return /^https:\/\/([a-z0-9-]+\.)*yandex\.(ru|com)\//i.test(candidate) ? candidate : ''
 }
 
 export default defineEventHandler(async (event): Promise<CompanyProfileData> => {
@@ -235,6 +226,8 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
         slug: business.entrepreneur.slug,
         name: business.entrepreneur.name,
         title: business.entrepreneur.title,
+        heroRightTeaser: business.entrepreneur.heroRightTeaser,
+        heroBottomRightTeaser: business.entrepreneur.heroBottomRightTeaser,
         quote: business.entrepreneur.quote,
         photo: business.entrepreneur.photo,
         biographyPhoto: business.entrepreneur.biographyPhoto || business.entrepreneur.photo,
@@ -252,7 +245,7 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
     phone: business.phone,
     email: business.email,
     website: business.website,
-    mapSrc: extractMapSrc(business.mapEmbed),
+    mapCoordinates: getYandexMapCoordinates(business.mapEmbed),
     awardsEnabled: business.awardsEnabled !== false,
     awardsTitle: business.awardsTitle || 'Достижения и награды',
     awardsDescription: business.awardsDescription || 'Ключевые результаты и внешнее признание проекта.',

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { LandingArticle } from '@features/landing/model/landing.data'
 import type { ArticleRowItem } from '@shared/types/article-row'
-import ArticleRowCard from '@shared/ui/cards/ArticleRowCard.vue'
+import ArticleRowsSection from '@shared/ui/articles/ArticleRowsSection.vue'
 
 defineProps<{
   title: string
@@ -21,31 +21,8 @@ const articleRows = computed<ArticleRowItem[]>(() => articles.value.map(article 
 </script>
 
 <template>
-  <section class="bg-bg">
-    <div class="mx-auto w-full max-w-[1920px]">
-      <h2 class="mb-10 px-4 pt-12 font-display text-[clamp(3rem,8vw,6rem)] font-black uppercase leading-[0.88]  tracking-[-3%] text-text sm:px-6 lg:mb-12 lg:px-10 lg:pt-16">
-        {{ title }}
-      </h2>
-
-      <div class="border border-border-strong bg-surface">
-        <ul
-          v-if="articleRows.length"
-          class="grid gap-5"
-        >
-          <ArticleRowCard
-            v-for="article in articleRows"
-            :key="article.id"
-            :article="article"
-          />
-        </ul>
-
-        <p
-          v-else
-          class="px-4 py-12 font-sans text-sm uppercase tracking-[0.14em] text-text/55 sm:px-6 lg:px-10"
-        >
-          Статьи появятся после первой публикации
-        </p>
-      </div>
-    </div>
-  </section>
+  <ArticleRowsSection
+    :title="title"
+    :articles="articleRows"
+  />
 </template>

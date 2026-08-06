@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt'
 import prisma from '~~/lib/prisma'
 import { setPublicUserSession } from '@server/utils/auth-session'
+import { hashPassword } from '@server/utils/password'
 import {
   getStringValue,
   isValidEmail,
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, statusMessage: 'Email already registered' })
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10)
+  const hashedPassword = await hashPassword(password, 10)
   const user = await prisma.user.create({
     data: {
       name,

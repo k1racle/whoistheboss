@@ -1,3 +1,5 @@
+import type { MapCoordinates } from '@shared/types/map'
+
 export interface CompanyCatalogItem {
   slug: string
   name: string
@@ -21,6 +23,8 @@ export interface CompanyOwnerSummary {
   slug: string
   name: string
   title: string
+  heroRightTeaser: string | null
+  heroBottomRightTeaser: string | null
   quote: string | null
   photo: string | null
   biographyPhoto: string | null
@@ -73,7 +77,7 @@ export interface CompanyProfileData {
   phone: string | null
   email: string | null
   website: string | null
-  mapSrc: string
+  mapCoordinates: MapCoordinates | null
   awardsEnabled: boolean
   awardsTitle: string
   awardsDescription: string

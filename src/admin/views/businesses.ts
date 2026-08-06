@@ -357,12 +357,10 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[]): str
           `)}
 
           ${section('business-editor-addresses', '08', 'Адреса', 'Карта расположения компании на публичной странице.', `
-            ${field('Iframe Яндекс Карт', 'mapEmbed', item.mapEmbed, {
-              textarea: true,
-              rows: 8,
-              help: 'Вставьте полный код iframe из Конструктора Яндекс Карт или прямую ссылку на карту. Перед копированием выберите красные метки в цвет кнопок сайта.',
+            ${field('Координаты Яндекс Карт', 'mapEmbed', item.mapEmbed, {
+              help: 'Укажите широту и долготу через запятую. Старые iframe и прямые ссылки Яндекс Карт с параметром ll продолжат работать.',
               wide: true,
-              placeholder: '<iframe src="https://yandex.ru/map-widget/v1/…"></iframe>'
+              placeholder: '55.755864, 37.617698'
             })}
           `)}
 
@@ -503,7 +501,7 @@ function fillForm(item: Business) {
   form.querySelector<HTMLTextAreaElement>('textarea[name="specsTitle"]')!.value = item.specsTitle || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="specsDescription"]')!.value = item.specsDescription || '';
   renderBusinessSpecs(parseBusinessSpecs(item.specsItems));
-  form.querySelector<HTMLTextAreaElement>('textarea[name="mapEmbed"]')!.value = item.mapEmbed || '';
+  form.querySelector<HTMLInputElement>('input[name="mapEmbed"]')!.value = item.mapEmbed || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="awardsTitle"]')!.value = item.awardsTitle || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="awardsDescription"]')!.value = item.awardsDescription || '';
   renderBusinessAwards(parseBusinessAwards(item.awardsItems));

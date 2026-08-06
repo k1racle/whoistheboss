@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt'
 import prisma from '~~/lib/prisma'
 import { getPostLoginRedirect, setPublicUserSession } from '@server/utils/auth-session'
+import { comparePassword } from '@server/utils/password'
 import {
   getStringValue,
   isValidEmail,
@@ -8,7 +8,7 @@ import {
   requestWantsJson,
 } from '@server/utils/request-flow'
 
-interface LoginBody {
+interface LoginBody extends Record<string, unknown> {
   email?: unknown
   password?: unknown
   returnTo?: unknown
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password)
+  const isPasswordValid = await comparePassword(password, user.password)
   if (!isPasswordValid) {
     if (!wantsJson) {
       return sendRedirect(event, '/login?error=1', 303)

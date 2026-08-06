@@ -9,10 +9,14 @@ const props = withDefaults(defineProps<{
   image: string | null
   imageAlt: string
   imageAspect?: 'portrait' | 'wide'
+  buttonHref?: string
+  buttonLabel?: string
 }>(), {
   asideText: '',
   bottomText: '',
   imageAspect: 'portrait',
+  buttonHref: '#interviews',
+  buttonLabel: 'СМОТРЕТЬ ИНТЕРВЬЮ',
 })
 
 const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.trim()).filter(Boolean))
@@ -39,10 +43,10 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
 
         <div class="mt-auto flex items-end gap-[120px] pt-10 max-lg:flex-col max-lg:items-start max-lg:gap-6">
           <a
-            href="#interviews"
+            :href="buttonHref"
             class="inline-flex min-h-[42px] shrink-0 items-center justify-center gap-3 border border-accent bg-accent px-4 py-2 font-sans text-base uppercase leading-4 text-text-on-accent no-underline max-md:w-full"
           >
-            СМОТРЕТЬ ИНТЕРВЬЮ
+            {{ buttonLabel }}
             <ArrowMark />
           </a>
           <p v-if="asideText" class="m-0 w-[min(520px,100%)] whitespace-pre-line font-sans text-base leading-4 text-text">

@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
 
-defineProps<{
+withDefaults(defineProps<{
   eyebrow: string
   title: string
   image: string | null
   imageAlt: string
   blocks: string[]
-}>()
+  buttonHref?: string
+  buttonLabel?: string
+}>(), {
+  buttonHref: '#interviews',
+  buttonLabel: 'СМОТРЕТЬ ИНТЕРВЬЮ',
+})
 </script>
 
 <template>
@@ -22,10 +27,10 @@ defineProps<{
           <span>{{ title }}?</span>
         </h2>
         <a
-          href="#interviews"
+          :href="buttonHref"
           class="inline-flex min-h-[42px] items-center justify-center gap-3 border border-accent bg-accent px-4 py-2 font-sans text-base uppercase leading-4 text-text-on-accent no-underline transition-colors duration-200 hover:border-text hover:bg-surface hover:text-text focus-visible:border-text focus-visible:bg-surface focus-visible:text-text max-md:w-full"
         >
-          СМОТРЕТЬ ИНТЕРВЬЮ
+          {{ buttonLabel }}
           <ArrowMark />
         </a>
         <img v-if="image" :src="image" :alt="imageAlt" class="mt-4 w-[min(100%,33rem)] object-cover">

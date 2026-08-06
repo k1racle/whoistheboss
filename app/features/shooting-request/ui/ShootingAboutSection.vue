@@ -12,12 +12,15 @@ const props = defineProps<{
   videoFile: string
 }>()
 
+const logoRef = ref<HTMLElement | null>(null)
 const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
+
+defineExpose({ logoRef })
 </script>
 
 <template>
   <section id="about" class="relative bg-bg px-4 py-14 sm:px-6 lg:px-10 lg:py-20">
-    <span class="absolute left-10 top-16 hidden xl:block">
+    <span ref="logoRef" class="absolute left-10 top-16 hidden xl:block">
       <SiteLogo />
     </span>
 

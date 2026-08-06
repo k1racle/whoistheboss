@@ -65,7 +65,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 bg-bg/90 backdrop-blur">
+  <header class="sticky top-0 z-50 bg-bg/90 backdrop-blur-2xl">
     <div class="mx-auto flex w-full max-w-[1920px] items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:gap-6 lg:px-10 lg:py-4">
       <div class="flex min-w-0 items-center gap-6 lg:gap-12">
         <NuxtLink
@@ -127,12 +127,12 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <div
       id="site-mobile-menu"
-      class="fixed inset-0 z-40 transition-[opacity,visibility] duration-300 lg:hidden"
+      class="fixed inset-0 z-50 transition-[opacity,visibility] duration-300 lg:hidden"
       :class="isMenuOpen ? 'visible opacity-100' : 'invisible opacity-0'"
       :aria-hidden="!isMenuOpen"
     >
       <div
-        class="absolute inset-0 bg-bg/60 backdrop-blur-2xl"
+        class="absolute inset-0 bg-bg/90 backdrop-blur"
         @click="closeMenu"
       />
       <div class="relative flex h-full flex-col items-end gap-8 overflow-y-auto px-5 pb-8 pt-24 sm:px-8">

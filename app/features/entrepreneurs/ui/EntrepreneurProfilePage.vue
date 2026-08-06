@@ -3,6 +3,7 @@ import type { EntrepreneurDetailData } from '@features/entrepreneurs/model/entre
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import { ROUTES } from '@shared/navigation'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
+import TextMarquee from '@shared/ui/marquee/TextMarquee.vue'
 import EntrepreneurAboutSection from './profile/EntrepreneurAboutSection.vue'
 import EntrepreneurFeaturedInterviewSection from './profile/EntrepreneurFeaturedInterviewSection.vue'
 import EntrepreneurInterviewListSection from './profile/EntrepreneurInterviewListSection.vue'
@@ -24,6 +25,9 @@ const sectionOrder = computed(() => new Map(props.entrepreneur.sectionOrder.map(
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => props.entrepreneur.sectionVisibility[key] !== false
 const biographyBlocks = computed(() => props.entrepreneur.biographyBlocks.filter(Boolean))
+const heroMarqueeText = computed(() =>
+  props.entrepreneur.heroMarquee || `${props.entrepreneur.name} • ${props.entrepreneur.title} • КТО ЗДЕСЬ ГЛАВНЫЙ`,
+)
 </script>
 
 <template>
@@ -32,6 +36,13 @@ const biographyBlocks = computed(() => props.entrepreneur.biographyBlocks.filter
       v-if="isVisible('hero')"
       :style="sectionStyle('hero')"
       :entrepreneur="entrepreneur"
+    />
+
+    <TextMarquee
+      v-if="isVisible('hero')"
+      :style="sectionStyle('hero')"
+      :text="heroMarqueeText"
+      :duration-seconds="48"
     />
 
     <EntrepreneurAboutSection

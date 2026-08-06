@@ -153,12 +153,17 @@ onBeforeUnmount(() => {
         :class="scenePositionClass"
         :style="sceneStyle"
       >
-        <div class="mx-auto flex w-full max-w-[1920px] flex-col gap-10 px-4 py-14 sm:px-6 lg:hidden">
-          <div class="max-w-[620px] space-y-8">
+        <div class="mx-auto w-full max-w-[1920px] px-4 pt-14 sm:px-6 lg:hidden">
+          <div class="ml-auto max-w-[620px]">
             <p class="font-sans text-sm leading-6 text-text/78 sm:text-base">
               {{ intro }}
             </p>
-            <h2 class="mx-auto flex w-fit flex-col items-center text-center font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text">
+          </div>
+        </div>
+
+        <div class="relative mx-auto w-full max-w-[1920px] px-4 pb-14 sm:px-6 lg:hidden">
+          <div class="pointer-events-none sticky top-0 z-0 flex h-svh items-center justify-center">
+            <h2 class="mx-auto flex w-fit flex-col items-center text-center font-display text-[clamp(72px,21vw,96px)] font-black uppercase leading-[0.86] tracking-[-0.03em] text-text">
               <span
                 v-for="line in titleLines"
                 :key="line"
@@ -168,7 +173,7 @@ onBeforeUnmount(() => {
             </h2>
           </div>
 
-          <div class="flex flex-col gap-5">
+          <div class="relative z-10 -mt-[100svh] flex flex-col gap-5 py-[45svh]">
             <AudienceCard
               v-for="(card, index) in cards"
               :key="card.id"

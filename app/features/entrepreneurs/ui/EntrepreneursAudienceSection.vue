@@ -32,11 +32,11 @@ const slotStyle = (index: number) => {
 <template>
   <section id="about" class="bg-bg px-4 py-14 sm:px-6 lg:px-10 lg:py-24">
     <div class="mx-auto w-full max-w-[1920px]">
-      <header v-if="$slots.intro" class="mb-12 ml-auto max-w-[760px] lg:mb-20">
-        <slot name="intro" />
-      </header>
-
       <div class="flex flex-col gap-5 lg:grid lg:grid-cols-4 lg:gap-0">
+        <header v-if="$slots.intro" class="text-right mb-7 max-w-[760px] lg:col-start-3 lg:col-end-5 lg:row-start-1 lg:mb-0 lg:w-full lg:justify-self-end lg:self-center">
+          <slot name="intro" />
+        </header>
+
         <AudienceCard
           v-for="(card, index) in cards"
           :key="card.id"
