@@ -3,9 +3,11 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
+    "build": "npm run build:admin && nuxt build",
+    "build:admin": "vite build --config vite.admin.config.ts",
+    "dev": "concurrently -n site,admin -c cyan,magenta \"npm run dev:site\" \"npm run dev:admin\"",
     "dev:site": "nuxt dev --port 3001 --host 127.0.0.1",
+    "dev:admin": "vite --config vite.admin.config.ts",
     "generate": "nuxt generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -30,7 +32,8 @@
     "quill": "^2.0.3",
     "satori": "^0.29.0",
     "vue": "^3.5.40",
-    "vue-router": "^5.2.0"
+    "vue-router": "^5.2.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",

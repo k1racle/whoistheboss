@@ -244,8 +244,9 @@ async function fetchJson(input: string, init?: RequestInit) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Unknown error' }));
-    const issues = Array.isArray(err.issues)
-      ? err.issues
+    const details = err.data && typeof err.data === 'object' ? err.data : err;
+    const issues = Array.isArray(details.issues)
+      ? details.issues
         .map((issue: { path?: unknown; message?: unknown }) => {
           const path = Array.isArray(issue.path) ? issue.path.join('.') : '';
           const message = typeof issue.message === 'string' ? issue.message : '';
@@ -253,8 +254,8 @@ async function fetchJson(input: string, init?: RequestInit) {
         })
         .filter(Boolean)
       : [];
-    const details = issues.length ? ` (${issues.join(', ')})` : '';
-    throw new Error(`${err.error || 'Request failed'}${details}`);
+    const issueDetails = issues.length ? ` (${issues.join(', ')})` : '';
+    throw new Error(`${details.error || err.statusMessage || 'Request failed'}${issueDetails}`);
   }
   return res.json();
 }
