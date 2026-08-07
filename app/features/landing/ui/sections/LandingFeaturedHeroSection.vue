@@ -26,7 +26,7 @@ defineProps<{
             :src="image"
             :alt="landingFeaturedHero.imageAlt"
             class="h-full w-full object-cover"
-          />
+          >
         </picture>
 
         <div

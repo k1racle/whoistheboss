@@ -34,17 +34,20 @@ RUN echo "PORTAINER_NODE24_MINIMAL_MODULES_2026-08-07_1" \
     grep -Eqi "heap out of memory|heap limit|allocation failed|killed" /tmp/build.log && exit 81; \
     grep -Eqi "ENOSPC|no space left" /tmp/build.log && exit 82; \
     grep -Eqi "illegal instruction|SIGILL|segmentation fault|bus error" /tmp/build.log && exit 83; \
-    grep -Eqi "cannot find|could not resolve|ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND|command not found" /tmp/build.log && exit 84; \
     grep -Eqi "unsupported.*node|node.js.*version|EBADENGINE" /tmp/build.log && exit 85; \
-    grep -Eqi "native binding|sharp|resvg|dlopen|GLIBC|GLIBCXX|wrong ELF|Exec format" /tmp/build.log && exit 88; \
     grep -Eqi "fetch failed|EAI_AGAIN|ENOTFOUND|ECONNRESET|ETIMEDOUT" /tmp/build.log && exit 90; \
     grep -Eqi "@prisma|prisma client|prisma schema" /tmp/build.log && exit 91; \
-    grep -Eqi "RollupError|RolldownError|@rolldown|@rollup|rollup-linux|rolldown-binding" /tmp/build.log && exit 101; \
+    grep -Eqi "native binding|sharp|resvg|dlopen|GLIBC|GLIBCXX|wrong ELF|Exec format" /tmp/build.log && exit 88; \
     grep -Eqi "Tailwind|@tailwindcss|CssSyntaxError|PostCSS|unknown utility" /tmp/build.log && exit 102; \
     grep -Eqi "VueCompilerError|@vue/compiler-sfc|vite:vue|Single File Component" /tmp/build.log && exit 103; \
+    grep -Eqi "sh:.*vite.*not found|vite:.*not found|vite.*command not found" /tmp/build.log && exit 108; \
+    grep -Eqi "failed to resolve import|Rollup failed to resolve import|Could not load .*imported by" /tmp/build.log && exit 110; \
+    grep -Eqi "RollupError|RolldownError|@rolldown|@rollup|rollup-linux|rolldown-binding" /tmp/build.log && exit 101; \
     grep -Eqi "ENOENT|no such file or directory|case-sensitive" /tmp/build.log && exit 104; \
+    grep -Eqi "Cannot find module|Cannot find package|ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND" /tmp/build.log && exit 109; \
     grep -Eqi "TypeError|ReferenceError|SyntaxError" /tmp/build.log && exit 106; \
     grep -Eq "ERR_[A-Z_]+" /tmp/build.log && exit 107; \
+    grep -Eqi "cannot find|could not resolve|command not found" /tmp/build.log && exit 84; \
     grep -Eq "Building Nitro Server|Server built" /tmp/build.log && exit 94; \
     grep -q "Building server" /tmp/build.log && exit 93; \
     grep -q "Client built" /tmp/build.log && exit 96; \
