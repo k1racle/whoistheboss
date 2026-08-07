@@ -33,7 +33,7 @@ const sectionRef = ref<HTMLElement | null>(null)
 const sceneRef = ref<HTMLElement | null>(null)
 const stageRef = ref<HTMLElement | null>(null)
 
-const isDesktop = useMediaQuery('(min-width: 1024px)')
+const isDesktop = shallowRef(false)
 
 const cards = computed<LandingAudienceCard[]>(() =>
   props.cards?.length ? props.cards : [...landingAudienceFallback],
@@ -83,6 +83,8 @@ const slotVariant = (index: number): 'light' | 'accent' => {
 }
 
 const updateAudience = () => {
+  isDesktop.value = window.matchMedia('(min-width: 1024px)').matches
+
   const section = sectionRef.value
   const scene = sceneRef.value
   const stage = stageRef.value

@@ -22,11 +22,10 @@ defineProps<{
             media="(max-width: 768px)"
             :srcset="mobileImage"
           >
-          <NuxtImg
+          <img
             :src="image"
             :alt="landingFeaturedHero.imageAlt"
             class="h-full w-full object-cover"
-            densities="x1 x2"
           />
         </picture>
 

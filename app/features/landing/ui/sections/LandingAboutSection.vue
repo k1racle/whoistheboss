@@ -55,11 +55,10 @@ const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
       </div>
 
       <div class="relative aspect-video border border-border-strong bg-surface lg:w-2/3">
-        <NuxtImg
+        <img
           src="/uploads/frame-118-1784803179906.png"
           alt="Превью видео проекта Кто здесь главный?"
           class="h-full w-full object-cover"
-          densities="x1 x2"
         />
         <div class="pointer-events-none absolute inset-0 bg-linear-to-tr from-text/10 via-transparent to-transparent" />
         <button

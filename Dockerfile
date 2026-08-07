@@ -37,9 +37,16 @@ RUN echo "PORTAINER_NODE24_MINIMAL_MODULES_2026-08-07_1" \
     grep -Eqi "native binding|sharp|resvg|dlopen|GLIBC|GLIBCXX|wrong ELF|Exec format" /tmp/build.log && exit 88; \
     grep -Eqi "fetch failed|EAI_AGAIN|ENOTFOUND|ECONNRESET|ETIMEDOUT" /tmp/build.log && exit 90; \
     grep -Eqi "@prisma|prisma client|prisma schema" /tmp/build.log && exit 91; \
+    grep -Eqi "RollupError|RolldownError|@rolldown|@rollup|rollup-linux|rolldown-binding" /tmp/build.log && exit 101; \
+    grep -Eqi "Tailwind|@tailwindcss|CssSyntaxError|PostCSS|unknown utility" /tmp/build.log && exit 102; \
+    grep -Eqi "VueCompilerError|@vue/compiler-sfc|vite:vue|Single File Component" /tmp/build.log && exit 103; \
+    grep -Eqi "ENOENT|no such file or directory|case-sensitive" /tmp/build.log && exit 104; \
+    grep -Eqi "TypeError|ReferenceError|SyntaxError" /tmp/build.log && exit 106; \
+    grep -Eq "ERR_[A-Z_]+" /tmp/build.log && exit 107; \
     grep -Eq "Building Nitro Server|Server built" /tmp/build.log && exit 94; \
     grep -q "Building server" /tmp/build.log && exit 93; \
-    grep -Eq "Building client|Client built" /tmp/build.log && exit 92; \
+    grep -q "Client built" /tmp/build.log && exit 96; \
+    grep -q "Building client" /tmp/build.log && exit 92; \
     grep -q "Building Nuxt for production" /tmp/build.log && exit 95; \
     grep -q "> build:admin" /tmp/build.log && exit 86; \
     exit 99; \
