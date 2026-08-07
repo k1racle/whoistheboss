@@ -27,7 +27,7 @@ defineProps<{
         :src="item.coverImage"
         :alt="item.name"
         class="h-full w-full object-cover"
-      >
+      />
 
       <div
         class="absolute inset-0 flex items-center justify-center bg-accent/90 p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100"

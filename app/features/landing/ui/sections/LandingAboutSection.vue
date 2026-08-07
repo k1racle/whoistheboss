@@ -59,7 +59,7 @@ const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
           src="/uploads/frame-118-1784803179906.png"
           alt="Превью видео проекта Кто здесь главный?"
           class="h-full w-full object-cover"
-        >
+        />
         <div class="pointer-events-none absolute inset-0 bg-linear-to-tr from-text/10 via-transparent to-transparent" />
         <button
           type="button"
