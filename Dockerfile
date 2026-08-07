@@ -8,8 +8,10 @@ RUN apt-get update \
 
 COPY package*.json ./
 COPY prisma ./prisma
-RUN npm install --global npm@11.17.0
-RUN npm ci > /tmp/npm-ci.log 2>&1 \
+RUN echo "PORTAINER_NODE24_BUNDLED_NPM_2026-08-07_1" \
+  && node --version \
+  && npm --version \
+  && npm ci > /tmp/npm-ci.log 2>&1 \
   || { \
     tail -n 200 /tmp/npm-ci.log; \
     grep -Eqi "EBADENGINE|unsupported engine|node.js.*version" /tmp/npm-ci.log && exit 71; \
