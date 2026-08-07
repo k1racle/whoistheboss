@@ -12,7 +12,7 @@ RUN npm ci
 
 COPY . .
 RUN npx prisma generate
-RUN npm run build
+RUN echo "PORTAINER_SOURCE_CHECK_2026-08-07_1" && node --version && npm --version && npm run build
 
 # Stage 2: Production
 FROM node:24-bookworm-slim AS runner

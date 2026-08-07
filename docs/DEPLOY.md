@@ -2,11 +2,12 @@
 
 Документ описывает сборку и ререлиз Nuxt 4-приложения `guessboss` через Docker Compose и Portainer. Инструкция сохраняет существующие PostgreSQL-данные и загруженные файлы при переходе с legacy Express-сайта.
 
-Статус документа на 7 августа 2026 года: черновик по данным репозитория. Внешний механизм автодеплоя, имя Portainer Stack и фактические имена production volumes ещё нужно подтвердить у ответственного за инфраструктуру.
+Статус документа на 7 августа 2026 года: черновик по данным репозитория и фактического прогона деплоя. Production использует Portainer Stack `whoistheboss`. Push в Git не запускает деплой автоматически: после push оператор вручную обновляет существующий Stack в Portainer. Фактические имена production volumes ещё нужно подтвердить у ответственного за инфраструктуру.
 
 ## Главные правила
 
-- Считайте любой push или merge в `main` потенциальным немедленным production-деплоем.
+- Push или merge в `main` только публикует новый код в Git и сам по себе не меняет production.
+- Production обновляется только после ручного запуска деплоя существующего Stack `whoistheboss` в Portainer.
 - Не отправляйте изменения в `main`, пока не созданы и не проверены бэкапы PostgreSQL и uploads.
 - Не меняйте имя существующего Portainer Stack во время ререлиза.
 - Не удаляйте Stack вместе с volumes и не выполняйте `docker compose down -v`.
@@ -144,21 +145,19 @@ Compose также передаёт настройки uploads, SMTP, Telegram �
 
 Текущая Nuxt-версия сохраняет заявку на съёмку в PostgreSQL, но ещё не переносит legacy email- и Telegram-уведомления. Наличие environment variables не означает, что уведомления уже работают.
 
-## Модель автодеплоя
+## Ручной деплой через Portainer
 
-По информации владельца, push в `main` запускает production-деплой автоматически. Репозиторий не содержит GitHub Actions или deploy-скрипта, поэтому запуск, вероятно, настроен в Portainer через Git polling, webhook или внешний сервис.
+Push в `main` не запускает production-деплой. После push оператор открывает существующий [Portainer Stack `whoistheboss`](https://185.72.147.187:9443/#!/3/docker/stacks/whoistheboss?id=52&type=2&regular=true&orphaned=false&orphanedRunning=false) и вручную запускает его обновление из Git.
+
+Перед запуском обновления оператор проверяет, что открыт именно Stack `whoistheboss`, а не создаёт новый Stack. Также нужно проверить отслеживаемую ветку и убедиться, что Portainer получил ожидаемый release commit. Затем оператор запускает redeploy/update и наблюдает полный build log до завершения операции.
 
 Перед первым ререлизом ответственный за инфраструктуру должен зафиксировать:
 
-- имя Portainer Stack;
 - Git repository URL и отслеживаемую ветку;
-- способ запуска обновления;
 - текущий deployed commit;
 - фактические имена volumes;
 - адрес reverse proxy и правила кэширования;
 - способ повторного развёртывания предыдущего commit.
-
-До подтверждения этих данных команда не использует `main` как обычную интеграционную ветку.
 
 ## Подготовка release candidate
 
@@ -282,14 +281,15 @@ docker exec guessboss-app npx prisma migrate status
 
 ### Запуск
 
-1. Выполните согласованный merge release-ветки в `main`.
-2. Push в `main` выполняйте только в согласованное release window.
-3. Наблюдайте запуск внешнего auto-deploy в Portainer.
-4. Не создавайте новый Stack и не меняйте имя существующего.
-5. Убедитесь, что Portainer повторно подключает прежние `postgres_data` и `uploads` volumes.
-6. Дождитесь завершения Docker build.
-7. Проверьте в логах успешный `prisma migrate deploy`.
-8. Дождитесь healthy-состояния `guessboss-app`.
+1. Выполните согласованный merge release-ветки в `main` и отправьте commit в Git.
+2. Откройте [Portainer Stack `whoistheboss`](https://185.72.147.187:9443/#!/3/docker/stacks/whoistheboss?id=52&type=2&regular=true&orphaned=false&orphanedRunning=false).
+3. Проверьте отслеживаемую ветку и ожидаемый release commit.
+4. Вручную запустите обновление/redeploy существующего Stack из Git.
+5. Не создавайте новый Stack и не меняйте имя существующего.
+6. Убедитесь, что Portainer повторно подключает прежние `postgres_data` и `uploads` volumes.
+7. Дождитесь завершения Docker build и сохраните полный build log при ошибке.
+8. Проверьте в логах успешный `prisma migrate deploy`.
+9. Дождитесь healthy-состояния `guessboss-app`.
 
 ### Проверка контейнеров
 
@@ -388,8 +388,8 @@ Release log можно хранить в отдельном закрытом о�
 ## Известные блокеры первого ререлиза
 
 - Рабочие бэкапы PostgreSQL и uploads ещё не настроены.
-- Внешний механизм auto-deploy из `main` не подтверждён.
-- Точные имена Portainer Stack и production volumes неизвестны.
+- Точные имена production volumes неизвестны.
+- Git-ветка, подключённая к Stack `whoistheboss`, ещё не зафиксирована в документе.
 - Текущий compose ещё должен получить Nuxt runtime bridging для session и public site config.
 - Splash middleware ещё должен проверять роль авторизованного пользователя для preview-bypass.
 - Нужно согласовать, получает preview только `ADMIN` или также `EDITOR`.
