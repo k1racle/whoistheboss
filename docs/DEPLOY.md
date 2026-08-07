@@ -50,7 +50,7 @@ Production-контент состоит из двух независимых ч
 
 Builder выполняет следующую последовательность:
 
-1. Использует Node.js 20 на Debian Bookworm.
+1. Использует Node.js 24 LTS на Debian Bookworm. Nuxt 4.5.1 требует Node.js 22.19+, 24.11+ или 26+.
 2. Устанавливает системные зависимости для Prisma и нативных Node.js-пакетов.
 3. Копирует `package.json`, `package-lock.json` и Prisma schema.
 4. Выполняет `npm ci`.

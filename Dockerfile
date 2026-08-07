@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:20-bookworm-slim AS builder
+FROM node:24-bookworm-slim AS builder
 WORKDIR /app
 
 RUN apt-get update \
@@ -15,7 +15,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Stage 2: Production
-FROM node:20-bookworm-slim AS runner
+FROM node:24-bookworm-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
