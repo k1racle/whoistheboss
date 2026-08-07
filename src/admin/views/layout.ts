@@ -18,8 +18,6 @@ export function layout(title: string, content: string, user?: UserInfo | null): 
     ['/admin/articles', 'Записи блога'],
     ['/admin/reels', 'Рилсы'],
     ['/admin/shooting-requests', 'Заявки'],
-    ['/admin/subscribers', 'Подписчики'],
-    ['/admin/comments', 'Комментарии'],
     ...(isAdmin ? [['/admin/users', 'Пользователи']] : []),
     ['/admin/banner', 'Баннер'],
     ['/admin/audience-cards', 'Карточки «Для кого»'],

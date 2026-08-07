@@ -10,9 +10,7 @@ export async function dashboardView(user?: UserInfo | null) {
       api.interviews.list().then((r) => r.length).catch(() => 0),
       api.reels.list().then((r) => r.length).catch(() => 0),
       api.articles.list().then((r) => r.length).catch(() => 0),
-      api.comments.list().then((r) => r.filter((c) => !c.isApproved).length).catch(() => 0),
       api.shootingRequests.list().then((r) => r.filter((x) => x.status === 'NEW').length).catch(() => 0),
-      api.subscribers.list().then((r) => r.length).catch(() => 0),
     ]);
 
     const content = `
@@ -23,9 +21,7 @@ export async function dashboardView(user?: UserInfo | null) {
         ${statCard('Статьи', counts[3], '/admin/articles')}
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        ${statCard('Комментариев на модерации', counts[4], '/admin/comments')}
-        ${statCard('Новых заявок', counts[5], '/admin/shooting-requests')}
-        ${statCard('Подписчиков', counts[6], '/admin/subscribers')}
+        ${statCard('Новых заявок', counts[4], '/admin/shooting-requests')}
       </div>
       <div class="bg-white border border-gray-200 rounded-sm p-6">
         <h2 class="text-lg font-semibold mb-4">Быстрые действия</h2>

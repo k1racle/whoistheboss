@@ -208,23 +208,6 @@ export interface AudienceCard {
   updatedAt: string;
 }
 
-export interface Comment {
-  id: string;
-  content: string;
-  userId: string;
-  user: { id: string; name: string; email: string };
-  interviewId?: string | null;
-  interview?: { id: string; title: string; slug: string } | null;
-  articleId?: string | null;
-  article?: { id: string; title: string; slug: string } | null;
-  reelId?: string | null;
-  reel?: { id: string; title: string; slug: string } | null;
-  entrepreneurId?: string | null;
-  entrepreneur?: { id: string; name: string; slug: string } | null;
-  isApproved: boolean;
-  createdAt: string;
-}
-
 export interface ShootingRequest {
   id: string;
   name: string;
@@ -235,13 +218,6 @@ export interface ShootingRequest {
   status: 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Subscriber {
-  id: string;
-  email: string;
-  isActive: boolean;
-  createdAt: string;
 }
 
 export type Settings = Record<string, string>;
@@ -368,31 +344,11 @@ export const api = {
     delete: (id: string) => fetchJson(`/admin/audience-cards/${id}`, { method: 'DELETE' }),
   },
 
-  comments: {
-    list: (): Promise<Comment[]> => fetchJson('/admin/comments'),
-    approve: (id: string, isApproved = true) =>
-      fetchJson(`/admin/comments/${id}/approve`, { method: 'POST', body: JSON.stringify({ isApproved }) }),
-    delete: (id: string) => fetchJson(`/admin/comments/${id}`, { method: 'DELETE' }),
-  },
-
   shootingRequests: {
     list: (): Promise<ShootingRequest[]> => fetchJson('/admin/shooting-requests'),
     updateStatus: (id: string, status: ShootingRequest['status']) =>
       fetchJson(`/admin/shooting-requests/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
     delete: (id: string) => fetchJson(`/admin/shooting-requests/${id}`, { method: 'DELETE' }),
-  },
-
-  subscribers: {
-    list: (): Promise<Subscriber[]> => fetchJson('/admin/subscribers'),
-    exportCsv: () => {
-      const link = document.createElement('a');
-      link.href = API_URL + '/admin/subscribers/export.csv';
-      link.download = 'subscribers.csv';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    },
-    delete: (id: string) => fetchJson(`/admin/subscribers/${id}`, { method: 'DELETE' }),
   },
 
   settings: {

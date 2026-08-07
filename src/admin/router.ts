@@ -8,9 +8,7 @@ import { businessesView, businessFormView } from './views/businesses.js';
 import { audienceCardsView, audienceCardFormView } from './views/audienceCards.js';
 import { bannerView } from './views/banner.js';
 import { stagesView } from './views/stages.js';
-import { commentsView } from './views/comments.js';
 import { shootingRequestsView } from './views/shootingRequests.js';
-import { subscribersView } from './views/subscribers.js';
 import { usersView, userFormView } from './views/users.js';
 import { settingsView } from './views/settings.js';
 import { blogPageView, companiesPageView, entrepreneursPageView, shootingPageView } from './views/pageEditors.js';
@@ -73,9 +71,7 @@ export const router = {
     if (path === '/admin/banner') return bannerView(user);
     if (path === '/admin/stages') return stagesView(user);
 
-    if (path === '/admin/comments') return commentsView(user);
     if (path === '/admin/shooting-requests') return shootingRequestsView(user);
-    if (path === '/admin/subscribers') return subscribersView(user);
     if (path === '/admin/users') return usersView(user);
     if (match(path, '/admin/users/new')) return userFormView(null, user);
     if (match(path, '/admin/users/:id/edit')) return userFormView(param(path, '/admin/users/:id/edit'), user);
