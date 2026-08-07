@@ -86,7 +86,7 @@ export function interviewFormView(id: string | null, user?: UserInfo | null) {
         syncVideoFields(item.videoType);
       }
       bindAutoSlug('interview-form', 'title');
-      attachSubmit(id, entrepreneurs);
+      attachSubmit(id);
     } catch (err) {
       setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
     }
@@ -229,7 +229,7 @@ function fillForm(item: Interview) {
   form.querySelector<HTMLInputElement>('input[name="isPublished"]')!.checked = item.isPublished;
 }
 
-function attachSubmit(id: string | null, entrepreneurs: Entrepreneur[]) {
+function attachSubmit(id: string | null) {
   const form = document.getElementById('interview-form') as HTMLFormElement | null;
   if (!form) return;
   form.addEventListener('submit', async (e) => {

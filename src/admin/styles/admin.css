@@ -1,6 +1,27 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'DexaPro';
+  src: url('/fonts/DexaPro-400-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DexaPro';
+  src: url('/fonts/dexapro-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-terracotta: #db2a00;
+  --color-terracotta-50: #fff1ed;
+  --color-terracotta-600: #db2a00;
+  --font-sans: 'DexaPro', system-ui, sans-serif;
+}
 
 :root {
   --admin-red: #DB2A00;

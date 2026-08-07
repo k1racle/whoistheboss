@@ -11,6 +11,8 @@ const sections = [
   ['cta', 'CTA', 'Общая форма заявки сайта.'],
 ] as const;
 
+type ShootingSectionKey = typeof sections[number][0];
+
 const defaultFaq: FaqItem[] = [
   { question: 'Кто может стать героем проекта?', answer: 'Предприниматель или руководитель с реальным опытом, историей и готовностью честно рассказать о своём пути.' },
   { question: 'Как проходит отбор?', answer: 'Команда проекта знакомится с заявкой, связывается с кандидатом и уточняет формат будущего материала.' },
@@ -62,10 +64,10 @@ function faqItem(item: FaqItem, index: number): string {
 }
 
 function render(settings: Settings): string {
-  const defaultOrder = sections.map(([key]) => key);
-  const savedOrder = parseJson<string[]>(settings.SHOOTING_PAGE_SECTION_ORDER, defaultOrder);
+  const defaultOrder = sections.map(([key]) => key) as ShootingSectionKey[];
+  const savedOrder = parseJson<ShootingSectionKey[]>(settings.SHOOTING_PAGE_SECTION_ORDER, defaultOrder);
   const order = [
-    ...savedOrder.filter((key) => defaultOrder.includes(key)),
+    ...savedOrder.filter((key): key is ShootingSectionKey => defaultOrder.includes(key)),
     ...defaultOrder.filter((key) => !savedOrder.includes(key)),
   ];
   const visibility = parseJson<Record<string, boolean>>(settings.SHOOTING_PAGE_SECTION_VISIBILITY, {});

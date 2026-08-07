@@ -1,0 +1,84 @@
+<script setup lang="ts">
+import type { EntrepreneurDetailData } from '@features/entrepreneurs/model/entrepreneur.types'
+
+const props = defineProps<{
+  entrepreneur: EntrepreneurDetailData
+}>()
+
+const heroSubtitle = computed(() =>
+  props.entrepreneur.heroRightTeaser
+  || props.entrepreneur.heroBottomRightTeaser
+  || props.entrepreneur.heroLeftTeaser
+  || props.entrepreneur.title
+  || props.entrepreneur.quote
+  || '',
+)
+</script>
+
+<template>
+  <section id="top" class="relative min-h-svh overflow-hidden bg-bg">
+    <div class="mx-auto hidden min-h-[calc(100svh-86px)] w-[min(calc(100%_-_80px),1920px)] items-end lg:flex">
+      <div class="flex w-full flex-col">
+        <div class="mb-[-4.65rem] flex w-full items-end justify-between gap-10">
+          <span class="font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-none tracking-[-0.03em] text-accent">
+            WHO'S THE
+          </span>
+          <p
+            v-if="entrepreneur.heroRightTeaser || entrepreneur.quote"
+            class="w-[min(500px,32vw)] max-w-[500px] self-center font-sans text-base font-bold uppercase leading-4 text-text"
+          >
+            {{ entrepreneur.heroRightTeaser || entrepreneur.quote }}
+          </p>
+        </div>
+
+        <div class="mb-[-5.05rem] flex w-full items-end justify-between gap-10">
+          <p
+            v-if="entrepreneur.heroLeftTeaser || entrepreneur.title"
+            class="w-[min(500px,32vw)] max-w-[500px] self-center text-right font-sans text-base font-bold uppercase leading-4 text-text"
+          >
+            {{ entrepreneur.heroLeftTeaser || entrepreneur.title }}
+          </p>
+          <h1 class="m-0 text-right font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-none tracking-[-0.03em] text-accent">
+            {{ entrepreneur.heroLastName }}
+          </h1>
+        </div>
+
+        <div class="flex w-full items-end justify-between gap-10">
+          <h1 class="m-0 text-left font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-none tracking-[-0.03em] text-accent">
+            {{ entrepreneur.heroFirstName }}
+          </h1>
+          <p
+            v-if="entrepreneur.heroBottomRightTeaser || entrepreneur.title"
+            class="w-[min(500px,32vw)] max-w-[500px] self-center font-sans text-base font-bold uppercase leading-4 text-text"
+          >
+            {{ entrepreneur.heroBottomRightTeaser || entrepreneur.title }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto flex min-h-[calc(100svh-86px)] w-[calc(100%_-_40px)] items-end pb-6 pt-[84px] lg:hidden">
+      <div class="flex w-full flex-col items-start gap-5">
+        <p
+          v-if="heroSubtitle"
+          class="m-0 w-full font-sans text-[13px] font-bold uppercase leading-[14px] text-text"
+        >
+          {{ heroSubtitle }}
+        </p>
+
+        <div class="flex w-full flex-col">
+          <span class="font-display text-[clamp(54px,15vw,86px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
+            WHO'S THE
+          </span>
+          <h1 class="m-0 font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
+            {{ entrepreneur.heroLastName }}
+          </h1>
+          <h1 class="m-0 font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
+            {{ entrepreneur.heroFirstName }}
+          </h1>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</template>

@@ -1,3 +1,12 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
 node_modules/
 dist/
 public/uploads/*
@@ -5,9 +14,27 @@ public/uploads/*
 .env
 .env.local
 .env.*.local
+
+# Logs
+logs
 *.log
+
+# Misc
 .DS_Store
+.fleet
+.idea
 Thumbs.db
 .vscode/settings.json
 coverage/
 .tmp-*
+.nuxt/
+.output/
+.agents/
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Temporary files
+src/server/*

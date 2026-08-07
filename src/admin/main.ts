@@ -1,5 +1,5 @@
 import './styles/admin.css';
-import { router, type RouteResult } from './router.js';
+import { router } from './router.js';
 import { api } from './api.js';
 import type { UserInfo } from './views/layout.js';
 
