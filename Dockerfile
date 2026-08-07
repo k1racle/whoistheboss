@@ -28,7 +28,7 @@ RUN npx prisma generate
 RUN echo "PORTAINER_ADMIN_BUILD_2026-08-07_1" \
   && npm run build:admin
 
-RUN echo "PORTAINER_NUXT_BUILD_2026-08-07_1" \
+RUN echo "PORTAINER_NUXT_BUILD_2026-08-07_2" \
   && node --version \
   && npm --version \
   && npm exec -- nuxt build > /tmp/nuxt-build.log 2>&1 \
@@ -51,6 +51,15 @@ RUN echo "PORTAINER_NUXT_BUILD_2026-08-07_1" \
     grep -Eqi "Failed to resolve type|Unresolvable type|Failed to resolve extends base type" /tmp/nuxt-build.log && exit 127; \
     grep -Eqi "At least one <template>|Single file component can contain only one|Duplicate <script|Duplicate <template" /tmp/nuxt-build.log && exit 128; \
     grep -Eqi "sh:.*vite.*not found|vite:.*not found|vite.*command not found" /tmp/nuxt-build.log && exit 108; \
+    grep -Eqi "(failed to resolve import|Could not load).*(@shared/navigation|app/shared/navigation)" /tmp/nuxt-build.log && exit 141; \
+    grep -Eqi "(failed to resolve import|Could not load).*ButtonLink\.vue" /tmp/nuxt-build.log && exit 142; \
+    grep -Eqi "(failed to resolve import|Could not load).*SiteLogo\.vue" /tmp/nuxt-build.log && exit 143; \
+    grep -Eqi "(failed to resolve import|Could not load).*SectionTitle\.vue" /tmp/nuxt-build.log && exit 144; \
+    grep -Eqi "(failed to resolve import|Could not load).*LandingAboutSection\.vue" /tmp/nuxt-build.log && exit 145; \
+    grep -Eqi "(failed to resolve import|Could not load|Cannot find (module|package)).*vue-router" /tmp/nuxt-build.log && exit 146; \
+    grep -Eqi "(failed to resolve import|Could not load).*arrow-right-corner\.svg" /tmp/nuxt-build.log && exit 147; \
+    grep -Eqi "(failed to resolve import|Could not load).*frame-1321316003\.svg" /tmp/nuxt-build.log && exit 148; \
+    grep -Eqi "(failed to resolve import|Could not load).*image-29\.svg" /tmp/nuxt-build.log && exit 149; \
     grep -Eqi "failed to resolve import|Rollup failed to resolve import|Could not load .*imported by" /tmp/nuxt-build.log && exit 110; \
     grep -Eqi "RollupError|RolldownError|@rolldown|@rollup|rollup-linux|rolldown-binding" /tmp/nuxt-build.log && exit 101; \
     grep -Eqi "ENOENT|no such file or directory|case-sensitive" /tmp/nuxt-build.log && exit 104; \
