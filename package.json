@@ -16,21 +16,14 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "@nuxt/fonts": "^0.14.0",
-    "@nuxt/icon": "^2.4.1",
     "@nuxt/image": "^2.1.0",
-    "@nuxtjs/color-mode": "^4.0.1",
-    "@nuxtjs/device": "^4.0.0",
-    "@nuxtjs/seo": "^5.3.9",
     "@prisma/client": "^5.15.0",
-    "@resvg/resvg-js": "^2.6.2",
     "@vueuse/nuxt": "^14.4.0",
     "bcrypt": "^6.0.0",
     "nodemailer": "^9.0.4",
     "nuxt": "^4.5.1",
     "nuxt-auth-utils": "^0.5.29",
     "quill": "^2.0.3",
-    "satori": "^0.29.0",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0",
     "zod": "^4.4.3"

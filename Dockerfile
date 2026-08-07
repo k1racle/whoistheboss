@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:22.19.0-bookworm-slim AS builder
+FROM node:24.19.0-bookworm-slim AS builder
 WORKDIR /app
 
 RUN apt-get update \
@@ -23,7 +23,7 @@ RUN npm ci > /tmp/npm-ci.log 2>&1 \
 
 COPY . .
 RUN npx prisma generate
-RUN echo "PORTAINER_NODE22_DIAGNOSTIC_2026-08-07_1" \
+RUN echo "PORTAINER_NODE24_MINIMAL_MODULES_2026-08-07_1" \
   && node --version \
   && npm --version \
   && npm run build > /tmp/build.log 2>&1 \
@@ -34,13 +34,19 @@ RUN echo "PORTAINER_NODE22_DIAGNOSTIC_2026-08-07_1" \
     grep -Eqi "illegal instruction|SIGILL|segmentation fault|bus error" /tmp/build.log && exit 83; \
     grep -Eqi "cannot find|could not resolve|ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND|command not found" /tmp/build.log && exit 84; \
     grep -Eqi "unsupported.*node|node.js.*version|EBADENGINE" /tmp/build.log && exit 85; \
-    grep -q "Building Nuxt for production" /tmp/build.log && exit 87; \
+    grep -Eqi "native binding|sharp|resvg|dlopen|GLIBC|GLIBCXX|wrong ELF|Exec format" /tmp/build.log && exit 88; \
+    grep -Eqi "fetch failed|EAI_AGAIN|ENOTFOUND|ECONNRESET|ETIMEDOUT" /tmp/build.log && exit 90; \
+    grep -Eqi "@prisma|prisma client|prisma schema" /tmp/build.log && exit 91; \
+    grep -Eq "Building Nitro Server|Server built" /tmp/build.log && exit 94; \
+    grep -q "Building server" /tmp/build.log && exit 93; \
+    grep -Eq "Building client|Client built" /tmp/build.log && exit 92; \
+    grep -q "Building Nuxt for production" /tmp/build.log && exit 95; \
     grep -q "> build:admin" /tmp/build.log && exit 86; \
-    exit 89; \
+    exit 99; \
   }
 
 # Stage 2: Production
-FROM node:22.19.0-bookworm-slim AS runner
+FROM node:24.19.0-bookworm-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
