@@ -8,6 +8,7 @@ RUN apt-get update \
 
 COPY package*.json ./
 COPY prisma ./prisma
+RUN npm install --global npm@11.17.0
 RUN npm ci > /tmp/npm-ci.log 2>&1 \
   || { \
     tail -n 200 /tmp/npm-ci.log; \
