@@ -6,13 +6,13 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends python3 make g++ openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-COPY package*.json ./
+COPY package.json ./
 COPY prisma ./prisma
-RUN npm ci
+RUN npm install
 
 COPY . .
 RUN npx prisma generate
-RUN echo "PORTAINER_SOURCE_CHECK_2026-08-07_1" && node --version && npm --version && npm run build
+RUN echo "PORTAINER_NPM_INSTALL_EXPERIMENT_2026-08-07_1" && node --version && npm --version && npm run build
 
 # Stage 2: Production
 FROM node:24-bookworm-slim@sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03 AS runner
