@@ -1,4 +1,8 @@
+import type { SiteSettingsRecord } from '@server/utils/site-settings'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+
+const DEFAULT_SPLASH_LOGO = '/images/logo.svg'
+const DEFAULT_SPLASH_MARQUEE = 'Скоро вы узнаете кто здесь главный — личные истории предпринимателей через их бизнес'
 
 const SPLASH_SETTING_KEYS = [
   'SPLASH_ENABLED',
@@ -37,12 +41,24 @@ function escapeHtml(value: string): string {
     .replaceAll("'", '&#39;')
 }
 
+function getNonEmptySiteSetting(
+  settings: SiteSettingsRecord,
+  key: string,
+  fallback: string,
+): string {
+  return getSiteSetting(settings, key).trim() || fallback
+}
+
 function renderSplashPage(siteName: string, siteUrl: string, logo: string, marquee: string): string {
   const safeSiteName = escapeHtml(siteName)
   const safeSiteUrl = escapeHtml(siteUrl)
   const safeLogo = escapeHtml(logo)
   const safeMarquee = escapeHtml(marquee)
-  const marqueeItems = Array.from({ length: 8 }, () => `<span class="marquee-item">${safeMarquee}</span>`).join('')
+  const marqueeItems = Array.from({ length: 4 }, () => `<span class="marquee-item">${safeMarquee}</span>`).join('')
+  const marqueeGroups = Array.from(
+    { length: 2 },
+    () => `<div class="marquee-group">${marqueeItems}</div>`,
+  ).join('')
 
   return `<!DOCTYPE html>
 <html lang="ru">
@@ -134,6 +150,11 @@ function renderSplashPage(siteName: string, siteUrl: string, logo: string, marqu
       animation: marquee 32s linear infinite;
     }
 
+    .marquee-group {
+      display: flex;
+      flex: none;
+    }
+
     .marquee-item {
       flex: none;
       padding: 0 32px;
@@ -165,7 +186,7 @@ function renderSplashPage(siteName: string, siteUrl: string, logo: string, marqu
     </div>
   </main>
   <div class="marquee" aria-label="О проекте">
-    <div class="marquee-track">${marqueeItems}</div>
+    <div class="marquee-track">${marqueeGroups}</div>
   </div>
 </body>
 </html>`
@@ -185,11 +206,15 @@ export default defineEventHandler(async (event) => {
     if (getSiteSetting(settings, 'SPLASH_ENABLED') !== 'true') return
 
     const config = useRuntimeConfig(event)
-    const logo = getSiteSetting(settings, 'SPLASH_LOGO', '/images/logo.svg')
-    const marquee = getSiteSetting(
+    const logo = getNonEmptySiteSetting(
+      settings,
+      'SPLASH_LOGO',
+      DEFAULT_SPLASH_LOGO,
+    )
+    const marquee = getNonEmptySiteSetting(
       settings,
       'SPLASH_MARQUEE',
-      'Скоро вы узнаете кто здесь главный - личные истории предпринимателей через их бизнес! Скоро вы узнаете кто здесь главный - личные истории предпринимателей через их бизнес',
+      DEFAULT_SPLASH_MARQUEE,
     )
 
     setResponseHeader(event, 'content-type', 'text/html; charset=UTF-8')
