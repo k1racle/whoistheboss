@@ -50,6 +50,16 @@ RUN echo "PORTAINER_NUXT_BUILD_2026-08-07_1" \
     grep -Eqi "Codegen node is missing|unhandled node type" /tmp/nuxt-build.log && exit 126; \
     grep -Eqi "Failed to resolve type|Unresolvable type|Failed to resolve extends base type" /tmp/nuxt-build.log && exit 127; \
     grep -Eqi "At least one <template>|Single file component can contain only one|Duplicate <script|Duplicate <template" /tmp/nuxt-build.log && exit 128; \
+    grep -Eqi "sh:.*vite.*not found|vite:.*not found|vite.*command not found" /tmp/nuxt-build.log && exit 108; \
+    grep -Eqi "failed to resolve import|Rollup failed to resolve import|Could not load .*imported by" /tmp/nuxt-build.log && exit 110; \
+    grep -Eqi "RollupError|RolldownError|@rolldown|@rollup|rollup-linux|rolldown-binding" /tmp/nuxt-build.log && exit 101; \
+    grep -Eqi "ENOENT|no such file or directory|case-sensitive" /tmp/nuxt-build.log && exit 104; \
+    grep -Eqi "Cannot find module|Cannot find package|ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND" /tmp/nuxt-build.log && exit 109; \
+    grep -Eqi "TypeError|ReferenceError|SyntaxError" /tmp/nuxt-build.log && exit 106; \
+    grep -Eq "ERR_[A-Z_]+" /tmp/nuxt-build.log && exit 107; \
+    grep -Eqi "cannot find|could not resolve|command not found" /tmp/nuxt-build.log && exit 84; \
+    about_line="$(grep -Eo 'LandingAboutSection\.vue:[0-9]+:[0-9]+' /tmp/nuxt-build.log | head -n 1 | cut -d: -f2)"; \
+    if [ -n "$about_line" ] && [ "$about_line" -le 100 ]; then exit $((150 + about_line)); fi; \
     grep -q "LandingAboutSection.vue" /tmp/nuxt-build.log && exit 131; \
     grep -q "LandingFeaturedHeroSection.vue" /tmp/nuxt-build.log && exit 132; \
     grep -q "LandingAudienceSection.vue" /tmp/nuxt-build.log && exit 133; \
@@ -60,14 +70,6 @@ RUN echo "PORTAINER_NUXT_BUILD_2026-08-07_1" \
     grep -q "app/features" /tmp/nuxt-build.log && exit 138; \
     grep -q "\.nuxt/" /tmp/nuxt-build.log && exit 139; \
     grep -Eqi "VueCompilerError|@vue/compiler-sfc|vite:vue|Single File Component" /tmp/nuxt-build.log && exit 103; \
-    grep -Eqi "sh:.*vite.*not found|vite:.*not found|vite.*command not found" /tmp/nuxt-build.log && exit 108; \
-    grep -Eqi "failed to resolve import|Rollup failed to resolve import|Could not load .*imported by" /tmp/nuxt-build.log && exit 110; \
-    grep -Eqi "RollupError|RolldownError|@rolldown|@rollup|rollup-linux|rolldown-binding" /tmp/nuxt-build.log && exit 101; \
-    grep -Eqi "ENOENT|no such file or directory|case-sensitive" /tmp/nuxt-build.log && exit 104; \
-    grep -Eqi "Cannot find module|Cannot find package|ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND" /tmp/nuxt-build.log && exit 109; \
-    grep -Eqi "TypeError|ReferenceError|SyntaxError" /tmp/nuxt-build.log && exit 106; \
-    grep -Eq "ERR_[A-Z_]+" /tmp/nuxt-build.log && exit 107; \
-    grep -Eqi "cannot find|could not resolve|command not found" /tmp/nuxt-build.log && exit 84; \
     grep -Eq "Building Nitro Server|Server built" /tmp/nuxt-build.log && exit 94; \
     grep -q "Building server" /tmp/nuxt-build.log && exit 93; \
     grep -q "Client built" /tmp/nuxt-build.log && exit 96; \
