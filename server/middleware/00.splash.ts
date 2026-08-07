@@ -189,7 +189,7 @@ export default defineEventHandler(async (event) => {
     const marquee = getSiteSetting(
       settings,
       'SPLASH_MARQUEE',
-      'Скоро вы узнаете кто здесь главный — личные истории предпринимателей через их бизнес',
+      'Скоро вы узнаете кто здесь главный - личные истории предпринимателей через их бизнес! Скоро вы узнаете кто здесь главный - личные истории предпринимателей через их бизнес',
     )
 
     setResponseHeader(event, 'content-type', 'text/html; charset=UTF-8')
