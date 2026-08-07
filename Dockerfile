@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:22-bookworm-slim AS builder
+FROM node:22.19.0-bookworm-slim AS builder
 WORKDIR /app
 
 RUN apt-get update \
@@ -8,7 +8,17 @@ RUN apt-get update \
 
 COPY package*.json ./
 COPY prisma ./prisma
-RUN npm ci
+RUN npm ci > /tmp/npm-ci.log 2>&1 \
+  || { \
+    tail -n 200 /tmp/npm-ci.log; \
+    grep -Eqi "EBADENGINE|unsupported engine|node.js.*version" /tmp/npm-ci.log && exit 71; \
+    grep -Eqi "EUSAGE|package.json.*package-lock|Missing:|Invalid:" /tmp/npm-ci.log && exit 72; \
+    grep -Eqi "EAI_AGAIN|ENOTFOUND|ECONNRESET|ETIMEDOUT|network" /tmp/npm-ci.log && exit 73; \
+    grep -Eqi "node-gyp|prebuild-install|ELIFECYCLE|postinstall|command failed" /tmp/npm-ci.log && exit 74; \
+    grep -Eqi "ENOSPC|no space left" /tmp/npm-ci.log && exit 75; \
+    grep -Eqi "EACCES|EPERM|permission denied" /tmp/npm-ci.log && exit 76; \
+    exit 79; \
+  }
 
 COPY . .
 RUN npx prisma generate
@@ -29,7 +39,7 @@ RUN echo "PORTAINER_NODE22_DIAGNOSTIC_2026-08-07_1" \
   }
 
 # Stage 2: Production
-FROM node:22-bookworm-slim AS runner
+FROM node:22.19.0-bookworm-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
