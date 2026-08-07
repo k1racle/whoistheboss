@@ -17,7 +17,10 @@ interface SessionShape {
 
 function getPublicSessionConfig(): SessionConfig {
   const config = useRuntimeConfig()
-  const password = config.session.password || config.sessionSecret
+  const password = process.env.NUXT_SESSION_PASSWORD
+    || process.env.SESSION_SECRET
+    || config.session.password
+    || config.sessionSecret
 
   return {
     password,

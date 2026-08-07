@@ -12,6 +12,7 @@ services:
       PORT: ${PORT:-3000}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-guessboss}?schema=public
       SESSION_SECRET: ${SESSION_SECRET}
+      NUXT_SESSION_PASSWORD: ${SESSION_SECRET}
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin123}
       UPLOAD_DIR: ${UPLOAD_DIR:-./public/uploads}
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-100}
