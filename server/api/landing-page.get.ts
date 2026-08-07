@@ -5,6 +5,12 @@ const LANDING_PAGE_KEYS = [
   'HOME_ABOUT_TITLE',
   'HOME_ABOUT_TEXT',
   'HOME_ABOUT_BOTTOM_TEXT',
+  'HOME_ABOUT_VIDEO_TYPE',
+  'HOME_ABOUT_VIDEO_URL',
+  'HOME_ABOUT_VIDEO_FILE',
+  'HOME_ABOUT_HOVER_VIDEO_TYPE',
+  'HOME_ABOUT_HOVER_VIDEO_URL',
+  'HOME_ABOUT_HOVER_VIDEO_FILE',
   'HOME_AUDIENCE_TITLE',
   'HOME_HEROES_TITLE',
   'HOME_HEROES_TEXT',
@@ -21,6 +27,14 @@ const LANDING_PAGE_KEYS = [
 
 export default defineEventHandler(async () => {
   const settings = await getSiteSettings(LANDING_PAGE_KEYS)
+  const aboutVideoFile = getSiteSetting(settings, 'HOME_ABOUT_VIDEO_FILE')
+  const aboutHoverVideoFile = getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_FILE')
+  const aboutVideoType = aboutVideoFile || getSiteSetting(settings, 'HOME_ABOUT_VIDEO_TYPE') === 'SELF_HOSTED'
+    ? 'SELF_HOSTED'
+    : 'EMBED'
+  const aboutHoverVideoType = aboutHoverVideoFile || getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_TYPE') === 'SELF_HOSTED'
+    ? 'SELF_HOSTED'
+    : 'EMBED'
 
   return {
     heroTitle: getSiteSetting(settings, 'HOME_HERO_TITLE', 'Кто здесь\nглавный?'),
@@ -35,6 +49,12 @@ export default defineEventHandler(async () => {
       'HOME_ABOUT_BOTTOM_TEXT',
       'Мы убеждены, что каждый успешный бизнес начинается с человека. Поэтому рассказываем не только о компаниях и проектах, но прежде всего о людях, которые их создали.',
     ),
+    aboutVideoType,
+    aboutVideoUrl: getSiteSetting(settings, 'HOME_ABOUT_VIDEO_URL'),
+    aboutVideoFile,
+    aboutHoverVideoType,
+    aboutHoverVideoUrl: getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_URL'),
+    aboutHoverVideoFile,
     audienceTitle: getSiteSetting(settings, 'HOME_AUDIENCE_TITLE', 'ДЛЯ\nКОГО'),
     heroesTitle: getSiteSetting(settings, 'HOME_HEROES_TITLE', 'Наши герои'),
     heroesText: getSiteSetting(

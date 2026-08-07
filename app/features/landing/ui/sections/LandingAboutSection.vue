@@ -7,13 +7,65 @@ import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 const props = defineProps<{
   title: string
   text: string
+  videoType: 'EMBED' | 'SELF_HOSTED'
+  videoUrl: string
+  videoFile: string
+  hoverVideoType: 'EMBED' | 'SELF_HOSTED'
+  hoverVideoUrl: string
+  hoverVideoFile: string
 }>()
 
 const logoRef = ref<HTMLElement | null>(null)
+const isMediaHovered = shallowRef(false)
+const fallbackImageFailed = shallowRef(false)
 
 defineExpose({ logoRef })
 
 const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
+const fallbackImageSrc = '/uploads/frame-118-1784803179906.png'
+
+interface AboutMedia {
+  type: 'EMBED' | 'SELF_HOSTED'
+  source: string
+}
+
+function resolveMedia(
+  type: AboutMedia['type'],
+  url: string,
+  file: string,
+): AboutMedia | null {
+  const source = type === 'SELF_HOSTED' ? file || url : url || file
+
+  return source ? { type, source } : null
+}
+
+const defaultMedia = computed(() => resolveMedia(
+  props.videoType,
+  props.videoUrl,
+  props.videoFile,
+))
+
+const hoverMedia = computed(() => resolveMedia(
+  props.hoverVideoType,
+  props.hoverVideoUrl,
+  props.hoverVideoFile,
+))
+
+const activeMedia = computed(() => (
+  isMediaHovered.value ? hoverMedia.value ?? defaultMedia.value : defaultMedia.value
+))
+
+function showHoverMedia() {
+  isMediaHovered.value = true
+}
+
+function showDefaultMedia() {
+  isMediaHovered.value = false
+}
+
+function hideBrokenFallback() {
+  fallbackImageFailed.value = true
+}
 </script>
 
 <template>
@@ -54,32 +106,47 @@ const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
         </ButtonLink>
       </div>
 
-      <div class="relative aspect-video border border-border-strong bg-surface lg:w-2/3">
+      <div
+        class="relative aspect-video overflow-hidden border border-border-strong bg-surface lg:w-2/3"
+        @mouseenter="showHoverMedia"
+        @mouseleave="showDefaultMedia"
+      >
+        <iframe
+          v-if="activeMedia?.type === 'EMBED'"
+          :key="activeMedia.source"
+          :src="activeMedia.source"
+          title="О проекте"
+          class="h-full w-full border-0"
+          allow="autoplay; fullscreen"
+          allowfullscreen
+          loading="lazy"
+        />
+        <video
+          v-else-if="activeMedia"
+          :key="activeMedia.source"
+          :src="activeMedia.source"
+          title="О проекте"
+          class="h-full w-full object-cover"
+          controls
+          muted
+          playsinline
+          preload="metadata"
+        />
         <img
-          src="/uploads/frame-118-1784803179906.png"
+          v-else-if="!fallbackImageFailed"
+          :src="fallbackImageSrc"
           alt="Превью видео проекта Кто здесь главный?"
           class="h-full w-full object-cover"
+          @error="hideBrokenFallback"
         />
-        <div class="pointer-events-none absolute inset-0 bg-linear-to-tr from-text/10 via-transparent to-transparent" />
-        <button
-          type="button"
-          aria-label="Запустить промо-видео"
-          class="absolute left-1/2 top-1/2 inline-flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-text-on-accent shadow-[0_12px_30px_rgba(219,42,0,0.35)]"
+        <div
+          v-else
+          role="img"
+          aria-label="Видео пока не добавлено"
+          class="flex h-full w-full animate-pulse items-center justify-center bg-linear-to-br from-surface via-border/45 to-surface px-6"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-            class="ml-1 h-7 w-7"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
+          <span class="h-2/3 w-2/3 rounded-sm bg-border-strong/45" aria-hidden="true" />
+        </div>
       </div>
     </div>
   </section>

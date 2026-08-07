@@ -48,6 +48,12 @@ onBeforeUnmount(() => {
       ref="aboutSectionRef"
       :title="page.aboutTitle"
       :text="page.aboutText"
+      :video-type="page.aboutVideoType"
+      :video-url="page.aboutVideoUrl"
+      :video-file="page.aboutVideoFile"
+      :hover-video-type="page.aboutHoverVideoType"
+      :hover-video-url="page.aboutHoverVideoUrl"
+      :hover-video-file="page.aboutHoverVideoFile"
     />
     <LandingFeaturedHeroSection
       :image="page.bannerImage"

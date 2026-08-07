@@ -55,6 +55,12 @@ export type LandingPageData = {
   aboutTitle: string
   aboutText: string
   aboutBottomText: string
+  aboutVideoType: 'EMBED' | 'SELF_HOSTED'
+  aboutVideoUrl: string
+  aboutVideoFile: string
+  aboutHoverVideoType: 'EMBED' | 'SELF_HOSTED'
+  aboutHoverVideoUrl: string
+  aboutHoverVideoFile: string
   audienceTitle: string
   heroesTitle: string
   heroesText: string
@@ -120,6 +126,12 @@ export const landingPageFallback: LandingPageData = {
   aboutTitle: 'О проекте',
   aboutText: landingAboutParagraphs.join('\n\n'),
   aboutBottomText: landingAudienceIntro,
+  aboutVideoType: 'EMBED',
+  aboutVideoUrl: '',
+  aboutVideoFile: '',
+  aboutHoverVideoType: 'EMBED',
+  aboutHoverVideoUrl: '',
+  aboutHoverVideoFile: '',
   audienceTitle: 'ДЛЯ\nКОГО',
   heroesTitle: 'Наши герои',
   heroesText: landingHeroesDescription,
