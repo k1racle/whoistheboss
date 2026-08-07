@@ -792,7 +792,7 @@ textarea.editor-control {
   display: flex;
   align-items: flex-end;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-top: 18px;
 }
 
 .story-sections-editor__actions label {

@@ -270,6 +270,8 @@ function renderForm(item: Partial<Entrepreneur>): string {
 
           ${section('editor-stories', '04', 'Секции с текстом', 'Добавляйте нужные секции, выбирая один из четырёх вариантов оформления.', `
             <div class="editor-field editor-field--wide story-sections-editor">
+              <div class="story-sections-editor__list" data-story-list></div>
+              <p class="story-sections-editor__empty" data-story-empty>Секций пока нет. Выберите тип и нажмите «Добавить секцию».</p>
               <div class="story-sections-editor__actions">
                 <label>
                   <span class="editor-field__label">Тип новой секции</span>
@@ -280,8 +282,6 @@ function renderForm(item: Partial<Entrepreneur>): string {
                 </label>
                 <button type="button" class="editor-button editor-button--primary" data-story-add disabled>Добавить секцию</button>
               </div>
-              <div class="story-sections-editor__list" data-story-list></div>
-              <p class="story-sections-editor__empty" data-story-empty>Секций пока нет. Выберите тип и нажмите «Добавить секцию».</p>
             </div>
           `)}
 
