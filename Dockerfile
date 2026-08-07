@@ -42,6 +42,23 @@ RUN echo "PORTAINER_NUXT_BUILD_2026-08-07_1" \
     grep -Eqi "@prisma|prisma client|prisma schema" /tmp/nuxt-build.log && exit 91; \
     grep -Eqi "native binding|sharp|resvg|dlopen|GLIBC|GLIBCXX|wrong ELF|Exec format" /tmp/nuxt-build.log && exit 88; \
     grep -Eqi "Tailwind|@tailwindcss|CssSyntaxError|PostCSS|unknown utility" /tmp/nuxt-build.log && exit 102; \
+    grep -Eqi "Element is missing end tag|Missing end tag" /tmp/nuxt-build.log && exit 121; \
+    grep -Eqi "Invalid end tag|Unexpected closing tag|no matching end tag" /tmp/nuxt-build.log && exit 122; \
+    grep -Eqi "Error parsing JavaScript expression|Error parsing interpolation|Error parsing template expression" /tmp/nuxt-build.log && exit 123; \
+    grep -Eqi "Duplicate attribute" /tmp/nuxt-build.log && exit 124; \
+    grep -Eqi "v-else.*no adjacent v-if|v-else-if.*no adjacent v-if|v-for.*has no expression|v-if.*has no expression" /tmp/nuxt-build.log && exit 125; \
+    grep -Eqi "Codegen node is missing|unhandled node type" /tmp/nuxt-build.log && exit 126; \
+    grep -Eqi "Failed to resolve type|Unresolvable type|Failed to resolve extends base type" /tmp/nuxt-build.log && exit 127; \
+    grep -Eqi "At least one <template>|Single file component can contain only one|Duplicate <script|Duplicate <template" /tmp/nuxt-build.log && exit 128; \
+    grep -q "LandingAboutSection.vue" /tmp/nuxt-build.log && exit 131; \
+    grep -q "LandingFeaturedHeroSection.vue" /tmp/nuxt-build.log && exit 132; \
+    grep -q "LandingAudienceSection.vue" /tmp/nuxt-build.log && exit 133; \
+    grep -q "LandingPlaceCard.vue" /tmp/nuxt-build.log && exit 134; \
+    grep -q "app/features/landing" /tmp/nuxt-build.log && exit 135; \
+    grep -q "app/pages" /tmp/nuxt-build.log && exit 136; \
+    grep -q "app/shared" /tmp/nuxt-build.log && exit 137; \
+    grep -q "app/features" /tmp/nuxt-build.log && exit 138; \
+    grep -q "\.nuxt/" /tmp/nuxt-build.log && exit 139; \
     grep -Eqi "VueCompilerError|@vue/compiler-sfc|vite:vue|Single File Component" /tmp/nuxt-build.log && exit 103; \
     grep -Eqi "sh:.*vite.*not found|vite:.*not found|vite.*command not found" /tmp/nuxt-build.log && exit 108; \
     grep -Eqi "failed to resolve import|Rollup failed to resolve import|Could not load .*imported by" /tmp/nuxt-build.log && exit 110; \
