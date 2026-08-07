@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BlogArticleDetailResponse } from '@features/blog/model/blog.types'
+import type { BlogArticleDetailResponse } from '../model/blog.types'
 import type { ArticleRowItem } from '@shared/types/article-row'
 import BlogRelatedMaterialsSection from '@features/blog/ui/BlogRelatedMaterialsSection.vue'
 import { formatNumericRussianDate } from '@shared/lib/date'

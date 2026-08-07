@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ContactPageData } from '@features/contacts/model/contact-page.types'
+import type { ContactPageData } from '../model/contact-page.types'
 import { SOCIAL_LINKS } from '@shared/social'
 
 defineProps<ContactPageData & {

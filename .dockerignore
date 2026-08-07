@@ -1,4 +1,6 @@
 node_modules/
+.nuxt/
+.output/
 dist/
 public/uploads/*
 !public/uploads/.gitkeep
