@@ -1,5 +1,6 @@
 import { api, type Article, type Business, type Entrepreneur } from '../api.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
+import { attachFormAutosave } from '../lib/formAutosave.js';
 import { bindAutoSlug } from '../lib/slug.js';
 import { escapeHtml, formatDate, layout, pageAlert, type UserInfo } from './layout.js';
 
@@ -532,6 +533,24 @@ function attachSubmit(id: string | null) {
   const form = document.getElementById('article-form') as HTMLFormElement | null;
   if (!form) return;
 
+  const hasContent = () => {
+    const content = getHtml('content');
+    return Boolean(content && content !== '<p><br></p>');
+  };
+  const autosave = attachFormAutosave({
+    form,
+    available: Boolean(id),
+    canAutosave: () => hasContent() && !hasSelectedFiles(form),
+    blockedMessage: 'Заполните текст и сохраните выбранные файлы вручную',
+    save: async () => {
+      const content = getHtml('content');
+      if (!content || content === '<p><br></p>') throw new Error('Добавьте основной текст статьи');
+      const data = await collectFormData(form, content);
+      if (id) await api.articles.update(id, data);
+      else await api.articles.create(data);
+    },
+  });
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const message = document.getElementById('form-message');
@@ -540,15 +559,7 @@ function attachSubmit(id: string | null) {
 
     try {
       if (submit) submit.disabled = true;
-      const content = getHtml('content');
-      if (!content || content === '<p><br></p>') {
-        if (message) message.innerHTML = pageAlert('Добавьте основной текст статьи', 'error');
-        return;
-      }
-
-      const data = await collectFormData(form, content);
-      if (id) await api.articles.update(id, data);
-      else await api.articles.create(data);
+      await autosave.saveNow();
       location.href = '/admin/articles';
     } catch (error) {
       if (message) {
@@ -559,6 +570,11 @@ function attachSubmit(id: string | null) {
       if (submit) submit.disabled = false;
     }
   });
+}
+
+function hasSelectedFiles(form: HTMLFormElement): boolean {
+  return Array.from(form.querySelectorAll<HTMLInputElement>('input[type="file"]'))
+    .some((input) => Boolean(input.files?.length));
 }
 
 async function collectFormData(form: HTMLFormElement, content: string): Promise<Partial<Article>> {

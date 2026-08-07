@@ -1,4 +1,5 @@
 import { api, type Settings } from '../api.js';
+import { attachFormAutosave, type FormAutosaveController } from '../lib/formAutosave.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 
 type BannerFieldName = 'HOME_BANNER_IMAGE' | 'HOME_BANNER_MOBILE_IMAGE';
@@ -30,7 +31,13 @@ export function bannerView(user?: UserInfo | null) {
     try {
       const settings = await api.settings.get();
       setContent(renderBannerEditor(settings));
-      attachBannerEditor();
+      const form = document.getElementById('banner-form') as HTMLFormElement | null;
+      if (!form) return;
+      const autosave = attachFormAutosave({
+        form,
+        save: () => api.settings.update(collectBannerSettings(form)),
+      });
+      attachBannerEditor(autosave);
     } catch (error) {
       setContent(pageAlert(error instanceof Error ? error.message : 'Не удалось загрузить баннер', 'error'));
     }
@@ -117,7 +124,7 @@ function renderMediaField(
     </div>`;
 }
 
-function attachBannerEditor() {
+function attachBannerEditor(autosave: FormAutosaveController) {
   const form = document.getElementById('banner-form') as HTMLFormElement | null;
   const modal = document.getElementById('banner-media-library');
   const grid = modal?.querySelector<HTMLElement>('[data-library-grid]');
@@ -209,20 +216,24 @@ function attachBannerEditor() {
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const message = document.getElementById('form-message');
-    const link = form.elements.namedItem('HOME_BANNER_LINK') as HTMLInputElement | null;
-    const desktop = form.elements.namedItem('HOME_BANNER_IMAGE') as HTMLInputElement | null;
-    const mobile = form.elements.namedItem('HOME_BANNER_MOBILE_IMAGE') as HTMLInputElement | null;
     try {
-      await api.settings.update({
-        HOME_BANNER_IMAGE: desktop?.value.trim() || '',
-        HOME_BANNER_MOBILE_IMAGE: mobile?.value.trim() || '',
-        HOME_BANNER_LINK: link?.value.trim() || '/entrepreneurs',
-      });
+      await autosave.saveNow();
       if (message) message.innerHTML = pageAlert('Баннер сохранен');
     } catch (error) {
       if (message) message.innerHTML = pageAlert(error instanceof Error ? error.message : 'Ошибка сохранения', 'error');
     }
   });
+}
+
+function collectBannerSettings(form: HTMLFormElement): Settings {
+  const link = form.elements.namedItem('HOME_BANNER_LINK') as HTMLInputElement | null;
+  const desktop = form.elements.namedItem('HOME_BANNER_IMAGE') as HTMLInputElement | null;
+  const mobile = form.elements.namedItem('HOME_BANNER_MOBILE_IMAGE') as HTMLInputElement | null;
+  return {
+    HOME_BANNER_IMAGE: desktop?.value.trim() || '',
+    HOME_BANNER_MOBILE_IMAGE: mobile?.value.trim() || '',
+    HOME_BANNER_LINK: link?.value.trim() || '/entrepreneurs',
+  };
 }
 
 function setContent(html: string) {

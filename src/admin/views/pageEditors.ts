@@ -1,4 +1,5 @@
 import { api, type Article, type Settings } from '../api.js';
+import { attachFormAutosave, type FormAutosaveController } from '../lib/formAutosave.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { createShootingPageView } from './shootingPageEditor.js';
 
@@ -232,7 +233,13 @@ function pageEditorView(config: PageEditorConfig, user?: UserInfo | null) {
       attachOrderEditor();
       if (config.articleSelection) attachArticleSelection();
       attachPageMediaFields();
-      attachPageSubmit(config);
+      const form = document.getElementById(config.formId) as HTMLFormElement | null;
+      if (!form) return;
+      const autosave = attachFormAutosave({
+        form,
+        save: () => api.settings.update(collectPageSettings(form, config)),
+      });
+      attachPageSubmit(config, autosave);
     } catch (error) {
       setContent(pageAlert(error instanceof Error ? error.message : 'Не удалось загрузить редактор', 'error'));
     }
@@ -524,28 +531,38 @@ function attachPageMediaFields() {
   });
 }
 
-function attachPageSubmit(config: PageEditorConfig) {
+function attachPageSubmit(config: PageEditorConfig, autosave: FormAutosaveController) {
   const form = document.getElementById(config.formId) as HTMLFormElement | null;
   if (!form) return;
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const fd = new FormData(form);
-    const data: Settings = {};
-    fd.forEach((value, key) => {
-      if (!key.startsWith('page_section_') && !key.startsWith('blog_popular_article_')) {
-        data[key] = String(value);
-      }
-    });
-    if (config.articleSelection) {
-      const selectedIds = Array.from({ length: 6 }, (_, index) => String(fd.get(`blog_popular_article_${index}`) || ''))
-        .filter((id, index, ids) => id && ids.indexOf(id) === index);
-      data.BLOG_PAGE_POPULAR_ARTICLE_IDS = JSON.stringify(selectedIds);
+    const message = document.getElementById('form-message');
+    try {
+      await autosave.saveNow();
+      if (message) message.innerHTML = pageAlert(config.saveMessage);
+    } catch (error) {
+      if (message) message.innerHTML = pageAlert(error instanceof Error ? error.message : 'Ошибка сохранения', 'error');
     }
-    data[`${config.keyPrefix}_SECTION_VISIBILITY`] = JSON.stringify(
-      Object.fromEntries(config.sections.map(([key]) => [key, fd.has(`page_section_${key}`)])),
-    );
-    await saveSettings(data, config.saveMessage);
   });
+}
+
+function collectPageSettings(form: HTMLFormElement, config: PageEditorConfig): Settings {
+  const fd = new FormData(form);
+  const data: Settings = {};
+  fd.forEach((value, key) => {
+    if (!key.startsWith('page_section_') && !key.startsWith('blog_popular_article_')) {
+      data[key] = String(value);
+    }
+  });
+  if (config.articleSelection) {
+    const selectedIds = Array.from({ length: 6 }, (_, index) => String(fd.get(`blog_popular_article_${index}`) || ''))
+      .filter((id, index, ids) => id && ids.indexOf(id) === index);
+    data.BLOG_PAGE_POPULAR_ARTICLE_IDS = JSON.stringify(selectedIds);
+  }
+  data[`${config.keyPrefix}_SECTION_VISIBILITY`] = JSON.stringify(
+    Object.fromEntries(config.sections.map(([key]) => [key, fd.has(`page_section_${key}`)])),
+  );
+  return data;
 }
 
 function attachSimpleSubmit() {

@@ -1,9 +1,11 @@
 import './styles/admin.css';
 import { router } from './router.js';
 import { api } from './api.js';
+import { confirmFormNavigation, deactivateFormAutosave } from './lib/formAutosave.js';
 import type { UserInfo } from './views/layout.js';
 
 let currentUser: UserInfo | null = null;
+let renderedPath = location.pathname;
 
 async function init() {
   const path = location.pathname;
@@ -27,8 +29,10 @@ async function render(path: string) {
   const app = document.getElementById('app');
   if (!app) return;
 
+  deactivateFormAutosave();
   const result = await router.resolve(path, currentUser);
   app.innerHTML = result.html;
+  renderedPath = path;
   attachGlobalListeners();
   if (result.init) {
     await result.init();
@@ -45,6 +49,7 @@ function attachGlobalListeners() {
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
+      if (!await confirmFormNavigation()) return;
       try {
         await api.logout();
       } finally {
@@ -55,7 +60,7 @@ function attachGlobalListeners() {
 }
 
 function setupNavigation() {
-  document.body.addEventListener('click', (e) => {
+  document.body.addEventListener('click', async (e) => {
     const target = e.target as HTMLElement;
     const link = target.closest('a[data-link]') as HTMLAnchorElement | null;
     if (!link) return;
@@ -64,13 +69,19 @@ function setupNavigation() {
     if (link.hasAttribute('download')) return;
     e.preventDefault();
     if (href !== location.pathname) {
+      if (!await confirmFormNavigation()) return;
       history.pushState(null, '', href);
-      render(href);
+      await render(href);
     }
   });
 
-  window.addEventListener('popstate', () => {
-    render(location.pathname);
+  window.addEventListener('popstate', async () => {
+    const targetPath = location.pathname;
+    if (!await confirmFormNavigation()) {
+      history.pushState(null, '', renderedPath);
+      return;
+    }
+    await render(targetPath);
   });
 }
 

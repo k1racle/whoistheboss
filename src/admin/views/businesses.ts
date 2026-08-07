@@ -1,6 +1,7 @@
 import { api, type Business, type Entrepreneur } from '../api.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
+import { attachFormAutosave } from '../lib/formAutosave.js';
 import { bindAutoSlug } from '../lib/slug.js';
 
 const businessSectionOptions = [
@@ -546,19 +547,25 @@ function attachSubmit(id: string | null) {
   attachBusinessSpecs(form);
   attachBusinessAwards(form);
   attachBusinessGallery(form);
+  const autosave = attachFormAutosave({
+    form,
+    available: Boolean(id),
+    canAutosave: () => !hasSelectedFiles(form),
+    blockedMessage: 'Сначала сохраните выбранные файлы вручную',
+    save: async () => {
+      const descriptionHtml = getHtml('description');
+      const data = await collectFormData(form, descriptionHtml);
+      if (id) await api.businesses.update(id, data);
+      else await api.businesses.create(data);
+    },
+  });
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = document.getElementById('form-message');
     if (msg) msg.innerHTML = '';
 
     try {
-      const descriptionHtml = getHtml('description');
-      const data = await collectFormData(form, descriptionHtml);
-      if (id) {
-        await api.businesses.update(id, data);
-      } else {
-        await api.businesses.create(data);
-      }
+      await autosave.saveNow();
       location.href = '/admin/businesses';
     } catch (err) {
       if (msg) {
@@ -566,6 +573,11 @@ function attachSubmit(id: string | null) {
       }
     }
   });
+}
+
+function hasSelectedFiles(form: HTMLFormElement): boolean {
+  return Array.from(form.querySelectorAll<HTMLInputElement>('input[type="file"]'))
+    .some((input) => Boolean(input.files?.length));
 }
 
 function attachCoverPreview(form: HTMLFormElement) {

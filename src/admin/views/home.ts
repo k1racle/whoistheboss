@@ -1,4 +1,5 @@
 import { api, type Settings } from '../api.js';
+import { attachFormAutosave, type FormAutosaveController } from '../lib/formAutosave.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 
 const homeSections = [
@@ -23,7 +24,13 @@ export function homeView(user?: UserInfo | null) {
       setContent(renderHomeForm(settings));
       attachOrderEditor();
       attachMediaFields();
-      attachSubmit();
+      const form = document.getElementById('home-form') as HTMLFormElement | null;
+      if (!form) return;
+      const autosave = attachFormAutosave({
+        form,
+        save: () => api.settings.update(collectHomeSettings(form)),
+      });
+      attachSubmit(autosave);
     } catch (error) {
       setContent(pageAlert(error instanceof Error ? error.message : 'Не удалось загрузить настройки главной', 'error'));
     }
@@ -245,27 +252,31 @@ function attachMediaFields() {
   });
 }
 
-function attachSubmit() {
+function attachSubmit(autosave: FormAutosaveController) {
   const form = document.getElementById('home-form') as HTMLFormElement | null;
   if (!form) return;
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const fd = new FormData(form);
-    const data: Settings = {};
-    fd.forEach((value, key) => {
-      if (!key.startsWith('home_section_')) data[key] = String(value);
-    });
-    data.HOME_SECTION_VISIBILITY = JSON.stringify(Object.fromEntries(homeSections.map(([key]) => [key, fd.has(`home_section_${key}`)])));
-    data.HOME_ABOUT_VIDEO_TYPE = data.HOME_ABOUT_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED';
-    data.HOME_ABOUT_HOVER_VIDEO_TYPE = data.HOME_ABOUT_HOVER_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED';
     const message = document.getElementById('form-message');
     try {
-      await api.settings.update(data);
+      await autosave.saveNow();
       if (message) message.innerHTML = pageAlert('Главная страница сохранена');
     } catch (error) {
       if (message) message.innerHTML = pageAlert(error instanceof Error ? error.message : 'Ошибка сохранения', 'error');
     }
   });
+}
+
+function collectHomeSettings(form: HTMLFormElement): Settings {
+  const fd = new FormData(form);
+  const data: Settings = {};
+  fd.forEach((value, key) => {
+    if (!key.startsWith('home_section_')) data[key] = String(value);
+  });
+  data.HOME_SECTION_VISIBILITY = JSON.stringify(Object.fromEntries(homeSections.map(([key]) => [key, fd.has(`home_section_${key}`)])));
+  data.HOME_ABOUT_VIDEO_TYPE = data.HOME_ABOUT_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED';
+  data.HOME_ABOUT_HOVER_VIDEO_TYPE = data.HOME_ABOUT_HOVER_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED';
+  return data;
 }
 
 function parseObject(value?: string): Record<string, boolean> {

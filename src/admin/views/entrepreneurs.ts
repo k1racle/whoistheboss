@@ -1,6 +1,7 @@
 import { api, type Entrepreneur, type EntrepreneurStorySection } from '../api.js';
 import { layout, formatDate, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
+import { attachFormAutosave } from '../lib/formAutosave.js';
 import { bindAutoSlug } from '../lib/slug.js';
 
 const entrepreneurSectionOptions = [
@@ -909,19 +910,26 @@ function attachSubmit(id: string | null) {
   const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
   if (!form) return;
 
+  const autosave = attachFormAutosave({
+    form,
+    available: Boolean(id),
+    canAutosave: () => !hasSelectedFiles(form),
+    blockedMessage: 'Сначала сохраните выбранные файлы вручную',
+    save: async () => {
+      const bioHtml = getHtml('bio');
+      const data = await collectFormData(form, bioHtml);
+      if (id) await api.entrepreneurs.update(id, data);
+      else await api.entrepreneurs.create(data);
+    },
+  });
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = document.getElementById('form-message');
     if (msg) msg.innerHTML = '';
 
     try {
-      const bioHtml = getHtml('bio');
-      const data = await collectFormData(form, bioHtml);
-      if (id) {
-        await api.entrepreneurs.update(id, data);
-      } else {
-        await api.entrepreneurs.create(data);
-      }
+      await autosave.saveNow();
       location.href = '/admin/entrepreneurs';
     } catch (err) {
       if (msg) {
@@ -929,6 +937,11 @@ function attachSubmit(id: string | null) {
       }
     }
   });
+}
+
+function hasSelectedFiles(form: HTMLFormElement): boolean {
+  return Array.from(form.querySelectorAll<HTMLInputElement>('input[type="file"]'))
+    .some((input) => Boolean(input.files?.length));
 }
 
 async function collectStorySections(form: HTMLFormElement): Promise<EntrepreneurStorySection[]> {

@@ -1,4 +1,5 @@
 import { api, type Settings } from '../api.js';
+import { attachFormAutosave, type FormAutosaveController } from '../lib/formAutosave.js';
 import { escapeHtml, layout, pageAlert, type UserInfo } from './layout.js';
 
 type FaqItem = { question: string; answer: string };
@@ -191,7 +192,7 @@ function syncOrderControls(form: HTMLFormElement): void {
   });
 }
 
-function attach(): void {
+function attach(autosave: FormAutosaveController): void {
   const form = document.getElementById('shooting-page-editor') as HTMLFormElement | null;
   if (!form) return;
 
@@ -246,25 +247,7 @@ function attach(): void {
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (submit) submit.disabled = true;
     try {
-      const payload: Settings = {};
-      new FormData(form).forEach((value, key) => {
-        if (typeof value === 'string') payload[key] = value;
-      });
-      const orderItems = [...form.querySelectorAll<HTMLElement>('[data-section-key]')];
-      payload.SHOOTING_PAGE_SECTION_ORDER = JSON.stringify(orderItems.map((item) => item.dataset.sectionKey));
-      payload.SHOOTING_PAGE_SECTION_VISIBILITY = JSON.stringify(Object.fromEntries(orderItems.map((item) => [
-        item.dataset.sectionKey,
-        item.querySelector<HTMLInputElement>('[data-visible]')?.checked !== false,
-      ])));
-      payload.SHOOTING_PAGE_FAQ_JSON = JSON.stringify(
-        [...form.querySelectorAll<HTMLElement>('[data-faq-item]')]
-          .map((item) => ({
-            question: item.querySelector<HTMLInputElement>('[data-faq-question]')?.value.trim() || '',
-            answer: item.querySelector<HTMLTextAreaElement>('[data-faq-answer]')?.value.trim() || '',
-          }))
-          .filter((item) => item.question || item.answer),
-      );
-      await api.settings.update(payload);
+      await autosave.saveNow();
       setMessage('Страница сохранена', 'success');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Не удалось сохранить страницу', 'error');
@@ -274,6 +257,28 @@ function attach(): void {
   });
 }
 
+function collectSettings(form: HTMLFormElement): Settings {
+  const payload: Settings = {};
+  new FormData(form).forEach((value, key) => {
+    if (typeof value === 'string') payload[key] = value;
+  });
+  const orderItems = [...form.querySelectorAll<HTMLElement>('[data-section-key]')];
+  payload.SHOOTING_PAGE_SECTION_ORDER = JSON.stringify(orderItems.map((item) => item.dataset.sectionKey));
+  payload.SHOOTING_PAGE_SECTION_VISIBILITY = JSON.stringify(Object.fromEntries(orderItems.map((item) => [
+    item.dataset.sectionKey,
+    item.querySelector<HTMLInputElement>('[data-visible]')?.checked !== false,
+  ])));
+  payload.SHOOTING_PAGE_FAQ_JSON = JSON.stringify(
+    [...form.querySelectorAll<HTMLElement>('[data-faq-item]')]
+      .map((item) => ({
+        question: item.querySelector<HTMLInputElement>('[data-faq-question]')?.value.trim() || '',
+        answer: item.querySelector<HTMLTextAreaElement>('[data-faq-answer]')?.value.trim() || '',
+      }))
+      .filter((item) => item.question || item.answer),
+  );
+  return payload;
+}
+
 export function createShootingPageView(user?: UserInfo | null) {
   const html = layout('Страница «Стать героем»', '<div class="admin-loading">Загрузка редактора...</div>', user);
   async function init() {
@@ -281,7 +286,13 @@ export function createShootingPageView(user?: UserInfo | null) {
       const settings = await api.settings.get();
       const content = document.getElementById('page-content');
       if (content) content.innerHTML = render(settings);
-      attach();
+      const form = document.getElementById('shooting-page-editor') as HTMLFormElement | null;
+      if (!form) return;
+      const autosave = attachFormAutosave({
+        form,
+        save: () => api.settings.update(collectSettings(form)),
+      });
+      attach(autosave);
     } catch (error) {
       const content = document.getElementById('page-content');
       if (content) content.innerHTML = pageAlert(error instanceof Error ? error.message : 'Не удалось загрузить редактор', 'error');

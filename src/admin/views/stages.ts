@@ -1,4 +1,5 @@
 import { api, type Settings } from '../api.js';
+import { attachFormAutosave, type FormAutosaveController } from '../lib/formAutosave.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 
 interface StageItem {
@@ -23,7 +24,13 @@ export function stagesView(user?: UserInfo | null) {
     try {
       const settings = await api.settings.get();
       setContent(renderStagesEditor(settings));
-      attachStagesEditor();
+      const form = document.getElementById('stages-form') as HTMLFormElement | null;
+      if (!form) return;
+      const autosave = attachFormAutosave({
+        form,
+        save: () => api.settings.update(collectStagesSettings(form)),
+      });
+      attachStagesEditor(autosave);
     } catch (error) {
       setContent(pageAlert(error instanceof Error ? error.message : 'Не удалось загрузить этапы', 'error'));
     }
@@ -102,7 +109,7 @@ function renderStage(stage: StageItem, index: number): string {
     </article>`;
 }
 
-function attachStagesEditor() {
+function attachStagesEditor(autosave: FormAutosaveController) {
   const form = document.getElementById('stages-form') as HTMLFormElement | null;
   const list = document.querySelector<HTMLElement>('[data-stages-list]');
   if (!form || !list) return;
@@ -143,23 +150,28 @@ function attachStagesEditor() {
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const stages = Array.from(list.querySelectorAll<HTMLElement>('[data-stage-item]')).map((item) => ({
-      index: item.querySelector<HTMLInputElement>('[data-stage-index]')?.value.trim() || '',
-      title: item.querySelector<HTMLInputElement>('[data-stage-title]')?.value.trim() || '',
-      subtitle: item.querySelector<HTMLInputElement>('[data-stage-subtitle]')?.value.trim() || '',
-      eyebrow: item.querySelector<HTMLInputElement>('[data-stage-eyebrow]')?.value.trim() || '',
-      description: item.querySelector<HTMLTextAreaElement>('[data-stage-description]')?.value.trim() || '',
-    }));
-    const title = (form.elements.namedItem('HOME_STAGES_TITLE') as HTMLInputElement).value.trim();
     const message = document.getElementById('form-message');
     try {
-      await api.settings.update({ HOME_STAGES_TITLE: title, HOME_STAGES_JSON: JSON.stringify(stages) });
+      await autosave.saveNow();
       if (message) message.innerHTML = pageAlert('Этапы сохранены');
     } catch (error) {
       if (message) message.innerHTML = pageAlert(error instanceof Error ? error.message : 'Ошибка сохранения', 'error');
     }
   });
   sync();
+}
+
+function collectStagesSettings(form: HTMLFormElement): Settings {
+  const list = form.querySelector<HTMLElement>('[data-stages-list]');
+  const stages = Array.from(list?.querySelectorAll<HTMLElement>('[data-stage-item]') || []).map((item) => ({
+    index: item.querySelector<HTMLInputElement>('[data-stage-index]')?.value.trim() || '',
+    title: item.querySelector<HTMLInputElement>('[data-stage-title]')?.value.trim() || '',
+    subtitle: item.querySelector<HTMLInputElement>('[data-stage-subtitle]')?.value.trim() || '',
+    eyebrow: item.querySelector<HTMLInputElement>('[data-stage-eyebrow]')?.value.trim() || '',
+    description: item.querySelector<HTMLTextAreaElement>('[data-stage-description]')?.value.trim() || '',
+  }));
+  const title = (form.elements.namedItem('HOME_STAGES_TITLE') as HTMLInputElement).value.trim();
+  return { HOME_STAGES_TITLE: title, HOME_STAGES_JSON: JSON.stringify(stages) };
 }
 
 function parseStages(value?: string): StageItem[] {

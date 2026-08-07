@@ -1363,6 +1363,95 @@ textarea.editor-control {
   font-size: 12px;
 }
 
+.autosave-control {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 2px 8px;
+  margin-left: auto;
+  color: #4b5563;
+}
+
+.autosave-control__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.autosave-control__select {
+  min-width: 92px;
+  padding: 6px 24px 6px 8px;
+  color: #111827;
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.autosave-control__select:disabled {
+  color: #9ca3af;
+  background: #f3f4f6;
+}
+
+.autosave-control__status {
+  grid-column: 1 / -1;
+  min-height: 13px;
+  margin: 0 !important;
+  color: #6b7280;
+  font-size: 10px !important;
+  text-align: right;
+}
+
+.standalone-editor__actions .autosave-control span {
+  margin-right: 0;
+}
+
+.autosave-leave-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.autosave-leave-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, .58);
+  backdrop-filter: blur(3px);
+}
+
+.autosave-leave-dialog__panel {
+  position: relative;
+  width: min(480px, 100%);
+  padding: 28px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 24px 64px rgba(17, 24, 39, .24);
+}
+
+.autosave-leave-dialog__panel h2 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.autosave-leave-dialog__panel p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.autosave-leave-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
 .editor-button--save {
   min-width: 130px;
 }
@@ -1744,6 +1833,19 @@ textarea.editor-control {
   .entrepreneur-editor__actions {
     left: 0;
     padding: 10px 16px;
+  }
+
+  .autosave-control {
+    display: block;
+  }
+
+  .autosave-control__label,
+  .autosave-control__status {
+    display: none;
+  }
+
+  .autosave-control__select {
+    min-width: 84px;
   }
 
   .standalone-editor__header {
