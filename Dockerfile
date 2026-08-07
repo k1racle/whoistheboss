@@ -25,35 +25,37 @@ RUN echo "PORTAINER_NODE24_BUNDLED_NPM_2026-08-07_1" \
 
 COPY . .
 RUN npx prisma generate
-RUN echo "PORTAINER_NODE24_MINIMAL_MODULES_2026-08-07_1" \
+RUN echo "PORTAINER_ADMIN_BUILD_2026-08-07_1" \
+  && npm run build:admin
+
+RUN echo "PORTAINER_NUXT_BUILD_2026-08-07_1" \
   && node --version \
   && npm --version \
-  && npm run build > /tmp/build.log 2>&1 \
+  && npm exec -- nuxt build > /tmp/nuxt-build.log 2>&1 \
   || { \
-    tail -n 200 /tmp/build.log; \
-    grep -Eqi "heap out of memory|heap limit|allocation failed|killed" /tmp/build.log && exit 81; \
-    grep -Eqi "ENOSPC|no space left" /tmp/build.log && exit 82; \
-    grep -Eqi "illegal instruction|SIGILL|segmentation fault|bus error" /tmp/build.log && exit 83; \
-    grep -Eqi "unsupported.*node|node.js.*version|EBADENGINE" /tmp/build.log && exit 85; \
-    grep -Eqi "fetch failed|EAI_AGAIN|ENOTFOUND|ECONNRESET|ETIMEDOUT" /tmp/build.log && exit 90; \
-    grep -Eqi "@prisma|prisma client|prisma schema" /tmp/build.log && exit 91; \
-    grep -Eqi "native binding|sharp|resvg|dlopen|GLIBC|GLIBCXX|wrong ELF|Exec format" /tmp/build.log && exit 88; \
-    grep -Eqi "Tailwind|@tailwindcss|CssSyntaxError|PostCSS|unknown utility" /tmp/build.log && exit 102; \
-    grep -Eqi "VueCompilerError|@vue/compiler-sfc|vite:vue|Single File Component" /tmp/build.log && exit 103; \
-    grep -Eqi "sh:.*vite.*not found|vite:.*not found|vite.*command not found" /tmp/build.log && exit 108; \
-    grep -Eqi "failed to resolve import|Rollup failed to resolve import|Could not load .*imported by" /tmp/build.log && exit 110; \
-    grep -Eqi "RollupError|RolldownError|@rolldown|@rollup|rollup-linux|rolldown-binding" /tmp/build.log && exit 101; \
-    grep -Eqi "ENOENT|no such file or directory|case-sensitive" /tmp/build.log && exit 104; \
-    grep -Eqi "Cannot find module|Cannot find package|ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND" /tmp/build.log && exit 109; \
-    grep -Eqi "TypeError|ReferenceError|SyntaxError" /tmp/build.log && exit 106; \
-    grep -Eq "ERR_[A-Z_]+" /tmp/build.log && exit 107; \
-    grep -Eqi "cannot find|could not resolve|command not found" /tmp/build.log && exit 84; \
-    grep -Eq "Building Nitro Server|Server built" /tmp/build.log && exit 94; \
-    grep -q "Building server" /tmp/build.log && exit 93; \
-    grep -q "Client built" /tmp/build.log && exit 96; \
-    grep -q "Building client" /tmp/build.log && exit 92; \
-    grep -q "Building Nuxt for production" /tmp/build.log && exit 95; \
-    grep -q "> build:admin" /tmp/build.log && exit 86; \
+    tail -n 200 /tmp/nuxt-build.log; \
+    grep -Eqi "heap out of memory|heap limit|allocation failed|killed" /tmp/nuxt-build.log && exit 81; \
+    grep -Eqi "ENOSPC|no space left" /tmp/nuxt-build.log && exit 82; \
+    grep -Eqi "illegal instruction|SIGILL|segmentation fault|bus error" /tmp/nuxt-build.log && exit 83; \
+    grep -Eqi "unsupported.*node|node.js.*version|EBADENGINE" /tmp/nuxt-build.log && exit 85; \
+    grep -Eqi "fetch failed|EAI_AGAIN|ENOTFOUND|ECONNRESET|ETIMEDOUT" /tmp/nuxt-build.log && exit 90; \
+    grep -Eqi "@prisma|prisma client|prisma schema" /tmp/nuxt-build.log && exit 91; \
+    grep -Eqi "native binding|sharp|resvg|dlopen|GLIBC|GLIBCXX|wrong ELF|Exec format" /tmp/nuxt-build.log && exit 88; \
+    grep -Eqi "Tailwind|@tailwindcss|CssSyntaxError|PostCSS|unknown utility" /tmp/nuxt-build.log && exit 102; \
+    grep -Eqi "VueCompilerError|@vue/compiler-sfc|vite:vue|Single File Component" /tmp/nuxt-build.log && exit 103; \
+    grep -Eqi "sh:.*vite.*not found|vite:.*not found|vite.*command not found" /tmp/nuxt-build.log && exit 108; \
+    grep -Eqi "failed to resolve import|Rollup failed to resolve import|Could not load .*imported by" /tmp/nuxt-build.log && exit 110; \
+    grep -Eqi "RollupError|RolldownError|@rolldown|@rollup|rollup-linux|rolldown-binding" /tmp/nuxt-build.log && exit 101; \
+    grep -Eqi "ENOENT|no such file or directory|case-sensitive" /tmp/nuxt-build.log && exit 104; \
+    grep -Eqi "Cannot find module|Cannot find package|ERR_MODULE_NOT_FOUND|MODULE_NOT_FOUND" /tmp/nuxt-build.log && exit 109; \
+    grep -Eqi "TypeError|ReferenceError|SyntaxError" /tmp/nuxt-build.log && exit 106; \
+    grep -Eq "ERR_[A-Z_]+" /tmp/nuxt-build.log && exit 107; \
+    grep -Eqi "cannot find|could not resolve|command not found" /tmp/nuxt-build.log && exit 84; \
+    grep -Eq "Building Nitro Server|Server built" /tmp/nuxt-build.log && exit 94; \
+    grep -q "Building server" /tmp/nuxt-build.log && exit 93; \
+    grep -q "Client built" /tmp/nuxt-build.log && exit 96; \
+    grep -q "Building client" /tmp/nuxt-build.log && exit 92; \
+    grep -q "Building Nuxt for production" /tmp/nuxt-build.log && exit 95; \
     exit 99; \
   }
 
