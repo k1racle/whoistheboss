@@ -1,3 +1,5 @@
+import type { LandingPageData } from '@features/landing/model/landing.data'
+import { getPublishedEntrepreneurs } from '@server/utils/published-entrepreneurs'
 import { getSiteSettings, getSiteSetting } from '@server/utils/site-settings'
 
 const LANDING_PAGE_KEYS = [
@@ -25,8 +27,11 @@ const LANDING_PAGE_KEYS = [
   'HOME_BANNER_LINK',
 ] as const
 
-export default defineEventHandler(async () => {
-  const settings = await getSiteSettings(LANDING_PAGE_KEYS)
+export default defineEventHandler(async (): Promise<LandingPageData> => {
+  const [settings, entrepreneurs] = await Promise.all([
+    getSiteSettings(LANDING_PAGE_KEYS),
+    getPublishedEntrepreneurs(),
+  ])
   const aboutVideoFile = getSiteSetting(settings, 'HOME_ABOUT_VIDEO_FILE')
   const aboutHoverVideoFile = getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_FILE')
   const aboutVideoType = aboutVideoFile || getSiteSetting(settings, 'HOME_ABOUT_VIDEO_TYPE') === 'SELF_HOSTED'
@@ -83,5 +88,6 @@ export default defineEventHandler(async () => {
     bannerImage: getSiteSetting(settings, 'HOME_BANNER_IMAGE'),
     bannerMobileImage: getSiteSetting(settings, 'HOME_BANNER_MOBILE_IMAGE'),
     bannerLink: getSiteSetting(settings, 'HOME_BANNER_LINK', '/entrepreneurs'),
+    entrepreneurs,
   }
 })

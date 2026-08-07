@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { landingHeroes, type LandingHeroCard } from '@features/landing/model/landing.data'
+import type { LandingHeroCard } from '@features/landing/model/landing.data'
 import LandingHeroCardItem from '@features/landing/ui/cards/LandingHeroCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
@@ -9,11 +9,10 @@ import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 const props = withDefaults(defineProps<{
   title: string
   description: string
-  heroes?: LandingHeroCard[]
+  heroes: LandingHeroCard[]
   sectionId?: string
   showMore?: boolean
 }>(), {
-  heroes: () => landingHeroes,
   sectionId: undefined,
   showMore: true,
 })

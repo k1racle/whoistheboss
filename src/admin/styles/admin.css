@@ -992,6 +992,50 @@ textarea.editor-control {
   font-size: 13px;
 }
 
+.admin-main input[type="file"]:not(.sr-only) {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 5px;
+  color: #4b5563;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+
+.admin-main input[type="file"]:not(.sr-only)::file-selector-button {
+  min-height: 32px;
+  padding: 7px 12px;
+  margin-right: 12px;
+  color: #374151;
+  background: #f3f4f6;
+  border: 0;
+  border-radius: 4px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color .15s ease, background-color .15s ease;
+}
+
+.admin-main input[type="file"]:not(.sr-only):hover {
+  background: #fffaf8;
+  border-color: var(--editor-accent, #DB2A00);
+}
+
+.admin-main input[type="file"]:not(.sr-only):hover::file-selector-button {
+  color: var(--editor-accent, #DB2A00);
+  background: #fff3ef;
+}
+
+.admin-main input[type="file"]:not(.sr-only):focus-visible {
+  outline: 0;
+  border-color: var(--editor-accent, #DB2A00);
+  box-shadow: 0 0 0 3px rgba(219, 42, 0, .1);
+}
+
 .entrepreneur-editor__publish {
   padding: 20px 24px;
   background: #fff;

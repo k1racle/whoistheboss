@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { LandingPageData } from '@features/landing/model/landing.data'
+import { toLandingHeroCard } from '@features/entrepreneurs/model/entrepreneur-card'
 import LandingAboutSection from '@features/landing/ui/sections/LandingAboutSection.vue'
 import LandingArticles from '@features/landing/ui/sections/LandingArticles.vue'
 import LandingAudienceSection from '@features/landing/ui/sections/LandingAudienceSection.vue'
@@ -10,9 +11,11 @@ import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHer
 import LandingPlacesSection from '@features/landing/ui/sections/LandingPlacesSection.vue'
 import { useSiteHeader } from '@shared/ui/header/useSiteHeader'
 
-defineProps<{
+const props = defineProps<{
   page: LandingPageData
 }>()
+
+const heroes = computed(() => props.page.entrepreneurs.map(toLandingHeroCard))
 
 const { logoVisible } = useSiteHeader()
 
@@ -63,6 +66,7 @@ onBeforeUnmount(() => {
     <LandingOurHeroesSection
       :title="page.heroesTitle"
       :description="page.heroesText"
+      :heroes="heroes"
     />
     <LandingPlacesSection
       :title="page.placesTitle"

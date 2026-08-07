@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { EntrepreneursPageData } from '@features/entrepreneurs/model/entrepreneur.types'
 import type { LandingAudienceCard, LandingHeroCard } from '@features/landing/model/landing.data'
+import { toLandingHeroCard } from '@features/entrepreneurs/model/entrepreneur-card'
 import EntrepreneursAudienceSection from '@features/entrepreneurs/ui/EntrepreneursAudienceSection.vue'
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection.vue'
 import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHeroesSection.vue'
-import { ROUTES } from '@shared/navigation'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
@@ -27,16 +27,7 @@ const audienceCards = computed<LandingAudienceCard[]>(() => props.page.audienceC
   hoverDescription: card.hoverDescription || undefined,
 })))
 
-const heroes = computed<LandingHeroCard[]>(() => props.page.entrepreneurs.map(entrepreneur => ({
-  id: entrepreneur.slug,
-  name: entrepreneur.name,
-  role: entrepreneur.title,
-  company: '',
-  image: entrepreneur.photo || '/images/placeholder.svg',
-  imageHover: entrepreneur.hoverPhoto || entrepreneur.photo || '/images/placeholder.svg',
-  imageAlt: `Карточка героя ${entrepreneur.name}`,
-  href: ROUTES.ENTREPRENEUR(entrepreneur.slug),
-})))
+const heroes = computed<LandingHeroCard[]>(() => props.page.entrepreneurs.map(toLandingHeroCard))
 </script>
 
 <template>

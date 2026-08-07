@@ -2,11 +2,19 @@
 import LandingContactForm from '@features/landing/ui/contact/LandingContactForm.vue'
 import LandingContactText from '@features/landing/ui/contact/LandingContactText.vue'
 
-defineProps<{
+const DEFAULT_CTA_TITLE = 'Стать\nучастником'
+const DEFAULT_FORM_TITLE = 'Заполните ваши данные\nдля связи'
+const DEFAULT_FORM_DESCRIPTION = 'Отправьте нам заявку, и мы свяжемся с вами.'
+
+const props = defineProps<{
   ctaTitle: string
   formTitle: string
   formDescription: string
 }>()
+
+const ctaTitle = computed(() => props.ctaTitle.trim() || DEFAULT_CTA_TITLE)
+const formTitle = computed(() => props.formTitle.trim() || DEFAULT_FORM_TITLE)
+const formDescription = computed(() => props.formDescription.trim() || DEFAULT_FORM_DESCRIPTION)
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 

@@ -1,14 +1,32 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
+import BannerSkeleton from '@shared/ui/skeleton/BannerSkeleton.vue'
+
+const props = withDefaults(defineProps<{
   desktopImage?: string
   mobileImage?: string
   href?: string
-  fallbackText?: string
 }>(), {
   desktopImage: '',
   mobileImage: '',
   href: '/',
-  fallbackText: 'ЗДЕСЬ БУДЕТ БАННЕР\nС НОВЫМ МАТЕРИАЛОМ',
+})
+
+const imageSource = computed(() => props.desktopImage || props.mobileImage)
+const isImageLoaded = shallowRef(false)
+const imageElement = useTemplateRef<HTMLImageElement>('imageElement')
+
+watch(
+  [() => props.desktopImage, () => props.mobileImage],
+  () => {
+    isImageLoaded.value = false
+  },
+)
+
+onMounted(() => {
+  const image = imageElement.value
+  if (!image?.complete) return
+
+  isImageLoaded.value = image.naturalWidth > 0
 })
 </script>
 
@@ -17,29 +35,33 @@ withDefaults(defineProps<{
     <div class="mx-auto w-full max-w-[1920px]">
       <NuxtLink
         :to="href"
-        class="group block overflow-hidden border border-border-strong bg-surface"
+        class="group grid overflow-hidden border border-border-strong bg-surface"
+        aria-label="Открыть материал баннера"
       >
-        <picture v-if="desktopImage || mobileImage">
+        <BannerSkeleton
+          v-if="!isImageLoaded"
+          class="col-start-1 row-start-1"
+        />
+
+        <picture
+          v-if="imageSource"
+          class="col-start-1 row-start-1 transition-opacity duration-300"
+          :class="isImageLoaded ? 'opacity-100' : 'opacity-0'"
+        >
           <source
             v-if="mobileImage"
             media="(max-width: 768px)"
             :srcset="mobileImage"
           >
           <img
-            :src="desktopImage || mobileImage"
+            ref="imageElement"
+            :src="imageSource"
             alt=""
             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            @load="isImageLoaded = true"
+            @error="isImageLoaded = false"
           >
         </picture>
-
-        <div
-          v-else
-          class="flex min-h-[280px] items-center justify-center bg-text px-8 py-12 text-center sm:min-h-[340px]"
-        >
-          <p class="font-display text-[clamp(2rem,7vw,5rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] text-text-on-accent whitespace-pre-line">
-            {{ fallbackText }}
-          </p>
-        </div>
       </NuxtLink>
     </div>
   </section>

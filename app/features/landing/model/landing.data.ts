@@ -1,3 +1,5 @@
+import type { EntrepreneurListItem } from '@features/entrepreneurs/model/entrepreneur.types'
+
 export type LandingHeroCard = {
   id: string
   name: string
@@ -42,14 +44,6 @@ export const landingAboutParagraphs = [
 
 export const landingHeroesDescription = 'Главные герои проекта — предприниматели, которые своим трудом, идеями и решениями создают бизнес и меняют окружающий мир. У каждого из них свой путь, свои ценности и своя история. Мы знакомим вас с людьми, которые стоят за известными компаниями, предприятиями, ресторанами, магазинами и другими успешными проектами.'
 
-export const landingFeaturedHero = {
-  name: 'Андрей Шевченко',
-  role: 'Мидийное место',
-  image: '/uploads/frame-1321315980-1785315691463.png',
-  imageHover: undefined,
-  imageAlt: 'Промо-баннер с Андреем Шевченко',
-} as const
-
 export type LandingPageData = {
   heroTitle: string
   aboutTitle: string
@@ -73,6 +67,7 @@ export type LandingPageData = {
   bannerImage: string
   bannerMobileImage: string
   bannerLink: string
+  entrepreneurs: EntrepreneurListItem[]
 }
 
 
@@ -87,36 +82,6 @@ export const landingAudienceFallback: LandingAudienceCard[] = [
   { id: 'managing-partners', title: 'Управляющие партнеры', hoverTitle: 'Лица решений' },
   { id: 'ceos', title: 'Генеральные директора', hoverTitle: 'Те, кто ведет вперед' },
   { id: 'creators', title: 'Создатели чего-то', hoverTitle: 'Авторы нового' },
-] as const
-
-export const landingHeroes: LandingHeroCard[] = [
-  {
-    id: 'andrey-shevchenko',
-    name: 'Андрей Шевченко',
-    role: 'Управляющий партнер',
-    company: 'Мидийное место',
-    image: '/uploads/property-1-default-1784802691081.png',
-    imageHover: '/uploads/property-1-hover-1784802691081.png',
-    imageAlt: 'Карточка героя Андрея Шевченко',
-  },
-  {
-    id: 'elenika-korelova',
-    name: 'Эленика Корелова',
-    role: 'Управляющий партнер',
-    company: 'Zanoza Open Bar',
-    image: '/uploads/property-1-default-1-1784803027388.png',
-    imageHover: '/uploads/property-1-hover-1-1784803027388.png',
-    imageAlt: 'Карточка героя Эленики Кореловой',
-  },
-  {
-    id: 'vyacheslav-morkovskiy',
-    name: 'Вячеслав Морковский',
-    role: 'Управляющий партнер',
-    company: 'Big Baby Burger',
-    image: '/uploads/property-1-default-2-1784803092347.png',
-    imageHover: '/uploads/property-1-hover-2-1784803092347.png',
-    imageAlt: 'Карточка героя Вячеслава Морковского',
-  },
 ] as const
 
 export const landingPlacesDescription = 'Компании и проекты наших героев: места, бренды и команды, за которыми стоят реальные предпринимательские истории.'
@@ -141,7 +106,8 @@ export const landingPageFallback: LandingPageData = {
   ctaTitle: 'Стать\nучастником',
   ctaFormTitle: 'Заполните ваши данные\nдля связи',
   ctaFormDescription: 'Отправьте нам заявку и мы перезвоним.',
-  bannerImage: landingFeaturedHero.image,
+  bannerImage: '',
   bannerMobileImage: '',
   bannerLink: '/entrepreneurs',
+  entrepreneurs: [],
 }

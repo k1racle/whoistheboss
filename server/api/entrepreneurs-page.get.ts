@@ -2,6 +2,7 @@ import type { EntrepreneursPageData } from '@features/entrepreneurs/model/entrep
 import prisma from '~~/lib/prisma'
 import { parseSectionOrder, parseSectionVisibility } from '@shared/lib/section-config'
 import { ROUTES } from '@shared/navigation'
+import { getPublishedEntrepreneurs } from '@server/utils/published-entrepreneurs'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
 
 const ENTREPRENEURS_PAGE_KEYS = [
@@ -32,18 +33,7 @@ const DEFAULT_AUDIENCE_CARDS = [
 export default defineEventHandler(async (): Promise<EntrepreneursPageData> => {
   const [settings, entrepreneurs, audienceCards] = await Promise.all([
     getSiteSettings(ENTREPRENEURS_PAGE_KEYS),
-    prisma.entrepreneur.findMany({
-      where: { isPublished: true },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        slug: true,
-        name: true,
-        title: true,
-        photo: true,
-        hoverPhoto: true,
-        quote: true,
-      },
-    }),
+    getPublishedEntrepreneurs(),
     prisma.audienceCard.findMany({
       where: { isPublished: true },
       orderBy: { sortOrder: 'asc' },

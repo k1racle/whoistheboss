@@ -21,5 +21,7 @@ export function getSiteSetting(
   key: string,
   fallback = '',
 ): string {
-  return settings[key] ?? fallback
+  const value = settings[key]
+
+  return value?.trim() ? value : fallback
 }
