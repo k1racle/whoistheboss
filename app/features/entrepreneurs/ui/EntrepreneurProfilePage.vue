@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import type { EntrepreneurDetailData } from '@features/entrepreneurs/model/entrepreneur.types'
+import {
+  getEntrepreneurStorySectionAnchor,
+  type EntrepreneurDetailData,
+} from '@features/entrepreneurs/model/entrepreneur.types'
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import { ROUTES } from '@shared/navigation'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
@@ -11,9 +14,7 @@ import EntrepreneurMoreSection from './profile/EntrepreneurMoreSection.vue'
 import EntrepreneurProfileHero from './profile/EntrepreneurProfileHero.vue'
 import EntrepreneurRelatedSection from './profile/EntrepreneurRelatedSection.vue'
 import EntrepreneurShortsSection from './profile/EntrepreneurShortsSection.vue'
-import EntrepreneurStoryVariant01 from './profile/EntrepreneurStoryVariant01.vue'
-import EntrepreneurStoryVariant02 from './profile/EntrepreneurStoryVariant02.vue'
-import EntrepreneurStoryVariant03 from './profile/EntrepreneurStoryVariant03.vue'
+import EntrepreneurStorySection from './profile/EntrepreneurStorySection.vue'
 
 const props = defineProps<{
   entrepreneur: EntrepreneurDetailData
@@ -24,9 +25,10 @@ const props = defineProps<{
 const sectionOrder = computed(() => new Map(props.entrepreneur.sectionOrder.map((key, index) => [key, index])))
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => props.entrepreneur.sectionVisibility[key] !== false
-const biographyBlocks = computed(() => props.entrepreneur.biographyBlocks.filter(Boolean))
+const visibleStorySections = computed(() => props.entrepreneur.storySections.filter(section => section.isVisible))
 const heroMarqueeText = computed(() =>
-  props.entrepreneur.heroMarquee || `${props.entrepreneur.name} • ${props.entrepreneur.title} • КТО ЗДЕСЬ ГЛАВНЫЙ`,
+  props.entrepreneur.heroMarquee
+  || [props.entrepreneur.name, props.entrepreneur.title, 'КТО ЗДЕСЬ ГЛАВНЫЙ'].filter(Boolean).join(' • '),
 )
 </script>
 
@@ -54,53 +56,19 @@ const heroMarqueeText = computed(() =>
       :gallery="entrepreneur.aboutGalleryImages"
     />
 
-    <EntrepreneurStoryVariant01
-      v-if="isVisible('biography')"
-      id="biography"
-      :style="sectionStyle('biography')"
-      eyebrow="Биография"
-      :title="entrepreneur.biographyTitle || entrepreneur.name"
-      :image="entrepreneur.biographyPhoto"
-      :image-alt="entrepreneur.name"
-      :blocks="biographyBlocks"
-    />
-
-    <EntrepreneurStoryVariant02
-      v-if="isVisible('childhood')"
-      id="childhood"
-      :style="sectionStyle('childhood')"
-      :title="entrepreneur.childhoodTitle"
-      :text-one="entrepreneur.childhoodTextOne"
-      :text-two="entrepreneur.childhoodTextTwo"
-    />
-
-    <EntrepreneurStoryVariant03
-      v-if="isVisible('education')"
-      id="education"
-      :style="sectionStyle('education')"
-      :title="entrepreneur.educationTitle"
-      :text="entrepreneur.educationText"
-      :aside-text="entrepreneur.educationAsideText"
-      :image="entrepreneur.educationPhoto"
-      :image-alt="entrepreneur.name"
+    <EntrepreneurStorySection
+      v-for="storySection in visibleStorySections"
+      :id="getEntrepreneurStorySectionAnchor(storySection.id)"
+      :key="storySection.id"
+      :style="sectionStyle(`story:${storySection.id}`)"
+      :section="storySection"
+      :entrepreneur-name="entrepreneur.name"
     />
 
     <EntrepreneurShortsSection
       v-if="isVisible('shorts')"
       :style="sectionStyle('shorts')"
       :reels="entrepreneur.reels"
-    />
-
-    <EntrepreneurStoryVariant03
-      v-if="isVisible('turnover')"
-      id="turnover"
-      :style="sectionStyle('turnover')"
-      :title="entrepreneur.turnoverTitle"
-      :text="entrepreneur.turnoverText"
-      :bottom-text="entrepreneur.turnoverBottomText"
-      :image="entrepreneur.turnoverPhoto"
-      :image-alt="entrepreneur.name"
-      image-aspect="wide"
     />
 
     <EntrepreneurMoreSection

@@ -1,4 +1,4 @@
-import { api, type Entrepreneur } from '../api.js';
+import { api, type Entrepreneur, type EntrepreneurStorySection } from '../api.js';
 import { layout, formatDate, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
 import { bindAutoSlug } from '../lib/slug.js';
@@ -6,11 +6,7 @@ import { bindAutoSlug } from '../lib/slug.js';
 const entrepreneurSectionOptions = [
   ['hero', 'Херо'],
   ['about', 'Меню и фотослайдер'],
-  ['biography', 'Биография'],
-  ['childhood', 'Детство'],
-  ['education', 'Образование и опыт'],
   ['shorts', 'Короткие видео'],
-  ['turnover', 'Оборот / бизнес'],
   ['more', 'Больше о герое'],
   ['featuredInterview', 'Главное интервью'],
   ['cta', 'Стать участником'],
@@ -18,6 +14,13 @@ const entrepreneurSectionOptions = [
   ['interviewList', 'Список интервью'],
   ['articles', 'Статьи'],
 ] as const;
+
+const storySectionTypeLabels: Record<EntrepreneurStorySection['type'], string> = {
+  BIOGRAPHY: 'Биография',
+  ACCENT: 'Красный текстовый блок',
+  PORTRAIT: 'Текст + вертикальное фото',
+  WIDE: 'Текст + широкое фото',
+};
 
 export function entrepreneursView(user?: UserInfo | null) {
   const html = layout('Предприниматели', renderLoading(), user);
@@ -107,6 +110,7 @@ export function entrepreneurFormView(id: string | null, user?: UserInfo | null) 
     attachSectionNavigation();
     attachSectionOrderEditor('entrepreneur-form');
     attachMediaEditor();
+    attachStorySections();
     bindAutoSlug('entrepreneur-form', 'name');
     attachSubmit(id);
   }
@@ -215,10 +219,7 @@ function renderForm(item: Partial<Entrepreneur>): string {
           <a href="#editor-main">01. Основное</a>
           <a href="#editor-hero">02. Херо</a>
           <a href="#editor-about">03. Меню и галерея</a>
-          <a href="#editor-biography">04. Биография</a>
-          <a href="#editor-childhood">05. Детство</a>
-          <a href="#editor-education">06. Образование</a>
-          <a href="#editor-turnover">07. Оборот</a>
+          <a href="#editor-stories">04. Секции с текстом</a>
           <a href="#editor-more">08. Больше</a>
           <a href="#editor-interview">09. Интервью</a>
           <a href="#editor-extra">10. Дополнительно</a>
@@ -248,7 +249,7 @@ function renderForm(item: Partial<Entrepreneur>): string {
           ${section('editor-main', '01', 'Основное', 'Имя героя, адрес страницы, должность и главная фотография.', `
             ${field('Имя и фамилия', 'name', item.name, { required: true, help: 'Выводится в заголовках и карточках героя.' })}
             ${field('Адрес страницы (формируется автоматически)', 'slug', item.slug, { required: true, help: 'Создаётся из имени латиницей. При совпадении адресов система добавит номер.' })}
-            ${field('Должность / подпись', 'title', item.title, { required: true, help: 'Короткая роль героя: «Управляющий партнер».' })}
+            ${field('Должность / подпись', 'title', item.title, { help: 'Короткая роль героя: «Управляющий партнер». Поле можно оставить пустым.' })}
             ${field('Цитата', 'quote', item.quote, { help: 'Используется как запасной тизер в блоках страницы.' })}
             ${mediaField('Главное фото героя', 'photo', 'photoFile', item.photo, 'Основной портрет для карточки героя и связанных блоков. Рекомендуется вертикальное изображение.')}
           `, true)}
@@ -262,36 +263,26 @@ function renderForm(item: Partial<Entrepreneur>): string {
 
           ${section('editor-about', '03', 'Меню и фотослайдер', 'Полноэкранный блок после херо: карточки навигации слева, фотографии справа.', `
             ${field('Вступительное описание', 'aboutIntroDescription', item.aboutIntroDescription, { textarea: true, rows: 4, help: 'Поясняющий текст над блоком.', wide: true })}
-            ${field('Названия карточек меню', 'aboutMenuLabels', item.aboutMenuLabels, { textarea: true, rows: 7, help: 'Одно название в строке. Порядок соответствует пунктам меню.' })}
-            ${field('Описания карточек меню', 'aboutMenuDescriptions', item.aboutMenuDescriptions, { textarea: true, rows: 7, help: 'Одно описание в строке, в том же порядке, что названия.' })}
+            ${field('Дополнительные карточки меню', 'aboutMenuLabels', item.aboutMenuLabels, { textarea: true, rows: 4, help: 'Две строки: «Статьи» и «Контакты». Карточки текстовых секций редактируются внутри самих секций.' })}
+            ${field('Описания дополнительных карточек', 'aboutMenuDescriptions', item.aboutMenuDescriptions, { textarea: true, rows: 4, help: 'Две строки в том же порядке: описание для «Статей» и для «Контактов».' })}
             ${galleryField('Фотографии слайдера', 'aboutGalleryPhotos', item.aboutGalleryPhotos, 'Фото меняются при наведении на пункты меню. Расположите их в том же порядке, что карточки.')}
           `)}
 
-          ${section('editor-biography', '04', 'Биография', 'Блок «БИОГРАФИЯ / КТО ЗДЕСЬ…»: заголовок формируется автоматически, справа три текста, слева фото.', `
-            ${field('Первый текст', 'biographyTextOne', item.biographyTextOne, { textarea: true, rows: 6, help: 'Верхний текст правой колонки.' })}
-            ${field('Второй текст', 'biographyTextTwo', item.biographyTextTwo, { textarea: true, rows: 6, help: 'Второй текст, расположен ниже первого.' })}
-            ${field('Третий текст', 'biographyTextThree', item.biographyTextThree, { textarea: true, rows: 6, help: 'Нижний текст, прижат к нижнему краю блока.' })}
-            ${mediaField('Фото блока «Биография»', 'biographyPhoto', 'biographyPhotoFile', item.biographyPhoto, 'Статичное фото под заголовком слева. Лучше использовать горизонтальный кадр.')}
-          `)}
-
-          ${section('editor-childhood', '05', 'Детство', 'Красный текстовый блок, связанный со вторым пунктом меню.', `
-            ${field('Заголовок', 'childhoodTitle', item.childhoodTitle, { textarea: true, rows: 3, help: 'Можно переносить строки вручную.' , wide: true })}
-            ${field('Первый текст', 'childhoodTextOne', item.childhoodTextOne, { textarea: true, rows: 7, help: 'Первый абзац под заголовком.' })}
-            ${field('Второй текст', 'childhoodTextTwo', item.childhoodTextTwo, { textarea: true, rows: 7, help: 'Второй отдельный абзац.' })}
-          `)}
-
-          ${section('editor-education', '06', 'Образование и опыт', 'Третий пункт меню: крупный заголовок и текст слева, фотография справа.', `
-            ${field('Заголовок', 'educationTitle', item.educationTitle, { textarea: true, rows: 4, help: 'Каждая строка выводится отдельно. Третья строка получает дизайнерский отступ.', wide: true })}
-            ${field('Основной текст', 'educationText', item.educationText, { textarea: true, rows: 8, help: 'Текст под крупным заголовком.' })}
-            ${field('Текст рядом с кнопкой', 'educationAsideText', item.educationAsideText, { textarea: true, rows: 5, help: 'Нижний текст справа от кнопки «Смотреть интервью».' })}
-            ${mediaField('Фото блока', 'educationPhoto', 'educationPhotoFile', item.educationPhoto, 'Фотография в правой колонке блока «Образование и опыт».')}
-          `)}
-
-          ${section('editor-turnover', '07', 'Оборот / бизнес', 'Четвёртый пункт меню: заголовок, интервью, фото и два текста.', `
-            ${field('Заголовок', 'turnoverTitle', item.turnoverTitle, { textarea: true, rows: 4, help: 'Каждая строка заголовка выводится отдельно.', wide: true })}
-            ${field('Верхний текст справа', 'turnoverText', item.turnoverText, { textarea: true, rows: 7, help: 'Размещается вверху правой колонки.' })}
-            ${field('Нижний текст справа', 'turnoverBottomText', item.turnoverBottomText, { textarea: true, rows: 7, help: 'Низ текста выравнивается по нижнему краю фотографии.' })}
-            ${mediaField('Фото блока', 'turnoverPhoto', 'turnoverPhotoFile', item.turnoverPhoto, 'Горизонтальное фото 16:9 под кнопкой «Смотреть интервью».')}
+          ${section('editor-stories', '04', 'Секции с текстом', 'Добавляйте нужные секции, выбирая один из четырёх вариантов оформления.', `
+            <div class="editor-field editor-field--wide story-sections-editor">
+              <div class="story-sections-editor__actions">
+                <label>
+                  <span class="editor-field__label">Тип новой секции</span>
+                  <select class="editor-control" data-story-type-select>
+                    <option value="" selected disabled>Выберите тип оформления</option>
+                    ${Object.entries(storySectionTypeLabels).map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}
+                  </select>
+                </label>
+                <button type="button" class="editor-button editor-button--primary" data-story-add disabled>Добавить секцию</button>
+              </div>
+              <div class="story-sections-editor__list" data-story-list></div>
+              <p class="story-sections-editor__empty" data-story-empty>Секций пока нет. Выберите тип и нажмите «Добавить секцию».</p>
+            </div>
           `)}
 
           ${section('editor-more', '08', 'Больше о герое', 'Красные карточки ссылок и широкая фотография перед интервью.', `
@@ -364,6 +355,331 @@ function renderForm(item: Partial<Entrepreneur>): string {
   `;
 }
 
+function createStorySection(type: EntrepreneurStorySection['type'], name = ''): EntrepreneurStorySection {
+  const id = globalThis.crypto?.randomUUID?.() || `story-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const base = {
+    id,
+    isVisible: true,
+    menuLabel: storySectionTypeLabels[type],
+    menuDescription: '',
+    menuImage: null,
+  };
+
+  if (type === 'BIOGRAPHY') {
+    return { ...base, type, eyebrow: 'Биография', title: name.toUpperCase(), textOne: '', textTwo: '', textThree: '', image: null };
+  }
+  if (type === 'ACCENT') return { ...base, type, title: '', textOne: '', textTwo: '' };
+  if (type === 'PORTRAIT') return { ...base, type, title: '', text: '', asideText: '', image: null };
+  return { ...base, type, title: '', text: '', bottomText: '', image: null };
+}
+
+function normalizeAdminStorySections(item: Entrepreneur): EntrepreneurStorySection[] {
+  if (Array.isArray(item.storySections)) return item.storySections;
+
+  const labels = (item.aboutMenuLabels || '').split(/\r?\n/).map(value => value.trim());
+  const descriptions = (item.aboutMenuDescriptions || '').split(/\r?\n/).map(value => value.trim());
+  const gallery = (item.aboutGalleryPhotos || item.galleryPhotos || '').split(/\r?\n|,/).map(value => value.trim()).filter(Boolean);
+  const fallbackImage = item.photo || gallery[0] || null;
+  const biographyFallback = stripHtml(item.bio || item.quote || '');
+
+  return [
+    {
+      id: 'legacy-biography',
+      type: 'BIOGRAPHY',
+      isVisible: parseVisibility(item.sectionVisibility).biography !== false,
+      menuLabel: labels[0] || `Who's the ${item.name}?`,
+      menuDescription: descriptions[0] || 'Краткая информация и навигация по странице героя.',
+      menuImage: gallery[0] || fallbackImage,
+      eyebrow: 'Биография',
+      title: item.name.toUpperCase(),
+      textOne: item.biographyTextOne || biographyFallback,
+      textTwo: item.biographyTextTwo || '',
+      textThree: item.biographyTextThree || '',
+      image: item.biographyPhoto || fallbackImage,
+    },
+    {
+      id: 'legacy-childhood',
+      type: 'ACCENT',
+      isVisible: parseVisibility(item.sectionVisibility).childhood !== false,
+      menuLabel: labels[1] || 'Краткая биография',
+      menuDescription: descriptions[1] || 'Детство, интересы и обстоятельства, которые сформировали взгляд на дело.',
+      menuImage: gallery[1] || fallbackImage,
+      title: item.childhoodTitle || 'Детство, среда и первые ориентиры',
+      textOne: item.childhoodTextOne || biographyFallback,
+      textTwo: item.childhoodTextTwo || '',
+    },
+    {
+      id: 'legacy-education',
+      type: 'PORTRAIT',
+      isVisible: parseVisibility(item.sectionVisibility).education !== false,
+      menuLabel: labels[2] || 'Начало карьеры',
+      menuDescription: descriptions[2] || 'Образование, первые роли и профессиональный опыт.',
+      menuImage: gallery[2] || fallbackImage,
+      title: item.educationTitle || 'Образование\nи опыт\nработы',
+      text: item.educationText || biographyFallback || item.title,
+      asideText: item.educationAsideText || '',
+      image: item.educationPhoto || fallbackImage,
+    },
+    {
+      id: 'legacy-turnover',
+      type: 'WIDE',
+      isVisible: parseVisibility(item.sectionVisibility).turnover !== false,
+      menuLabel: labels[3] || 'Первые успехи в бизнесе',
+      menuDescription: descriptions[3] || 'Решения, которые привели к первым заметным результатам.',
+      menuImage: gallery[3] || fallbackImage,
+      title: item.turnoverTitle || 'Первые успехи\nв бизнесе',
+      text: item.turnoverText || biographyFallback || item.title,
+      bottomText: item.turnoverBottomText || '',
+      image: item.turnoverPhoto || fallbackImage,
+    },
+  ];
+}
+
+function stripHtml(value: string): string {
+  const element = document.createElement('div');
+  element.innerHTML = value;
+  return element.textContent?.replace(/\s+/g, ' ').trim() || '';
+}
+
+function getAdditionalMenuLines(value: string | null | undefined): string {
+  const lines = (value || '').split(/\r?\n/);
+  return (lines.length >= 6 ? lines.slice(4, 6) : lines.slice(0, 2)).join('\n');
+}
+
+function renderStoryTextField(label: string, field: string, value: string, rows = 4): string {
+  return `
+    <label class="editor-field">
+      <span class="editor-field__label">${label}</span>
+      <textarea rows="${rows}" class="editor-control" data-story-field="${field}">${escapeHtml(value)}</textarea>
+    </label>
+  `;
+}
+
+function renderStoryImageField(section: { image: string | null }): string {
+  return `
+    <div class="editor-field editor-field--wide media-field" data-media-field>
+      <div class="media-field__heading">
+        <div><span class="editor-field__label">Фото секции</span></div>
+        <span class="media-field__status" data-media-status>${section.image ? 'Изображение выбрано' : 'Не выбрано'}</span>
+      </div>
+      <div class="media-field__body">
+        <div class="media-field__preview" data-media-preview></div>
+        <div class="media-field__controls">
+          <input type="hidden" value="${escapeHtml(section.image || '')}" data-media-url data-story-image>
+          <input type="file" accept="image/*" class="sr-only" data-media-file>
+          <button type="button" class="editor-button editor-button--primary" data-media-upload>Загрузить фото</button>
+          <button type="button" class="editor-button" data-media-library>Выбрать загруженное</button>
+          <button type="button" class="editor-button editor-button--danger" data-media-clear>Убрать</button>
+          <details class="media-field__url">
+            <summary>Указать URL вручную</summary>
+            <input type="text" value="${escapeHtml(section.image || '')}" class="editor-control" data-media-url-proxy>
+          </details>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderStorySectionRow(section: EntrepreneurStorySection, index: number): string {
+  let fields: string;
+  if (section.type === 'BIOGRAPHY') {
+    fields = [
+      renderStoryTextField('Надзаголовок', 'eyebrow', section.eyebrow, 2),
+      renderStoryTextField('Имя в заголовке', 'title', section.title, 2),
+      renderStoryTextField('Первый текст', 'textOne', section.textOne, 6),
+      renderStoryTextField('Второй текст', 'textTwo', section.textTwo, 6),
+      renderStoryTextField('Третий текст', 'textThree', section.textThree, 6),
+      renderStoryImageField(section),
+    ].join('');
+  } else if (section.type === 'ACCENT') {
+    fields = [
+      renderStoryTextField('Заголовок', 'title', section.title, 3),
+      renderStoryTextField('Первый текст', 'textOne', section.textOne, 7),
+      renderStoryTextField('Второй текст', 'textTwo', section.textTwo, 7),
+    ].join('');
+  } else if (section.type === 'PORTRAIT') {
+    fields = [
+      renderStoryTextField('Заголовок', 'title', section.title, 4),
+      renderStoryTextField('Основной текст', 'text', section.text, 8),
+      renderStoryTextField('Текст рядом с кнопкой', 'asideText', section.asideText, 5),
+      renderStoryImageField(section),
+    ].join('');
+  } else {
+    fields = [
+      renderStoryTextField('Заголовок', 'title', section.title, 4),
+      renderStoryTextField('Верхний текст справа', 'text', section.text, 7),
+      renderStoryTextField('Нижний текст справа', 'bottomText', section.bottomText, 7),
+      renderStoryImageField(section),
+    ].join('');
+  }
+
+  return `
+    <article class="story-section-row" data-story-section data-story-id="${escapeHtml(section.id)}" data-story-type="${section.type}">
+      <div class="story-section-row__header">
+        <span class="story-section-row__number" data-story-number>${String(index + 1).padStart(2, '0')}</span>
+        <strong>${storySectionTypeLabels[section.type]}</strong>
+        <button type="button" class="editor-button editor-button--danger" data-story-remove>Удалить секцию</button>
+      </div>
+      <div class="story-section-row__menu">
+        ${renderStoryTextField('Название карточки меню', 'menuLabel', section.menuLabel, 2)}
+        ${renderStoryTextField('Описание карточки меню', 'menuDescription', section.menuDescription, 3)}
+        <label class="editor-field">
+          <span class="editor-field__label">Фото карточки меню</span>
+          <input type="text" class="editor-control" value="${escapeHtml(section.menuImage || '')}" data-story-menu-image>
+        </label>
+      </div>
+      <div class="editor-grid">${fields}</div>
+    </article>
+  `;
+}
+
+function renderStorySections(sections: EntrepreneurStorySection[]) {
+  const list = document.querySelector<HTMLElement>('[data-story-list]');
+  if (!list) return;
+  list.innerHTML = sections.map(renderStorySectionRow).join('');
+  updateStorySectionsState();
+}
+
+function updateStorySectionsState() {
+  const list = document.querySelector<HTMLElement>('[data-story-list]');
+  document.querySelector<HTMLElement>('[data-story-empty]')?.classList.toggle('hidden', Boolean(list?.children.length));
+  list?.querySelectorAll<HTMLElement>('[data-story-section]').forEach((row, index) => {
+    const number = row.querySelector<HTMLElement>('[data-story-number]');
+    if (number) number.textContent = String(index + 1).padStart(2, '0');
+  });
+}
+
+function storyOrderKey(id: string): string {
+  return `story:${id}`;
+}
+
+function renderOrderItem(key: string, label: string, visible: boolean, storyId?: string): string {
+  const inputName = storyId ? `story_visible_${storyId}` : `section_${key}`;
+  return `
+    <div class="editor-order-item" data-section-order-item data-section-key="${escapeHtml(key)}"${storyId ? ` data-story-order-id="${escapeHtml(storyId)}"` : ''}>
+      <label class="editor-switch">
+        <input type="checkbox" name="${escapeHtml(inputName)}" ${visible ? 'checked' : ''}>
+        <span class="editor-switch__track"></span>
+        <span><strong>${escapeHtml(label)}</strong><small>Показывать блок на публичной странице</small></span>
+      </label>
+      <div class="editor-order-controls">
+        <button type="button" class="editor-order-button" data-order-direction="up" aria-label="Поднять блок">↑</button>
+        <button type="button" class="editor-order-button" data-order-direction="down" aria-label="Опустить блок">↓</button>
+      </div>
+    </div>
+  `;
+}
+
+function normalizeEditorSectionOrder(raw: string | null | undefined, stories: EntrepreneurStorySection[]): string[] {
+  const storyKeys = stories.map(section => storyOrderKey(section.id));
+  const defaults = [
+    'hero',
+    'about',
+    ...storyKeys.slice(0, 3),
+    'shorts',
+    ...storyKeys.slice(3),
+    'more',
+    'featuredInterview',
+    'cta',
+    'banner',
+    'interviewList',
+    'articles',
+  ];
+  const legacyMap: Record<string, string> = {
+    biography: 'story:legacy-biography',
+    childhood: 'story:legacy-childhood',
+    education: 'story:legacy-education',
+    turnover: 'story:legacy-turnover',
+  };
+  const allowed = new Set(defaults);
+  let saved: string[] = [];
+  try {
+    const parsed = JSON.parse(raw || '[]');
+    if (Array.isArray(parsed)) {
+      saved = parsed
+        .filter((key): key is string => typeof key === 'string')
+        .map(key => legacyMap[key] || key)
+        .filter((key, index, values) => allowed.has(key) && values.indexOf(key) === index);
+    }
+  } catch {
+    saved = [];
+  }
+  return [...saved, ...defaults.filter(key => !saved.includes(key))];
+}
+
+function renderSectionOrderItems(
+  form: HTMLFormElement,
+  stories: EntrepreneurStorySection[],
+  visibility: Record<string, boolean>,
+  rawOrder: string | null | undefined,
+) {
+  const list = form.querySelector<HTMLElement>('[data-section-order-list]');
+  const value = form.querySelector<HTMLInputElement>('[data-section-order-value]');
+  if (!list || !value) return;
+  const storyMap = new Map(stories.map(section => [storyOrderKey(section.id), section]));
+  const fixedLabels = new Map<string, string>(entrepreneurSectionOptions);
+  const order = normalizeEditorSectionOrder(rawOrder, stories);
+
+  list.innerHTML = order.map((key) => {
+    const story = storyMap.get(key);
+    if (story) return renderOrderItem(key, `${storySectionTypeLabels[story.type]} — ${story.menuLabel}`, story.isVisible, story.id);
+    return renderOrderItem(key, fixedLabels.get(key) || key, visibility[key] !== false);
+  }).join('');
+  value.value = JSON.stringify(order);
+}
+
+let bindDynamicMediaField: ((field: HTMLElement) => void) | null = null;
+let syncSectionOrderEditor: (() => void) | null = null;
+
+function attachStorySections() {
+  const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
+  const list = form?.querySelector<HTMLElement>('[data-story-list]');
+  const addButton = form?.querySelector<HTMLButtonElement>('[data-story-add]');
+  const typeSelect = form?.querySelector<HTMLSelectElement>('[data-story-type-select]');
+  const orderList = form?.querySelector<HTMLElement>('[data-section-order-list]');
+  if (!form || !list || !addButton || !typeSelect || !orderList) return;
+
+  typeSelect.addEventListener('change', () => {
+    addButton.disabled = !typeSelect.value;
+  });
+
+  addButton.addEventListener('click', () => {
+    if (!typeSelect.value) return;
+    const type = typeSelect.value as EntrepreneurStorySection['type'];
+    const name = form.querySelector<HTMLInputElement>('input[name="name"]')?.value.trim() || '';
+    const section = createStorySection(type, name);
+    list.insertAdjacentHTML('beforeend', renderStorySectionRow(section, list.children.length));
+    const row = list.lastElementChild as HTMLElement | null;
+    row?.querySelectorAll<HTMLElement>('[data-media-field]').forEach(field => bindDynamicMediaField?.(field));
+
+    const orderItem = renderOrderItem(
+      storyOrderKey(section.id),
+      `${storySectionTypeLabels[section.type]} — ${section.menuLabel}`,
+      true,
+      section.id,
+    );
+    const moreItem = orderList.querySelector<HTMLElement>('[data-section-key="more"]');
+    if (moreItem) moreItem.insertAdjacentHTML('beforebegin', orderItem);
+    else orderList.insertAdjacentHTML('beforeend', orderItem);
+    updateStorySectionsState();
+    syncSectionOrderEditor?.();
+    typeSelect.value = '';
+    addButton.disabled = true;
+  });
+
+  list.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLElement>('[data-story-remove]');
+    const row = button?.closest<HTMLElement>('[data-story-section]');
+    if (!button || !row) return;
+    const id = row.dataset.storyId || '';
+    if (!confirm('Удалить эту текстовую секцию?')) return;
+    row.remove();
+    orderList.querySelector<HTMLElement>(`[data-story-order-id="${CSS.escape(id)}"]`)?.remove();
+    updateStorySectionsState();
+    syncSectionOrderEditor?.();
+  });
+}
+
 function fillForm(item: Entrepreneur) {
   const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
   if (!form) return;
@@ -376,23 +692,8 @@ function fillForm(item: Entrepreneur) {
   form.querySelector<HTMLTextAreaElement>('textarea[name="heroBottomRightTeaser"]')!.value = item.heroBottomRightTeaser || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="heroMarquee"]')!.value = item.heroMarquee || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="aboutIntroDescription"]')!.value = item.aboutIntroDescription || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="aboutMenuLabels"]')!.value = item.aboutMenuLabels || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="aboutMenuDescriptions"]')!.value = item.aboutMenuDescriptions || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="biographyTextOne"]')!.value = item.biographyTextOne || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="biographyTextTwo"]')!.value = item.biographyTextTwo || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="biographyTextThree"]')!.value = item.biographyTextThree || '';
-  form.querySelector<HTMLInputElement>('input[name="biographyPhoto"]')!.value = item.biographyPhoto || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="childhoodTitle"]')!.value = item.childhoodTitle || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="childhoodTextOne"]')!.value = item.childhoodTextOne || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="childhoodTextTwo"]')!.value = item.childhoodTextTwo || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="educationTitle"]')!.value = item.educationTitle || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="educationText"]')!.value = item.educationText || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="educationAsideText"]')!.value = item.educationAsideText || '';
-  form.querySelector<HTMLInputElement>('input[name="educationPhoto"]')!.value = item.educationPhoto || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="turnoverTitle"]')!.value = item.turnoverTitle || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="turnoverText"]')!.value = item.turnoverText || '';
-  form.querySelector<HTMLTextAreaElement>('textarea[name="turnoverBottomText"]')!.value = item.turnoverBottomText || '';
-  form.querySelector<HTMLInputElement>('input[name="turnoverPhoto"]')!.value = item.turnoverPhoto || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="aboutMenuLabels"]')!.value = getAdditionalMenuLines(item.aboutMenuLabels);
+  form.querySelector<HTMLTextAreaElement>('textarea[name="aboutMenuDescriptions"]')!.value = getAdditionalMenuLines(item.aboutMenuDescriptions);
   form.querySelector<HTMLTextAreaElement>('textarea[name="moreCardTitles"]')!.value = item.moreCardTitles || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="moreCardLinks"]')!.value = item.moreCardLinks || '';
   form.querySelector<HTMLInputElement>('input[name="morePhoto"]')!.value = item.morePhoto || '';
@@ -406,12 +707,9 @@ function fillForm(item: Entrepreneur) {
   setHtml('bio', item.bio || '');
   form.querySelector<HTMLInputElement>('input[name="quote"]')!.value = item.quote || '';
   const visibility = parseVisibility(item.sectionVisibility);
-  entrepreneurSectionOptions.forEach(([key]) => {
-    const input = form.querySelector<HTMLInputElement>(`input[name="section_${key}"]`);
-    if (input) input.checked = visibility[key] !== false;
-  });
-  const orderInput = form.querySelector<HTMLInputElement>('[data-section-order-value]');
-  if (orderInput) orderInput.value = JSON.stringify(parseSectionOrder(item.sectionOrder, entrepreneurSectionOptions.map(([key]) => key)));
+  const storySections = normalizeAdminStorySections(item);
+  renderStorySections(storySections);
+  renderSectionOrderItems(form, storySections, visibility, item.sectionOrder);
   form.querySelector<HTMLInputElement>('input[name="isPublished"]')!.checked = item.isPublished;
   syncFeaturedInterviewVideoFields(item.featuredInterviewVideoType || 'EMBED');
 }
@@ -509,11 +807,13 @@ function attachMediaEditor() {
     closeLibrary();
   });
 
-  document.querySelectorAll<HTMLElement>('[data-media-field]').forEach((field) => {
+  const bindMediaField = (field: HTMLElement) => {
+    if (field.dataset.mediaBound === 'true') return;
     const urlInput = field.querySelector<HTMLInputElement>('[data-media-url]');
     const fileInput = field.querySelector<HTMLInputElement>('[data-media-file]');
     const proxy = field.querySelector<HTMLInputElement>('[data-media-url-proxy]');
     if (!urlInput || !fileInput) return;
+    field.dataset.mediaBound = 'true';
 
     renderPreview(field, urlInput.value);
     field.querySelector<HTMLElement>('[data-media-upload]')?.addEventListener('click', () => fileInput.click());
@@ -538,7 +838,10 @@ function attachMediaEditor() {
       fileInput.value = '';
       renderPreview(field, urlInput.value);
     });
-  });
+  };
+
+  bindDynamicMediaField = bindMediaField;
+  document.querySelectorAll<HTMLElement>('[data-media-field]').forEach(bindMediaField);
 
   document.querySelectorAll<HTMLElement>('[data-gallery-field]').forEach((field) => {
     const valueInput = field.querySelector<HTMLTextAreaElement>('[data-gallery-value]');
@@ -628,6 +931,51 @@ function attachSubmit(id: string | null) {
   });
 }
 
+async function collectStorySections(form: HTMLFormElement): Promise<EntrepreneurStorySection[]> {
+  const rows = Array.from(form.querySelectorAll<HTMLElement>('[data-story-section]'));
+  const sections: EntrepreneurStorySection[] = [];
+
+  for (const row of rows) {
+    const id = row.dataset.storyId || '';
+    const type = row.dataset.storyType as EntrepreneurStorySection['type'];
+    const field = (name: string) => row.querySelector<HTMLTextAreaElement>(`[data-story-field="${name}"]`)?.value.trim() || '';
+    const imageInput = row.querySelector<HTMLInputElement>('[data-story-image]');
+    const imageFile = row.querySelector<HTMLInputElement>('[data-media-file]')?.files?.[0];
+    let image = imageInput?.value.trim() || null;
+    if (imageFile) image = (await api.uploadImage(imageFile)).url;
+    const isVisible = form.querySelector<HTMLInputElement>(`input[name="story_visible_${CSS.escape(id)}"]`)?.checked !== false;
+    const menuImage = row.querySelector<HTMLInputElement>('[data-story-menu-image]')?.value.trim() || image;
+    const base = {
+      id,
+      isVisible,
+      menuLabel: field('menuLabel'),
+      menuDescription: field('menuDescription'),
+      menuImage,
+    };
+
+    if (type === 'BIOGRAPHY') {
+      sections.push({
+        ...base,
+        type,
+        eyebrow: field('eyebrow'),
+        title: field('title'),
+        textOne: field('textOne'),
+        textTwo: field('textTwo'),
+        textThree: field('textThree'),
+        image,
+      });
+    } else if (type === 'ACCENT') {
+      sections.push({ ...base, type, title: field('title'), textOne: field('textOne'), textTwo: field('textTwo') });
+    } else if (type === 'PORTRAIT') {
+      sections.push({ ...base, type, title: field('title'), text: field('text'), asideText: field('asideText'), image });
+    } else if (type === 'WIDE') {
+      sections.push({ ...base, type, title: field('title'), text: field('text'), bottomText: field('bottomText'), image });
+    }
+  }
+
+  return sections;
+}
+
 async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<Partial<Entrepreneur>> {
   const fd = new FormData(form);
 
@@ -645,27 +993,6 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
     hoverPhoto = uploaded.url;
   }
 
-  const biographyPhotoFile = fd.get('biographyPhotoFile') as File | null;
-  let biographyPhoto = (fd.get('biographyPhoto') as string) || null;
-  if (biographyPhotoFile && biographyPhotoFile.size > 0) {
-    const uploaded = await api.uploadImage(biographyPhotoFile);
-    biographyPhoto = uploaded.url;
-  }
-
-  const educationPhotoFile = fd.get('educationPhotoFile') as File | null;
-  let educationPhoto = (fd.get('educationPhoto') as string) || null;
-  if (educationPhotoFile && educationPhotoFile.size > 0) {
-    const uploaded = await api.uploadImage(educationPhotoFile);
-    educationPhoto = uploaded.url;
-  }
-
-  const turnoverPhotoFile = fd.get('turnoverPhotoFile') as File | null;
-  let turnoverPhoto = (fd.get('turnoverPhoto') as string) || null;
-  if (turnoverPhotoFile && turnoverPhotoFile.size > 0) {
-    const uploaded = await api.uploadImage(turnoverPhotoFile);
-    turnoverPhoto = uploaded.url;
-  }
-
   const morePhotoFile = fd.get('morePhotoFile') as File | null;
   let morePhoto = (fd.get('morePhoto') as string) || null;
   if (morePhotoFile && morePhotoFile.size > 0) {
@@ -681,6 +1008,8 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
     featuredInterviewVideoFile = uploaded.url;
   }
 
+  const storySections = await collectStorySections(form);
+
   return {
     name: fd.get('name') as string,
     slug: fd.get('slug') as string,
@@ -692,21 +1021,7 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
     aboutIntroDescription: (fd.get('aboutIntroDescription') as string) || null,
     aboutMenuLabels: (fd.get('aboutMenuLabels') as string) || null,
     aboutMenuDescriptions: (fd.get('aboutMenuDescriptions') as string) || null,
-    biographyTextOne: (fd.get('biographyTextOne') as string) || null,
-    biographyTextTwo: (fd.get('biographyTextTwo') as string) || null,
-    biographyTextThree: (fd.get('biographyTextThree') as string) || null,
-    biographyPhoto,
-    childhoodTitle: (fd.get('childhoodTitle') as string) || null,
-    childhoodTextOne: (fd.get('childhoodTextOne') as string) || null,
-    childhoodTextTwo: (fd.get('childhoodTextTwo') as string) || null,
-    educationTitle: (fd.get('educationTitle') as string) || null,
-    educationText: (fd.get('educationText') as string) || null,
-    educationAsideText: (fd.get('educationAsideText') as string) || null,
-    educationPhoto,
-    turnoverTitle: (fd.get('turnoverTitle') as string) || null,
-    turnoverText: (fd.get('turnoverText') as string) || null,
-    turnoverBottomText: (fd.get('turnoverBottomText') as string) || null,
-    turnoverPhoto,
+    storySections,
     moreCardTitles: (fd.get('moreCardTitles') as string) || null,
     moreCardLinks: (fd.get('moreCardLinks') as string) || null,
     morePhoto,
@@ -763,6 +1078,7 @@ function attachSectionOrderEditor(formId: string) {
       if (down) down.disabled = index === items.length - 1;
     });
   };
+  syncSectionOrderEditor = sync;
 
   list.addEventListener('click', (event) => {
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-order-direction]');

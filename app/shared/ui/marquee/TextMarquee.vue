@@ -19,7 +19,7 @@ withDefaults(defineProps<{
         <span
           v-for="index in repeat"
           :key="`${group}-${index}`"
-          class="whitespace-nowrap px-8 font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text-on-accent max-lg:px-5 max-lg:text-2xl max-lg:leading-7"
+          class="whitespace-nowrap px-5 font-sans text-2xl font-bold uppercase leading-7 tracking-normal text-text-on-accent lg:px-8"
         >
           {{ text }}
         </span>

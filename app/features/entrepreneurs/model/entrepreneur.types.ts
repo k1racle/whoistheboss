@@ -38,6 +38,65 @@ export interface EntrepreneurAboutMenuItem {
   href: string
   label: string
   note: string
+  image: string | null
+}
+
+interface EntrepreneurStorySectionBase {
+  id: string
+  isVisible: boolean
+  menuLabel: string
+  menuDescription: string
+  menuImage: string | null
+}
+
+export interface EntrepreneurBiographyStorySection extends EntrepreneurStorySectionBase {
+  type: 'BIOGRAPHY'
+  eyebrow: string
+  title: string
+  textOne: string
+  textTwo: string
+  textThree: string
+  image: string | null
+}
+
+export interface EntrepreneurAccentStorySection extends EntrepreneurStorySectionBase {
+  type: 'ACCENT'
+  title: string
+  textOne: string
+  textTwo: string
+}
+
+export interface EntrepreneurPortraitStorySection extends EntrepreneurStorySectionBase {
+  type: 'PORTRAIT'
+  title: string
+  text: string
+  asideText: string
+  image: string | null
+}
+
+export interface EntrepreneurWideStorySection extends EntrepreneurStorySectionBase {
+  type: 'WIDE'
+  title: string
+  text: string
+  bottomText: string
+  image: string | null
+}
+
+export type EntrepreneurStorySection =
+  | EntrepreneurBiographyStorySection
+  | EntrepreneurAccentStorySection
+  | EntrepreneurPortraitStorySection
+  | EntrepreneurWideStorySection
+
+export function getEntrepreneurStorySectionAnchor(sectionId: string): string {
+  const legacyAnchors: Record<string, string> = {
+    'legacy-biography': 'biography',
+    'legacy-childhood': 'childhood',
+    'legacy-education': 'education',
+    'legacy-turnover': 'turnover',
+  }
+
+  return legacyAnchors[sectionId] || `story-${sectionId}`
 }
 
 export interface EntrepreneurMoreItem {
@@ -59,20 +118,7 @@ export interface EntrepreneurDetailData {
   aboutIntroDescription: string
   aboutMenuItems: EntrepreneurAboutMenuItem[]
   aboutGalleryImages: string[]
-  biographyTitle: string
-  biographyPhoto: string | null
-  biographyBlocks: string[]
-  childhoodTitle: string
-  childhoodTextOne: string
-  childhoodTextTwo: string
-  educationTitle: string
-  educationText: string
-  educationAsideText: string
-  educationPhoto: string | null
-  turnoverTitle: string
-  turnoverText: string
-  turnoverBottomText: string
-  turnoverPhoto: string | null
+  storySections: EntrepreneurStorySection[]
   moreItems: EntrepreneurMoreItem[]
   morePhoto: string | null
   featuredInterviewVideoType: 'EMBED' | 'SELF_HOSTED'

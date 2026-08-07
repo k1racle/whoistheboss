@@ -16,8 +16,8 @@ const heroSubtitle = computed(() =>
 </script>
 
 <template>
-  <section id="top" class="relative min-h-svh overflow-hidden bg-bg">
-    <div class="mx-auto hidden min-h-[calc(100svh-86px)] w-[min(calc(100%_-_80px),1920px)] items-end lg:flex">
+  <section id="top" class="relative min-h-[calc(100svh-142px)] overflow-hidden bg-bg">
+    <div class="mx-auto hidden min-h-[calc(100svh-142px)] w-[min(calc(100%_-_80px),1920px)] items-end lg:flex">
       <div class="flex w-full flex-col">
         <div class="mb-[-4.65rem] flex w-full items-end justify-between gap-10">
           <span class="font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-none tracking-[-0.03em] text-accent">
@@ -57,7 +57,7 @@ const heroSubtitle = computed(() =>
       </div>
     </div>
 
-    <div class="mx-auto flex min-h-[calc(100svh-86px)] w-[calc(100%_-_40px)] items-end pb-6 pt-[84px] lg:hidden">
+    <div class="mx-auto flex min-h-[calc(100svh-142px)] w-[calc(100%_-_40px)] items-end pb-6 pt-[84px] lg:hidden">
       <div class="flex w-full flex-col items-start gap-5">
         <p
           v-if="heroSubtitle"

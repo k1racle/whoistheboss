@@ -12,8 +12,10 @@ const defaultImageIndex = computed(() => props.items.length > 1 ? 1 : 0)
 const hoveredIndex = shallowRef<number | null>(null)
 
 const activeImage = computed(() => {
-  if (!props.gallery.length) return '/images/placeholder.svg'
   const imageIndex = hoveredIndex.value ?? defaultImageIndex.value
+  const itemImage = props.items[imageIndex]?.image
+  if (itemImage) return itemImage
+  if (!props.gallery.length) return '/images/placeholder.svg'
   return props.gallery[imageIndex % props.gallery.length] || props.gallery[0] || '/images/placeholder.svg'
 })
 

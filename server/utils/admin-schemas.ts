@@ -3,10 +3,54 @@ import { z } from 'zod'
 const nullableText = z.string().optional().nullable()
 const publishedAt = z.union([z.string().min(1), z.literal('')]).optional().nullable()
 
+const storySectionBase = {
+  id: z.string().min(1),
+  isVisible: z.boolean().default(true),
+  menuLabel: z.string().default(''),
+  menuDescription: z.string().default(''),
+  menuImage: nullableText,
+}
+
+const storySectionSchema = z.discriminatedUnion('type', [
+  z.object({
+    ...storySectionBase,
+    type: z.literal('BIOGRAPHY'),
+    eyebrow: z.string().default('Биография'),
+    title: z.string().default(''),
+    textOne: z.string().default(''),
+    textTwo: z.string().default(''),
+    textThree: z.string().default(''),
+    image: nullableText,
+  }),
+  z.object({
+    ...storySectionBase,
+    type: z.literal('ACCENT'),
+    title: z.string().default(''),
+    textOne: z.string().default(''),
+    textTwo: z.string().default(''),
+  }),
+  z.object({
+    ...storySectionBase,
+    type: z.literal('PORTRAIT'),
+    title: z.string().default(''),
+    text: z.string().default(''),
+    asideText: z.string().default(''),
+    image: nullableText,
+  }),
+  z.object({
+    ...storySectionBase,
+    type: z.literal('WIDE'),
+    title: z.string().default(''),
+    text: z.string().default(''),
+    bottomText: z.string().default(''),
+    image: nullableText,
+  }),
+])
+
 export const entrepreneurSchema = z.object({
   slug: z.string().optional(),
   name: z.string().min(1),
-  title: z.string().min(1),
+  title: z.string(),
   heroLeftTeaser: nullableText,
   heroRightTeaser: nullableText,
   heroBottomRightTeaser: nullableText,
@@ -30,6 +74,7 @@ export const entrepreneurSchema = z.object({
   turnoverText: nullableText,
   turnoverBottomText: nullableText,
   turnoverPhoto: nullableText,
+  storySections: z.array(storySectionSchema).optional(),
   moreCardTitles: nullableText,
   moreCardLinks: nullableText,
   morePhoto: nullableText,

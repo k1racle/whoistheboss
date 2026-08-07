@@ -57,6 +57,7 @@ model Entrepreneur {
   turnoverText String? @db.Text
   turnoverBottomText String? @db.Text
   turnoverPhoto String?
+  storySections Json?
   moreCardTitles String? @db.Text
   moreCardLinks String? @db.Text
   morePhoto String?

@@ -10,6 +10,21 @@ export interface User {
   updatedAt: string;
 }
 
+interface EntrepreneurStorySectionBase {
+  id: string;
+  isVisible: boolean;
+  menuLabel: string;
+  menuDescription: string;
+  menuImage: string | null;
+}
+
+export type EntrepreneurStorySection = EntrepreneurStorySectionBase & (
+  | { type: 'BIOGRAPHY'; eyebrow: string; title: string; textOne: string; textTwo: string; textThree: string; image: string | null }
+  | { type: 'ACCENT'; title: string; textOne: string; textTwo: string }
+  | { type: 'PORTRAIT'; title: string; text: string; asideText: string; image: string | null }
+  | { type: 'WIDE'; title: string; text: string; bottomText: string; image: string | null }
+);
+
 export interface Entrepreneur {
   id: string;
   slug: string;
@@ -38,6 +53,7 @@ export interface Entrepreneur {
   turnoverText?: string | null;
   turnoverBottomText?: string | null;
   turnoverPhoto?: string | null;
+  storySections?: EntrepreneurStorySection[] | null;
   moreCardTitles?: string | null;
   moreCardLinks?: string | null;
   morePhoto?: string | null;

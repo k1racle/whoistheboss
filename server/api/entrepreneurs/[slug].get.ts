@@ -1,29 +1,21 @@
-import type { EntrepreneurDetailData, EntrepreneurMoreItem } from '@features/entrepreneurs/model/entrepreneur.types'
+import {
+  getEntrepreneurStorySectionAnchor,
+  type EntrepreneurDetailData,
+  type EntrepreneurMoreItem,
+} from '@features/entrepreneurs/model/entrepreneur.types'
 import prisma from '~~/lib/prisma'
-import { parseSectionOrder, parseSectionVisibility } from '@shared/lib/section-config'
+import { parseSectionVisibility } from '@shared/lib/section-config'
 import { ROUTES } from '@shared/navigation'
+import {
+  normalizeEntrepreneurSectionOrder,
+  normalizeEntrepreneurStorySections,
+} from '@server/utils/entrepreneur-story-sections'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
 
 const ENTREPRENEUR_DETAIL_SETTINGS_KEYS = [
   'HOME_BANNER_IMAGE',
   'HOME_BANNER_MOBILE_IMAGE',
   'HOME_BANNER_LINK',
-] as const
-
-const DEFAULT_SECTION_ORDER = [
-  'hero',
-  'about',
-  'biography',
-  'childhood',
-  'education',
-  'shorts',
-  'turnover',
-  'more',
-  'featuredInterview',
-  'articles',
-  'cta',
-  'banner',
-  'interviewList',
 ] as const
 
 function stripHtml(value: string | null | undefined): string {
@@ -134,52 +126,49 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
   ].filter(Boolean) as string[]))
 
   const sectionVisibility = parseSectionVisibility(entrepreneur.sectionVisibility)
-  const defaultLabels = [
-    `Who's the ${entrepreneur.name}?`,
-    'Краткая биография',
-    'Начало карьеры',
-    'Первые успехи в бизнесе',
-    'Миссия и масштаб',
-    'Контакты и материалы',
-  ] as const
-  const defaultDescriptions = [
-    'Краткая информация и навигация по странице героя.',
-    'Детство, интересы и обстоятельства, которые сформировали взгляд на дело.',
-    'Образование, первые роли и профессиональный опыт.',
-    'Решения, которые привели к первым заметным результатам.',
-    'Подход к масштабу, продукту и развитию.',
-    'Разделы со статьями, интервью и дополнительными материалами.',
-  ] as const
-  const menuLinks = ['#biography', '#childhood', '#education', '#turnover', '#articles', '#contacts']
-  const menuSectionKeys = ['biography', 'childhood', 'education', 'turnover', 'articles', null]
-  const customLabels = (entrepreneur.aboutMenuLabels || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean)
-  const customDescriptions = (entrepreneur.aboutMenuDescriptions || '').split(/\r?\n/).map((item) => item.trim()).filter(Boolean)
-
-  const aboutMenuItems = menuLinks
-    .map((href, index) => ({
-      href,
-      label: customLabels[index] || defaultLabels[index] || '',
-      note: customDescriptions[index] || defaultDescriptions[index] || '',
-      sectionKey: menuSectionKeys[index],
-    }))
-    .filter((item) => !item.sectionKey || sectionVisibility[item.sectionKey] !== false)
-    .map(({ href, label, note }) => ({ href, label, note }))
-
-  const biographyBlocks = [
-    entrepreneur.biographyTextOne,
-    entrepreneur.biographyTextTwo,
-    entrepreneur.biographyTextThree,
-  ]
-    .map((item) => (item || '').trim())
-    .filter(Boolean)
-
+  const hasStoredStorySections = Array.isArray(entrepreneur.storySections)
   const biographyFallback = (entrepreneur.bio || entrepreneur.quote || '')
     .split(/\n\s*\n/)
     .map((item) => stripHtml(item))
     .filter(Boolean)
-
   const educationFallback = stripHtml(entrepreneur.bio || entrepreneur.quote || '')
+  const storySections = normalizeEntrepreneurStorySections(
+    entrepreneur,
+    sectionVisibility,
+    aboutGalleryImages,
+    biographyFallback,
+    educationFallback,
+  )
+  const customLabels = (entrepreneur.aboutMenuLabels || '').split(/\r?\n/).map(item => item.trim())
+  const customDescriptions = (entrepreneur.aboutMenuDescriptions || '').split(/\r?\n/).map(item => item.trim())
+  const articlesMenuIndex = hasStoredStorySections ? 0 : 4
+  const contactsMenuIndex = hasStoredStorySections ? 1 : 5
+  const aboutMenuItems = [
+    ...storySections
+      .filter(section => section.isVisible)
+      .map(section => ({
+        href: `#${getEntrepreneurStorySectionAnchor(section.id)}`,
+        label: section.menuLabel,
+        note: section.menuDescription,
+        image: section.menuImage,
+      })),
+    ...(sectionVisibility.articles === false
+      ? []
+      : [{
+          href: '#articles',
+          label: customLabels[articlesMenuIndex] || 'Миссия и масштаб',
+          note: customDescriptions[articlesMenuIndex] || 'Подход к масштабу, продукту и развитию.',
+          image: aboutGalleryImages[4] || entrepreneur.photo || null,
+        }]),
+    {
+      href: '#contacts',
+      label: customLabels[contactsMenuIndex] || 'Контакты и материалы',
+      note: customDescriptions[contactsMenuIndex] || 'Разделы со статьями, интервью и дополнительными материалами.',
+      image: aboutGalleryImages[5] || entrepreneur.photo || null,
+    },
+  ]
   const featuredInterview = interviews[0] || null
+  const defaultMarquee = [entrepreneur.name, entrepreneur.title, 'Кто здесь главный'].filter(Boolean).join(' • ')
 
   return {
     slug: entrepreneur.slug,
@@ -191,26 +180,13 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     heroLeftTeaser: entrepreneur.heroLeftTeaser || entrepreneur.title || '',
     heroRightTeaser: entrepreneur.heroRightTeaser || entrepreneur.quote || entrepreneur.title || '',
     heroBottomRightTeaser: entrepreneur.heroBottomRightTeaser || entrepreneur.title || '',
-    heroMarquee: entrepreneur.heroMarquee || `${entrepreneur.name} • ${entrepreneur.title} • Кто здесь главный`,
+    heroMarquee: entrepreneur.heroMarquee || defaultMarquee,
     aboutIntroDescription: entrepreneur.aboutIntroDescription || entrepreneur.quote || '',
     aboutMenuItems,
     aboutGalleryImages: aboutGalleryImages.length
       ? aboutGalleryImages
       : [entrepreneur.photo || '/images/placeholder.svg'],
-    biographyTitle: entrepreneur.name.toUpperCase(),
-    biographyPhoto: entrepreneur.biographyPhoto || entrepreneur.photo || aboutGalleryImages[0] || null,
-    biographyBlocks: biographyBlocks.length ? biographyBlocks : biographyFallback,
-    childhoodTitle: entrepreneur.childhoodTitle || 'Детство, среда и первые ориентиры',
-    childhoodTextOne: entrepreneur.childhoodTextOne || stripHtml(entrepreneur.bio) || entrepreneur.quote || '',
-    childhoodTextTwo: entrepreneur.childhoodTextTwo || '',
-    educationTitle: entrepreneur.educationTitle || 'Образование\nи опыт\nработы',
-    educationText: entrepreneur.educationText || educationFallback || entrepreneur.title,
-    educationAsideText: entrepreneur.educationAsideText || '',
-    educationPhoto: entrepreneur.educationPhoto || entrepreneur.photo || aboutGalleryImages[0] || null,
-    turnoverTitle: entrepreneur.turnoverTitle || 'Первые успехи\nв бизнесе',
-    turnoverText: entrepreneur.turnoverText || educationFallback || entrepreneur.title,
-    turnoverBottomText: entrepreneur.turnoverBottomText || '',
-    turnoverPhoto: entrepreneur.turnoverPhoto || entrepreneur.photo || aboutGalleryImages[0] || null,
+    storySections,
     moreItems: parseMoreItems(entrepreneur.moreCardTitles, entrepreneur.moreCardLinks),
     morePhoto: entrepreneur.morePhoto || entrepreneur.photo || aboutGalleryImages[0] || null,
     featuredInterviewVideoType: entrepreneur.featuredInterviewVideoType || featuredInterview?.videoType || 'EMBED',
@@ -250,7 +226,7 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     bannerImage: getSiteSetting(settings, 'HOME_BANNER_IMAGE'),
     bannerMobileImage: getSiteSetting(settings, 'HOME_BANNER_MOBILE_IMAGE'),
     bannerLink: getSiteSetting(settings, 'HOME_BANNER_LINK', ROUTES.ENTREPRENEURS),
-    sectionOrder: parseSectionOrder(entrepreneur.sectionOrder, DEFAULT_SECTION_ORDER),
+    sectionOrder: normalizeEntrepreneurSectionOrder(entrepreneur.sectionOrder, storySections),
     sectionVisibility,
   }
 })
