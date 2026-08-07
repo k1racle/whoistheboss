@@ -16,10 +16,6 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-  routeRules: {
-    '/admin': { redirect: '/admin/' },
-  },
-
   $development: {
     routeRules: {
       '/admin/**': { proxy: 'http://127.0.0.1:5173/admin/**' },
