@@ -8,7 +8,6 @@ import { ROUTES } from '@shared/navigation'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import PageMoreSection from '@shared/ui/page/PageMoreSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
-import EntrepreneurStoryVariant01 from '@features/entrepreneurs/ui/profile/EntrepreneurStoryVariant01.vue'
 import EntrepreneurStoryVariant03 from '@features/entrepreneurs/ui/profile/EntrepreneurStoryVariant03.vue'
 import CompanyAddressesSection from './profile/CompanyAddressesSection.vue'
 import CompanyAwardsSection from './profile/CompanyAwardsSection.vue'
@@ -30,7 +29,6 @@ const props = defineProps<{
 const sectionOrder = computed(() => new Map(props.company.sectionOrder.map((key, index) => [key, index])))
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => isSectionVisible(props.company.sectionVisibility, key)
-const ownerBiographyBlocks = computed(() => props.company.owner?.biographyBlocks.filter(Boolean) ?? [])
 const visibleStorySections = computed(() => props.company.storySections.filter(section => section.isVisible))
 const { isEnabled: isBannerEnabled } = useSiteBanner()
 </script>
@@ -85,19 +83,6 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
       :owner-hero-right-teaser="company.owner.heroRightTeaser"
       :owner-hero-bottom-right-teaser="company.owner.heroBottomRightTeaser"
       :photo="company.founderPhoto"
-    />
-
-    <EntrepreneurStoryVariant01
-      v-if="isVisible('ownerBiography') && company.owner && ownerBiographyBlocks.length"
-      id="owner-biography"
-      :style="sectionStyle('ownerBiography')"
-      eyebrow="БИОГРАФИЯ"
-      :title="company.owner.name"
-      :image="company.owner.biographyPhoto"
-      :image-alt="company.owner.name"
-      :blocks="ownerBiographyBlocks"
-      :button-href="ROUTES.ENTREPRENEUR(company.owner.slug)"
-      button-label="ЧИТАТЬ ПОДРОБНЕЕ"
     />
 
     <CompanySpecsSection

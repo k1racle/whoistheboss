@@ -240,7 +240,20 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
     business.morePhoto,
   ].filter(Boolean) as string[]))
 
-  const ownerBiographyBlocks = business.useCustomOwnerBiography
+  const ownerBiographyBlocks = business.entrepreneur
+    ? [
+      business.entrepreneur.biographyTextOne,
+      business.entrepreneur.biographyTextTwo,
+      business.entrepreneur.biographyTextThree,
+      stripHtml(business.entrepreneur.bio),
+      business.entrepreneur.aboutIntroDescription,
+      business.entrepreneur.quote,
+    ]
+      .map((item) => (item || '').trim())
+      .filter((item, index, items) => item && items.indexOf(item) === index)
+      .slice(0, 4)
+    : []
+  const customOwnerBiographyBlocks = business.useCustomOwnerBiography
     ? parseOwnerBiographyBlocks(business.ownerBiographyBlocks)
     : []
   const storySections = parseStorySections(business.storySections)
@@ -274,7 +287,11 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
         quote: business.entrepreneur.quote,
         photo: business.entrepreneur.photo,
         biographyPhoto: business.entrepreneur.biographyPhoto || business.entrepreneur.photo,
-        biographyBlocks: ownerBiographyBlocks,
+        biographyBlocks: customOwnerBiographyBlocks.length
+          ? customOwnerBiographyBlocks
+          : ownerBiographyBlocks.length
+            ? ownerBiographyBlocks
+          : [`${business.entrepreneur.name} — основатель и человек, который определяет характер компании ${business.name}.`],
       }
       : null,
     storySections,
