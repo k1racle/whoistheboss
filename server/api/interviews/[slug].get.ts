@@ -54,6 +54,7 @@ export default defineEventHandler(async (event) => {
       quote: interview.quote,
       coverImage: interview.coverImage,
       publishedAt: interview.publishedAt?.toISOString() ?? null,
+      updatedAt: interview.updatedAt.toISOString(),
       entrepreneur: interview.entrepreneur,
       summary: interview.summary,
       content: interview.content,

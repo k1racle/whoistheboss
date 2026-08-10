@@ -22,7 +22,7 @@ defineProps<{
         {{ item.name }} [ {{ item.type }} ]
       </h3>
 
-      <img
+      <NuxtImg
         v-if="item.coverImage"
         :src="item.coverImage"
         :alt="item.name"

@@ -17,13 +17,38 @@ if (error.value || !data.value) {
 }
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
+const interview = data.value.interview
+const title = `${interview.metaTitle || interview.title} — ${config.public.siteName}`
+const description = interview.metaDesc || interview.summary || config.public.siteDescription
+
 useSeoMeta({
-  title: () => `${data.value?.interview.metaTitle || data.value?.interview.title || 'Интервью'} — ${config.public.siteName}`,
-  description: () => data.value?.interview.metaDesc || data.value?.interview.summary || config.public.siteDescription,
-  ogTitle: () => `${data.value?.interview.metaTitle || data.value?.interview.title || 'Интервью'} — ${config.public.siteName}`,
-  ogDescription: () => data.value?.interview.metaDesc || data.value?.interview.summary || config.public.siteDescription,
+  title,
+  description,
+  ogTitle: title,
+  ogDescription: description,
   ogType: 'video.other',
+  ogImage: interview.coverImage || undefined,
+  twitterCard: interview.coverImage ? 'summary_large_image' : 'summary',
+  twitterImage: interview.coverImage || undefined,
 })
+
+useSchemaOrg([
+  defineVideo({
+    name: interview.title,
+    description,
+    thumbnailUrl: interview.coverImage || undefined,
+    uploadDate: interview.publishedAt || interview.updatedAt,
+    embedUrl: interview.videoType === 'EMBED' ? interview.videoUrl || undefined : undefined,
+    contentUrl: interview.videoType === 'SELF_HOSTED' ? interview.videoFile || interview.videoUrl || undefined : undefined,
+  }),
+  defineBreadcrumb({
+    itemListElement: [
+      { name: 'Главная', item: '/' },
+      { name: 'Интервью', item: '/interviews' },
+      { name: interview.title },
+    ],
+  }),
+])
 </script>
 
 <template>

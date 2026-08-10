@@ -1,14 +1,76 @@
 import { resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 
+const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000'
+const siteName = process.env.SITE_NAME ?? 'Кто здесь главный?'
+const siteDescription = process.env.SITE_DESCRIPTION ?? 'Интервью с основателями бизнеса. Видео, рилсы, фото.'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
 
   modules: [
-    '@nuxt/eslint'
+    '@nuxt/eslint',
+    '@nuxt/image',
+    '@nuxtjs/seo',
   ],
+
+  ogImage: false,
+
+  site: {
+    url: siteUrl,
+    name: siteName,
+    description: siteDescription,
+    defaultLocale: 'ru',
+    trailingSlash: false,
+  },
+
+  robots: {
+    disallow: ['/admin', '/login', '/register'],
+    sitemap: '/sitemap.xml',
+    mergeWithRobotsTxtPath: false,
+  },
+
+  sitemap: {
+    sources: ['/api/__sitemap__/urls'],
+    exclude: [
+      '/admin/**',
+      '/api/**',
+      '/login',
+      '/register',
+      '/businesses',
+      '/businesses/**',
+    ],
+  },
+
+  schemaOrg: {
+    identity: {
+      '@type': 'Organization',
+      name: siteName,
+      url: siteUrl,
+      logo: '/favicon/web-app-manifest-512x512.png',
+    },
+  },
+
+  seo: {
+    canonicalQueryWhitelist: [],
+    redirectToCanonicalSiteUrl: false,
+  },
+
+  linkChecker: {
+    failOnError: false,
+    excludeLinks: ['/admin/**', '/api/**', '/uploads/**'],
+  },
+
+  routeRules: {
+    '/admin/**': { robots: 'noindex, nofollow', sitemap: false },
+    '/api/**': { robots: 'noindex, nofollow', sitemap: false },
+    '/login': { robots: 'noindex, nofollow', sitemap: false },
+    '/register': { robots: 'noindex, nofollow', sitemap: false },
+    '/businesses': { sitemap: false },
+    '/businesses/**': { sitemap: false },
+  },
 
   css: ['~/assets/css/main.css'],
 
@@ -86,9 +148,9 @@ export default defineNuxtConfig({
       password: process.env.NUXT_SESSION_PASSWORD || process.env.SESSION_SECRET || '',
     },
     public: {
-      siteUrl: process.env.SITE_URL ?? 'http://localhost:3000',
-      siteName: process.env.SITE_NAME ?? 'Кто здесь главный?',
-      siteDescription: process.env.SITE_DESCRIPTION ?? 'Интервью с основателями бизнеса. Видео, рилсы, фото.',
+      siteUrl,
+      siteName,
+      siteDescription,
     },
   },
 })

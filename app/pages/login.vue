@@ -14,6 +14,8 @@ useSeoMeta({
   ogTitle: `Вход — ${config.public.siteName}`,
   ogDescription: config.public.siteDescription,
 })
+
+useRobotsRule('noindex, nofollow')
 </script>
 
 <template>

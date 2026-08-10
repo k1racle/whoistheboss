@@ -16,6 +16,7 @@ export interface InterviewListItem {
 }
 
 export interface InterviewDetailItem extends InterviewListItem {
+  updatedAt: string
   summary: string | null
   content: string | null
   videoType: 'EMBED' | 'SELF_HOSTED'

@@ -134,7 +134,7 @@ function hideBrokenFallback() {
           playsinline
           preload="metadata"
         />
-        <img
+        <NuxtImg
           v-else-if="!fallbackImageFailed"
           :src="fallbackImageSrc"
           alt="Превью видео проекта Кто здесь главный?"

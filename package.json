@@ -16,6 +16,8 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "@nuxt/image": "^2.1.0",
+    "@nuxtjs/seo": "^5.3.12",
     "@prisma/client": "^5.15.0",
     "bcrypt": "^6.0.0",
     "h3": "^1.15.11",

@@ -42,12 +42,12 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
           {{ buttonLabel }}
         </ButtonLink>
 
-        <img
+        <NuxtImg
           v-if="image"
           :src="image"
           :alt="imageAlt"
           class="mt-auto aspect-video w-[min(100%,52rem)] object-cover pt-10"
-        >
+        />
       </div>
 
       <div class="flex min-h-full flex-col gap-10 pt-4">

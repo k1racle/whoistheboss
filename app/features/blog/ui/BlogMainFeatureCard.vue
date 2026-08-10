@@ -7,8 +7,10 @@ defineProps<{
   reverse: boolean
 }>()
 
-const useImageFallback = (event: Event) => {
-  const image = event.currentTarget
+const useImageFallback = (payload: string | Event) => {
+  if (typeof payload === 'string') return
+
+  const image = payload.currentTarget
   if (!(image instanceof HTMLImageElement) || image.src.endsWith('/images/placeholder.svg')) return
 
   image.src = '/images/placeholder.svg'
@@ -62,14 +64,14 @@ const useImageFallback = (event: Event) => {
       :aria-label="card.url ? `Открыть материал «${card.title}»` : undefined"
       :aria-hidden="card.url ? undefined : true"
     >
-      <img
+      <NuxtImg
         v-if="card.image"
         :src="card.image"
         :alt="card.title"
         class="h-full w-full object-cover"
         loading="lazy"
         @error="useImageFallback"
-      >
+      />
       <span v-else class="block h-full w-full bg-border-strong" aria-hidden="true" />
     </component>
   </article>

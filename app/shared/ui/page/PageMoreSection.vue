@@ -43,12 +43,12 @@ withDefaults(defineProps<{
         </template>
 
         <div class="col-span-2 h-[min(29.0625rem,24vw)] max-h-[29.0625rem] w-full overflow-hidden bg-border-strong max-lg:col-span-full max-lg:aspect-square max-lg:h-auto max-lg:max-h-none">
-          <img
+          <NuxtImg
             v-if="image"
             :src="image"
             :alt="imageAlt"
             class="h-full w-full object-cover"
-          >
+          />
         </div>
       </div>
 

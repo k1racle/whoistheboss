@@ -14,16 +14,41 @@ if (error.value || !data.value) {
   throw createError({ statusCode: 404, statusMessage: 'Entrepreneur not found' })
 }
 
+const entrepreneur = data.value
+const title = `${entrepreneur.name} — ${config.public.siteName}`
+const description = entrepreneur.quote || entrepreneur.title || config.public.siteDescription
+const profileImage = entrepreneur.aboutGalleryImages[0]
+
 const success = computed(() => route.query.success === '1')
 const errorFlag = computed(() => route.query.error === '1')
 
 useSeoMeta({
-  title: () => `${data.value?.name || 'Предприниматель'} — ${config.public.siteName}`,
-  description: () => data.value?.quote || data.value?.title || config.public.siteDescription,
-  ogTitle: () => `${data.value?.name || 'Предприниматель'} — ${config.public.siteName}`,
-  ogDescription: () => data.value?.quote || data.value?.title || config.public.siteDescription,
+  title,
+  description,
+  ogTitle: title,
+  ogDescription: description,
   ogType: 'profile',
+  ogImage: profileImage,
+  twitterCard: profileImage ? 'summary_large_image' : 'summary',
+  twitterImage: profileImage,
 })
+
+useSchemaOrg([
+  definePerson({
+    name: entrepreneur.name,
+    description,
+    image: profileImage,
+    url: `/entrepreneurs/${entrepreneur.slug}`,
+    jobTitle: entrepreneur.title,
+  }),
+  defineBreadcrumb({
+    itemListElement: [
+      { name: 'Главная', item: '/' },
+      { name: 'Предприниматели', item: '/entrepreneurs' },
+      { name: entrepreneur.name },
+    ],
+  }),
+])
 </script>
 
 <template>

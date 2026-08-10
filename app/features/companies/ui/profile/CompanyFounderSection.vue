@@ -22,12 +22,12 @@ const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
   <section class="relative min-h-svh bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:pb-[100px] lg:pt-[380px]">
     <div class="mx-auto w-full max-w-[1920px]">
       <div class="mx-auto aspect-[0.78] w-[min(78vw,520px)] overflow-hidden bg-border-strong lg:w-[min(560px,34vw)]">
-        <img
+        <NuxtImg
           v-if="photo"
           :src="photo"
           :alt="ownerName"
           class="h-full w-full object-cover"
-        >
+        />
       </div>
 
       <div class="mt-11 hidden lg:block">

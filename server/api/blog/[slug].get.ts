@@ -162,6 +162,7 @@ export default defineEventHandler(async (event): Promise<BlogArticleDetailRespon
     article: {
       ...mapArticleSummary(article),
       createdAt: article.createdAt.toISOString(),
+      updatedAt: article.updatedAt.toISOString(),
       coverImageSource: article.coverImageSource,
       content: article.content,
       secondaryImage: article.secondaryImage,

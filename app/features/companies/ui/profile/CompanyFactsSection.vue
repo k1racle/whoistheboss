@@ -25,12 +25,12 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
           {{ subtitle }}
         </p>
         <div class="mt-10 aspect-video overflow-hidden bg-border-strong">
-          <img
+          <NuxtImg
             v-if="image"
             :src="image"
             :alt="imageAlt"
             class="h-full w-full object-cover"
-          >
+          />
         </div>
       </div>
 
