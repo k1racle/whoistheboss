@@ -140,7 +140,7 @@ function hideBrokenFallback() {
           alt="Превью видео проекта Кто здесь главный?"
           class="h-full w-full object-cover"
           @error="hideBrokenFallback"
-        />
+        >
         <div
           v-else
           role="img"
