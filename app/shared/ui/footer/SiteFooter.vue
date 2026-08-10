@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
 import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
+import type { FooterMetaItem } from '@shared/types/site-footer'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 
 withDefaults(defineProps<{
   socialLinks?: SocialLink[]
+  metaItems?: FooterMetaItem[]
 }>(), {
   socialLinks: () => SOCIAL_LINKS,
+  metaItems: () => [
+    { text: 'ИП Батагов А.А.', href: '' },
+    { text: 'Пошта Почта', href: '' },
+    { text: 'Политика конф-ти', href: '' },
+  ],
 })
 
 const pageLinks = [
@@ -18,7 +25,6 @@ const pageLinks = [
 
 const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта', '?'] as const
 
-const metaItems = ['ИП', 'Батагов А.А.', 'Пошта Почта', 'Политика конф-ти'] as const
 </script>
 
 <template>
@@ -80,10 +86,28 @@ const metaItems = ['ИП', 'Батагов А.А.', 'Пошта Почта', 'П
         </div>
 
         <div class="flex flex-wrap items-center gap-x-8 gap-y-2 font-sans text-xs uppercase leading-4 text-text-muted sm:text-sm lg:justify-end lg:text-base">
-          <span
+          <template
             v-for="item in metaItems"
-            :key="item"
-          >{{ item }}</span>
+            :key="`${item.text}-${item.href}`"
+          >
+            <NuxtLink
+              v-if="item.href.startsWith('/') && !item.href.startsWith('//')"
+              :to="item.href"
+              class="transition-colors hover:text-accent"
+            >
+              {{ item.text }}
+            </NuxtLink>
+            <a
+              v-else-if="item.href"
+              :href="item.href"
+              class="transition-colors hover:text-accent"
+              target="_blank"
+              rel="noopener"
+            >
+              {{ item.text }}
+            </a>
+            <span v-else>{{ item.text }}</span>
+          </template>
         </div>
       </div>
     </div>

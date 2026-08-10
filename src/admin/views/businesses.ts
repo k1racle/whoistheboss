@@ -3,6 +3,7 @@ import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
 import { attachFormAutosave } from '../lib/formAutosave.js';
 import { bindAutoSlug } from '../lib/slug.js';
+import { attachSortableList, renderSortableHandle } from '../lib/sortableList.js';
 
 const businessSectionOptions = [
   ['hero', 'Херо'],
@@ -926,10 +927,7 @@ function renderBusinessOrderItem(key: string, label: string, visible: boolean, s
         <span class="editor-switch__track"></span>
         <span><strong>${escapeHtml(label)}</strong><small>Показывать блок на публичной странице</small></span>
       </label>
-      <div class="editor-order-controls">
-        <button type="button" class="editor-order-button" data-order-direction="up" aria-label="Поднять блок">↑</button>
-        <button type="button" class="editor-order-button" data-order-direction="down" aria-label="Опустить блок">↓</button>
-      </div>
+      <div class="editor-order-controls">${renderSortableHandle('Перетащить блок')}</div>
     </div>
   `;
 }
@@ -1370,8 +1368,7 @@ function renderBusinessGalleryRow(image: string, index: number): string {
       <div class="business-gallery-row__heading">
         <span class="business-spec-row__number" data-business-gallery-number>${String(index + 1).padStart(2, '0')}</span>
         <div class="business-gallery-row__actions">
-          <button type="button" class="editor-button" data-business-gallery-up aria-label="Поднять фотографию">↑</button>
-          <button type="button" class="editor-button" data-business-gallery-down aria-label="Опустить фотографию">↓</button>
+          ${renderSortableHandle('Перетащить фотографию')}
           <button type="button" class="editor-button editor-button--danger" data-business-gallery-remove>Удалить</button>
         </div>
       </div>
@@ -1406,6 +1403,12 @@ function attachBusinessGallery(form: HTMLFormElement) {
 
   const refresh = () => updateBusinessGalleryState(list);
 
+  attachSortableList({
+    list,
+    itemSelector: '[data-business-gallery-row]',
+    onChange: refresh,
+  });
+
   addButton.addEventListener('click', () => {
     list.insertAdjacentHTML('beforeend', renderBusinessGalleryRow('', list.children.length));
     refresh();
@@ -1416,12 +1419,6 @@ function attachBusinessGallery(form: HTMLFormElement) {
     const row = target.closest<HTMLElement>('[data-business-gallery-row]');
     if (!row) return;
     if (target.closest('[data-business-gallery-remove]')) row.remove();
-    if (target.closest('[data-business-gallery-up]') && row.previousElementSibling) {
-      list.insertBefore(row, row.previousElementSibling);
-    }
-    if (target.closest('[data-business-gallery-down]') && row.nextElementSibling) {
-      list.insertBefore(row.nextElementSibling, row);
-    }
     refresh();
   });
 
@@ -1450,11 +1447,7 @@ function updateBusinessGalleryPreview(row: HTMLElement | null, src: string) {
 function updateBusinessGalleryState(list: HTMLElement) {
   list.querySelectorAll<HTMLElement>('[data-business-gallery-row]').forEach((row, index) => {
     const number = row.querySelector<HTMLElement>('[data-business-gallery-number]');
-    const up = row.querySelector<HTMLButtonElement>('[data-business-gallery-up]');
-    const down = row.querySelector<HTMLButtonElement>('[data-business-gallery-down]');
     if (number) number.textContent = String(index + 1).padStart(2, '0');
-    if (up) up.disabled = index === 0;
-    if (down) down.disabled = index === list.children.length - 1;
   });
   document.querySelector<HTMLElement>('[data-business-gallery-empty]')
     ?.classList.toggle('hidden', Boolean(list.children.length));
@@ -1490,23 +1483,13 @@ function attachSectionOrderEditor(formId: string) {
   if (!list || !value) return;
   const sync = () => {
     value.value = JSON.stringify(Array.from(list.querySelectorAll<HTMLElement>('[data-section-order-item]')).map((item) => item.dataset.sectionKey || ''));
-    list.querySelectorAll<HTMLElement>('[data-section-order-item]').forEach((item, index, items) => {
-      const up = item.querySelector<HTMLButtonElement>('[data-order-direction="up"]');
-      const down = item.querySelector<HTMLButtonElement>('[data-order-direction="down"]');
-      if (up) up.disabled = index === 0;
-      if (down) down.disabled = index === items.length - 1;
-    });
   };
   syncBusinessSectionOrderEditor = sync;
-  list.addEventListener('click', (event) => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-order-direction]');
-    const item = button?.closest<HTMLElement>('[data-section-order-item]');
-    if (!button || !item) return;
-    if (button.dataset.orderDirection === 'up' && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
-    if (button.dataset.orderDirection === 'down' && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
-    sync();
+  attachSortableList({
+    list,
+    itemSelector: '[data-section-order-item]',
+    onChange: sync,
   });
-  sync();
 }
 
 function setContent(html: string) {

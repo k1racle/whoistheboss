@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { CompanyProfileData } from '@features/companies/model/companies-page.types'
-import EntrepreneurStorySection from '@features/entrepreneurs/ui/profile/EntrepreneurStorySection.vue'
 import EntrepreneurRelatedSection from '@features/entrepreneurs/ui/profile/EntrepreneurRelatedSection.vue'
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import { isSectionVisible } from '@shared/lib/section-config'
 import { ROUTES } from '@shared/navigation'
+import AdditionalSection from '@shared/ui/additional-sections/AdditionalSection.vue'
+import AdditionalSectionPortrait from '@shared/ui/additional-sections/AdditionalSectionPortrait.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import PageMoreSection from '@shared/ui/page/PageMoreSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
-import EntrepreneurStoryVariant03 from '@features/entrepreneurs/ui/profile/EntrepreneurStoryVariant03.vue'
 import CompanyAddressesSection from './profile/CompanyAddressesSection.vue'
 import CompanyAwardsSection from './profile/CompanyAwardsSection.vue'
 import CompanyFactsSection from './profile/CompanyFactsSection.vue'
@@ -62,7 +62,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
       :style="sectionStyle('titleBand')"
     />
 
-    <EntrepreneurStoryVariant03
+    <AdditionalSectionPortrait
       v-if="isVisible('about')"
       id="about"
       :style="sectionStyle('about')"
@@ -126,13 +126,13 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
       :image-alt-prefix="company.name"
     />
 
-    <EntrepreneurStorySection
+    <AdditionalSection
       v-for="storySection in visibleStorySections"
       :id="`story-${storySection.id}`"
       :key="storySection.id"
       :style="sectionStyle(`story:${storySection.id}`)"
       :section="storySection"
-      :entrepreneur-name="company.name"
+      :subject-name="company.name"
       :button-href="company.owner ? ROUTES.ENTREPRENEUR(company.owner.slug) : ROUTES.ENTREPRENEURS"
       button-label="ЧИТАТЬ ПОДРОБНЕЕ"
     />

@@ -1,18 +1,11 @@
 <script setup lang="ts">
-import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
-
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   title: string
   text: string
   bottomText: string
   image: string | null
   imageAlt: string
-  buttonHref?: string
-  buttonLabel?: string
-}>(), {
-  buttonHref: '#interviews',
-  buttonLabel: 'СМОТРЕТЬ ИНТЕРВЬЮ',
-})
+}>()
 
 const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.trim()).filter(Boolean))
 </script>
@@ -30,17 +23,6 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
             {{ line }}
           </span>
         </h2>
-
-        <ButtonLink
-          :to="buttonHref"
-          arrow="mark"
-          size="story"
-          variant="flat"
-          :emphasis="false"
-          class="mt-12 shrink-0 border border-accent max-md:w-full"
-        >
-          {{ buttonLabel }}
-        </ButtonLink>
 
         <img
           v-if="image"

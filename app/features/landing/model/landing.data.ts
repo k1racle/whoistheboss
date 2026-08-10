@@ -28,15 +28,6 @@ export type LandingAudienceCard = {
   hoverDescription?: string
 }
 
-export type LandingPlaceCard = {
-  slug: string
-  name: string
-  type: string
-  coverImage: string | null
-  description: string | null
-}
-
-
 export const landingAboutParagraphs = [
   'Мы рассказываем личные истории предпринимателей через их дело. За каждым рестораном, магазином, студией, производством или компанией стоит человек со своим путем, идеями, победами и трудностями. Именно эти истории мы показываем честно и без прикрас.',
   'Наши интервью, биографии, статьи и репортажи помогают увидеть не только успешный бизнес, но и людей, которые стоят за ним. Потому что главное не вывеска, а человек, который ее создал.',

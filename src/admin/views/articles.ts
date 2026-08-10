@@ -2,6 +2,7 @@ import { api, type Article, type Business, type Entrepreneur } from '../api.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
 import { attachFormAutosave } from '../lib/formAutosave.js';
 import { bindAutoSlug } from '../lib/slug.js';
+import { attachSortableList, renderSortableHandle } from '../lib/sortableList.js';
 import { escapeHtml, formatDate, layout, pageAlert, type UserInfo } from './layout.js';
 
 type RelatedSelection = {
@@ -151,10 +152,7 @@ function renderForm(
                         <span class="editor-switch__track"></span>
                         <span><strong>${label}</strong><small>Показывать блок на публичной странице</small></span>
                       </label>
-                      <div class="editor-order-controls">
-                        <button type="button" class="editor-order-button" data-order-direction="up" aria-label="Поднять блок">↑</button>
-                        <button type="button" class="editor-order-button" data-order-direction="down" aria-label="Опустить блок">↓</button>
-                      </div>
+                      <div class="editor-order-controls">${renderSortableHandle('Перетащить блок')}</div>
                     </div>
                   `).join('')}
                 </div>
@@ -431,25 +429,13 @@ function attachSectionOrderEditor(formId: string) {
   const value = form?.querySelector<HTMLInputElement>('[data-section-order-value]');
   if (!list || !value) return;
 
-  const sync = () => {
+  attachSortableList({
+    list,
+    itemSelector: '[data-section-order-item]',
+    onChange: () => {
     value.value = JSON.stringify(Array.from(list.querySelectorAll<HTMLElement>('[data-section-order-item]')).map((item) => item.dataset.sectionKey || ''));
-    list.querySelectorAll<HTMLElement>('[data-section-order-item]').forEach((item, index, items) => {
-      const up = item.querySelector<HTMLButtonElement>('[data-order-direction="up"]');
-      const down = item.querySelector<HTMLButtonElement>('[data-order-direction="down"]');
-      if (up) up.disabled = index === 0;
-      if (down) down.disabled = index === items.length - 1;
-    });
-  };
-
-  list.addEventListener('click', (event) => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-order-direction]');
-    const item = button?.closest<HTMLElement>('[data-section-order-item]');
-    if (!button || !item) return;
-    if (button.dataset.orderDirection === 'up' && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
-    if (button.dataset.orderDirection === 'down' && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
-    sync();
+    },
   });
-  sync();
 }
 
 function attachArticleMediaEditor() {

@@ -63,11 +63,13 @@ const buttonClasses = computed(() => [
     :to="to"
     :class="buttonClasses"
   >
-    <slot />
+    <span class="inline-flex h-[22px] items-center">
+      <slot />
+    </span>
     <span
       v-if="arrow === 'badge'"
       aria-hidden="true"
-      class="inline-flex items-center justify-center bg-accent px-2 py-1 text-text-on-accent transition-colors group-hover:bg-surface group-hover:text-accent group-focus-visible:bg-surface group-focus-visible:text-accent"
+      class="inline-flex h-[22px] items-center justify-center bg-accent px-2 text-text-on-accent transition-colors group-hover:bg-surface group-hover:text-accent group-focus-visible:bg-surface group-focus-visible:text-accent"
     >
       <span class="block h-[19px] w-[34px] shrink-0 bg-current [-webkit-mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat] [mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat]" />
     </span>

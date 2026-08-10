@@ -15,6 +15,11 @@ import {
   throwAdminError,
 } from '@server/utils/admin-api'
 import { hashPassword } from '@server/utils/password'
+import {
+  FOOTER_META_ITEMS_KEY,
+  footerMetaItemsSchema,
+  isSafeFooterHref,
+} from '@server/utils/site-footer'
 
 const publicUserSelect = {
   id: true,
@@ -172,6 +177,22 @@ export async function handleSettings(event: H3Event, path: readonly string[]) {
   }
 
   const data = await readAdminBody(event, settingsSchema)
+  if (Object.hasOwn(data, FOOTER_META_ITEMS_KEY)) {
+    try {
+      data[FOOTER_META_ITEMS_KEY] = JSON.stringify(
+        footerMetaItemsSchema.parse(JSON.parse(data[FOOTER_META_ITEMS_KEY] || '[]')),
+      )
+    }
+    catch {
+      throwAdminError(400, 'Проверьте текст и ссылки элементов нижней строки футера')
+    }
+  }
+  const invalidSocialLink = Object.entries(data).find(([key, value]) => (
+    key.startsWith('SOCIAL_') && value.trim() && !isSafeFooterHref(value.trim())
+  ))
+  if (invalidSocialLink) {
+    throwAdminError(400, `Некорректная ссылка в поле ${invalidSocialLink[0]}`)
+  }
   await prisma.$transaction(
     Object.entries(data).map(([key, value]) => prisma.siteSetting.upsert({
       where: { key },

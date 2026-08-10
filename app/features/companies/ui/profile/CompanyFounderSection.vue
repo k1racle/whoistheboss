@@ -19,7 +19,7 @@ const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
 </script>
 
 <template>
-  <section class="relative min-h-svh bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:pb-[100px] lg:pt-[380px]">
+  <section class="relative min-h-svh bg-bg px-5 py-14 sm:px-6 lg:px-10 lg:py-20">
     <div class="mx-auto w-full max-w-[1920px]">
       <div class="mx-auto aspect-[0.78] w-[min(78vw,520px)] overflow-hidden bg-border-strong lg:w-[min(560px,34vw)]">
         <img

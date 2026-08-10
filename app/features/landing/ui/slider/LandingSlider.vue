@@ -36,7 +36,7 @@ onBeforeUnmount(() => {
   <div class="space-y-5 md:hidden">
     <div
       ref="trackRef"
-      class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 pt-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       :aria-label="ariaLabel"
     >
       <slot />

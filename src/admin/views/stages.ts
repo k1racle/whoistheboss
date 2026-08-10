@@ -1,5 +1,6 @@
 import { api, type Settings } from '../api.js';
 import { attachFormAutosave, type FormAutosaveController } from '../lib/formAutosave.js';
+import { attachSortableList, renderSortableHandle } from '../lib/sortableList.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 
 interface StageItem {
@@ -79,8 +80,7 @@ function renderStage(stage: StageItem, index: number): string {
         <span class="stages-admin-item__position" data-stage-position>${String(index + 1).padStart(2, '0')}</span>
         <strong>Этап</strong>
         <div class="editor-order-controls">
-          <button type="button" class="editor-order-button" data-stage-move="up" title="Выше">↑</button>
-          <button type="button" class="editor-order-button" data-stage-move="down" title="Ниже">↓</button>
+          ${renderSortableHandle('Перетащить этап')}
           <button type="button" class="editor-order-button editor-order-button--remove" data-stage-remove title="Удалить">×</button>
         </div>
       </div>
@@ -118,13 +118,15 @@ function attachStagesEditor(autosave: FormAutosaveController) {
     const items = Array.from(list.querySelectorAll<HTMLElement>('[data-stage-item]'));
     items.forEach((item, index) => {
       const position = item.querySelector<HTMLElement>('[data-stage-position]');
-      const up = item.querySelector<HTMLButtonElement>('[data-stage-move="up"]');
-      const down = item.querySelector<HTMLButtonElement>('[data-stage-move="down"]');
       if (position) position.textContent = String(index + 1).padStart(2, '0');
-      if (up) up.disabled = index === 0;
-      if (down) down.disabled = index === items.length - 1;
     });
   };
+
+  attachSortableList({
+    list,
+    itemSelector: '[data-stage-item]',
+    onChange: sync,
+  });
 
   document.querySelector<HTMLElement>('[data-stage-add]')?.addEventListener('click', () => {
     const wrapper = document.createElement('div');
@@ -140,10 +142,6 @@ function attachStagesEditor(autosave: FormAutosaveController) {
     if (!item) return;
     if (target.closest('[data-stage-remove]')) {
       item.remove();
-    } else {
-      const move = target.closest<HTMLElement>('[data-stage-move]')?.dataset.stageMove;
-      if (move === 'up' && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
-      if (move === 'down' && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
     }
     sync();
   });

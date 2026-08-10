@@ -1,6 +1,7 @@
 import type { BlogArticleSummary } from '@features/blog/model/blog.types'
 import type { InterviewListItem } from '@features/interviews/model/interview.types'
 import type { ReelItem } from '@features/reels/model/reel.types'
+import type { AdditionalSectionData } from '@shared/types/additional-section'
 
 export interface AudienceCardItem {
   id: string
@@ -41,53 +42,6 @@ export interface EntrepreneurAboutMenuItem {
   image: string | null
 }
 
-interface EntrepreneurStorySectionBase {
-  id: string
-  isVisible: boolean
-  menuLabel: string
-  menuDescription: string
-  menuImage: string | null
-}
-
-export interface EntrepreneurBiographyStorySection extends EntrepreneurStorySectionBase {
-  type: 'BIOGRAPHY'
-  eyebrow: string
-  title: string
-  textOne: string
-  textTwo: string
-  textThree: string
-  image: string | null
-}
-
-export interface EntrepreneurAccentStorySection extends EntrepreneurStorySectionBase {
-  type: 'ACCENT'
-  title: string
-  textOne: string
-  textTwo: string
-}
-
-export interface EntrepreneurPortraitStorySection extends EntrepreneurStorySectionBase {
-  type: 'PORTRAIT'
-  title: string
-  text: string
-  asideText: string
-  image: string | null
-}
-
-export interface EntrepreneurWideStorySection extends EntrepreneurStorySectionBase {
-  type: 'WIDE'
-  title: string
-  text: string
-  bottomText: string
-  image: string | null
-}
-
-export type EntrepreneurStorySection =
-  | EntrepreneurBiographyStorySection
-  | EntrepreneurAccentStorySection
-  | EntrepreneurPortraitStorySection
-  | EntrepreneurWideStorySection
-
 export function getEntrepreneurStorySectionAnchor(sectionId: string): string {
   const legacyAnchors: Record<string, string> = {
     'legacy-biography': 'biography',
@@ -118,7 +72,7 @@ export interface EntrepreneurDetailData {
   aboutIntroDescription: string
   aboutMenuItems: EntrepreneurAboutMenuItem[]
   aboutGalleryImages: string[]
-  storySections: EntrepreneurStorySection[]
+  storySections: AdditionalSectionData[]
   moreItems: EntrepreneurMoreItem[]
   morePhoto: string | null
   featuredInterviewVideoType: 'EMBED' | 'SELF_HOSTED'

@@ -1,5 +1,5 @@
 import type { Entrepreneur, Prisma } from '@prisma/client'
-import type { EntrepreneurStorySection } from '@features/entrepreneurs/model/entrepreneur.types'
+import type { AdditionalSectionData } from '@shared/types/additional-section'
 
 const FIXED_SECTION_ORDER = [
   'hero',
@@ -45,7 +45,7 @@ function normalizeStoredSection(
   index: number,
   entrepreneurName: string,
   fallbackImage: string | null,
-): EntrepreneurStorySection | null {
+): AdditionalSectionData | null {
   if (!isRecord(value) || typeof value.id !== 'string') return null
 
   const base = {
@@ -105,14 +105,14 @@ export function normalizeEntrepreneurStorySections(
   galleryImages: string[],
   biographyFallback: string[],
   bodyFallback: string,
-): EntrepreneurStorySection[] {
+): AdditionalSectionData[] {
   const raw = entrepreneur.storySections as Prisma.JsonValue | null
   const fallbackImage = entrepreneur.photo || galleryImages[0] || null
 
   if (Array.isArray(raw)) {
     return raw
       .map((item, index) => normalizeStoredSection(item, index, entrepreneur.name, fallbackImage))
-      .filter((item): item is EntrepreneurStorySection => item !== null)
+      .filter((item): item is AdditionalSectionData => item !== null)
   }
 
   const labels = splitLines(entrepreneur.aboutMenuLabels)
@@ -179,7 +179,7 @@ export function normalizeEntrepreneurStorySections(
 
 export function normalizeEntrepreneurSectionOrder(
   raw: string | null | undefined,
-  storySections: EntrepreneurStorySection[],
+  storySections: AdditionalSectionData[],
 ): string[] {
   const storyKeys = storySections.map(section => `story:${section.id}`)
   const defaults = [

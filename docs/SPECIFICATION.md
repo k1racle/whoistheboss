@@ -23,7 +23,7 @@
 | Стили | Tailwind CSS 4 через `@tailwindcss/vite` |
 | Изображения | `@nuxt/image` |
 | SEO | `@nuxtjs/seo`, sitemap, robots, Schema.org |
-| Админка | Vue 3, TypeScript, Vite, Vue Router |
+| Админка | TypeScript, Vite, browser DOM API, собственный роутер |
 | Редактор контента | Quill |
 | База данных | PostgreSQL 16 |
 | ORM и миграции | Prisma 5 |
@@ -57,9 +57,11 @@ Prisma остается единственным основным способо
 
 ### 3.3. Админка
 
-Админка остается отдельным Vue/Vite-клиентом в `src/admin/`. Она собирается в `dist/admin` и раздается Nitro под `/admin` с SPA fallback для `/admin/*`.
+Админка остается отдельным Vite-клиентом на TypeScript в `src/admin/`. Она формирует HTML-строки, использует browser DOM API и собственный роутер из `src/admin/router.ts`. Админка собирается в `dist/admin` и раздается Nitro под `/admin` с SPA fallback для `/admin/*`.
 
 Админка не импортирует компоненты публичного Nuxt-приложения и взаимодействует с сервером через `/api/auth/*` и `/api/admin/*`.
+
+Подробная карта админки, ее маршрутов и сквозных сценариев изменений находится в `docs/ADMIN.md`.
 
 ### 3.4. Основные каталоги
 

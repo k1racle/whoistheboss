@@ -1,5 +1,6 @@
 import { api, type Settings } from '../api.js';
 import { attachFormAutosave, type FormAutosaveController } from '../lib/formAutosave.js';
+import { attachSortableList, renderSortableHandle } from '../lib/sortableList.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 
 const homeSections = [
@@ -111,10 +112,7 @@ function renderHomeForm(settings: Settings): string {
                       <span class="editor-switch__track"></span>
                       <span><strong>${label}</strong><small>Отображать на главной странице</small></span>
                     </label>
-                    <div class="editor-order-controls">
-                      <button type="button" class="editor-order-button" data-order-direction="up">↑</button>
-                      <button type="button" class="editor-order-button" data-order-direction="down">↓</button>
-                    </div>
+                    <div class="editor-order-controls">${renderSortableHandle('Перетащить блок')}</div>
                   </div>`).join('')}
               </div>
             </div>`, true)}
@@ -201,25 +199,14 @@ function attachOrderEditor() {
   const list = document.querySelector<HTMLElement>('[data-section-order-list]');
   const value = document.querySelector<HTMLInputElement>('[data-section-order-value]');
   if (!list || !value) return;
-  const sync = () => {
-    const items = Array.from(list.querySelectorAll<HTMLElement>('[data-section-order-item]'));
-    value.value = JSON.stringify(items.map((item) => item.dataset.sectionKey || ''));
-    items.forEach((item, index) => {
-      const up = item.querySelector<HTMLButtonElement>('[data-order-direction="up"]');
-      const down = item.querySelector<HTMLButtonElement>('[data-order-direction="down"]');
-      if (up) up.disabled = index === 0;
-      if (down) down.disabled = index === items.length - 1;
-    });
-  };
-  list.addEventListener('click', (event) => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-order-direction]');
-    const item = button?.closest<HTMLElement>('[data-section-order-item]');
-    if (!button || !item) return;
-    if (button.dataset.orderDirection === 'up' && item.previousElementSibling) list.insertBefore(item, item.previousElementSibling);
-    if (button.dataset.orderDirection === 'down' && item.nextElementSibling) list.insertBefore(item.nextElementSibling, item);
-    sync();
+  attachSortableList({
+    list,
+    itemSelector: '[data-section-order-item]',
+    onChange: () => {
+      const items = Array.from(list.querySelectorAll<HTMLElement>('[data-section-order-item]'));
+      value.value = JSON.stringify(items.map((item) => item.dataset.sectionKey || ''));
+    },
   });
-  sync();
 }
 
 function attachMediaFields() {

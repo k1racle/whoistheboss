@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import type { EntrepreneurStorySection } from '@features/entrepreneurs/model/entrepreneur.types'
-import EntrepreneurStoryVariant01 from './EntrepreneurStoryVariant01.vue'
-import EntrepreneurStoryVariant02 from './EntrepreneurStoryVariant02.vue'
-import EntrepreneurStoryVariant03 from './EntrepreneurStoryVariant03.vue'
-import EntrepreneurStoryVariant04 from './EntrepreneurStoryVariant04.vue'
+import type { AdditionalSectionData } from '@shared/types/additional-section'
+import AdditionalSectionAccent from './AdditionalSectionAccent.vue'
+import AdditionalSectionBiography from './AdditionalSectionBiography.vue'
+import AdditionalSectionPortrait from './AdditionalSectionPortrait.vue'
+import AdditionalSectionWide from './AdditionalSectionWide.vue'
 
 defineOptions({ inheritAttrs: false })
 
-const props = defineProps<{
-  section: EntrepreneurStorySection
-  entrepreneurName: string
-}>()
+const props = withDefaults(defineProps<{
+  section: AdditionalSectionData
+  subjectName: string
+  buttonHref?: string
+  buttonLabel?: string
+}>(), {
+  buttonHref: '#interviews',
+  buttonLabel: 'СМОТРЕТЬ ИНТЕРВЬЮ',
+})
 
 const attrs = useAttrs()
 const biographyBlocks = computed(() => {
@@ -20,38 +25,42 @@ const biographyBlocks = computed(() => {
 </script>
 
 <template>
-  <EntrepreneurStoryVariant01
+  <AdditionalSectionBiography
     v-if="section.type === 'BIOGRAPHY'"
     v-bind="attrs"
     :eyebrow="section.eyebrow"
-    :title="section.title || entrepreneurName"
+    :title="section.title || subjectName"
     :image="section.image"
-    :image-alt="entrepreneurName"
+    :image-alt="subjectName"
     :blocks="biographyBlocks"
+    :button-href="buttonHref"
+    :button-label="buttonLabel"
   />
-  <EntrepreneurStoryVariant02
+  <AdditionalSectionAccent
     v-else-if="section.type === 'ACCENT'"
     v-bind="attrs"
     :title="section.title"
     :text-one="section.textOne"
     :text-two="section.textTwo"
   />
-  <EntrepreneurStoryVariant03
+  <AdditionalSectionPortrait
     v-else-if="section.type === 'PORTRAIT'"
     v-bind="attrs"
     :title="section.title"
     :text="section.text"
     :aside-text="section.asideText"
     :image="section.image"
-    :image-alt="entrepreneurName"
+    :image-alt="subjectName"
+    :button-href="buttonHref"
+    :button-label="buttonLabel"
   />
-  <EntrepreneurStoryVariant04
+  <AdditionalSectionWide
     v-else
     v-bind="attrs"
     :title="section.title"
     :text="section.text"
     :bottom-text="section.bottomText"
     :image="section.image"
-    :image-alt="entrepreneurName"
+    :image-alt="subjectName"
   />
 </template>

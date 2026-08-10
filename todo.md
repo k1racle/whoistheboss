@@ -2,6 +2,8 @@
 
 вернуть библиотеки, сеошку можно вернуть с og images false, nuxtImage спорный, может сломать.
 
+скачет заголовок на главной - плохо для метрики смещения контента
+
 Универсальная обёртка для story-секций из админки:
 
 - `app/features/entrepreneurs/ui/profile/EntrepreneurStorySection.vue`

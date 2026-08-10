@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { LandingPlaceCard } from '@features/landing/model/landing.data'
-import LandingPlaceCardComponent from '@features/landing/ui/sections/components/LandingPlaceCard.vue'
+import type { CompanyCatalogItem } from '@features/companies/model/companies-page.types'
+import CompanyCatalogCard from '@features/companies/ui/CompanyCatalogCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
 import { protectPrepositions } from '@shared/lib/typography'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const protectedTitle = computed(() => protectPrepositions(props.title))
 
-const { data } = await useFetch<{ businesses: LandingPlaceCard[] }>('/api/businesses')
+const { data } = await useFetch<{ businesses: CompanyCatalogItem[] }>('/api/businesses')
 
 const places = computed(() => data.value?.businesses ?? [])
 </script>
@@ -47,19 +47,19 @@ const places = computed(() => data.value?.businesses ?? [])
           :items-count="places.length"
           aria-label="Мобильный слайдер секции Места"
         >
-          <LandingPlaceCardComponent
+          <CompanyCatalogCard
             v-for="place in places"
             :key="place.slug"
-            :item="place"
-            as-slide
+            :company="place"
+            class="w-[70%] min-w-[70%] max-w-[70%] shrink-0 snap-center"
           />
         </LandingSlider>
 
         <div class="hidden gap-6 md:grid md:grid-cols-3">
-          <LandingPlaceCardComponent
+          <CompanyCatalogCard
             v-for="place in places"
             :key="place.slug"
-            :item="place"
+            :company="place"
           />
         </div>
       </div>

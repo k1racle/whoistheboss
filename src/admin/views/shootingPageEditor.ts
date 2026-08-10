@@ -1,5 +1,6 @@
 import { api, type Settings } from '../api.js';
 import { attachFormAutosave, type FormAutosaveController } from '../lib/formAutosave.js';
+import { attachSortableList, renderSortableHandle } from '../lib/sortableList.js';
 import { escapeHtml, layout, pageAlert, type UserInfo } from './layout.js';
 
 type FaqItem = { question: string; answer: string };
@@ -98,10 +99,7 @@ function render(settings: Settings): string {
                         <small>Отображать на публичной странице</small>
                       </span>
                     </label>
-                    <div class="editor-order-controls">
-                      <button type="button" class="editor-order-button" data-move="-1" aria-label="Поднять">↑</button>
-                      <button type="button" class="editor-order-button" data-move="1" aria-label="Опустить">↓</button>
-                    </div>
+                    <div class="editor-order-controls">${renderSortableHandle('Перетащить блок')}</div>
                   </div>`).join('')}
               </div>
             </div>`, 0, true)}
@@ -182,35 +180,21 @@ function renumberFaq(): void {
   });
 }
 
-function syncOrderControls(form: HTMLFormElement): void {
-  const items = [...form.querySelectorAll<HTMLElement>('[data-section-key]')];
-  items.forEach((item, index) => {
-    const up = item.querySelector<HTMLButtonElement>('[data-move="-1"]');
-    const down = item.querySelector<HTMLButtonElement>('[data-move="1"]');
-    if (up) up.disabled = index === 0;
-    if (down) down.disabled = index === items.length - 1;
-  });
-}
-
 function attach(autosave: FormAutosaveController): void {
   const form = document.getElementById('shooting-page-editor') as HTMLFormElement | null;
   if (!form) return;
 
-  syncOrderControls(form);
+  const orderList = form.querySelector<HTMLElement>('[data-shooting-order-list]');
+  if (orderList) {
+    attachSortableList({
+      list: orderList,
+      itemSelector: '[data-section-key]',
+      onChange: () => undefined,
+    });
+  }
 
   form.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;
-    const move = target.closest<HTMLButtonElement>('[data-move]');
-    if (move) {
-      const item = move.closest<HTMLElement>('[data-section-key]');
-      const direction = Number(move.dataset.move);
-      if (item) {
-        const sibling = direction < 0 ? item.previousElementSibling : item.nextElementSibling;
-        if (sibling) item.parentElement?.insertBefore(item, direction < 0 ? sibling : sibling.nextElementSibling);
-      }
-      syncOrderControls(form);
-      return;
-    }
     if (target.closest('[data-faq-remove]')) {
       target.closest('[data-faq-item]')?.remove();
       renumberFaq();

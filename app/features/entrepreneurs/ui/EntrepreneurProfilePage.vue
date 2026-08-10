@@ -5,6 +5,7 @@ import {
 } from '@features/entrepreneurs/model/entrepreneur.types'
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import { ROUTES } from '@shared/navigation'
+import AdditionalSection from '@shared/ui/additional-sections/AdditionalSection.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import TextMarquee from '@shared/ui/marquee/TextMarquee.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
@@ -15,7 +16,6 @@ import EntrepreneurMoreSection from './profile/EntrepreneurMoreSection.vue'
 import EntrepreneurProfileHero from './profile/EntrepreneurProfileHero.vue'
 import EntrepreneurRelatedSection from './profile/EntrepreneurRelatedSection.vue'
 import EntrepreneurShortsSection from './profile/EntrepreneurShortsSection.vue'
-import EntrepreneurStorySection from './profile/EntrepreneurStorySection.vue'
 
 const props = defineProps<{
   entrepreneur: EntrepreneurDetailData
@@ -58,13 +58,13 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
       :gallery="entrepreneur.aboutGalleryImages"
     />
 
-    <EntrepreneurStorySection
+    <AdditionalSection
       v-for="storySection in visibleStorySections"
       :id="getEntrepreneurStorySectionAnchor(storySection.id)"
       :key="storySection.id"
       :style="sectionStyle(`story:${storySection.id}`)"
       :section="storySection"
-      :entrepreneur-name="entrepreneur.name"
+      :subject-name="entrepreneur.name"
     />
 
     <EntrepreneurShortsSection

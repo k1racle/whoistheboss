@@ -1,5 +1,5 @@
 import type { MapCoordinates } from '@shared/types/map'
-import type { EntrepreneurStorySection } from '@features/entrepreneurs/model/entrepreneur.types'
+import type { AdditionalSectionData } from '@shared/types/additional-section'
 import type { BlogArticleSummary } from '@features/blog/model/blog.types'
 
 export interface CompanyCatalogItem {
@@ -70,7 +70,7 @@ export interface CompanyProfileData {
   aboutAsideText: string
   aboutPhoto: string | null
   owner: CompanyOwnerSummary | null
-  storySections: EntrepreneurStorySection[]
+  storySections: AdditionalSectionData[]
   founderPhoto: string | null
   specsTitle: string
   specsDescription: string
