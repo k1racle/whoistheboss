@@ -2,14 +2,17 @@
 import type { LandingPlaceCard } from '@features/landing/model/landing.data'
 import LandingPlaceCardComponent from '@features/landing/ui/sections/components/LandingPlaceCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
+import { protectPrepositions } from '@shared/lib/typography'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import { ROUTES } from '@shared/navigation'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
-defineProps<{
+const props = defineProps<{
   title: string
   description: string
 }>()
+
+const protectedTitle = computed(() => protectPrepositions(props.title))
 
 const { data } = await useFetch<{ businesses: LandingPlaceCard[] }>('/api/businesses')
 
@@ -22,7 +25,7 @@ const places = computed(() => data.value?.businesses ?? [])
       <div class="mb-8 flex flex-col gap-5 lg:mb-10">
         <div class="flex items-center justify-between gap-6">
           <SectionTitle>
-            {{ title }}
+            {{ protectedTitle }}
           </SectionTitle>
 
           <ButtonLink
@@ -34,7 +37,7 @@ const places = computed(() => data.value?.businesses ?? [])
           </ButtonLink>
         </div>
 
-        <p class="max-w-[860px] font-sans text-sm leading-6 text-text/78 sm:text-base">
+        <p class="max-w-[860px] font-sans text-base leading-4 text-text/78">
           {{ description }}
         </p>
       </div>

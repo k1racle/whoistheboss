@@ -1,4 +1,6 @@
 import type { MapCoordinates } from '@shared/types/map'
+import type { EntrepreneurStorySection } from '@features/entrepreneurs/model/entrepreneur.types'
+import type { BlogArticleSummary } from '@features/blog/model/blog.types'
 
 export interface CompanyCatalogItem {
   slug: string
@@ -68,6 +70,7 @@ export interface CompanyProfileData {
   aboutAsideText: string
   aboutPhoto: string | null
   owner: CompanyOwnerSummary | null
+  storySections: EntrepreneurStorySection[]
   founderPhoto: string | null
   specsTitle: string
   specsDescription: string
@@ -77,7 +80,7 @@ export interface CompanyProfileData {
   phone: string | null
   email: string | null
   website: string | null
-  mapCoordinates: MapCoordinates | null
+  mapCoordinates: MapCoordinates[]
   awardsEnabled: boolean
   awardsTitle: string
   awardsDescription: string
@@ -90,6 +93,7 @@ export interface CompanyProfileData {
   galleryImages: string[]
   moreItems: CompanyMoreItem[]
   morePhoto: string | null
+  articles: BlogArticleSummary[]
   relatedTitle: string
   related: CompanyCatalogItem[]
   bannerImage: string

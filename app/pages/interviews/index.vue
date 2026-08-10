@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { InterviewListItem } from '@features/interviews/model/interview.types'
 import InterviewsPage from '@features/interviews/ui/InterviewsPage.vue'
+import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const config = useRuntimeConfig()
 
@@ -12,6 +14,7 @@ const { data } = await useAsyncData('interviews-list', async () => {
     return []
   }
 })
+const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
 useSeoMeta({
   title: `Интервью — ${config.public.siteName}`,
@@ -22,5 +25,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <InterviewsPage :interviews="data ?? []" />
+  <div class="flex flex-col">
+    <InterviewsPage :interviews="data ?? []" />
+    <PageBannerSection
+      v-if="isBannerEnabled('/interviews')"
+      :desktop-image="banner.image"
+      :mobile-image="banner.mobileImage"
+      :href="banner.link"
+    />
+  </div>
 </template>

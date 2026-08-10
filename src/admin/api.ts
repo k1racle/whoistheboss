@@ -129,8 +129,10 @@ export interface Article {
   entrepreneurId?: string | null;
   entrepreneur?: { id: string; name: string } | null;
   coverImage?: string | null;
+  coverImageSource?: string | null;
   content: string;
   secondaryImage?: string | null;
+  secondaryImageSource?: string | null;
   secondaryText?: string | null;
   relatedTitle?: string | null;
   relatedMaterials?: string | null;
@@ -162,6 +164,9 @@ export interface Business {
   aboutAsideText?: string | null;
   aboutPhoto?: string | null;
   founderPhoto?: string | null;
+  useCustomOwnerBiography?: boolean;
+  ownerBiographyBlocks?: string | null;
+  storySections?: EntrepreneurStorySection[] | null;
   specsTitle?: string | null;
   specsDescription?: string | null;
   specsItems?: string | null;

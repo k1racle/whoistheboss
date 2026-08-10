@@ -156,8 +156,10 @@ model Article {
   entrepreneurId String?
   entrepreneur   Entrepreneur? @relation(fields: [entrepreneurId], references: [id], onDelete: SetNull)
   coverImage     String?
+  coverImageSource String?
   content        String        @db.Text
   secondaryImage String?
+  secondaryImageSource String?
   secondaryText  String?       @db.Text
   relatedTitle   String?
   relatedMaterials String?     @db.Text
@@ -193,6 +195,9 @@ model Business {
   aboutAsideText  String?      @db.Text
   aboutPhoto      String?
   founderPhoto    String?
+  useCustomOwnerBiography Boolean @default(false)
+  ownerBiographyBlocks String? @db.Text
+  storySections   Json?
   specsTitle      String?      @db.Text
   specsDescription String?     @db.Text
   specsItems      String?      @db.Text

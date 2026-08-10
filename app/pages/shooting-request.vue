@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { ShootingPageData } from '@features/shooting-request/model/shooting-page.types'
 import ShootingRequestPage from '@features/shooting-request/ui/ShootingRequestPage.vue'
+import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const config = useRuntimeConfig()
 
@@ -32,6 +34,7 @@ const { data } = await useAsyncData('shooting-page', async () => {
 })
 
 const page = computed(() => data.value ?? fallbackPage)
+const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 useSeoMeta({
   title: `${page.value.seoTitle} — ${config.public.siteName}`,
   description: page.value.seoDescription || config.public.siteDescription,
@@ -41,5 +44,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <ShootingRequestPage :page="page" />
+  <div class="flex flex-col">
+    <ShootingRequestPage :page="page" />
+    <PageBannerSection
+      v-if="isBannerEnabled('/shooting-request')"
+      :desktop-image="banner.image"
+      :mobile-image="banner.mobileImage"
+      :href="banner.link"
+    />
+  </div>
 </template>

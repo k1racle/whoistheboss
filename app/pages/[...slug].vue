@@ -25,7 +25,7 @@ useSeoMeta({
       <h1 class="mt-4 font-display text-[clamp(2rem,7vw,4.5rem)] font-black uppercase leading-[0.92] tracking-[-0.04em] text-text">
         Страница не найдена
       </h1>
-      <p class="mt-4 max-w-[30rem] font-sans text-sm leading-6 text-text-muted sm:text-base">
+      <p class="mt-4 max-w-[30rem] font-sans text-base leading-4 text-text-muted">
         Запрашиваемая страница не существует или была удалена.
       </p>
       <NuxtLink

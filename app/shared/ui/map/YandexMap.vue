@@ -2,7 +2,7 @@
 import type { MapCoordinates } from '@shared/types/map'
 
 const props = withDefaults(defineProps<{
-  coordinates: MapCoordinates
+  coordinates: MapCoordinates[]
   title: string
   zoom?: number
 }>(), {
@@ -10,13 +10,16 @@ const props = withDefaults(defineProps<{
 })
 
 const mapSrc = computed(() => {
-  const latitude = Math.min(Math.max(props.coordinates.latitude, -90), 90)
-  const longitude = Math.min(Math.max(props.coordinates.longitude, -180), 180)
+  const points = props.coordinates.map((coordinates) => {
+    const latitude = Math.min(Math.max(coordinates.latitude, -90), 90)
+    const longitude = Math.min(Math.max(coordinates.longitude, -180), 180)
+    return `${longitude},${latitude}`
+  })
+  const center = points[0] || '37.617698,55.755864'
   const zoom = Math.min(Math.max(Math.round(props.zoom), 1), 21)
-  const point = `${longitude},${latitude}`
   const params = new URLSearchParams({
-    ll: point,
-    pt: `${point},pm2rdm`,
+    ll: center,
+    pt: points.map(point => `${point},pm2rdm`).join('~'),
     z: String(zoom),
   })
 

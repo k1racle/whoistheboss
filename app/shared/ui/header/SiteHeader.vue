@@ -25,6 +25,8 @@ const mobileNavigationItems = [
   { label: 'Съемка', to: ROUTES.SHOOTING_REQUEST },
 ] as const
 
+const loadingLogoImage = '/images/LogoPlaceholder.svg'
+
 const route = useRoute()
 const isMenuOpen = ref(false)
 
@@ -71,12 +73,32 @@ onBeforeUnmount(() => {
         <NuxtLink
           :to="ROUTES.LANDING"
           aria-label="Кто здесь главный?"
-          class="shrink-0 visible translate-y-0 scale-100 opacity-100 transition-[opacity,transform,visibility] duration-[120ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-          :class="logoVisible
-            ? 'lg:visible lg:translate-y-0 lg:scale-100 lg:opacity-100'
-            : 'lg:invisible lg:-translate-y-1 lg:scale-95 lg:opacity-0 lg:pointer-events-none'"
+          class="shrink-0"
         >
-          <SiteLogo :src="logoSrc" />
+          <SiteLogo :src="logoSrc" class="lg:hidden" />
+          <Transition
+            enter-active-class="transition-[opacity,transform] duration-150 ease-out"
+            enter-from-class="-translate-y-1 opacity-0"
+            enter-to-class="translate-y-0 opacity-100"
+            leave-active-class="transition-[opacity,transform] duration-150 ease-out"
+            leave-from-class="translate-y-0 opacity-100"
+            leave-to-class="-translate-y-1 opacity-0"
+            mode="out-in"
+          >
+            <SiteLogo
+              v-if="logoVisible"
+              key="site-logo"
+              :src="logoSrc"
+              class="hidden lg:block"
+            />
+            <img
+              v-else
+              key="loading-logo"
+              :src="loadingLogoImage"
+              alt=""
+              class="hidden h-9 w-auto object-contain sm:h-10 lg:block lg:h-11"
+            >
+          </Transition>
         </NuxtLink>
 
         <nav

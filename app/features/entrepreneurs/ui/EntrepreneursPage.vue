@@ -8,6 +8,7 @@ import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection
 import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHeroesSection.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const props = defineProps<{
   page: EntrepreneursPageData
@@ -28,6 +29,7 @@ const audienceCards = computed<LandingAudienceCard[]>(() => props.page.audienceC
 })))
 
 const heroes = computed<LandingHeroCard[]>(() => props.page.entrepreneurs.map(toLandingHeroCard))
+const { isEnabled: isBannerEnabled } = useSiteBanner()
 </script>
 
 <template>
@@ -72,7 +74,7 @@ const heroes = computed<LandingHeroCard[]>(() => props.page.entrepreneurs.map(to
     />
 
     <PageBannerSection
-      v-if="isVisible('banner')"
+      v-if="isVisible('banner') && isBannerEnabled('/entrepreneurs')"
       :style="sectionStyle('banner')"
       :desktop-image="page.bannerImage"
       :mobile-image="page.bannerMobileImage"

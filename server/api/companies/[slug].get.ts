@@ -7,6 +7,7 @@ import type {
 import prisma from '~~/lib/prisma'
 import { parseSectionOrder, parseSectionVisibility } from '@shared/lib/section-config'
 import { ROUTES } from '@shared/navigation'
+import { storySectionSchema } from '@server/utils/admin-schemas'
 import { safeJsonParse } from '@server/utils/json'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
 import { getYandexMapCoordinates } from '@server/utils/yandex-map'
@@ -30,10 +31,46 @@ const DEFAULT_SECTION_ORDER = [
   'facts',
   'gallery',
   'more',
+  'articles',
   'related',
   'cta',
   'banner',
 ] as const
+
+function parseStorySections(raw: unknown): CompanyProfileData['storySections'] {
+  if (!Array.isArray(raw)) return []
+
+  return raw.flatMap((item) => {
+    const result = storySectionSchema.safeParse(item)
+    return result.success ? [result.data] : []
+  })
+}
+
+function parseOwnerBiographyBlocks(raw: string | null | undefined): string[] {
+  const parsed = safeJsonParse<unknown>(raw, [])
+  if (!Array.isArray(parsed)) return []
+
+  return parsed
+    .filter((item): item is string => typeof item === 'string')
+    .map(item => item.trim())
+    .filter(Boolean)
+    .slice(0, 4)
+}
+
+function getCompanySectionOrder(
+  raw: string | null | undefined,
+  storySections: CompanyProfileData['storySections'],
+): string[] {
+  const storyKeys = storySections.map(section => `story:${section.id}`)
+  const moreIndex = DEFAULT_SECTION_ORDER.indexOf('more')
+  const defaults = [
+    ...DEFAULT_SECTION_ORDER.slice(0, moreIndex),
+    ...storyKeys,
+    ...DEFAULT_SECTION_ORDER.slice(moreIndex),
+  ]
+
+  return parseSectionOrder(raw, defaults)
+}
 
 function stripHtml(value: string | null | undefined): string {
   return (value || '')
@@ -150,7 +187,7 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
     },
   })
 
-  const [fallbackRelated, settings] = await Promise.all([
+  const [fallbackRelated, articles, settings] = await Promise.all([
     prisma.business.findMany({
       where: {
         isPublished: true,
@@ -165,6 +202,21 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
         name: true,
         type: true,
         coverImage: true,
+      },
+    }),
+    prisma.article.findMany({
+      where: { isPublished: true, entrepreneurId: business.entrepreneurId },
+      orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+      take: 6,
+      include: {
+        entrepreneur: {
+          select: {
+            slug: true,
+            name: true,
+            title: true,
+            photo: true,
+          },
+        },
       },
     }),
     getSiteSettings(COMPANY_DETAIL_SETTINGS_KEYS),
@@ -201,6 +253,10 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
       .filter((item, index, items) => item && items.indexOf(item) === index)
       .slice(0, 4)
     : []
+  const customOwnerBiographyBlocks = business.useCustomOwnerBiography
+    ? parseOwnerBiographyBlocks(business.ownerBiographyBlocks)
+    : []
+  const storySections = parseStorySections(business.storySections)
 
   return {
     slug: business.slug,
@@ -231,11 +287,14 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
         quote: business.entrepreneur.quote,
         photo: business.entrepreneur.photo,
         biographyPhoto: business.entrepreneur.biographyPhoto || business.entrepreneur.photo,
-        biographyBlocks: ownerBiographyBlocks.length
-          ? ownerBiographyBlocks
+        biographyBlocks: customOwnerBiographyBlocks.length
+          ? customOwnerBiographyBlocks
+          : ownerBiographyBlocks.length
+            ? ownerBiographyBlocks
           : [`${business.entrepreneur.name} — основатель и человек, который определяет характер компании ${business.name}.`],
       }
       : null,
+    storySections,
     founderPhoto: business.founderPhoto || business.entrepreneur?.photo || null,
     specsTitle: business.specsTitle || 'Основные характеристики',
     specsDescription: business.specsDescription || 'Ключевые показатели, ориентиры и факты о компании.',
@@ -258,12 +317,22 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
     galleryImages,
     moreItems: parseMoreItems(business.moreCardTitles, business.moreCardLinks),
     morePhoto: business.morePhoto || business.coverImage,
+    articles: articles.map((item) => ({
+      id: item.id,
+      slug: item.slug,
+      title: item.title,
+      subtitle: item.subtitle,
+      category: item.category,
+      coverImage: item.coverImage,
+      publishedAt: item.publishedAt?.toISOString() ?? null,
+      entrepreneur: item.entrepreneur,
+    })),
     relatedTitle: business.relatedTitle || 'Читайте также',
     related,
     bannerImage: getSiteSetting(settings, 'HOME_BANNER_IMAGE'),
     bannerMobileImage: getSiteSetting(settings, 'HOME_BANNER_MOBILE_IMAGE'),
     bannerLink: getSiteSetting(settings, 'HOME_BANNER_LINK', ROUTES.ENTREPRENEURS),
-    sectionOrder: parseSectionOrder(business.sectionOrder, DEFAULT_SECTION_ORDER),
+    sectionOrder: getCompanySectionOrder(business.sectionOrder, storySections),
     sectionVisibility: parseSectionVisibility(business.sectionVisibility),
   }
 })

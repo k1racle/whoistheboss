@@ -2,6 +2,7 @@
 import type { LandingHeroCard } from '@features/landing/model/landing.data'
 import LandingHeroCardItem from '@features/landing/ui/cards/LandingHeroCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
+import { protectPrepositions } from '@shared/lib/typography'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import { ROUTES } from '@shared/navigation'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
@@ -24,6 +25,7 @@ const visibleHeroes = computed(() => {
 
   return visibleCount > 0 ? featured.slice(0, visibleCount) : featured
 })
+const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>
 
 <template>
@@ -32,7 +34,7 @@ const visibleHeroes = computed(() => {
       <div class="mb-8 flex flex-col gap-5 lg:mb-10">
         <div class="flex items-center justify-between gap-6">
           <SectionTitle>
-            {{ title }}
+            {{ protectedTitle }}
           </SectionTitle>
 
           <ButtonLink
@@ -45,7 +47,7 @@ const visibleHeroes = computed(() => {
           </ButtonLink>
         </div>
 
-        <p v-if="description" class="max-w-[860px] font-sans text-sm leading-6 text-text/78 sm:text-base">
+        <p v-if="description" class="max-w-[860px] font-sans text-base leading-4 text-text/78">
           {{ description }}
         </p>
       </div>

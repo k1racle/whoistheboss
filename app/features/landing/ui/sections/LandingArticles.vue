@@ -7,9 +7,20 @@ defineProps<{
   title: string
 }>()
 
-const { data } = await useFetch<{ articles: LandingArticle[] }>('/api/articles/latest')
+interface LatestArticlesResponse {
+  articles: LandingArticle[]
+  hasMore: boolean
+}
 
-const articles = computed(() => data.value?.articles ?? [])
+const PAGE_SIZE = 6
+
+const { data } = await useFetch<LatestArticlesResponse>('/api/articles/latest', {
+  query: { limit: PAGE_SIZE, skip: 0 },
+})
+
+const articles = ref<LandingArticle[]>(data.value?.articles ?? [])
+const hasMore = ref(data.value?.hasMore ?? false)
+const loading = ref(false)
 const articleRows = computed<ArticleRowItem[]>(() => articles.value.map(article => ({
   id: article.id,
   slug: article.slug,
@@ -18,11 +29,32 @@ const articleRows = computed<ArticleRowItem[]>(() => articles.value.map(article 
   entrepreneurName: article.entrepreneurName,
   coverImage: article.coverImage,
 })))
+
+async function loadMore() {
+  if (loading.value || !hasMore.value) return
+
+  loading.value = true
+
+  try {
+    const response = await $fetch<LatestArticlesResponse>('/api/articles/latest', {
+      query: { limit: PAGE_SIZE, skip: articles.value.length },
+    })
+
+    articles.value.push(...response.articles)
+    hasMore.value = response.hasMore
+  }
+  finally {
+    loading.value = false
+  }
+}
 </script>
 
 <template>
   <ArticleRowsSection
     :title="title"
     :articles="articleRows"
+    :has-more="hasMore"
+    :loading="loading"
+    @load-more="loadMore"
   />
 </template>

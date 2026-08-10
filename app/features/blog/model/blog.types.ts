@@ -54,8 +54,11 @@ export interface BlogPageData {
 }
 
 export interface BlogArticleDetail extends BlogArticleSummary {
+  createdAt: string
+  coverImageSource: string | null
   content: string
   secondaryImage: string | null
+  secondaryImageSource: string | null
   secondaryText: string | null
   relatedTitle: string | null
   metaTitle: string | null

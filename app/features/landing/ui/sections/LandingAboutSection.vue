@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
+import { protectPrepositions } from '@shared/lib/typography'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
@@ -22,6 +23,7 @@ const fallbackImageFailed = shallowRef(false)
 defineExpose({ logoRef })
 
 const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
+const protectedTitle = computed(() => protectPrepositions(props.title))
 const fallbackImageSrc = '/uploads/frame-118-1784803179906.png'
 
 interface AboutMedia {
@@ -85,9 +87,9 @@ function hideBrokenFallback() {
 
           <div class="space-y-5">
             <SectionTitle>
-              {{ title }}
+              {{ protectedTitle }}
             </SectionTitle>
-            <div class="space-y-4 font-sans text-sm leading-6 text-text/78">
+            <div class="space-y-4 font-sans text-base leading-4 text-text/78">
               <p
                 v-for="paragraph in paragraphs"
                 :key="paragraph"

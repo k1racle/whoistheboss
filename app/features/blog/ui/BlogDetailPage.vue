@@ -5,7 +5,9 @@ import BlogRelatedMaterialsSection from '@features/blog/ui/BlogRelatedMaterialsS
 import { formatNumericRussianDate } from '@shared/lib/date'
 import ArticleRowsSection from '@shared/ui/articles/ArticleRowsSection.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
+import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 import TrustedRichText from '@shared/ui/page/TrustedRichText.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const props = defineProps<BlogArticleDetailResponse>()
 
@@ -13,7 +15,7 @@ const sectionOrder = computed(() => new Map(props.article.sectionOrder.map((key,
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => props.article.sectionVisibility[key] !== false
 
-const publishedDate = computed(() => formatNumericRussianDate(props.article.publishedAt))
+const publishedDate = computed(() => formatNumericRussianDate(props.article.publishedAt ?? props.article.createdAt))
 const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(article => ({
   id: article.id,
   slug: article.slug,
@@ -22,6 +24,7 @@ const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(art
   entrepreneurName: article.entrepreneur?.name ?? null,
   coverImage: article.coverImage,
 })))
+const { isEnabled: isBannerEnabled } = useSiteBanner()
 </script>
 
 <template>
@@ -31,14 +34,13 @@ const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(art
       :style="sectionStyle('cover')"
       class="bg-bg pb-12 pt-24 lg:pb-20 lg:pt-36"
     >
-      <div class="mx-auto w-full max-w-[1440px] px-5 sm:px-6 lg:px-10">
+      <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
         <header>
-          <h1 class="font-display text-[clamp(56px,9vw,148px)] font-black uppercase leading-[0.9] tracking-[-0.03em]">
+          <SectionTitle tag="h1">
             {{ article.title }}
-          </h1>
+          </SectionTitle>
           <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-sans text-sm uppercase leading-5 text-text/70">
             <time v-if="publishedDate">Дата: {{ publishedDate }}</time>
-            <span v-if="article.entrepreneur">Автор: {{ article.entrepreneur.name }}</span>
             <span
               v-if="article.category"
               class="inline-flex min-h-8 items-center bg-accent px-4 py-2 text-text-on-accent"
@@ -48,12 +50,22 @@ const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(art
           </div>
         </header>
 
-        <img
+        <figure
           v-if="article.coverImage"
-          :src="article.coverImage"
-          :alt="article.title"
-          class="mt-10 aspect-[16/9] w-full bg-border-strong object-cover lg:mt-14"
+          class="m-0 mt-10 lg:mt-14"
         >
+          <img
+            :src="article.coverImage"
+            :alt="article.title"
+            class="aspect-[16/9] w-full bg-border-strong object-cover"
+          >
+          <figcaption
+            v-if="article.coverImageSource"
+            class="font-sans text-[8px] font-normal uppercase leading-4 tracking-normal text-text"
+          >
+            Источник: {{ article.coverImageSource }}
+          </figcaption>
+        </figure>
       </div>
     </section>
 
@@ -62,7 +74,7 @@ const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(art
       :style="sectionStyle('content')"
       class="bg-bg py-12 lg:py-20"
     >
-      <div class="mx-auto w-full max-w-[980px] px-5 sm:px-6 lg:px-10">
+      <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
         <TrustedRichText
           :html="article.content"
           class="prose max-w-none font-sans text-lg leading-8 text-text"
@@ -75,13 +87,23 @@ const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(art
       :style="sectionStyle('secondary')"
       class="bg-bg py-12 lg:py-20"
     >
-      <div class="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-8 px-5 sm:px-6 lg:grid-cols-2 lg:px-10">
-        <img
+      <div class="mx-auto grid w-full max-w-[1920px] grid-cols-1 gap-8 px-5 sm:px-6 lg:grid-cols-2 lg:px-10">
+        <figure
           v-if="article.secondaryImage"
-          :src="article.secondaryImage"
-          alt=""
-          class="aspect-[4/3] w-full bg-border-strong object-cover"
+          class="m-0"
         >
+          <img
+            :src="article.secondaryImage"
+            alt=""
+            class="aspect-[4/3] w-full bg-border-strong object-cover"
+          >
+          <figcaption
+            v-if="article.secondaryImageSource"
+            class="font-sans text-[8px] font-normal uppercase leading-4 tracking-normal text-text"
+          >
+            Источник: {{ article.secondaryImageSource }}
+          </figcaption>
+        </figure>
         <TrustedRichText
           v-if="article.secondaryText"
           :html="article.secondaryText"
@@ -105,7 +127,7 @@ const latestRows = computed<ArticleRowItem[]>(() => props.latestArticles.map(art
     />
 
     <PageBannerSection
-      v-if="isVisible('banner')"
+      v-if="isVisible('banner') && isBannerEnabled('/blog/SLUG')"
       :style="sectionStyle('banner')"
       :desktop-image="bannerImage"
       :mobile-image="bannerMobileImage"

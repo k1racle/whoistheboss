@@ -3,9 +3,12 @@ import type { BlogRelatedEntrepreneur } from '@features/blog/model/blog.types'
 import { ROUTES } from '@shared/navigation'
 import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   entrepreneur: BlogRelatedEntrepreneur
-}>()
+  showText?: boolean
+}>(), {
+  showText: true,
+})
 
 const imageSrc = computed(() => props.entrepreneur.photo || '/images/placeholder.svg')
 const hoverImageSrc = computed(() => props.entrepreneur.hoverPhoto || props.entrepreneur.photo || '/images/placeholder.svg')
@@ -31,14 +34,16 @@ const hoverImageSrc = computed(() => props.entrepreneur.hoverPhoto || props.entr
       loading="lazy"
     >
 
-    <span class="absolute left-4 top-4 z-[2] max-w-[70%] bg-accent px-2 py-1 font-sans text-[25px] font-normal uppercase leading-[27px] text-text-on-accent md:text-[32px] md:leading-8">
-      {{ entrepreneur.name }}
-    </span>
-    <span class="absolute right-4 top-5 z-[2] text-text-on-accent" aria-hidden="true">
-      <ArrowMark />
-    </span>
-    <span class="absolute bottom-4 right-4 z-[2] max-w-[58%] text-right font-sans text-base uppercase leading-4 text-text-on-accent">
-      {{ entrepreneur.title }}
-    </span>
+    <template v-if="showText">
+      <span class="absolute left-4 top-4 z-[2] max-w-[70%] bg-accent px-2 py-1 font-sans text-[25px] font-normal uppercase leading-[27px] text-text-on-accent md:text-[32px] md:leading-8">
+        {{ entrepreneur.name }}
+      </span>
+      <span class="absolute right-4 top-5 z-[2] text-text-on-accent" aria-hidden="true">
+        <ArrowMark />
+      </span>
+      <span class="absolute bottom-4 right-4 z-[2] max-w-[58%] text-right font-sans text-base uppercase leading-4 text-text-on-accent">
+        {{ entrepreneur.title }}
+      </span>
+    </template>
   </NuxtLink>
 </template>

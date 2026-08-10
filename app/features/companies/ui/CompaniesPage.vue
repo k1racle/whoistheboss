@@ -7,6 +7,7 @@ import LandingContactSection from '@features/landing/ui/sections/LandingContactS
 import { ROUTES } from '@shared/navigation'
 import { isSectionVisible } from '@shared/lib/section-config'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const props = defineProps<{
   page: CompaniesPageData
@@ -17,6 +18,7 @@ const props = defineProps<{
 const sectionOrder = computed(() => new Map(props.page.sectionOrder.map((key, index) => [key, index])))
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => isSectionVisible(props.page.sectionVisibility, key)
+const { isEnabled: isBannerEnabled } = useSiteBanner()
 </script>
 
 <template>
@@ -49,7 +51,7 @@ const isVisible = (key: string) => isSectionVisible(props.page.sectionVisibility
     />
 
     <PageBannerSection
-      v-if="isVisible('banner')"
+      v-if="isVisible('banner') && isBannerEnabled('/companies')"
       :style="sectionStyle('banner')"
       :desktop-image="page.bannerImage"
       :mobile-image="page.bannerMobileImage"

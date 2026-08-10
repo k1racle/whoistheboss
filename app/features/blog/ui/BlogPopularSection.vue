@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import type { BlogArticleSummary } from '@features/blog/model/blog.types'
 import BlogPopularCard from '@features/blog/ui/BlogPopularCard.vue'
+import { protectPrepositions } from '@shared/lib/typography'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
-defineProps<{
+const props = defineProps<{
   title: string
   articles: BlogArticleSummary[]
 }>()
+
+const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>
 
 <template>
   <section id="popular" class="bg-bg py-[60px] lg:py-[72px] lg:pb-[130px]">
     <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
       <SectionTitle class="mb-16 lg:mb-[120px]">
-        {{ title }}
+        {{ protectedTitle }}
       </SectionTitle>
 
       <div

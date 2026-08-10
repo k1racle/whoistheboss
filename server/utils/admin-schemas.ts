@@ -8,10 +8,10 @@ const storySectionBase = {
   isVisible: z.boolean().default(true),
   menuLabel: z.string().default(''),
   menuDescription: z.string().default(''),
-  menuImage: nullableText,
+  menuImage: z.string().nullable().default(null),
 }
 
-const storySectionSchema = z.discriminatedUnion('type', [
+export const storySectionSchema = z.discriminatedUnion('type', [
   z.object({
     ...storySectionBase,
     type: z.literal('BIOGRAPHY'),
@@ -20,7 +20,7 @@ const storySectionSchema = z.discriminatedUnion('type', [
     textOne: z.string().default(''),
     textTwo: z.string().default(''),
     textThree: z.string().default(''),
-    image: nullableText,
+    image: z.string().nullable().default(null),
   }),
   z.object({
     ...storySectionBase,
@@ -35,7 +35,7 @@ const storySectionSchema = z.discriminatedUnion('type', [
     title: z.string().default(''),
     text: z.string().default(''),
     asideText: z.string().default(''),
-    image: nullableText,
+    image: z.string().nullable().default(null),
   }),
   z.object({
     ...storySectionBase,
@@ -43,7 +43,7 @@ const storySectionSchema = z.discriminatedUnion('type', [
     title: z.string().default(''),
     text: z.string().default(''),
     bottomText: z.string().default(''),
-    image: nullableText,
+    image: z.string().nullable().default(null),
   }),
 ])
 
@@ -129,8 +129,10 @@ export const articleSchema = z.object({
   category: nullableText,
   entrepreneurId: nullableText,
   coverImage: nullableText,
+  coverImageSource: nullableText,
   content: z.string().min(1),
   secondaryImage: nullableText,
+  secondaryImageSource: nullableText,
   secondaryText: nullableText,
   relatedTitle: nullableText,
   relatedMaterials: nullableText,
@@ -159,6 +161,9 @@ export const businessSchema = z.object({
   aboutAsideText: nullableText,
   aboutPhoto: nullableText,
   founderPhoto: nullableText,
+  useCustomOwnerBiography: z.boolean().default(false),
+  ownerBiographyBlocks: nullableText,
+  storySections: z.array(storySectionSchema).optional(),
   specsTitle: nullableText,
   specsDescription: nullableText,
   specsItems: nullableText,

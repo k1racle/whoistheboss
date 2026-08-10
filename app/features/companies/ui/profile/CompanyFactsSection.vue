@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { protectPrepositions } from '@shared/lib/typography'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
-defineProps<{
+const props = defineProps<{
   title: string
   subtitle: string
   textOne: string
@@ -9,6 +10,8 @@ defineProps<{
   image: string | null
   imageAlt: string
 }>()
+
+const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>
 
 <template>
@@ -16,7 +19,7 @@ defineProps<{
     <div class="mx-auto grid w-full max-w-[1920px] grid-cols-1 gap-10 lg:grid-cols-[minmax(0,60%)_minmax(0,40%)]">
       <div>
         <SectionTitle class="m-0 whitespace-pre-line">
-          {{ title }}
+          {{ protectedTitle }}
         </SectionTitle>
         <p v-if="subtitle" class="mt-5 max-w-[760px] whitespace-pre-line font-sans text-base font-bold uppercase leading-4 text-text">
           {{ subtitle }}

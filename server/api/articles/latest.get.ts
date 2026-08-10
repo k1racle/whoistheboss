@@ -9,6 +9,11 @@ function parseCount(raw: string | undefined, fallback: number): number {
   return Math.min(Math.max(parsed, 1), MAX_LATEST_NEWS_COUNT)
 }
 
+function parseSkip(raw: string | undefined): number {
+  const parsed = Number.parseInt(raw ?? '', 10)
+  return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0
+}
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const setting = await prisma.siteSetting.findUnique({
@@ -17,13 +22,18 @@ export default defineEventHandler(async (event) => {
   })
   const configuredCount = parseCount(setting?.value ?? '', DEFAULT_LATEST_NEWS_COUNT)
   const limit = parseCount(String(query.limit ?? ''), configuredCount)
+  const skip = parseSkip(String(query.skip ?? ''))
 
-  const articles = await prisma.article.findMany({
-    where: { isPublished: true },
-    include: { entrepreneur: { select: { name: true } } },
-    orderBy: { publishedAt: 'desc' },
-    take: limit,
-  })
+  const [articles, total] = await Promise.all([
+    prisma.article.findMany({
+      where: { isPublished: true },
+      include: { entrepreneur: { select: { name: true } } },
+      orderBy: { publishedAt: 'desc' },
+      skip,
+      take: limit,
+    }),
+    prisma.article.count({ where: { isPublished: true } }),
+  ])
 
   return {
     articles: articles.map((article) => ({
@@ -34,5 +44,6 @@ export default defineEventHandler(async (event) => {
       entrepreneurName: article.entrepreneur?.name ?? null,
       coverImage: article.coverImage,
     })),
+    hasMore: skip + articles.length < total,
   }
 })

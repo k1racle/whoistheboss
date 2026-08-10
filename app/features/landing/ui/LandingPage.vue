@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LandingPageData } from '@features/landing/model/landing.data'
+import type { LandingAudienceCard, LandingPageData } from '@features/landing/model/landing.data'
 import { toLandingHeroCard } from '@features/entrepreneurs/model/entrepreneur-card'
 import LandingAboutSection from '@features/landing/ui/sections/LandingAboutSection.vue'
 import LandingArticles from '@features/landing/ui/sections/LandingArticles.vue'
@@ -10,14 +10,17 @@ import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection
 import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHeroesSection.vue'
 import LandingPlacesSection from '@features/landing/ui/sections/LandingPlacesSection.vue'
 import { useSiteHeader } from '@shared/ui/header/useSiteHeader'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const props = defineProps<{
   page: LandingPageData
 }>()
 
 const heroes = computed(() => props.page.entrepreneurs.map(toLandingHeroCard))
+const { data: audienceCards } = await useFetch<LandingAudienceCard[]>('/api/landing/audience-cards')
 
 const { logoVisible } = useSiteHeader()
+const { isEnabled: isBannerEnabled } = useSiteBanner()
 
 const aboutSectionRef = ref<InstanceType<typeof LandingAboutSection> | null>(null)
 
@@ -59,6 +62,7 @@ onBeforeUnmount(() => {
       :hover-video-file="page.aboutHoverVideoFile"
     />
     <LandingFeaturedHeroSection
+      v-if="isBannerEnabled('/')"
       :image="page.bannerImage"
       :mobile-image="page.bannerMobileImage"
       :link="page.bannerLink"
@@ -76,6 +80,7 @@ onBeforeUnmount(() => {
     <LandingAudienceSection
       :title="page.audienceTitle"
       :intro="page.aboutBottomText"
+      :cards="audienceCards ?? []"
     />
     <LandingContactSection
       :cta-title="page.ctaTitle"

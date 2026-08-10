@@ -31,8 +31,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="bg-bg px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
-    <div class="mx-auto w-full max-w-[1920px]">
+  <section class="bg-bg py-12 lg:py-16">
+    <div class="w-full max-w-none">
       <NuxtLink
         :to="href"
         class="group grid overflow-hidden border border-border-strong bg-surface"

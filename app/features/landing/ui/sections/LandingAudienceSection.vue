@@ -185,12 +185,17 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="pointer-events-none absolute inset-0 z-0 hidden items-center justify-center lg:flex">
-          <h2
-            class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94] tracking-[-0.03em] text-text transition-[opacity,transform] duration-300"
+          <div
+            class="flex flex-col items-center transition-[opacity,transform] duration-300"
             :class="isFinal ? 'opacity-0 -translate-y-6' : 'opacity-100 translate-y-0'"
           >
-            {{ desktopTitle }}
-          </h2>
+            <p class="mb-8 max-w-[640px] text-center font-sans text-sm leading-6 text-text/78 sm:text-base">
+              {{ intro }}
+            </p>
+            <h2 class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94] tracking-[-0.03em] text-text">
+              {{ desktopTitle }}
+            </h2>
+          </div>
         </div>
 
         <div
@@ -218,7 +223,6 @@ onBeforeUnmount(() => {
           </h2>
           <ButtonLink
             :to="ROUTES.SHOOTING_REQUEST"
-            arrow="none"
           >
             Стать участником
           </ButtonLink>

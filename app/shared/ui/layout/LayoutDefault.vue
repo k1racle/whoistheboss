@@ -4,7 +4,10 @@ import SiteHeader from '@shared/ui/header/SiteHeader.vue'
 import { useSiteHeader } from '@shared/ui/header/useSiteHeader'
 import LayoutMaster from '@shared/ui/layout/LayoutMaster.vue'
 
-const { logoVisible } = useSiteHeader()
+const route = useRoute()
+const { logoVisible, syncLogoVisibility } = useSiteHeader()
+
+watch(() => route.path, syncLogoVisibility, { immediate: true })
 </script>
 
 <template>

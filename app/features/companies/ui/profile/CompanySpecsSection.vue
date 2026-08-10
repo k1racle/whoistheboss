@@ -1,20 +1,23 @@
 <script setup lang="ts">
 import type { CompanySpecItem } from '@features/companies/model/companies-page.types'
+import { protectPrepositions } from '@shared/lib/typography'
 import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
-defineProps<{
+const props = defineProps<{
   title: string
   description: string
   items: CompanySpecItem[]
 }>()
+
+const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>
 
 <template>
   <section class="bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:py-[130px]">
     <div class="mx-auto w-full max-w-[1920px]">
       <SectionTitle class="m-0 whitespace-pre-line">
-        {{ title }}
+        {{ protectedTitle }}
       </SectionTitle>
       <p class="mt-3 whitespace-pre-line font-sans text-base uppercase leading-4 text-text">
         {{ description }}

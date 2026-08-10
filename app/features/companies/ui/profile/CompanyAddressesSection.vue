@@ -4,7 +4,7 @@ import YandexMap from '@shared/ui/map/YandexMap.vue'
 
 defineProps<{
   name: string
-  mapCoordinates: MapCoordinates | null
+  mapCoordinates: MapCoordinates[]
 }>()
 </script>
 
@@ -17,7 +17,7 @@ defineProps<{
 
       <div class="relative mt-14 min-h-[58svh] overflow-hidden bg-surface">
         <YandexMap
-          v-if="mapCoordinates"
+          v-if="mapCoordinates.length"
           :coordinates="mapCoordinates"
           :title="`Адреса ${name}`"
           class="absolute inset-0 h-full w-full border-0 grayscale saturate-150 contrast-105"

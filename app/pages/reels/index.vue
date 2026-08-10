@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { ReelItem } from '@features/reels/model/reel.types'
 import ReelsPage from '@features/reels/ui/ReelsPage.vue'
+import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const config = useRuntimeConfig()
 
@@ -12,6 +14,7 @@ const { data } = await useAsyncData('reels-list', async () => {
     return []
   }
 })
+const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
 useSeoMeta({
   title: `Рилсы — ${config.public.siteName}`,
@@ -22,5 +25,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <ReelsPage :reels="data ?? []" />
+  <div class="flex flex-col">
+    <ReelsPage :reels="data ?? []" />
+    <PageBannerSection
+      v-if="isBannerEnabled('/reels')"
+      :desktop-image="banner.image"
+      :mobile-image="banner.mobileImage"
+      :href="banner.link"
+    />
+  </div>
 </template>

@@ -204,6 +204,15 @@ function renderForm(
             'Обложка показывается в формате 16:9, основной текст идёт сразу под ней.',
             `
               ${imageField('Главное изображение', 'coverImage', item.coverImage, 'Рекомендуемый формат: горизонтальное изображение 16:9.')}
+              ${textField(
+                'Источник главного изображения',
+                'coverImageSource',
+                item.coverImageSource,
+                false,
+                'Введите только текст после «Источник:». Если поле пустое, подпись не выводится.',
+                'text',
+                true,
+              )}
               <div class="editor-field editor-field--wide">
                 <label class="editor-field__label">Текст статьи <span class="text-[#DB2A00]">*</span></label>
                 <div id="editor-content" class="admin-rich-editor article-editor__rich article-editor__rich--main bg-white">${item.content || ''}</div>
@@ -219,6 +228,15 @@ function renderForm(
             'На странице изображение располагается слева, текст справа.',
             `
               ${imageField('Изображение дополнительного блока', 'secondaryImage', item.secondaryImage, 'Вертикальное или квадратное изображение.')}
+              ${textField(
+                'Источник дополнительного изображения',
+                'secondaryImageSource',
+                item.secondaryImageSource,
+                false,
+                'Введите только текст после «Источник:». Если поле пустое, подпись не выводится.',
+                'text',
+                true,
+              )}
               <div class="editor-field editor-field--wide">
                 <label class="editor-field__label">Текст справа</label>
                 <div id="editor-secondaryText" class="admin-rich-editor article-editor__rich article-editor__rich--secondary bg-white">${item.secondaryText || ''}</div>
@@ -600,8 +618,10 @@ async function collectFormData(form: HTMLFormElement, content: string): Promise<
     category: nullableString(formData.get('category')),
     entrepreneurId: nullableString(formData.get('entrepreneurId')),
     coverImage,
+    coverImageSource: nullableString(formData.get('coverImageSource')),
     content,
     secondaryImage,
+    secondaryImageSource: nullableString(formData.get('secondaryImageSource')),
     secondaryText: cleanEditorHtml(getHtml('secondaryText')),
     relatedTitle: nullableString(formData.get('relatedTitle')),
     relatedMaterials: JSON.stringify(relatedMaterials),

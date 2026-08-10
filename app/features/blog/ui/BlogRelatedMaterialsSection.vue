@@ -2,21 +2,24 @@
 import type { BlogArticleRelatedMaterial } from '@features/blog/model/blog.types'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
 import BlogRelatedMaterialCard from '@features/blog/ui/BlogRelatedMaterialCard.vue'
+import { protectPrepositions } from '@shared/lib/typography'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   title?: string | null
   materials: BlogArticleRelatedMaterial[]
 }>(), {
   title: 'МАТЕРИАЛЫ ПО ТЕМЕ',
 })
+
+const protectedTitle = computed(() => protectPrepositions(props.title || 'МАТЕРИАЛЫ ПО ТЕМЕ'))
 </script>
 
 <template>
   <section class="bg-bg py-20 lg:py-32">
     <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
       <SectionTitle class="mb-12 text-center lg:mb-[86px]">
-        {{ title || 'МАТЕРИАЛЫ ПО ТЕМЕ' }}
+        {{ protectedTitle }}
       </SectionTitle>
 
       <LandingSlider :items-count="materials.length" aria-label="Материалы по теме">

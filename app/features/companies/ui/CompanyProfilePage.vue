@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { CompanyProfileData } from '@features/companies/model/companies-page.types'
+import EntrepreneurStorySection from '@features/entrepreneurs/ui/profile/EntrepreneurStorySection.vue'
+import EntrepreneurRelatedSection from '@features/entrepreneurs/ui/profile/EntrepreneurRelatedSection.vue'
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import { isSectionVisible } from '@shared/lib/section-config'
 import { ROUTES } from '@shared/navigation'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import PageMoreSection from '@shared/ui/page/PageMoreSection.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 import EntrepreneurStoryVariant01 from '@features/entrepreneurs/ui/profile/EntrepreneurStoryVariant01.vue'
 import EntrepreneurStoryVariant03 from '@features/entrepreneurs/ui/profile/EntrepreneurStoryVariant03.vue'
 import CompanyAddressesSection from './profile/CompanyAddressesSection.vue'
@@ -28,6 +31,8 @@ const sectionOrder = computed(() => new Map(props.company.sectionOrder.map((key,
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => isSectionVisible(props.company.sectionVisibility, key)
 const ownerBiographyBlocks = computed(() => props.company.owner?.biographyBlocks.filter(Boolean) ?? [])
+const visibleStorySections = computed(() => props.company.storySections.filter(section => section.isVisible))
+const { isEnabled: isBannerEnabled } = useSiteBanner()
 </script>
 
 <template>
@@ -136,12 +141,29 @@ const ownerBiographyBlocks = computed(() => props.company.owner?.biographyBlocks
       :image-alt-prefix="company.name"
     />
 
+    <EntrepreneurStorySection
+      v-for="storySection in visibleStorySections"
+      :id="`story-${storySection.id}`"
+      :key="storySection.id"
+      :style="sectionStyle(`story:${storySection.id}`)"
+      :section="storySection"
+      :entrepreneur-name="company.name"
+      :button-href="company.owner ? ROUTES.ENTREPRENEUR(company.owner.slug) : ROUTES.ENTREPRENEURS"
+      button-label="ЧИТАТЬ ПОДРОБНЕЕ"
+    />
+
     <PageMoreSection
       v-if="isVisible('more')"
       :style="sectionStyle('more')"
       :items="company.moreItems"
       :image="company.morePhoto"
       :image-alt="company.name"
+    />
+
+    <EntrepreneurRelatedSection
+      v-if="isVisible('articles') && company.articles.length"
+      :style="sectionStyle('articles')"
+      :articles="company.articles"
     />
 
     <CompanyRelatedSection
@@ -160,7 +182,7 @@ const ownerBiographyBlocks = computed(() => props.company.owner?.biographyBlocks
     />
 
     <PageBannerSection
-      v-if="isVisible('banner')"
+      v-if="isVisible('banner') && isBannerEnabled('/companies/SLUG')"
       :style="sectionStyle('banner')"
       :desktop-image="company.bannerImage"
       :mobile-image="company.bannerMobileImage"

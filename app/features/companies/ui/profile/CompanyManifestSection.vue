@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
+import { protectPrepositions } from '@shared/lib/typography'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
@@ -16,6 +17,7 @@ const props = defineProps<{
 const backdropStyle = computed(() => props.backgroundImage
   ? { backgroundImage: `url('${props.backgroundImage}')` }
   : undefined)
+const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>
 
 <template>
@@ -36,7 +38,7 @@ const backdropStyle = computed(() => props.backgroundImage
 
     <div class="mx-auto w-full max-w-[1920px] px-5 pb-24 pt-10 text-center sm:px-6 lg:px-10 lg:pb-[116px]">
       <SectionTitle class="mx-auto max-w-[980px]">
-        {{ title }}
+        {{ protectedTitle }}
       </SectionTitle>
 
       <p class="mx-auto mt-6 w-[min(520px,100%)] whitespace-pre-line font-sans text-base leading-4 text-text lg:w-[min(520px,42vw)]">
@@ -56,7 +58,7 @@ const backdropStyle = computed(() => props.backgroundImage
           <SiteLogo class="h-auto w-full" />
         </NuxtLink>
 
-        <p class="m-0 max-w-[420px] justify-self-start whitespace-pre-line font-sans text-base leading-4 text-text lg:justify-self-end">
+        <p class="m-0 max-w-[420px] justify-self-start whitespace-pre-line font-sans text-base leading-4 text-text lg:justify-self-end lg:text-right">
           {{ textThree }}
         </p>
       </div>

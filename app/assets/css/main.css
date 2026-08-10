@@ -104,3 +104,19 @@
     outline-offset: 2px;
   }
 }
+
+.display-title-size--xl {
+  font-size: clamp(104px, 16.67vw, 320px);
+}
+
+.display-title-size--lg {
+  font-size: clamp(96px, 13vw, 250px);
+}
+
+.display-title-size--md {
+  font-size: clamp(88px, 10vw, 200px);
+}
+
+.display-title-size--sm {
+  font-size: clamp(72px, 8vw, 160px);
+}

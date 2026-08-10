@@ -17,7 +17,7 @@ defineProps<{
   >
     <div class="relative flex-1 overflow-hidden bg-white/90">
       <h3
-        class="absolute left-0 top-0 z-1 bg-accent px-2 py-1.5 text-lg font-bold uppercase leading-none tracking-wide text-text-on-accent"
+        class="absolute left-0 top-0 z-1 max-w-[90%] bg-accent px-2 py-1.5 text-lg font-bold uppercase leading-none tracking-wide text-text-on-accent"
       >
         {{ item.name }} [ {{ item.type }} ]
       </h3>

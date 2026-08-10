@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getDisplayNameSize } from '@shared/lib/typography'
+
 const props = defineProps<{
   ownerName: string
   ownerTitle: string
@@ -13,6 +15,7 @@ const lastName = computed(() => nameParts.value[0] || props.ownerName)
 const firstName = computed(() => nameParts.value.slice(1).join(' '))
 const topText = computed(() => props.ownerHeroRightTeaser || props.ownerQuote || props.ownerTitle)
 const bottomText = computed(() => props.ownerHeroBottomRightTeaser || props.ownerTitle)
+const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
 </script>
 
 <template>
@@ -29,19 +32,19 @@ const bottomText = computed(() => props.ownerHeroBottomRightTeaser || props.owne
 
       <div class="mt-11 hidden lg:block">
         <div class="flex w-full items-start justify-between gap-10">
-          <p class="m-0 w-[500px] max-w-[500px] translate-y-3 whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text">
+          <p class="m-0 w-[500px] max-w-[500px] shrink-0 translate-y-3 whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text">
             {{ topText }}
           </p>
-          <h2 class="m-0 ml-auto text-right font-display text-[clamp(104px,16.67vw,320px)] font-black uppercase leading-none tracking-[-0.03em] text-accent">
+          <h2 class="m-0 ml-auto whitespace-nowrap text-right font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
             {{ lastName }}
           </h2>
         </div>
 
         <div class="-mt-20 flex w-full items-end justify-between gap-10">
-          <h2 class="m-0 font-display text-[clamp(104px,16.67vw,320px)] font-black uppercase leading-none tracking-[-0.03em] text-accent">
+          <h2 class="m-0 whitespace-nowrap font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
             {{ firstName }}
           </h2>
-          <p class="m-0 ml-auto w-[500px] max-w-[500px] -translate-y-20 whitespace-pre-line text-left font-sans text-base font-bold uppercase leading-4 text-text">
+          <p class="m-0 ml-auto w-[500px] max-w-[500px] shrink-0 -translate-y-20 whitespace-pre-line text-left font-sans text-base font-bold uppercase leading-4 text-text">
             {{ bottomText }}
           </p>
         </div>

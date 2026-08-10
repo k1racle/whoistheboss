@@ -2,19 +2,22 @@
 import type { CompanyCatalogItem } from '@features/companies/model/companies-page.types'
 import CompanyCatalogCard from '@features/companies/ui/CompanyCatalogCard.vue'
 import LandingSlider from '@features/landing/ui/slider/LandingSlider.vue'
+import { protectPrepositions } from '@shared/lib/typography'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
-defineProps<{
+const props = defineProps<{
   title: string
   companies: CompanyCatalogItem[]
 }>()
+
+const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>
 
 <template>
   <section class="bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:py-[130px]">
     <div class="mx-auto w-full max-w-[1920px]">
       <SectionTitle class="m-0 text-center">
-        {{ title }}
+        {{ protectedTitle }}
       </SectionTitle>
 
       <div v-if="companies.length" class="mt-12 md:hidden">

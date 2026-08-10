@@ -7,6 +7,7 @@ import LandingContactSection from '@features/landing/ui/sections/LandingContactS
 import { ROUTES } from '@shared/navigation'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import TextMarquee from '@shared/ui/marquee/TextMarquee.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 import EntrepreneurAboutSection from './profile/EntrepreneurAboutSection.vue'
 import EntrepreneurFeaturedInterviewSection from './profile/EntrepreneurFeaturedInterviewSection.vue'
 import EntrepreneurInterviewListSection from './profile/EntrepreneurInterviewListSection.vue'
@@ -30,6 +31,7 @@ const heroMarqueeText = computed(() =>
   props.entrepreneur.heroMarquee
   || [props.entrepreneur.name, props.entrepreneur.title, 'КТО ЗДЕСЬ ГЛАВНЫЙ'].filter(Boolean).join(' • '),
 )
+const { isEnabled: isBannerEnabled } = useSiteBanner()
 </script>
 
 <template>
@@ -103,7 +105,7 @@ const heroMarqueeText = computed(() =>
     />
 
     <PageBannerSection
-      v-if="isVisible('banner')"
+      v-if="isVisible('banner') && isBannerEnabled('/entrepreneurs/SLUG')"
       :style="sectionStyle('banner')"
       :desktop-image="entrepreneur.bannerImage"
       :mobile-image="entrepreneur.bannerMobileImage"

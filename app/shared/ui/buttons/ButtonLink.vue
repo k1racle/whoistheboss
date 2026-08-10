@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<{
   size: 'md',
   variant: 'border',
   desktopOnly: false,
-  emphasis: true,
+  emphasis: false,
 })
 
 const displayClass = computed(() => props.desktopOnly ? 'hidden lg:inline-flex' : 'inline-flex')
@@ -43,15 +43,15 @@ const sizeClasses: Record<ButtonLinkSize, string> = {
 
 const variantClasses: Record<ButtonLinkVariant, string> = {
   flat: '',
-  border: 'border border-accent hover:border-text',
-  invert: 'border border-accent duration-200 hover:border-text hover:bg-surface hover:text-text focus-visible:border-text focus-visible:bg-surface focus-visible:text-text',
+  border: 'border border-accent',
+  invert: 'border border-accent duration-200',
 }
 
 const weightClass = computed(() => props.emphasis ? 'font-bold tracking-[0.12em]' : 'font-normal tracking-normal')
 
 const buttonClasses = computed(() => [
   displayClass.value,
-  'items-center justify-center bg-accent font-sans uppercase text-text-on-accent no-underline transition-colors',
+  'group items-center justify-center bg-accent font-sans uppercase text-text-on-accent no-underline transition-colors hover:bg-surface hover:text-accent focus-visible:bg-surface focus-visible:text-accent',
   sizeClasses[props.size],
   variantClasses[props.variant],
   weightClass.value,
@@ -67,7 +67,7 @@ const buttonClasses = computed(() => [
     <span
       v-if="arrow === 'badge'"
       aria-hidden="true"
-      class="inline-flex items-center justify-center bg-accent px-2 py-1"
+      class="inline-flex items-center justify-center bg-accent px-2 py-1 text-text-on-accent transition-colors group-hover:bg-surface group-hover:text-accent group-focus-visible:bg-surface group-focus-visible:text-accent"
     >
       <span class="block h-[19px] w-[34px] shrink-0 bg-current [-webkit-mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat] [mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat]" />
     </span>

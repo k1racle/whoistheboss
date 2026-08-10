@@ -4,6 +4,32 @@ import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 
 type BannerFieldName = 'HOME_BANNER_IMAGE' | 'HOME_BANNER_MOBILE_IMAGE';
 
+const bannerPageOptions = [
+  ['/', 'Главная'],
+  ['/companies', 'Компании'],
+  ['/companies/SLUG', 'Страница компании'],
+  ['/entrepreneurs', 'Предприниматели'],
+  ['/entrepreneurs/SLUG', 'Страница предпринимателя'],
+  ['/blog', 'Блог'],
+  ['/blog/SLUG', 'Статья блога'],
+  ['/shooting-request', 'Заявка на съёмку'],
+  ['/contacts', 'Контакты'],
+  ['/reels', 'Рилсы'],
+  ['/interviews', 'Интервью'],
+  ['/interviews/SLUG', 'Страница интервью'],
+] as const;
+
+type BannerPageKey = typeof bannerPageOptions[number][0];
+
+const defaultBannerPages: BannerPageKey[] = [
+  '/',
+  '/companies',
+  '/companies/SLUG',
+  '/entrepreneurs',
+  '/entrepreneurs/SLUG',
+  '/blog/SLUG',
+];
+
 const bannerFields: Array<{
   name: BannerFieldName;
   title: string;
@@ -48,6 +74,7 @@ export function bannerView(user?: UserInfo | null) {
 
 function renderBannerEditor(settings: Settings): string {
   const link = settings.HOME_BANNER_LINK || '/entrepreneurs';
+  const selectedPages = parseBannerPages(settings.HOME_BANNER_PAGES);
 
   return `
     <form id="banner-form" class="standalone-editor">
@@ -72,6 +99,19 @@ function renderBannerEditor(settings: Settings): string {
           <input class="editor-control" name="HOME_BANNER_LINK" value="${escapeHtml(link)}" placeholder="/entrepreneurs или https://…">
           <span class="editor-field__help">Вся площадь баннера будет ссылкой. Значение применяется на всех страницах.</span>
         </label>
+
+        <div class="editor-field editor-field--wide">
+          <span class="editor-field__label">Страницы показа</span>
+          <span class="editor-field__help">Включите баннер только на тех страницах, где он должен отображаться.</span>
+          <div class="editor-visibility-grid">
+            ${bannerPageOptions.map(([key, label]) => `
+              <label class="editor-switch">
+                <input type="checkbox" name="HOME_BANNER_PAGE" value="${key}" ${selectedPages.includes(key) ? 'checked' : ''}>
+                <span class="editor-switch__track"></span>
+                <span><strong>${label}</strong><small>${key}</small></span>
+              </label>`).join('')}
+          </div>
+        </div>
       </section>
       <div class="standalone-editor__actions">
         <span>Изменения применятся ко всем страницам с этим баннером.</span>
@@ -229,11 +269,26 @@ function collectBannerSettings(form: HTMLFormElement): Settings {
   const link = form.elements.namedItem('HOME_BANNER_LINK') as HTMLInputElement | null;
   const desktop = form.elements.namedItem('HOME_BANNER_IMAGE') as HTMLInputElement | null;
   const mobile = form.elements.namedItem('HOME_BANNER_MOBILE_IMAGE') as HTMLInputElement | null;
+  const pages = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="HOME_BANNER_PAGE"]:checked'))
+    .map((input) => input.value);
   return {
     HOME_BANNER_IMAGE: desktop?.value.trim() || '',
     HOME_BANNER_MOBILE_IMAGE: mobile?.value.trim() || '',
     HOME_BANNER_LINK: link?.value.trim() || '/entrepreneurs',
+    HOME_BANNER_PAGES: JSON.stringify(pages),
   };
+}
+
+function parseBannerPages(value: string | null | undefined): BannerPageKey[] {
+  if (!value) return defaultBannerPages;
+
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) return defaultBannerPages;
+    return bannerPageOptions.map(([key]) => key).filter((key) => parsed.includes(key));
+  } catch {
+    return defaultBannerPages;
+  }
 }
 
 function setContent(html: string) {

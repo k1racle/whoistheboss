@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
+import { protectPrepositions } from '@shared/lib/typography'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
@@ -15,6 +16,7 @@ const props = defineProps<{
 
 const logoRef = ref<HTMLElement | null>(null)
 const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
+const protectedTitle = computed(() => protectPrepositions(props.title))
 
 defineExpose({ logoRef })
 </script>
@@ -29,9 +31,9 @@ defineExpose({ logoRef })
       <div class="flex flex-col justify-end gap-8">
         <div>
           <SectionTitle>
-            {{ title }}
+            {{ protectedTitle }}
           </SectionTitle>
-          <div class="mt-6 space-y-4 font-sans text-sm leading-6 text-text/78 sm:text-base">
+          <div class="mt-6 space-y-4 font-sans text-base leading-4 text-text/78">
             <p v-for="paragraph in paragraphs" :key="paragraph">{{ paragraph }}</p>
           </div>
         </div>

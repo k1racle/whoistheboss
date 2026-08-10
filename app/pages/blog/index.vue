@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { BlogPageData } from '@features/blog/model/blog.types'
 import BlogPage from '@features/blog/ui/BlogPage.vue'
+import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
+import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -35,6 +37,7 @@ const { data } = await useAsyncData('blog-page', async () => {
 const page = computed(() => data.value ?? fallbackPage)
 const success = computed(() => route.query.success === '1')
 const error = computed(() => route.query.error === '1')
+const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
 useSeoMeta({
   title: `Блог — ${config.public.siteName}`,
@@ -46,9 +49,17 @@ useSeoMeta({
 </script>
 
 <template>
-  <BlogPage
-    :page="page"
-    :success="success"
-    :error="error"
-  />
+  <div class="flex flex-col">
+    <BlogPage
+      :page="page"
+      :success="success"
+      :error="error"
+    />
+    <PageBannerSection
+      v-if="isBannerEnabled('/blog')"
+      :desktop-image="banner.image"
+      :mobile-image="banner.mobileImage"
+      :href="banner.link"
+    />
+  </div>
 </template>
