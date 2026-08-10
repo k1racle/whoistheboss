@@ -18,7 +18,7 @@ const emit = defineEmits<{
     :aria-label="`Открыть рилс ${reel.title}`"
     @click="emit('open', reel)"
   >
-    <NuxtImg v-if="reel.coverImage" :src="reel.coverImage" :alt="reel.title" class="h-full w-full object-cover" />
+    <img v-if="reel.coverImage" :src="reel.coverImage" :alt="reel.title" class="h-full w-full object-cover">
     <span class="absolute left-1/2 top-1/2 flex size-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-current text-lg leading-none text-text-on-accent" aria-hidden="true">▶</span>
   </button>
 

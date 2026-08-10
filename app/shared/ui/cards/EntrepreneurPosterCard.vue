@@ -17,17 +17,17 @@ defineProps<{
     :to="ROUTES.ENTREPRENEUR(entrepreneur.slug)"
     class="group relative block min-h-[420px] overflow-hidden rounded-[30px] border border-black/10 bg-text shadow-[0_26px_72px_rgba(7,7,7,0.18)] transition-transform duration-300 hover:-translate-y-1 sm:min-h-[500px]"
   >
-    <NuxtImg
+    <img
       :src="entrepreneur.photo || '/images/placeholder.svg'"
       :alt="entrepreneur.name"
       class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-    />
-    <NuxtImg
+    >
+    <img
       v-if="entrepreneur.hoverPhoto"
       :src="entrepreneur.hoverPhoto"
       alt=""
       class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-    />
+    >
 
     <div class="absolute inset-0 bg-linear-to-b from-black/15 via-transparent to-black/90" />
 

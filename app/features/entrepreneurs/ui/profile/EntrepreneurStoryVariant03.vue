@@ -59,13 +59,13 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
       </div>
 
       <div class="flex min-h-full flex-col items-start gap-10">
-        <NuxtImg
+        <img
           v-if="image"
           :src="image"
           :alt="imageAlt"
           class="w-full object-cover"
           :class="{ 'aspect-video': imageAspect === 'wide' }"
-        />
+        >
         <p v-if="bottomText" class="mt-auto whitespace-pre-line font-sans text-base leading-4 text-text">
           {{ bottomText }}
         </p>
