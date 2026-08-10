@@ -326,10 +326,10 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[]): str
           ${section('business-editor-founder', '06', 'Основатель', 'Центральное фото и имя связанного предпринимателя. Тексты берутся из его настроек hero.', `
             ${mediaField('Фото основателя', 'founderPhoto', 'founderPhotoFile', item.founderPhoto, 'Вертикальная фотография по центру блока. Если поле пустое, используется основное фото связанного предпринимателя.')}
             <div class="editor-field editor-field--wide">
-              <span class="editor-field__label">Источник биографии владельца</span>
-              <p class="editor-field__help">По умолчанию тексты берутся из связанного предпринимателя. Собственные тексты компании используются только после явного переключения.</p>
+              <span class="editor-field__label">Отображение биографии владельца</span>
+              <p class="editor-field__help">Автоматическая подстановка из карточки предпринимателя отключена. Блок показывается только при выборе собственных блоков и заполнении текста.</p>
               <div class="editor-segmented">
-                <label><input type="radio" name="ownerBiographySource" value="ENTREPRENEUR" ${item.useCustomOwnerBiography ? '' : 'checked'}><span>Из предпринимателя</span></label>
+                <label><input type="radio" name="ownerBiographySource" value="HIDDEN" ${item.useCustomOwnerBiography ? '' : 'checked'}><span>Не показывать</span></label>
                 <label><input type="radio" name="ownerBiographySource" value="CUSTOM" ${item.useCustomOwnerBiography ? 'checked' : ''}><span>Свои блоки</span></label>
               </div>
             </div>
@@ -531,7 +531,7 @@ function fillForm(item: Business) {
   updateBusinessMediaPreview('aboutPhoto', item.aboutPhoto || '');
   form.querySelector<HTMLInputElement>('input[name="founderPhoto"]')!.value = item.founderPhoto || '';
   updateBusinessMediaPreview('founderPhoto', item.founderPhoto || '');
-  form.querySelector<HTMLInputElement>(`input[name="ownerBiographySource"][value="${item.useCustomOwnerBiography ? 'CUSTOM' : 'ENTREPRENEUR'}"]`)!.checked = true;
+  form.querySelector<HTMLInputElement>(`input[name="ownerBiographySource"][value="${item.useCustomOwnerBiography ? 'CUSTOM' : 'HIDDEN'}"]`)!.checked = true;
   parseOwnerBiographyBlocks(item.ownerBiographyBlocks).forEach((block, index) => {
     form.querySelector<HTMLTextAreaElement>(`textarea[name="ownerBiographyBlock${index + 1}"]`)!.value = block;
   });
