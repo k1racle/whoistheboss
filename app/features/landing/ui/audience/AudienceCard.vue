@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import type { LandingAudienceCard } from '@features/landing/model/landing.data'
+import { protectPrepositions } from '@shared/lib/typography'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   card: LandingAudienceCard
   variant?: 'light' | 'accent'
 }>(), {
   variant: 'light',
 })
+
+const title = computed(() => protectPrepositions(props.card.title))
+const description = computed(() => protectPrepositions(props.card.description || ''))
+const hoverTitle = computed(() => protectPrepositions(props.card.hoverTitle ?? props.card.title))
+const hoverDescription = computed(() => protectPrepositions(props.card.hoverDescription ?? props.card.description ?? ''))
 </script>
 
 <template>
@@ -15,7 +21,7 @@ withDefaults(defineProps<{
     :class="
       variant === 'accent'
         ? 'bg-accent text-text-on-accent hover:bg-surface hover:text-text'
-        : 'bg-surface/60 text-text hover:bg-accent/85 backdrop-blur-[12px] hover:text-text-on-accent'
+        : 'bg-surface/60 text-text hover:bg-accent backdrop-blur-[12px] hover:text-text-on-accent'
     "
   >
     <span
@@ -25,25 +31,25 @@ withDefaults(defineProps<{
 
     <div class="absolute inset-4 flex flex-col justify-end transition-[opacity,transform] duration-350 group-hover:-translate-y-2.5 group-hover:opacity-0">
       <strong class="max-w-[88%] font-display text-[clamp(2rem,2.8vw,2.8rem)] font-black uppercase leading-[0.88] tracking-[-0.05em]">
-        {{ card.title }}
+        {{ title }}
       </strong>
       <small
-        v-if="card.description"
+        v-if="description"
         class="mt-2 max-w-[88%] font-sans text-sm leading-5"
       >
-        {{ card.description }}
+        {{ description }}
       </small>
     </div>
 
     <div class="absolute inset-4 flex translate-y-2.5 flex-col justify-end opacity-0 transition-[opacity,transform] duration-350 group-hover:translate-y-0 group-hover:opacity-100">
       <strong class="font-sans text-base font-normal uppercase leading-4 tracking-normal">
-        {{ card.hoverTitle ?? card.title }}
+        {{ hoverTitle }}
       </strong>
       <small
-        v-if="card.hoverDescription || card.description"
+        v-if="hoverDescription"
         class="mt-2 max-w-[88%] font-sans text-sm leading-5"
       >
-        {{ card.hoverDescription ?? card.description }}
+        {{ hoverDescription }}
       </small>
     </div>
   </article>

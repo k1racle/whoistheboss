@@ -32,7 +32,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
     <section
       v-if="isVisible('cover')"
       :style="sectionStyle('cover')"
-      class="bg-bg pb-12 pt-24 lg:pb-20 lg:pt-36"
+      class="bg-bg pt-24 lg:pt-36"
     >
       <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
         <header>
@@ -72,7 +72,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
     <section
       v-if="isVisible('content')"
       :style="sectionStyle('content')"
-      class="bg-bg py-12 lg:py-20"
+      class="bg-bg pb-12 pt-7 lg:pb-20 lg:pt-20"
     >
       <div class="mx-auto w-full max-w-[1920px] px-5 sm:px-6 lg:px-10">
         <TrustedRichText

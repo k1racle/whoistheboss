@@ -16,14 +16,13 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <section class="min-h-svh bg-bg pb-10 pt-[320px] max-lg:min-h-0 max-lg:px-5 max-lg:pb-8 max-lg:pt-40">
+  <section class="bg-bg py-14 max-lg:px-5 lg:py-20">
     <div class="mx-auto grid w-[min(calc(100%_-_80px),1920px)] grid-cols-[minmax(0,60%)_minmax(0,40%)] max-lg:w-full max-lg:grid-cols-1 max-lg:gap-10">
       <div class="flex flex-col items-start gap-7">
         <p class="m-0 font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-lg:text-[clamp(42px,10vw,72px)] max-lg:leading-[0.88]">
           {{ eyebrow }}
         </p>
         <h2 class="m-0 flex flex-wrap gap-x-1.5 font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-lg:text-[clamp(42px,10vw,72px)] max-lg:leading-[0.88]">
-          <span>WHO'S THE</span>
           <span>{{ title }}?</span>
         </h2>
         <ButtonLink

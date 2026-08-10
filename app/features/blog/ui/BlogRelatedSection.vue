@@ -31,7 +31,6 @@ const visibleCompanies = computed(() => props.companies.slice(0, 3))
           v-for="entrepreneur in visibleEntrepreneurs"
           :key="entrepreneur.slug"
           :entrepreneur="entrepreneur"
-          :show-text="false"
         />
       </div>
 

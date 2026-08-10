@@ -47,7 +47,7 @@ const phone = defineModel<string>('phone', { required: true })
     <button
       type="submit"
       :disabled="status === 'loading'"
-      class="mt-28 min-h-11 w-full border border-white bg-transparent px-4 py-3 font-sans text-sm font-normal uppercase leading-none text-text-on-accent transition-colors hover:border-white hover:bg-white hover:text-text disabled:cursor-not-allowed disabled:opacity-60 lg:mt-[54px] lg:min-h-[51px] lg:py-2 lg:text-[22px] lg:leading-[22px] lg:tracking-[-0.88px]"
+      class="mt-28 min-h-11 w-full cursor-pointer border border-white bg-transparent px-4 py-3 font-sans text-sm font-normal uppercase leading-none text-text-on-accent transition-colors hover:border-white hover:bg-white hover:text-text disabled:cursor-not-allowed disabled:opacity-60 lg:mt-[54px] lg:min-h-[51px] lg:py-2 lg:text-[22px] lg:leading-[22px] lg:tracking-[-0.88px]"
     >
       Отправить
     </button>

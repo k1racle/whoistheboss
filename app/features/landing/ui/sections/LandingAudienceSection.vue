@@ -142,16 +142,22 @@ onBeforeUnmount(() => {
 <template>
   <section
     :id="sectionId || 'for-whom'"
-    ref="sectionRef"
-    class="relative bg-bg lg:min-h-[320vh]"
+    class="relative bg-bg"
   >
-    <div class="relative lg:h-screen lg:min-h-screen">
-      <div
-        ref="sceneRef"
-        class="relative overflow-visible bg-bg lg:h-screen lg:overflow-hidden"
-        :class="scenePositionClass"
-        :style="sceneStyle"
-      >
+    <div class="mx-auto hidden w-full max-w-[1920px] px-10 lg:block lg:mt-30 lg:mb-1">
+      <p class="mx-auto max-w-[800px] text-center font-sans text-[32px] font-normal uppercase leading-8 tracking-[-2.5px] text-text/78">
+        {{ intro }}
+      </p>
+    </div>
+
+    <div ref="sectionRef" class="relative lg:min-h-[320vh]">
+      <div class="relative lg:h-screen lg:min-h-screen">
+        <div
+          ref="sceneRef"
+          class="relative overflow-visible bg-bg lg:h-screen lg:overflow-hidden"
+          :class="scenePositionClass"
+          :style="sceneStyle"
+        >
         <div class="mx-auto w-full max-w-[1920px] px-4 pt-14 sm:px-6 lg:hidden">
           <div class="ml-auto max-w-[620px]">
             <p class="font-sans text-sm leading-6 text-text/78 sm:text-base">
@@ -189,9 +195,6 @@ onBeforeUnmount(() => {
             class="flex flex-col items-center transition-[opacity,transform] duration-300"
             :class="isFinal ? 'opacity-0 -translate-y-6' : 'opacity-100 translate-y-0'"
           >
-            <p class="mb-8 max-w-[640px] text-center font-sans text-sm leading-6 text-text/78 sm:text-base">
-              {{ intro }}
-            </p>
             <h2 class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94] tracking-[-0.03em] text-text">
               {{ desktopTitle }}
             </h2>
@@ -228,6 +231,7 @@ onBeforeUnmount(() => {
           </ButtonLink>
         </div>
       </div>
+    </div>
     </div>
   </section>
 </template>

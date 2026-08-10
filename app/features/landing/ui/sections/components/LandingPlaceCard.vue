@@ -11,8 +11,8 @@ defineProps<{
 <template>
   <NuxtLink
     :to="ROUTES.COMPANY(item.slug)"
-    class="group relative flex h-[400px] flex-col bg-accent p-4 text-text-on-accent transition-colors duration-300 hover:bg-[#b52200]"
-    :class="asSlide ? 'max-w-[70%] shrink-0 snap-center' : ''"
+    class="group relative flex aspect-square flex-col bg-accent p-4 text-text-on-accent transition-colors duration-300 hover:bg-[#b52200]"
+    :class="asSlide ? 'w-[70%] min-w-[70%] max-w-[70%] shrink-0 snap-center' : 'w-full'"
     :aria-label="`${item.name}, ${item.type}`"
   >
     <div class="relative flex-1 overflow-hidden bg-white/90">

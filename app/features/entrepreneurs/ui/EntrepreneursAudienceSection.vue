@@ -33,7 +33,7 @@ const slotStyle = (index: number) => {
   <section id="about" class="bg-bg px-4 py-14 sm:px-6 lg:px-10 lg:py-24">
     <div class="mx-auto w-full max-w-[1920px]">
       <div class="flex flex-col gap-5 lg:grid lg:grid-cols-4 lg:gap-0">
-        <header v-if="$slots.intro" class="text-right mb-7 max-w-[760px] lg:col-start-3 lg:col-end-5 lg:row-start-1 lg:mb-0 lg:w-full lg:justify-self-end lg:self-center">
+        <header v-if="$slots.intro" class="text-right mb-7 max-w-[760px] lg:col-start-3 lg:col-end-5 lg:row-start-1 lg:mb-0 lg:mt-2 lg:w-full lg:justify-self-end lg:self-start">
           <slot name="intro" />
         </header>
 

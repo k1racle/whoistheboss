@@ -49,7 +49,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
         <SectionTitle>
           Наши герои
         </SectionTitle>
-        <p class="mt-6 max-w-[680px] font-sans text-base leading-6 text-text/80 sm:text-xl sm:leading-7">
+        <p class="ml-auto mt-6 max-w-[680px] font-sans text-base leading-6 text-text/80 sm:text-xl sm:leading-7">
           Здесь собраны предприниматели, руководители и основатели компаний, которые создают проекты и развивают бизнес через личное участие.
         </p>
       </template>
