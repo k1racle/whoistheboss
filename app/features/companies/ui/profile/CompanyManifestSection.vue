@@ -23,10 +23,10 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
 <template>
   <section id="interview" class="min-h-svh bg-bg pt-36 lg:pt-[160px]">
     <div
-      class="relative mb-36 h-[570px] bg-border-strong bg-cover bg-center lg:mb-[170px] lg:h-[1024px]"
+      class="relative mb-36 h-[628px] bg-border-strong bg-cover bg-center lg:mb-[170px]"
       :style="backdropStyle"
     >
-      <div class="absolute bottom-0 left-1/2 aspect-square w-[min(72vw,420px)] -translate-x-1/2 translate-y-[120px] overflow-hidden bg-text-muted lg:w-[min(420px,28vw)]">
+      <div class="absolute left-1/2 top-1/2 aspect-square w-[min(72vw,420px)] -translate-x-1/2 overflow-hidden bg-text-muted lg:w-[min(420px,28vw)]">
         <img
           v-if="squareImage"
           :src="squareImage"
