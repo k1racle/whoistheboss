@@ -92,12 +92,15 @@ const randomizeHoverImage = () => {
           class="pointer-events-none absolute left-[var(--hover-image-left)] top-[var(--hover-image-top)] aspect-[4/5] w-[180px] rotate-[var(--hover-image-rotation)] scale-[0.92] overflow-hidden bg-border-strong opacity-0 transition-[opacity,transform] duration-200 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
           :style="hoverStyle"
         >
-          <img
+          <NuxtImg
             :src="article.coverImage || '/images/placeholder.svg'"
             alt=""
+            sizes="180px"
+            format="webp"
             loading="lazy"
+            decoding="async"
             class="h-full w-full object-cover"
-          >
+          />
         </span>
       </span>
     </NuxtLink>

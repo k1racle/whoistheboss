@@ -51,7 +51,6 @@ const itemClass = (index: number) => {
           :alt="name"
           sizes="320:100vw 480:100vw sm:100vw md:100vw lg:60vw xl:60vw 2xl:60vw 2000:1134px"
           format="webp"
-          :quality="80"
           loading="lazy"
           decoding="async"
           class="h-full min-h-[720px] w-full object-cover max-lg:min-h-[28rem]"

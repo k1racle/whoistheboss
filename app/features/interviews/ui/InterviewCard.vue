@@ -12,7 +12,15 @@ defineProps<{
     :to="ROUTES.INTERVIEW(interview.slug)"
     class="group flex min-h-full flex-col bg-surface text-text no-underline transition-colors duration-200 hover:bg-accent hover:text-text-on-accent focus-visible:bg-accent focus-visible:text-text-on-accent"
   >
-    <img :src="interview.coverImage || '/images/placeholder.svg'" :alt="interview.title" class="aspect-[4/3] w-full object-cover">
+    <NuxtImg
+      :src="interview.coverImage || '/images/placeholder.svg'"
+      :alt="interview.title"
+      sizes="320:100vw 480:100vw sm:100vw md:50vw xl:33vw 2000:614px"
+      format="webp"
+      loading="lazy"
+      decoding="async"
+      class="aspect-[4/3] w-full object-cover"
+    />
     <div class="flex flex-1 flex-col gap-3 p-5">
       <span v-if="interview.entrepreneur" class="font-sans text-sm uppercase leading-4">
         {{ interview.entrepreneur.name }}

@@ -20,12 +20,15 @@ const imageSrc = computed(() => props.company.coverImage || '/images/placeholder
     </h3>
 
     <div class="relative m-[17px] mb-0 min-h-0 overflow-hidden bg-border-strong">
-      <img
+      <NuxtImg
         :src="imageSrc"
         :alt="company.name"
+        sizes="320:100vw 480:100vw sm:100vw md:50vw xl:33vw 2000:614px"
+        format="webp"
         class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025] group-focus-visible:scale-[1.025]"
         loading="lazy"
-      >
+        decoding="async"
+      />
     </div>
 
     <div class="flex items-end justify-between gap-6 px-3 pb-4 pt-3.5 md:px-4 md:pb-5 md:pt-[18px]">

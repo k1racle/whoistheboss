@@ -30,7 +30,7 @@ coverage/
 .nuxt/
 .output/
 .agents/
-
+task/reports/
 # Local env files
 .env
 .env.*

@@ -61,7 +61,15 @@ onBeforeUnmount(() => {
           class="group relative aspect-[9/16] overflow-hidden bg-surface text-left text-text"
           @click="openReel(reel.slug)"
         >
-          <img :src="reel.coverImage || '/images/placeholder.svg'" :alt="reel.title" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]">
+          <NuxtImg
+            :src="reel.coverImage || '/images/placeholder.svg'"
+            :alt="reel.title"
+            sizes="320:100vw 480:100vw sm:50vw xl:25vw 2000:460px"
+            format="webp"
+            loading="lazy"
+            decoding="async"
+            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+          />
           <span class="absolute inset-x-0 bottom-0 bg-text/80 p-4 font-sans text-base font-bold uppercase leading-5 text-white">
             {{ reel.title }}
           </span>

@@ -20,6 +20,7 @@ export default defineNuxtConfig({
 
   image: {
     provider: 'ipx',
+    quality: 100,
     dirs: [imageRootDir],
     ipx: {
       fs: {

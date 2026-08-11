@@ -17,17 +17,23 @@ const hoverImageSrc = computed(() => props.entrepreneur.hoverPhoto || props.entr
     :aria-label="`${entrepreneur.name}, ${entrepreneur.title}`"
   >
     <div class="col-start-1 row-start-1 bg-accent" aria-hidden="true" />
-    <img
+    <NuxtImg
       :src="imageSrc"
       :alt="entrepreneur.name"
+      sizes="320:100vw 480:100vw sm:100vw md:33vw 2000:614px"
+      format="webp"
       class="col-start-1 row-start-1 h-full w-full object-cover transition-opacity duration-500 group-hover:opacity-0 group-focus-visible:opacity-0"
       loading="lazy"
-    >
-    <img
+      decoding="async"
+    />
+    <NuxtImg
       :src="hoverImageSrc"
       alt=""
+      sizes="320:100vw 480:100vw sm:100vw md:33vw 2000:614px"
+      format="webp"
       class="col-start-1 row-start-1 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100"
       loading="lazy"
-    >
+      decoding="async"
+    />
   </NuxtLink>
 </template>

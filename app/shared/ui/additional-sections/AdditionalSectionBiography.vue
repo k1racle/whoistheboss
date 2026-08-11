@@ -35,7 +35,16 @@ withDefaults(defineProps<{
         >
           {{ buttonLabel }}
         </ButtonLink>
-        <img v-if="image" :src="image" :alt="imageAlt" class="mt-4 w-[min(100%,33rem)] object-cover">
+        <NuxtImg
+          v-if="image"
+          :src="image"
+          :alt="imageAlt"
+          sizes="320:100vw 480:100vw sm:100vw lg:528px"
+          format="webp"
+          loading="lazy"
+          decoding="async"
+          class="mt-4 w-[min(100%,33rem)] object-cover"
+        />
       </div>
 
       <div class="flex flex-col gap-0 pt-4 pl-[200px] max-lg:gap-5 max-lg:p-0">

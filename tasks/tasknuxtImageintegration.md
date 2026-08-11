@@ -1,6 +1,15 @@
 # Безопасная интеграция Nuxt Image
 
-Статус: `waiting-owner`. Повторную интеграцию нужно начинать только после отдельного согласования и проверки одного компонента в production Docker.
+Статус: `ready-production-check`. Владелец согласовал повторную интеграцию 11 августа 2026 года. Конфигурация и один тестовый компонент готовы к production-проверке.
+
+## Текущий результат
+
+- IPX использует тот же абсолютный корень, что и `UPLOAD_DIR`.
+- Первым тестовым компонентом выбран `app/features/entrepreneurs/ui/profile/EntrepreneurAboutSection.vue`.
+- Фото в секции `#about` использует WebP, quality 80, lazy loading и responsive-ширины от 320 до 2268 px с учётом DPR 2.
+- `npm run lint`, `npm run typecheck`, `npm run build` и production Docker build проходят.
+- Linux Docker bundle содержит `runtimeConfig.ipx.fs.dir = "/app/public"` и Sharp для `linux-x64`.
+- HTTP-ответы `/_ipx/*`, production Network, логи и работу новой загрузки из админки нужно проверить после деплоя.
 
 ## Цель
 
@@ -114,6 +123,7 @@ const imageRootDir = resolve(uploadDir, '..')
 export default defineNuxtConfig({
   image: {
     provider: 'ipx',
+    dirs: [imageRootDir],
     ipx: {
       fs: {
         dir: imageRootDir,
@@ -143,29 +153,28 @@ export default defineNuxtConfig({
 
 ### Этап 3. Вернуть NuxtImg в один компонент
 
-Первым тестовым компонентом использовать `app/features/interviews/ui/InterviewCard.vue`. Компонент должен сохранить текущие классы, aspect ratio, alt-текст и fallback.
+Первым тестовым компонентом использовать `app/features/entrepreneurs/ui/profile/EntrepreneurAboutSection.vue`. Это фото находится во второй секции детальной страницы предпринимателя и не влияет на LCP первого экрана. Компонент сохраняет текущие классы, crop, alt-текст, переключение фото при hover и fallback.
 
 Для теста задать осмысленные responsive-параметры, а не ограничиваться заменой имени тега:
 
 ```vue
 <NuxtImg
-  :src="interview.coverImage || '/images/placeholder.svg'"
-  :alt="interview.title"
-  width="720"
-  height="540"
-  sizes="100vw sm:50vw lg:33vw"
+  :src="activeImage"
+  :alt="name"
+  sizes="320:100vw 480:100vw sm:100vw md:100vw lg:60vw xl:60vw 2xl:60vw 2000:1134px"
   format="webp"
-  quality="80"
+  :quality="80"
   loading="lazy"
-  class="aspect-[4/3] w-full object-cover"
+  decoding="async"
+  class="h-full min-h-[720px] w-full object-cover max-lg:min-h-[28rem]"
 />
 ```
 
-Точные `sizes`, ширину, высоту и качество нужно подтвердить по фактической сетке страницы.
+На мобильном экране фото занимает почти всю ширину viewport. На desktop оно занимает три доли из пяти и ограничивается примерно 1134 CSS-пикселями на широком viewport. Набор `sizes` учитывает эту сетку и создаёт варианты для DPR 1 и 2.
 
 ### Этап 4. Проверить один компонент в production
 
-Проверить тестовую карточку на desktop и mobile:
+Проверить фото в секции `#about` на desktop и mobile:
 
 - изображение отображается после первого и повторного запроса;
 - запрос идёт через `/_ipx/*` и возвращает `200`;

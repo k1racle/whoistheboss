@@ -20,7 +20,15 @@ defineProps<{
           :to="`/interviews/${item.slug}`"
           class="bg-surface text-text no-underline"
         >
-          <img :src="item.coverImage || '/images/placeholder.svg'" :alt="item.title" class="aspect-video w-full object-cover">
+          <NuxtImg
+            :src="item.coverImage || '/images/placeholder.svg'"
+            :alt="item.title"
+            sizes="320:100vw 480:100vw sm:100vw md:33vw 2000:614px"
+            format="webp"
+            loading="lazy"
+            decoding="async"
+            class="aspect-video w-full object-cover"
+          />
           <h3 class="m-0 p-5 font-sans text-[22px] font-bold uppercase leading-[22px]">
             {{ item.title }}
           </h3>

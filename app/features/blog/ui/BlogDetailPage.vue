@@ -54,11 +54,14 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
           v-if="article.coverImage"
           class="m-0 mt-10 lg:mt-14"
         >
-          <img
+          <NuxtImg
             :src="article.coverImage"
             :alt="article.title"
+            sizes="320:100vw 480:100vw sm:100vw 2000:1840px"
+            format="webp"
+            decoding="async"
             class="aspect-[16/9] w-full bg-border-strong object-cover"
-          >
+          />
           <figcaption
             v-if="article.coverImageSource"
             class="font-sans text-[8px] font-normal uppercase leading-4 tracking-normal text-text"
@@ -92,11 +95,15 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
           v-if="article.secondaryImage"
           class="m-0"
         >
-          <img
+          <NuxtImg
             :src="article.secondaryImage"
             alt=""
+            sizes="320:100vw 480:100vw sm:100vw lg:50vw 2000:900px"
+            format="webp"
+            loading="lazy"
+            decoding="async"
             class="aspect-[4/3] w-full bg-border-strong object-cover"
-          >
+          />
           <figcaption
             v-if="article.secondaryImageSource"
             class="font-sans text-[8px] font-normal uppercase leading-4 tracking-normal text-text"

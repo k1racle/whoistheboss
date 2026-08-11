@@ -24,12 +24,16 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
           </span>
         </h2>
 
-        <img
+        <NuxtImg
           v-if="image"
           :src="image"
           :alt="imageAlt"
+          sizes="320:100vw 480:100vw sm:100vw lg:60vw 1536:832px"
+          format="webp"
+          loading="lazy"
+          decoding="async"
           class="mt-auto aspect-video w-[min(100%,52rem)] object-cover pt-10"
-        >
+        />
       </div>
 
       <div class="flex min-h-full flex-col gap-10 pt-4">

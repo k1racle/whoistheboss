@@ -27,12 +27,16 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
       :style="backdropStyle"
     >
       <div class="absolute left-1/2 top-1/2 aspect-square w-[min(72vw,420px)] -translate-x-1/2 overflow-hidden bg-text-muted lg:w-[min(420px,28vw)]">
-        <img
+        <NuxtImg
           v-if="squareImage"
           :src="squareImage"
           :alt="imageAlt"
+          sizes="320:72vw 480:72vw sm:420px lg:28vw 1536:420px"
+          format="webp"
+          loading="lazy"
+          decoding="async"
           class="h-full w-full object-cover"
-        >
+        />
       </div>
     </div>
 
