@@ -44,7 +44,7 @@ const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
           </h2>
         </div>
 
-        <div class="-mt-20 flex w-full items-end justify-between gap-10">
+        <div class="flex w-full items-end justify-between gap-10">
           <h2 class="m-0 whitespace-nowrap font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
             {{ firstName }}
           </h2>

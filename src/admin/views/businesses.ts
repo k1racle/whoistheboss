@@ -458,9 +458,10 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[]): str
                 <div class="business-specs-editor__heading">
                   <div>
                     <span class="editor-field__label">Фотографии галереи</span>
-                    <p class="editor-field__help">Добавляйте изображения, меняйте их порядок стрелками и проверяйте кадрирование по миниатюре. На странице каждая фотография занимает отдельную карточку горизонтального скролла.</p>
+                    <p class="editor-field__help">Можно выбрать сразу несколько изображений. Меняйте их порядок стрелками и проверяйте кадрирование по миниатюре. На странице каждая фотография занимает отдельную карточку горизонтального скролла.</p>
                   </div>
-                  <button type="button" class="editor-button editor-button--primary" data-business-gallery-add>Добавить фотографию</button>
+                  <input type="file" accept="image/*" multiple class="sr-only" data-business-gallery-files>
+                  <button type="button" class="editor-button editor-button--primary" data-business-gallery-add>Добавить фотографии</button>
                 </div>
                 <div class="business-gallery-editor__list" data-business-gallery-list>
                   ${galleryImages.map((image, index) => renderBusinessGalleryRow(image, index)).join('')}
@@ -1399,7 +1400,8 @@ function renderBusinessGallery(images: string[]) {
 function attachBusinessGallery(form: HTMLFormElement) {
   const list = form.querySelector<HTMLElement>('[data-business-gallery-list]');
   const addButton = form.querySelector<HTMLButtonElement>('[data-business-gallery-add]');
-  if (!list || !addButton) return;
+  const filesInput = form.querySelector<HTMLInputElement>('[data-business-gallery-files]');
+  if (!list || !addButton || !filesInput) return;
 
   const refresh = () => updateBusinessGalleryState(list);
 
@@ -1409,8 +1411,22 @@ function attachBusinessGallery(form: HTMLFormElement) {
     onChange: refresh,
   });
 
-  addButton.addEventListener('click', () => {
-    list.insertAdjacentHTML('beforeend', renderBusinessGalleryRow('', list.children.length));
+  addButton.addEventListener('click', () => filesInput.click());
+
+  filesInput.addEventListener('change', () => {
+    const files = Array.from(filesInput.files || []);
+    files.forEach((file) => {
+      list.insertAdjacentHTML('beforeend', renderBusinessGalleryRow('', list.children.length));
+      const row = list.lastElementChild as HTMLElement | null;
+      const rowFileInput = row?.querySelector<HTMLInputElement>('[data-business-gallery-file]');
+      if (!row || !rowFileInput) return;
+
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      rowFileInput.files = transfer.files;
+      updateBusinessGalleryPreview(row, URL.createObjectURL(file));
+    });
+    filesInput.value = '';
     refresh();
   });
 

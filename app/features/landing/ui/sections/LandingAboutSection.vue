@@ -24,7 +24,7 @@ defineExpose({ logoRef })
 
 const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
 const protectedTitle = computed(() => protectPrepositions(props.title))
-const fallbackImageSrc = '/uploads/frame-118-1784803179906.png'
+const fallbackImageSrc = '/images/placeholder.svg'
 
 interface AboutMedia {
   type: 'EMBED' | 'SELF_HOSTED'

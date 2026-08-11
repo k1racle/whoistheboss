@@ -454,29 +454,53 @@ function renderStoryTextField(label: string, field: string, value: string, rows 
   `;
 }
 
-function renderStoryImageField(section: { image: string | null }): string {
+function renderStoryMediaField(
+  label: string,
+  value: string | null,
+  kind: 'section' | 'menu',
+  help?: string,
+): string {
+  const valueAttribute = kind === 'section' ? 'data-story-image' : 'data-story-menu-image';
+  const fileAttribute = kind === 'section' ? 'data-story-image-file' : 'data-story-menu-image-file';
+
   return `
     <div class="editor-field editor-field--wide media-field" data-media-field>
       <div class="media-field__heading">
-        <div><span class="editor-field__label">Фото секции</span></div>
-        <span class="media-field__status" data-media-status>${section.image ? 'Изображение выбрано' : 'Не выбрано'}</span>
+        <div>
+          <span class="editor-field__label">${label}</span>
+          ${help ? `<p class="editor-field__help">${help}</p>` : ''}
+        </div>
+        <span class="media-field__status" data-media-status>${value ? 'Изображение выбрано' : 'Не выбрано'}</span>
       </div>
       <div class="media-field__body">
         <div class="media-field__preview" data-media-preview></div>
         <div class="media-field__controls">
-          <input type="hidden" value="${escapeHtml(section.image || '')}" data-media-url data-story-image>
-          <input type="file" accept="image/*" class="sr-only" data-media-file>
+          <input type="hidden" value="${escapeHtml(value || '')}" data-media-url ${valueAttribute}>
+          <input type="file" accept="image/*" class="sr-only" data-media-file ${fileAttribute}>
           <button type="button" class="editor-button editor-button--primary" data-media-upload>Загрузить фото</button>
           <button type="button" class="editor-button" data-media-library>Выбрать загруженное</button>
           <button type="button" class="editor-button editor-button--danger" data-media-clear>Убрать</button>
           <details class="media-field__url">
             <summary>Указать URL вручную</summary>
-            <input type="text" value="${escapeHtml(section.image || '')}" class="editor-control" data-media-url-proxy>
+            <input type="text" value="${escapeHtml(value || '')}" class="editor-control" data-media-url-proxy>
           </details>
         </div>
       </div>
     </div>
   `;
+}
+
+function renderStoryImageField(section: { image: string | null }): string {
+  return renderStoryMediaField('Фото секции', section.image, 'section');
+}
+
+function renderStoryMenuImageField(section: { menuImage: string | null }): string {
+  return renderStoryMediaField(
+    'Фото карточки меню',
+    section.menuImage,
+    'menu',
+    'Это изображение показывается справа при наведении на соответствующий пункт меню.',
+  );
 }
 
 function renderStorySectionRow(section: EntrepreneurStorySection, index: number): string {
@@ -522,10 +546,7 @@ function renderStorySectionRow(section: EntrepreneurStorySection, index: number)
       <div class="story-section-row__menu">
         ${renderStoryTextField('Название карточки меню', 'menuLabel', section.menuLabel, 2)}
         ${renderStoryTextField('Описание карточки меню', 'menuDescription', section.menuDescription, 3)}
-        <label class="editor-field">
-          <span class="editor-field__label">Фото карточки меню</span>
-          <input type="text" class="editor-control" value="${escapeHtml(section.menuImage || '')}" data-story-menu-image>
-        </label>
+        ${renderStoryMenuImageField(section)}
       </div>
       <div class="editor-grid">${fields}</div>
     </article>
@@ -948,11 +969,14 @@ async function collectStorySections(form: HTMLFormElement): Promise<Entrepreneur
     const type = row.dataset.storyType as EntrepreneurStorySection['type'];
     const field = (name: string) => row.querySelector<HTMLTextAreaElement>(`[data-story-field="${name}"]`)?.value.trim() || '';
     const imageInput = row.querySelector<HTMLInputElement>('[data-story-image]');
-    const imageFile = row.querySelector<HTMLInputElement>('[data-media-file]')?.files?.[0];
+    const imageFile = row.querySelector<HTMLInputElement>('[data-story-image-file]')?.files?.[0];
     let image = imageInput?.value.trim() || null;
     if (imageFile) image = (await api.uploadImage(imageFile)).url;
     const isVisible = form.querySelector<HTMLInputElement>(`input[name="story_visible_${CSS.escape(id)}"]`)?.checked !== false;
-    const menuImage = row.querySelector<HTMLInputElement>('[data-story-menu-image]')?.value.trim() || image;
+    const menuImageInput = row.querySelector<HTMLInputElement>('[data-story-menu-image]');
+    const menuImageFile = row.querySelector<HTMLInputElement>('[data-story-menu-image-file]')?.files?.[0];
+    let menuImage = menuImageInput?.value.trim() || image;
+    if (menuImageFile) menuImage = (await api.uploadImage(menuImageFile)).url;
     const base = {
       id,
       isVisible,

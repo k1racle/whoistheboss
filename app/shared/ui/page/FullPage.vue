@@ -30,13 +30,9 @@ const nextSection = computed(() => {
   return (section.nextElementSibling ?? section.parentElement?.nextElementSibling) as HTMLElement | null
 })
 
-const sectionStyle = computed(() => {
-  if (!viewportHeight.value) return undefined
-
-  return {
-    minHeight: `${Math.max(viewportHeight.value - offsetHeight.value, props.minHeight)}px`,
-  }
-})
+const sectionStyle = computed(() => ({
+  '--full-page-min-height': `${props.minHeight}px`,
+}))
 
 const isActiveSection = () => {
   const section = rootRef.value
@@ -108,7 +104,7 @@ onBeforeUnmount(() => {
   <component
     :is="as"
     ref="rootRef"
-    class="relative flex flex-col justify-between overflow-hidden"
+    class="full-page relative flex flex-col justify-between overflow-hidden"
     :style="sectionStyle"
     @touchend="handleTouchEnd"
     @touchstart.passive="handleTouchStart"
@@ -117,3 +113,24 @@ onBeforeUnmount(() => {
     <slot />
   </component>
 </template>
+
+<style scoped>
+.full-page {
+  --full-page-header-height: 4rem;
+
+  min-height: max(
+    var(--full-page-min-height),
+    calc(100svh - var(--full-page-header-height))
+  );
+  min-height: max(
+    var(--full-page-min-height),
+    calc(100dvh - var(--full-page-header-height))
+  );
+}
+
+@media (min-width: 64rem) {
+  .full-page {
+    --full-page-header-height: 4.75rem;
+  }
+}
+</style>

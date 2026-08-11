@@ -125,6 +125,7 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-title', content: 'Кто здесь главный?' },
       ],
       link: [
+        { rel: 'preload', href: '/fonts/DexaPro-Condensed-900-Black.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon/favicon.svg' },
         { rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon/favicon-96x96.png' },
         { rel: 'shortcut icon', href: '/favicon/favicon.ico' },

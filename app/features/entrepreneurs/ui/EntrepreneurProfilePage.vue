@@ -35,7 +35,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
 </script>
 
 <template>
-  <article class="flex flex-col overflow-hidden bg-bg">
+  <article class="flex flex-col overflow-x-clip bg-bg">
     <EntrepreneurProfileHero
       v-if="isVisible('hero')"
       :style="sectionStyle('hero')"

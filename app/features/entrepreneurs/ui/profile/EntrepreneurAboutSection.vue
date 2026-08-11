@@ -44,8 +44,8 @@ const itemClass = (index: number) => {
       </p>
     </div>
 
-    <div class="mx-auto grid w-[min(calc(100%_-_80px),1920px)] grid-cols-[minmax(0,2fr)_minmax(0,3fr)] items-stretch gap-[30px] max-lg:w-full max-lg:grid-cols-1">
-      <div class="order-2 overflow-hidden bg-[#d9d9d9] max-lg:order-1">
+    <div class="mx-auto grid w-[min(calc(100%_-_80px),1920px)] grid-cols-[minmax(0,2fr)_minmax(0,3fr)] items-start gap-[30px] max-lg:w-full max-lg:grid-cols-1">
+      <div class="order-2 self-start overflow-hidden bg-[#d9d9d9] lg:sticky lg:top-20 max-lg:order-1">
         <NuxtImg
           :src="activeImage"
           :alt="name"
@@ -53,7 +53,7 @@ const itemClass = (index: number) => {
           format="webp"
           loading="lazy"
           decoding="async"
-          class="h-full min-h-[720px] w-full object-cover max-lg:min-h-[28rem]"
+          class="block h-auto w-full object-contain"
         />
       </div>
 
