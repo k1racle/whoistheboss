@@ -235,6 +235,14 @@ Catch-all admin API выполняет серверную проверку ро�
 
 `server/api/site-footer.get.ts` публикует только заполненные `SOCIAL_TELEGRAM`, `SOCIAL_INSTAGRAM`, `SOCIAL_VK`, `SOCIAL_YOUTUBE`, `SOCIAL_PINTEREST` и `SOCIAL_DZEN`. Поля `SOCIAL_X` и `SOCIAL_WHATSAPP` хранятся отдельно и сейчас не выводятся в футере. `LayoutDefault.vue` загружает этот endpoint и передает типизированные данные в `SiteFooter.vue`; если настройка сохраняется, но не появляется на сайте, проверьте всю эту цепочку.
 
+## Порядок компаний в блоке «Места»
+
+Список `/admin/businesses` задает порядок компаний в блоке «Места» на главной странице. Администратор перемещает строки за drag handle, а клиент сохраняет полный массив идентификаторов через `PUT /api/admin/businesses/order`. Сервер валидирует массив и обновляет `Business.placesSortOrder` для всех компаний одной транзакцией.
+
+Публичный endpoint `GET /api/businesses` выбирает только опубликованные компании и сортирует их по `placesSortOrder`. Главная страница запрашивает первые три карточки без query-параметров. Параметры `limit` и `offset` подготавливают endpoint к последовательной загрузке следующих карточек; объект `pagination` возвращает `hasMore` и `nextOffset`.
+
+Порядок каталога `/companies` остается независимым и продолжает использовать дату создания. Новая компания получает последнюю позицию в блоке «Места», а миграция `20260811120000_business_places_sort_order` сохраняет для существующих записей прежний порядок по дате создания.
+
 ## Дополнительные контентные секции
 
 Предприниматели и компании используют общий набор дополнительных секций. Админка редактирует их в `src/admin/views/entrepreneurs.ts` и `src/admin/views/businesses.ts`, но публичный UI находится в shared-слое:
@@ -401,6 +409,7 @@ URL загруженного файла сохраняется в поле су�
 | «Страница блога» | `src/admin/views/pageEditors.ts`, `server/api/blog-page.get.ts`, `app/features/blog/` |
 | «Предприниматель», «основатель» | `src/admin/views/entrepreneurs.ts`, `server/api/entrepreneurs/[slug].get.ts`, `app/features/entrepreneurs/` |
 | «Компания», «бизнес» | `src/admin/views/businesses.ts`, `server/api/companies/[slug].get.ts`, `app/features/companies/` |
+| «Порядок компаний в Местах» | `src/admin/views/businesses.ts`, `server/utils/admin-content-handlers.ts`, `server/api/businesses.get.ts` |
 | «Текст и вертикальное/широкое фото» | story sections в `entrepreneurs.ts`/`businesses.ts` и `app/shared/ui/additional-sections/` |
 | «Главная страница» | `src/admin/views/home.ts`, `server/api/landing-page.get.ts`, `app/features/landing/` |
 | «Стать героем» | `src/admin/views/shootingPageEditor.ts`, `server/api/shooting-page.get.ts` |

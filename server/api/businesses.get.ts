@@ -1,18 +1,20 @@
+import { z } from 'zod'
 import prisma from '~~/lib/prisma'
 import { stripHtml } from '../utils/stripHtml'
 
 const DEFAULT_BUSINESSES_COUNT = 3
 const MAX_BUSINESSES_COUNT = 20
 
-function parseCount(raw: string | undefined, fallback: number): number {
-  const parsed = Number.parseInt(raw ?? '', 10)
-  if (!Number.isFinite(parsed)) return fallback
-  return Math.min(Math.max(parsed, 1), MAX_BUSINESSES_COUNT)
-}
+const businessesQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(MAX_BUSINESSES_COUNT).default(DEFAULT_BUSINESSES_COUNT),
+  offset: z.coerce.number().int().min(0).default(0),
+})
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event)
-  const limit = parseCount(String(query.limit ?? ''), DEFAULT_BUSINESSES_COUNT)
+  const { limit, offset } = await getValidatedQuery(
+    event,
+    query => businessesQuerySchema.parse(query),
+  )
 
   const businesses = await prisma.business.findMany({
     where: { isPublished: true },
@@ -23,17 +25,31 @@ export default defineEventHandler(async (event) => {
       coverImage: true,
       description: true,
     },
-    orderBy: { createdAt: 'desc' },
-    take: limit,
+    orderBy: [
+      { placesSortOrder: 'asc' },
+      { createdAt: 'desc' },
+      { id: 'asc' },
+    ],
+    skip: offset,
+    take: limit + 1,
   })
 
+  const hasMore = businesses.length > limit
+  const visibleBusinesses = businesses.slice(0, limit)
+
   return {
-    businesses: businesses.map((business) => ({
+    businesses: visibleBusinesses.map((business) => ({
       slug: business.slug,
       name: business.name,
       type: business.type,
       coverImage: business.coverImage,
       description: stripHtml(business.description),
     })),
+    pagination: {
+      limit,
+      offset,
+      hasMore,
+      nextOffset: hasMore ? offset + limit : null,
+    },
   }
 })

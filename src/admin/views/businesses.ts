@@ -37,15 +37,20 @@ export function businessesView(user?: UserInfo | null) {
   async function init() {
     try {
       const items = await api.businesses.list();
-      const rows = items.map((item) => renderRow(item)).join('');
+      const rows = items.map((item, index) => renderRow(item, index)).join('');
       setContent(`
-        <div class="mb-4 flex justify-end">
+        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700">Перетаскивайте строки, чтобы менять порядок компаний в блоке «Места». На сайте отображаются первые три опубликованные компании.</p>
+            <p class="mt-1 min-h-5 text-xs text-gray-500" data-business-order-status aria-live="polite"></p>
+          </div>
           <a href="/admin/businesses/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить</a>
         </div>
         <div class="bg-white border border-gray-200 rounded-sm overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Порядок</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Название</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Подпись карточки</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Предприниматель</th>
@@ -54,19 +59,26 @@ export function businessesView(user?: UserInfo | null) {
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Действия</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">${rows || emptyRow()}</tbody>
+            <tbody class="divide-y divide-gray-200" data-business-order-list>${rows || emptyRow()}</tbody>
           </table>
         </div>
       `);
+      attachBusinessOrder();
       attachActions(items);
     } catch (err) {
       setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
     }
   }
 
-  function renderRow(item: Business): string {
+  function renderRow(item: Business, index: number): string {
     return `
-      <tr data-id="${item.id}">
+      <tr data-id="${item.id}" data-business-order-row>
+        <td class="px-4 py-3 text-sm text-gray-600">
+          <div class="flex items-center gap-2">
+            ${renderSortableHandle('Изменить порядок компаний в блоке «Места»')}
+            <span class="min-w-6 tabular-nums" data-business-order-number>${String(index + 1).padStart(2, '0')}</span>
+          </div>
+        </td>
         <td class="px-4 py-3 text-sm font-medium text-gray-900">${escapeHtml(item.name)}</td>
         <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.type)}</td>
         <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.entrepreneur?.name || '—')}</td>
@@ -78,6 +90,61 @@ export function businessesView(user?: UserInfo | null) {
         </td>
       </tr>
     `;
+  }
+
+  function attachBusinessOrder() {
+    const list = document.querySelector<HTMLElement>('[data-business-order-list]');
+    const status = document.querySelector<HTMLElement>('[data-business-order-status]');
+    if (!list?.querySelector('[data-business-order-row]')) return;
+
+    let initialized = false;
+    let isSaving = false;
+    let pendingOrder: string[] | null = null;
+
+    const setStatus = (message: string) => {
+      if (status) status.textContent = message;
+    };
+
+    const savePendingOrder = async () => {
+      if (isSaving) return;
+      isSaving = true;
+
+      try {
+        while (pendingOrder) {
+          const ids = pendingOrder;
+          pendingOrder = null;
+          setStatus('Сохраняем порядок…');
+          await api.businesses.reorder(ids);
+        }
+        setStatus('Порядок сохранён');
+      } catch (err) {
+        pendingOrder = null;
+        alert(err instanceof Error ? err.message : 'Не удалось сохранить порядок компаний');
+        await init();
+      } finally {
+        isSaving = false;
+      }
+    };
+
+    attachSortableList({
+      list,
+      itemSelector: '[data-business-order-row]',
+      onChange: () => {
+        const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-business-order-row]'));
+        rows.forEach((row, index) => {
+          const number = row.querySelector<HTMLElement>('[data-business-order-number]');
+          if (number) number.textContent = String(index + 1).padStart(2, '0');
+        });
+
+        if (!initialized) {
+          initialized = true;
+          return;
+        }
+
+        pendingOrder = rows.map(row => row.dataset.id || '').filter(Boolean);
+        void savePendingOrder();
+      },
+    });
   }
 
   function attachActions(items: Business[]) {
@@ -1518,7 +1585,7 @@ function renderLoading(): string {
 }
 
 function emptyRow(): string {
-  return `<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Нет записей</td></tr>`;
+  return `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Нет записей</td></tr>`;
 }
 
 function statusBadge(isPublished: boolean): string {

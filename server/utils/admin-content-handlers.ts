@@ -2,6 +2,7 @@ import type { H3Event } from 'h3'
 import prisma from '~~/lib/prisma'
 import {
   articleSchema,
+  businessOrderSchema,
   businessSchema,
   entrepreneurSchema,
   interviewSchema,
@@ -209,12 +210,34 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
 }
 
 export async function handleBusinesses(event: H3Event, path: readonly string[]) {
+  if (path.length === 1 && path[0] === 'order') {
+    requireAdminMethod(event, ['PUT'])
+    const { ids } = await readAdminBody(event, businessOrderSchema)
+    const businesses = await prisma.business.findMany({ select: { id: true } })
+    const existingIds = new Set(businesses.map(business => business.id))
+
+    if (ids.length !== businesses.length || ids.some(id => !existingIds.has(id))) {
+      throwAdminError(400, 'Business order must include every business exactly once')
+    }
+
+    await prisma.$transaction(ids.map((id, placesSortOrder) => prisma.business.update({
+      where: { id },
+      data: { placesSortOrder },
+    })))
+
+    return { ok: true }
+  }
+
   const id = singleId(path)
   const method = requireAdminMethod(event, id ? ['GET', 'PUT', 'DELETE'] : ['GET', 'POST'])
 
   if (!id && method === 'GET') {
     return prisma.business.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { placesSortOrder: 'asc' },
+        { createdAt: 'desc' },
+        { id: 'asc' },
+      ],
       include: { entrepreneur: entrepreneurSummary },
     })
   }
@@ -249,9 +272,15 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
   }
 
   if (!id) {
+    const lastBusiness = await prisma.business.aggregate({
+      _max: { placesSortOrder: true },
+    })
     setResponseStatus(event, 201)
     return prisma.business.create({
-      data: normalized,
+      data: {
+        ...normalized,
+        placesSortOrder: (lastBusiness._max.placesSortOrder ?? -1) + 1,
+      },
       include: { entrepreneur: entrepreneurSummary },
     })
   }

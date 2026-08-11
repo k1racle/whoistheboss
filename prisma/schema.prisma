@@ -226,12 +226,14 @@ model Business {
   website        String?
   coverImage     String?
   isPublished    Boolean      @default(false)
+  placesSortOrder Int         @default(0)
   entrepreneurId String
   entrepreneur   Entrepreneur @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
   @@index([entrepreneurId])
+  @@index([placesSortOrder])
   @@map("businesses")
 }
 

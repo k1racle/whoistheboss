@@ -195,6 +195,13 @@ export const businessSchema = z.object({
   isPublished: z.boolean().default(false),
 })
 
+export const businessOrderSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1).refine(
+    ids => new Set(ids).size === ids.length,
+    'Business ids must be unique',
+  ),
+})
+
 export const audienceCardSchema = z.object({
   title: z.string().min(1),
   description: nullableText,

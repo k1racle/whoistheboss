@@ -95,7 +95,12 @@ const randomizeHoverImage = () => {
           <NuxtImg
             :src="article.coverImage || '/images/placeholder.svg'"
             alt=""
+            width="180"
+            height="225"
+            fit="cover"
             sizes="180px"
+            densities="1x 2x 3x"
+            quality="100"
             format="webp"
             loading="lazy"
             decoding="async"

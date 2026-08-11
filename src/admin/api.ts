@@ -195,6 +195,7 @@ export interface Business {
   website?: string | null;
   coverImage?: string | null;
   isPublished: boolean;
+  placesSortOrder: number;
   entrepreneurId: string;
   entrepreneur?: { id: string; name: string } | null;
   createdAt: string;
@@ -338,6 +339,8 @@ export const api = {
       fetchJson('/admin/businesses', { method: 'POST', body: JSON.stringify(data) }),
     update: (id: string, data: Partial<Business>) =>
       fetchJson(`/admin/businesses/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    reorder: (ids: string[]): Promise<{ ok: true }> =>
+      fetchJson('/admin/businesses/order', { method: 'PUT', body: JSON.stringify({ ids }) }),
     delete: (id: string) => fetchJson(`/admin/businesses/${id}`, { method: 'DELETE' }),
   },
 

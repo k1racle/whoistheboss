@@ -387,7 +387,7 @@ Legacy-поля пока сохраняются для обратной совм
 | `GET /api/landing/audience-cards` | Карточки аудитории |
 | `GET /api/companies-page` | Настройки и данные каталога компаний |
 | `GET /api/companies/:slug` | Страница компании |
-| `GET /api/businesses` | Legacy endpoint компаний |
+| `GET /api/businesses` | Упорядоченные карточки компаний для блока «Места»; поддерживает `limit` и `offset` |
 | `GET /api/entrepreneurs-page` | Настройки и данные каталога предпринимателей |
 | `GET /api/entrepreneurs/:slug` | Страница предпринимателя |
 | `GET /api/blog-page` | Настройки и данные блога |
@@ -401,6 +401,8 @@ Legacy-поля пока сохраняются для обратной совм
 | `GET /api/shooting-page` | Данные страницы заявки |
 | `POST /api/shooting-request` | Создание заявки на съемку |
 | `GET /api/site-banner` | Конфигурация общего баннера |
+
+`GET /api/businesses` по умолчанию возвращает первые три опубликованные компании по `Business.placesSortOrder`. Ответ сохраняет массив `businesses` и добавляет объект `pagination` с полями `limit`, `offset`, `hasMore` и `nextOffset`. Каталог `/companies` использует собственную сортировку и не зависит от порядка блока «Места».
 
 ### 9.2. Авторизация
 
@@ -427,6 +429,8 @@ Catch-all обработчик `/api/admin/[...path]` обслуживает р�
 - `subscribers`;
 - `settings`;
 - `upload`.
+
+Ресурс `businesses` поддерживает `PUT /api/admin/businesses/order`. Endpoint принимает полный массив идентификаторов компаний и транзакционно сохраняет их позиции в `Business.placesSortOrder`.
 
 Менять URL или shape существующих JSON-ответов без отдельной согласованной миграции нельзя.
 

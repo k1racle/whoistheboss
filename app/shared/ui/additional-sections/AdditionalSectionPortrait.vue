@@ -67,7 +67,7 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
           format="webp"
           loading="lazy"
           decoding="async"
-          class="w-full object-contain object-right max-lg:h-auto lg:h-[800px]"
+          class="w-full object-cover object-right max-lg:h-auto lg:h-[800px]"
           :class="{ 'aspect-video': imageAspect === 'wide' }"
         />
         <p v-if="bottomText" class="mt-auto whitespace-pre-line font-sans text-base leading-4 text-text">
