@@ -34,6 +34,7 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
     blockedMessage = 'Автосохранение ждёт заполнения обязательных полей',
   } = options;
   const actions = form.querySelector<HTMLElement>('.entrepreneur-editor__actions, .standalone-editor__actions');
+  const message = form.querySelector<HTMLElement>('#form-message, #shooting-page-message');
   let baseline = getFormSnapshot(form);
   let timer: number | null = null;
   let disposed = false;
@@ -62,6 +63,23 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
 
   function isDirty(): boolean {
     return !disposed && getFormSnapshot(form) !== baseline;
+  }
+
+  function clearAutosaveError(): void {
+    message?.querySelector<HTMLElement>('[data-autosave-error]')?.remove();
+  }
+
+  function showAutosaveError(error: unknown): void {
+    if (!message) return;
+    const reason = error instanceof Error && error.message.trim()
+      ? ` Причина: ${error.message.trim()}`
+      : '';
+    const alert = document.createElement('div');
+    alert.className = 'admin-alert admin-alert--error';
+    alert.dataset.autosaveError = 'true';
+    alert.setAttribute('role', 'alert');
+    alert.textContent = `Не удалось выполнить автосохранение. Изменения остались в форме — сохраните их вручную.${reason}`;
+    message.replaceChildren(alert);
   }
 
   function updateStatus(): void {
@@ -111,12 +129,14 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
         await save();
         baseline = savedSnapshot;
         lastResult = 'saved';
+        clearAutosaveError();
         status.textContent = isDirty()
           ? 'Сохранено, но появились новые изменения'
           : `${mode === 'auto' ? 'Автосохранено' : 'Сохранено'} · ${formatTime(new Date())}`;
       } catch (error) {
         lastResult = 'error';
         status.textContent = 'Ошибка сохранения — изменения не потеряны';
+        if (mode === 'auto') showAutosaveError(error);
         throw error;
       }
     })();

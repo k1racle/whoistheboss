@@ -46,7 +46,16 @@ const itemClass = (index: number) => {
 
     <div class="mx-auto grid w-[min(calc(100%_-_80px),1920px)] grid-cols-[minmax(0,2fr)_minmax(0,3fr)] items-stretch gap-[30px] max-lg:w-full max-lg:grid-cols-1">
       <div class="order-2 overflow-hidden bg-[#d9d9d9] max-lg:order-1">
-        <img :src="activeImage" :alt="name" class="h-full min-h-[720px] w-full object-cover max-lg:min-h-[28rem]">
+        <NuxtImg
+          :src="activeImage"
+          :alt="name"
+          sizes="320:100vw 480:100vw sm:100vw md:100vw lg:60vw xl:60vw 2xl:60vw 2000:1134px"
+          format="webp"
+          :quality="80"
+          loading="lazy"
+          decoding="async"
+          class="h-full min-h-[720px] w-full object-cover max-lg:min-h-[28rem]"
+        />
       </div>
 
       <nav class="order-1 flex flex-col gap-2.5 max-lg:order-2" aria-label="Навигация по странице героя">

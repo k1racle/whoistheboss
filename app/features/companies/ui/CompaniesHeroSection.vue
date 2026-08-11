@@ -18,7 +18,7 @@ const titleLines = computed(() => {
 <template>
   <FullPage id="top" next-label="Перейти к следующей секции">
     <div class="mx-auto flex w-full max-w-[1920px] flex-1 items-end px-5 sm:px-6 lg:px-10">
-      <h1 class="flex w-full flex-col gap-1 font-display text-[58px] font-black uppercase leading-[0.9] text-accent tracking-normal sm:text-[110px] lg:text-[220px] 2xl:text-[320px]">
+      <h1 class="flex w-full flex-col gap-1 font-display text-[clamp(80px,20vw,320px)] font-black uppercase leading-[0.9] tracking-normal text-accent">
         <span class="self-start">{{ titleLines.first }}</span>
         <span class="self-end text-right">{{ titleLines.second }}</span>
       </h1>

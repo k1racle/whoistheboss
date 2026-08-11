@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000'
 const siteName = process.env.SITE_NAME ?? 'Кто здесь главный?'
 const siteDescription = process.env.SITE_DESCRIPTION ?? 'Интервью с основателями бизнеса. Видео, рилсы, фото.'
+const uploadDir = resolve(process.env.UPLOAD_DIR ?? './public/uploads')
+const imageRootDir = resolve(uploadDir, '..')
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -15,6 +17,16 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxtjs/seo',
   ],
+
+  image: {
+    provider: 'ipx',
+    dirs: [imageRootDir],
+    ipx: {
+      fs: {
+        dir: imageRootDir,
+      },
+    },
+  },
 
   ogImage: false,
 
@@ -133,7 +145,7 @@ export default defineNuxtConfig({
     port: Number.parseInt(process.env.PORT ?? '3000', 10),
     databaseUrl: process.env.DATABASE_URL ?? '',
     sessionSecret: process.env.SESSION_SECRET ?? '',
-    uploadDir: process.env.UPLOAD_DIR ?? './public/uploads',
+    uploadDir,
     maxUploadSizeMb: Number.parseInt(process.env.MAX_UPLOAD_SIZE_MB ?? '100', 10),
     adminSeedPassword: process.env.ADMIN_SEED_PASSWORD ?? 'admin123',
     smtpHost: process.env.SMTP_HOST ?? '',

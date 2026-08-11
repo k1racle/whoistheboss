@@ -158,9 +158,9 @@ onBeforeUnmount(() => {
           :class="scenePositionClass"
           :style="sceneStyle"
         >
-        <div class="mx-auto w-full max-w-[1920px] px-4 pt-14 sm:px-6 lg:hidden">
-          <div class="ml-auto max-w-[620px]">
-            <p class="font-sans text-sm leading-6 text-text/78 sm:text-base">
+        <div class="mx-auto flex w-full max-w-[1920px] justify-center px-4 pt-14 sm:px-6 lg:hidden">
+          <div class="flex w-full justify-center">
+            <p class="mx-auto max-w-[800px] text-center font-sans text-[14px] font-normal uppercase leading-8 tracking-[-2.5px] text-text/78">
               {{ intro }}
             </p>
           </div>
@@ -178,7 +178,7 @@ onBeforeUnmount(() => {
             </h2>
           </div>
 
-          <div class="relative z-10 -mt-[100svh] flex flex-col gap-5 py-[45svh]">
+          <div class="relative z-10 -mt-[100svh] flex flex-col gap-5 pb-[45svh] pt-[65svh]">
             <AudienceCard
               v-for="(card, index) in cards"
               :key="card.id"
