@@ -25,8 +25,6 @@ const mobileNavigationItems = [
   { label: 'Съемка', to: ROUTES.SHOOTING_REQUEST },
 ] as const
 
-const loadingLogoImage = '/images/LogoPlaceholder.svg'
-
 const route = useRoute()
 const isMenuOpen = ref(false)
 
@@ -91,13 +89,12 @@ onBeforeUnmount(() => {
               :src="logoSrc"
               class="hidden lg:block"
             />
-            <img
+            <span
               v-else
-              key="loading-logo"
-              :src="loadingLogoImage"
-              alt=""
-              class="hidden h-9 w-auto object-contain sm:h-10 lg:block lg:h-11"
-            >
+              key="logo-placeholder"
+              aria-hidden="true"
+              class="hidden size-4 bg-accent lg:block"
+            />
           </Transition>
         </NuxtLink>
 
