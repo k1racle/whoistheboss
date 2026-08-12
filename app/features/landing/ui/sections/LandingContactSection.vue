@@ -48,7 +48,7 @@ const onSubmit = async () => {
     id="shooting"
     class="relative isolate overflow-hidden bg-accent text-text-on-accent"
   >
-    <div class="mx-auto flex min-h-[600px] w-full max-w-[1920px] flex-col justify-between gap-14 px-6 pb-12 pt-7 lg:min-h-[888px] lg:flex-row lg:items-stretch lg:gap-10 lg:px-10 lg:py-10 xl:grid xl:grid-cols-[minmax(0,1fr)_471px] xl:content-stretch xl:items-stretch">
+    <div class="mx-auto flex min-h-[600px] w-full max-w-[1920px] flex-col justify-between gap-14 px-6 pb-12 pt-7 lg:min-h-[800px] lg:flex-row lg:items-stretch lg:gap-10 lg:px-10 lg:py-10 xl:grid xl:grid-cols-[minmax(0,1fr)_471px] xl:content-stretch xl:items-stretch">
       <LandingContactText
         :cta-title="ctaTitle"
         :form-title="formTitle"
