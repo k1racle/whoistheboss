@@ -18,8 +18,8 @@ const mobileImageSrcset = computed(() => {
   if (!props.mobileImage) return undefined
 
   return [
-    `${image(props.mobileImage, { width: 768, quality: 82, format: 'webp' })} 768w`,
-    `${image(props.mobileImage, { width: 1536, quality: 82, format: 'webp' })} 1536w`,
+    `${image(props.mobileImage, { width: 768, quality: 78, format: 'webp' })} 768w`,
+    `${image(props.mobileImage, { width: 1536, quality: 78, format: 'webp' })} 1536w`,
   ].join(', ')
 })
 

@@ -168,7 +168,7 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     },
   ]
   const featuredInterview = interviews[0] || null
-  const defaultMarquee = [entrepreneur.name, entrepreneur.title, 'Кто здесь главный'].filter(Boolean).join(' • ')
+  const defaultMarquee = [entrepreneur.name, entrepreneur.title, 'Маршрут Построен'].filter(Boolean).join(' • ')
 
   return {
     slug: entrepreneur.slug,

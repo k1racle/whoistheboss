@@ -1,11 +1,44 @@
 import { createHash } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import { extname, join, resolve } from 'node:path'
+import sharp from 'sharp'
 import type { H3Event } from 'h3'
 import { requireAdminMethod, throwAdminError } from '@server/utils/admin-api'
 
 const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif', '.svg'])
 const videoExtensions = new Set(['.mp4', '.webm', '.mov', '.m4v'])
+const optimizableImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp'])
+const MAX_IMAGE_DIMENSION = 2560
+const WEBP_QUALITY = 78
+
+async function optimizeImageUpload(
+  data: Buffer,
+  extension: string,
+): Promise<{ data: Buffer, extension: string }> {
+  if (!optimizableImageExtensions.has(extension)) return { data, extension }
+
+  const probe = sharp(data, { animated: true, failOn: 'error' })
+  const metadata = await probe.metadata()
+  if ((metadata.pages ?? 1) > 1) return { data, extension }
+
+  const optimized = await sharp(data, { failOn: 'error' })
+    .rotate()
+    .resize({
+      width: MAX_IMAGE_DIMENSION,
+      height: MAX_IMAGE_DIMENSION,
+      fit: 'inside',
+      withoutEnlargement: true,
+    })
+    .webp({
+      quality: WEBP_QUALITY,
+      alphaQuality: 88,
+      effort: 4,
+      smartSubsample: true,
+    })
+    .toBuffer()
+
+  return { data: optimized, extension: '.webp' }
+}
 
 function normalizeOriginalName(value: string): string {
   if (/[\u0430-\u044f\u0451]/i.test(value)) return value
@@ -72,13 +105,26 @@ export async function handleUploads(event: H3Event, path: readonly string[]) {
     throwAdminError(400, `Unsupported ${kind} file extension`)
   }
 
-  const contentHash = createHash('sha256').update(file.data).digest('hex').slice(0, 24)
-  const filename = `${kind}-${contentHash}${extension}`
+  let outputData = file.data
+  let outputExtension = extension
+  if (kind === 'image') {
+    try {
+      const optimized = await optimizeImageUpload(file.data, extension)
+      outputData = optimized.data
+      outputExtension = optimized.extension
+    }
+    catch {
+      throwAdminError(400, 'Invalid or unsupported image file')
+    }
+  }
+
+  const contentHash = createHash('sha256').update(outputData).digest('hex').slice(0, 24)
+  const filename = `${kind}-${contentHash}${outputExtension}`
   const uploadDir = getUploadDirectory()
   const destination = join(uploadDir, filename)
 
   await fs.mkdir(uploadDir, { recursive: true })
   const alreadyExists = await fs.access(destination).then(() => true).catch(() => false)
-  if (!alreadyExists) await fs.writeFile(destination, file.data)
+  if (!alreadyExists) await fs.writeFile(destination, outputData)
   return { url: `/uploads/${filename}` }
 }

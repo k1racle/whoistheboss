@@ -9,7 +9,7 @@ withDefaults(defineProps<{
   logoVisible?: boolean
   socialLinks?: SocialLink[]
 }>(), {
-  logoSrc: '/images/image-29.svg',
+  logoSrc: '',
   logoVisible: true,
   socialLinks: () => SOCIAL_LINKS,
 })
@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
       <div class="flex min-w-0 items-center gap-6 lg:gap-12">
         <NuxtLink
           :to="ROUTES.LANDING"
-          aria-label="Кто здесь главный?"
+          aria-label="Маршрут Построен"
           class="shrink-0"
         >
           <SiteLogo :src="logoSrc" class="lg:hidden" />

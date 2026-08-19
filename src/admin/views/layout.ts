@@ -29,7 +29,7 @@ export function layout(title: string, content: string, user?: UserInfo | null): 
     <div class="admin-shell">
       <aside class="admin-sidebar">
         <a href="/admin" class="admin-brand" data-link>
-          <img src="/images/image-29.svg" alt="Кто здесь главный?">
+          <span class="admin-brand__mark" aria-label="Маршрут Построен">МАРШРУТ<br>ПОСТРОЕН</span>
           <span>Админ-панель</span>
         </a>
         <nav class="admin-nav" id="admin-nav">

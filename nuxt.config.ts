@@ -1,8 +1,8 @@
 import { resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 
-const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000'
-const siteName = process.env.SITE_NAME ?? 'Кто здесь главный?'
+const siteUrl = process.env.SITE_URL ?? 'https://xn----7sbqzieaghadljej2f.xn--p1ai'
+const siteName = process.env.SITE_NAME ?? 'Маршрут Построен'
 const siteDescription = process.env.SITE_DESCRIPTION ?? 'Интервью с основателями бизнеса. Видео, рилсы, фото.'
 const uploadDir = resolve(process.env.UPLOAD_DIR ?? './public/uploads')
 const imageRootDir = resolve(uploadDir, '..')
@@ -20,11 +20,12 @@ export default defineNuxtConfig({
 
   image: {
     provider: 'ipx',
-    quality: 82,
+    quality: 78,
     dirs: [imageRootDir],
     ipx: {
       fs: {
         dir: imageRootDir,
+        maxAge: 31536000,
       },
     },
   },
@@ -108,6 +109,13 @@ export default defineNuxtConfig({
     '/api/reels/**': { swr: 60 },
     '/api/contacts': { swr: 60 },
     '/api/shooting-page': { swr: 60 },
+    '/_ipx/**': {
+      cache: { maxAge: 31536000, swr: false, base: '/cache/ipx' },
+      headers: { 'cache-control': 'public, max-age=31536000, immutable' },
+    },
+    '/uploads/**': {
+      headers: { 'cache-control': 'public, max-age=31536000, immutable' },
+    },
     '/admin/**': { robots: 'noindex, nofollow', sitemap: false },
     '/api/**': { robots: 'noindex, nofollow', sitemap: false },
     '/login': { robots: 'noindex, nofollow', sitemap: false },
@@ -129,6 +137,13 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    compressPublicAssets: true,
+    storage: {
+      cache: {
+        driver: 'fs',
+        base: resolve(uploadDir, '.cache'),
+      },
+    },
     publicAssets: [
       {
         baseURL: 'admin',
@@ -153,7 +168,7 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1',
       meta: [
         { name: 'format-detection', content: 'telephone=no' },
-        { name: 'apple-mobile-web-app-title', content: 'Кто здесь главный?' },
+        { name: 'apple-mobile-web-app-title', content: siteName },
       ],
       link: [
         { rel: 'preload', href: '/fonts/DexaPro-Condensed-900-Black.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },

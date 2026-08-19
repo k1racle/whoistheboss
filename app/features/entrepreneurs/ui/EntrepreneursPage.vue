@@ -37,7 +37,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
     <LandingHeroSection
       v-if="isVisible('hero')"
       :style="sectionStyle('hero')"
-      title="Кто здесь главный?"
+      title="Маршрут Построен"
     />
 
     <EntrepreneursAudienceSection

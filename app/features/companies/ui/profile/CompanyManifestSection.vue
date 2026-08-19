@@ -57,7 +57,7 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
         <NuxtLink
           :to="ROUTES.LANDING"
           class="block w-[88px] leading-none"
-          aria-label="Кто здесь главный?"
+          aria-label="Маршрут Построен"
         >
           <SiteLogo class="h-auto w-full" />
         </NuxtLink>

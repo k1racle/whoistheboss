@@ -25,7 +25,7 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
-      SITE_NAME: ${SITE_NAME:-Кто здесь главный?}
+      SITE_NAME: ${SITE_NAME:-Маршрут Построен}
       SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Интервью с основателями бизнеса. Видео, рилсы, фото.}
     volumes:
       - uploads:/app/public/uploads

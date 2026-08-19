@@ -29,7 +29,7 @@ const isVisible = (key: string) => props.entrepreneur.sectionVisibility[key] !==
 const visibleStorySections = computed(() => props.entrepreneur.storySections.filter(section => section.isVisible))
 const heroMarqueeText = computed(() =>
   props.entrepreneur.heroMarquee
-  || [props.entrepreneur.name, props.entrepreneur.title, 'КТО ЗДЕСЬ ГЛАВНЫЙ'].filter(Boolean).join(' • '),
+  || [props.entrepreneur.name, props.entrepreneur.title, 'МАРШРУТ ПОСТРОЕН'].filter(Boolean).join(' • '),
 )
 const { isEnabled: isBannerEnabled } = useSiteBanner()
 </script>

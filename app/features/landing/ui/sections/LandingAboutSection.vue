@@ -137,7 +137,7 @@ function hideBrokenFallback() {
         <NuxtImg
           v-else-if="!fallbackImageFailed"
           :src="fallbackImageSrc"
-          alt="Превью видео проекта Кто здесь главный?"
+          alt="Превью видео проекта Маршрут Построен"
           sizes="320:100vw 480:100vw sm:100vw lg:67vw 2000:1220px"
           format="webp"
           loading="lazy"

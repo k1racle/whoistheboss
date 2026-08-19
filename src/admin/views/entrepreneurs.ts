@@ -255,7 +255,7 @@ function renderForm(item: Partial<Entrepreneur>): string {
 
           ${section('editor-hero', '02', 'Херо', 'Первый полноэкранный блок страницы. Имя берётся из раздела «Основное».', `
             ${field('Текст слева', 'heroLeftTeaser', item.heroLeftTeaser, { textarea: true, rows: 3, help: 'Небольшая подпись слева от фамилии.' })}
-            ${field('Текст справа сверху', 'heroRightTeaser', item.heroRightTeaser, { textarea: true, rows: 3, help: 'Подпись справа от строки «КТО ЗДЕСЬ».' })}
+            ${field('Текст справа сверху', 'heroRightTeaser', item.heroRightTeaser, { textarea: true, rows: 3, help: 'Подпись справа от строки «МАРШРУТ ПОСТРОЕН».' })}
             ${field('Текст справа снизу', 'heroBottomRightTeaser', item.heroBottomRightTeaser, { textarea: true, rows: 3, help: 'Дополнительная подпись в правой нижней части херо.' })}
             ${field('Бегущая строка', 'heroMarquee', item.heroMarquee, { textarea: true, rows: 3, help: 'Текст на красной полосе внизу херо. Если оставить пустым, соберётся автоматически.', wide: true })}
           `)}

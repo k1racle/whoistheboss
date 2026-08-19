@@ -48,7 +48,7 @@ export default defineEventHandler(async (): Promise<EntrepreneursPageData> => {
   ])
 
   return {
-    heroTitle: getSiteSetting(settings, 'ENTREPRENEURS_PAGE_HERO_TITLE', 'Кто здесь\nглавный?'),
+    heroTitle: getSiteSetting(settings, 'ENTREPRENEURS_PAGE_HERO_TITLE', 'Маршрут\nпостроен'),
     audienceTitle: getSiteSetting(settings, 'ENTREPRENEURS_PAGE_AUDIENCE_TITLE', 'Наши герои'),
     audienceText: getSiteSetting(
       settings,

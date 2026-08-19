@@ -88,7 +88,7 @@ export const landingAudienceFallback: LandingAudienceCard[] = [
 export const landingPlacesDescription = 'Компании и проекты наших героев: места, бренды и команды, за которыми стоят реальные предпринимательские истории.'
 
 export const landingPageFallback: LandingPageData = {
-  heroTitle: 'Кто здесь\nглавный?',
+  heroTitle: 'Маршрут\nпостроен',
   aboutTitle: 'О проекте',
   aboutText: landingAboutParagraphs.join('\n\n'),
   aboutBottomText: landingAudienceIntro,

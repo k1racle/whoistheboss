@@ -95,7 +95,7 @@ export default defineEventHandler(async (): Promise<LandingPageData> => {
     : 'EMBED'
 
   return {
-    heroTitle: getSiteSetting(settings, 'HOME_HERO_TITLE', 'Кто здесь\nглавный?'),
+    heroTitle: getSiteSetting(settings, 'HOME_HERO_TITLE', 'Маршрут\nпостроен'),
     aboutTitle: getSiteSetting(settings, 'HOME_ABOUT_TITLE', 'О проекте'),
     aboutText: getSiteSetting(
       settings,

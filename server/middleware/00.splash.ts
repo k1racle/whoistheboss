@@ -2,7 +2,7 @@ import type { SiteSettingsRecord } from '@server/utils/site-settings'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
 
 const DEFAULT_SPLASH_LOGO = '/images/logo.svg'
-const DEFAULT_SPLASH_MARQUEE = 'Скоро вы узнаете кто здесь главный — личные истории предпринимателей через их бизнес'
+const DEFAULT_SPLASH_MARQUEE = 'Маршрут построен — личные истории предпринимателей через их бизнес'
 
 const SPLASH_SETTING_KEYS = [
   'SPLASH_ENABLED',
@@ -197,7 +197,7 @@ function renderSplashPage(siteName: string, siteUrl: string, logo: string, marqu
   <main>
     <div class="frame">
       <img class="logo" src="${safeLogo}" alt="${safeSiteName}">
-      <div class="caption">Скоро вы узнаете, кто здесь главный</div>
+      <div class="caption">Маршрут построен</div>
     </div>
   </main>
   <div class="marquee" aria-label="О проекте">

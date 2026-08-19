@@ -6,7 +6,7 @@ const route = useRoute()
 const config = useRuntimeConfig()
 
 const fallbackPage: EntrepreneursPageData = {
-  heroTitle: 'Кто здесь\nглавный?',
+  heroTitle: 'Маршрут\nпостроен',
   audienceTitle: 'Наши герои',
   audienceText: 'Истории предпринимателей, руководителей и создателей проектов.',
   heroesTitle: 'Герои',

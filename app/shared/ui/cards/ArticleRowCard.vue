@@ -52,12 +52,12 @@ const randomizeHoverImage = () => {
     <NuxtLink
       :to="ROUTES.ARTICLE(article.slug)"
       class="group relative flex min-h-[260px] w-full max-w-full min-w-0 flex-col overflow-hidden border border-transparent bg-surface px-5 py-6 text-text no-underline transition-colors duration-200 hover:border-accent hover:bg-accent hover:text-text-on-accent focus-visible:border-accent focus-visible:bg-accent focus-visible:text-text-on-accent sm:px-6 lg:grid lg:h-[196px] lg:min-h-0 lg:grid-cols-[minmax(160px,1fr)_minmax(240px,1.8fr)_minmax(220px,0.8fr)_64px] lg:grid-rows-[auto_auto_1fr] lg:gap-x-6 lg:gap-y-5 lg:overflow-visible lg:px-8 xl:grid-cols-[minmax(220px,1.1fr)_minmax(360px,1.8fr)_minmax(260px,0.8fr)_64px] xl:gap-x-10"
-      :aria-label="`${article.title}, ${article.entrepreneurName || 'Кто здесь главный?'}`"
+      :aria-label="`${article.title}, ${article.entrepreneurName || 'Маршрут Построен'}`"
       @focus="randomizeHoverImage"
       @mouseenter="randomizeHoverImage"
     >
       <strong class="relative z-[2] min-w-0 break-words font-sans text-xl font-bold uppercase leading-6 lg:col-start-1 lg:row-start-1 lg:self-center lg:text-[32px] lg:leading-8 lg:tracking-[-1.25px]">
-        {{ article.entrepreneurName || 'Кто здесь главный?' }}
+        {{ article.entrepreneurName || 'Маршрут Построен' }}
       </strong>
 
       <span class="relative z-[2] my-5 h-px w-full shrink-0 bg-current opacity-30 lg:hidden" aria-hidden="true" />
@@ -100,7 +100,7 @@ const randomizeHoverImage = () => {
             fit="cover"
             sizes="180px"
             densities="1x 2x"
-            quality="82"
+            quality="78"
             format="webp"
             loading="lazy"
             decoding="async"

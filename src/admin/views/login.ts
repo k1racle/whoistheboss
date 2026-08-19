@@ -3,7 +3,7 @@ export function loginView() {
     <div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div class="bg-white p-8 rounded-sm shadow-sm w-full max-w-md">
         <h1 class="text-2xl font-bold mb-2 text-center">Админка</h1>
-        <p class="text-sm text-gray-500 text-center mb-6">Кто здесь главный?</p>
+        <p class="text-sm text-gray-500 text-center mb-6">Маршрут Построен</p>
         <form id="login-form" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
