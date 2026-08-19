@@ -11,7 +11,8 @@ COPY prisma ./prisma
 RUN echo "PORTAINER_NODE24_BUILD_2026-08-07_3" \
   && node --version \
   && npm --version \
-  && npm ci
+  && npm ci --include=optional \
+  && node -e "const sharp = require('sharp'); console.log('Sharp/libvips:', sharp.versions.sharp, sharp.versions.vips)"
 
 COPY . .
 RUN npx prisma generate

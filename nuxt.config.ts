@@ -138,6 +138,11 @@ export default defineNuxtConfig({
 
   nitro: {
     compressPublicAssets: true,
+    // The Docker runner copies the complete node_modules tree. Keeping native
+    // dependencies external prevents Nitro tracing Sharp without its libvips package.
+    externals: {
+      trace: false,
+    },
     storage: {
       cache: {
         driver: 'fs',
