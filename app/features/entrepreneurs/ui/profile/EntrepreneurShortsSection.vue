@@ -25,24 +25,20 @@ const closeReel = () => {
 
 <template>
   <section class="min-h-svh bg-bg px-10 py-12 md:flex md:items-center max-md:min-h-0 max-md:px-5 max-md:py-20">
-    <LandingSlider :items-count="visibleReels.length" aria-label="Короткие видео героя">
+    <LandingSlider
+      class="mx-auto w-full max-w-[1920px]"
+      :items-count="visibleReels.length"
+      aria-label="Короткие видео героя"
+      desktop-track-class="md:grid md:grid-cols-3 md:items-center md:gap-8"
+    >
       <EntrepreneurShortCard
         v-for="(reel, index) in visibleReels"
-        :key="reel?.id || `short-mobile-${index}`"
+        :key="reel?.id || `short-${index}`"
         :reel="reel"
-        class="min-w-[78%] shrink-0 snap-center sm:min-w-[420px]"
+        class="min-w-[78%] shrink-0 snap-center sm:min-w-[420px] md:min-w-0"
         @open="openReel"
       />
     </LandingSlider>
-
-    <div class="mx-auto hidden w-[min(100%,1920px)] grid-cols-3 items-center gap-8 md:grid">
-      <EntrepreneurShortCard
-        v-for="(reel, index) in visibleReels"
-        :key="reel?.id || `short-desktop-${index}`"
-        :reel="reel"
-        @open="openReel"
-      />
-    </div>
 
     <ReelModal :reel="activeReel" @close="closeReel" />
   </section>

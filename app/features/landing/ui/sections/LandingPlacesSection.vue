@@ -10,13 +10,11 @@ import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 const props = defineProps<{
   title: string
   description: string
+  places: CompanyCatalogItem[]
 }>()
 
 const protectedTitle = computed(() => protectPrepositions(props.title))
 
-const { data } = await useFetch<{ businesses: CompanyCatalogItem[] }>('/api/businesses')
-
-const places = computed(() => data.value?.businesses ?? [])
 </script>
 
 <template>
@@ -46,22 +44,15 @@ const places = computed(() => data.value?.businesses ?? [])
         <LandingSlider
           :items-count="places.length"
           aria-label="Мобильный слайдер секции Места"
+          desktop-track-class="md:grid md:grid-cols-3 md:gap-6"
         >
           <CompanyCatalogCard
             v-for="place in places"
             :key="place.slug"
             :company="place"
-            class="w-[70%] min-w-[70%] max-w-[70%] shrink-0 snap-center"
+            class="w-[70%] min-w-[70%] max-w-[70%] shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none"
           />
         </LandingSlider>
-
-        <div class="hidden gap-6 md:grid md:grid-cols-3">
-          <CompanyCatalogCard
-            v-for="place in places"
-            :key="place.slug"
-            :company="place"
-          />
-        </div>
       </div>
 
       <p

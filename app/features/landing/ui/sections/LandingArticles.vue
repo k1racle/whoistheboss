@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { LandingArticle } from '@features/landing/model/landing.data'
+import type { LandingArticle, LandingLatestArticles } from '@features/landing/model/landing.data'
 import type { ArticleRowItem } from '@shared/types/article-row'
 import ArticleRowsSection from '@shared/ui/articles/ArticleRowsSection.vue'
 
-defineProps<{
+const props = defineProps<{
   title: string
+  initialData: LandingLatestArticles
 }>()
 
 interface LatestArticlesResponse {
@@ -12,14 +13,8 @@ interface LatestArticlesResponse {
   hasMore: boolean
 }
 
-const PAGE_SIZE = 6
-
-const { data } = await useFetch<LatestArticlesResponse>('/api/articles/latest', {
-  query: { limit: PAGE_SIZE, skip: 0 },
-})
-
-const articles = ref<LandingArticle[]>(data.value?.articles ?? [])
-const hasMore = ref(data.value?.hasMore ?? false)
+const articles = ref<LandingArticle[]>([...props.initialData.articles])
+const hasMore = ref(props.initialData.hasMore)
 const loading = ref(false)
 const articleRows = computed<ArticleRowItem[]>(() => articles.value.map(article => ({
   id: article.id,
@@ -37,7 +32,7 @@ async function loadMore() {
 
   try {
     const response = await $fetch<LatestArticlesResponse>('/api/articles/latest', {
-      query: { limit: PAGE_SIZE, skip: articles.value.length },
+      query: { limit: props.initialData.pageSize, skip: articles.value.length },
     })
 
     articles.value.push(...response.articles)

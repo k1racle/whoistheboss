@@ -1,4 +1,5 @@
 import type { EntrepreneurListItem } from '@features/entrepreneurs/model/entrepreneur.types'
+import type { CompanyCatalogItem } from '@features/companies/model/companies-page.types'
 
 export type LandingHeroCard = {
   id: string
@@ -26,6 +27,12 @@ export type LandingAudienceCard = {
   description?: string
   hoverTitle?: string
   hoverDescription?: string
+}
+
+export type LandingLatestArticles = {
+  articles: LandingArticle[]
+  hasMore: boolean
+  pageSize: number
 }
 
 export const landingAboutParagraphs = [
@@ -59,6 +66,9 @@ export type LandingPageData = {
   bannerMobileImage: string
   bannerLink: string
   entrepreneurs: EntrepreneurListItem[]
+  audienceCards: LandingAudienceCard[]
+  places: CompanyCatalogItem[]
+  latestArticles: LandingLatestArticles
 }
 
 
@@ -101,4 +111,11 @@ export const landingPageFallback: LandingPageData = {
   bannerMobileImage: '',
   bannerLink: '/entrepreneurs',
   entrepreneurs: [],
+  audienceCards: [],
+  places: [],
+  latestArticles: {
+    articles: [],
+    hasMore: false,
+    pageSize: 6,
+  },
 }

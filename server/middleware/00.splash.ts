@@ -10,6 +10,15 @@ const SPLASH_SETTING_KEYS = [
   'SPLASH_MARQUEE',
 ] as const
 
+const getCachedSplashSettings = defineCachedFunction(
+  () => getSiteSettings(SPLASH_SETTING_KEYS),
+  {
+    maxAge: 60,
+    name: 'splash-settings',
+    getKey: () => 'global',
+  },
+)
+
 const SKIP_PREFIXES = [
   '/admin',
   '/api',
@@ -208,7 +217,7 @@ export default defineEventHandler(async (event) => {
   if (SKIP_PATHS.has(path) || SKIP_PREFIXES.some((prefix) => path.startsWith(prefix))) return
 
   try {
-    const settings = await getSiteSettings(SPLASH_SETTING_KEYS)
+    const settings = await getCachedSplashSettings()
     if (getSiteSetting(settings, 'SPLASH_ENABLED') !== 'true') return
 
     const config = useRuntimeConfig(event)

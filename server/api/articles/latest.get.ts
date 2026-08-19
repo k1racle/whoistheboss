@@ -24,16 +24,14 @@ export default defineEventHandler(async (event) => {
   const limit = parseCount(String(query.limit ?? ''), configuredCount)
   const skip = parseSkip(String(query.skip ?? ''))
 
-  const [articles, total] = await Promise.all([
-    prisma.article.findMany({
-      where: { isPublished: true },
-      include: { entrepreneur: { select: { name: true } } },
-      orderBy: { publishedAt: 'desc' },
-      skip,
-      take: limit,
-    }),
-    prisma.article.count({ where: { isPublished: true } }),
-  ])
+  const articleRows = await prisma.article.findMany({
+    where: { isPublished: true },
+    include: { entrepreneur: { select: { name: true } } },
+    orderBy: { publishedAt: 'desc' },
+    skip,
+    take: limit + 1,
+  })
+  const articles = articleRows.slice(0, limit)
 
   return {
     articles: articles.map((article) => ({
@@ -44,6 +42,6 @@ export default defineEventHandler(async (event) => {
       entrepreneurName: article.entrepreneur?.name ?? null,
       coverImage: article.coverImage,
     })),
-    hasMore: skip + articles.length < total,
+    hasMore: articleRows.length > limit,
   }
 })

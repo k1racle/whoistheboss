@@ -1,8 +1,8 @@
-import { randomUUID } from 'node:crypto'
+import { createHash } from 'node:crypto'
 import { promises as fs } from 'node:fs'
 import { extname, join, resolve } from 'node:path'
 import type { H3Event } from 'h3'
-import { requireAdminMethod, slugify, throwAdminError } from '@server/utils/admin-api'
+import { requireAdminMethod, throwAdminError } from '@server/utils/admin-api'
 
 const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif', '.svg'])
 const videoExtensions = new Set(['.mp4', '.webm', '.mov', '.m4v'])
@@ -61,16 +61,24 @@ export async function handleUploads(event: H3Event, path: readonly string[]) {
   }
 
   const config = useRuntimeConfig()
-  const maxSize = config.maxUploadSizeMb * 1024 * 1024
+  const maxSizeMb = kind === 'image' ? config.maxImageUploadSizeMb : config.maxUploadSizeMb
+  const maxSize = maxSizeMb * 1024 * 1024
   if (file.data.byteLength > maxSize) throwAdminError(413, 'File too large')
 
   const originalName = normalizeOriginalName(file.filename)
   const extension = extname(originalName).toLowerCase()
-  const base = slugify(originalName.slice(0, Math.max(0, originalName.length - extension.length))) || 'file'
-  const filename = `${base}-${Date.now()}-${randomUUID().slice(0, 8)}${extension}`
+  const allowedExtensions = kind === 'image' ? imageExtensions : videoExtensions
+  if (!allowedExtensions.has(extension)) {
+    throwAdminError(400, `Unsupported ${kind} file extension`)
+  }
+
+  const contentHash = createHash('sha256').update(file.data).digest('hex').slice(0, 24)
+  const filename = `${kind}-${contentHash}${extension}`
   const uploadDir = getUploadDirectory()
+  const destination = join(uploadDir, filename)
 
   await fs.mkdir(uploadDir, { recursive: true })
-  await fs.writeFile(join(uploadDir, filename), file.data)
+  const alreadyExists = await fs.access(destination).then(() => true).catch(() => false)
+  if (!alreadyExists) await fs.writeFile(destination, file.data)
   return { url: `/uploads/${filename}` }
 }

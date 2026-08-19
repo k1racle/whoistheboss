@@ -60,7 +60,9 @@ export default defineNuxtPlugin((nuxtApp) => {
     .from(document.scripts)
     .some((script) => script.src === METRIKA_SCRIPT_URL)
 
-  if (!scriptAlreadyExists) {
+  const loadMetrikaScript = () => {
+    if (scriptAlreadyExists || document.querySelector('[data-yandex-metrika]')) return
+
     const script = document.createElement('script')
 
     script.src = METRIKA_SCRIPT_URL
@@ -68,6 +70,22 @@ export default defineNuxtPlugin((nuxtApp) => {
     script.dataset.yandexMetrika = String(METRIKA_ID)
 
     document.head.appendChild(script)
+  }
+
+  const scheduleMetrikaScript = () => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(loadMetrikaScript, { timeout: 2_000 })
+      return
+    }
+
+    globalThis.setTimeout(loadMetrikaScript, 0)
+  }
+
+  if (document.readyState === 'complete') {
+    scheduleMetrikaScript()
+  }
+  else {
+    window.addEventListener('load', scheduleMetrikaScript, { once: true })
   }
 
   /*

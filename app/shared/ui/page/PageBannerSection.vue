@@ -13,7 +13,15 @@ const props = withDefaults(defineProps<{
 
 const imageSource = computed(() => props.desktopImage || props.mobileImage)
 const isImageLoaded = shallowRef(false)
-const imageElement = useTemplateRef<HTMLImageElement>('imageElement')
+const image = useImage()
+const mobileImageSrcset = computed(() => {
+  if (!props.mobileImage) return undefined
+
+  return [
+    `${image(props.mobileImage, { width: 768, quality: 82, format: 'webp' })} 768w`,
+    `${image(props.mobileImage, { width: 1536, quality: 82, format: 'webp' })} 1536w`,
+  ].join(', ')
+})
 
 watch(
   [() => props.desktopImage, () => props.mobileImage],
@@ -22,12 +30,6 @@ watch(
   },
 )
 
-onMounted(() => {
-  const image = imageElement.value
-  if (!image?.complete) return
-
-  isImageLoaded.value = image.naturalWidth > 0
-})
 </script>
 
 <template>
@@ -51,16 +53,20 @@ onMounted(() => {
           <source
             v-if="mobileImage"
             media="(max-width: 768px)"
-            :srcset="mobileImage"
+            :srcset="mobileImageSrcset"
+            sizes="100vw"
           >
-          <img
-            ref="imageElement"
+          <NuxtImg
             :src="imageSource"
             alt=""
+            sizes="320:100vw 768:100vw lg:100vw 2000:1920px"
+            format="webp"
+            loading="lazy"
+            decoding="async"
             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             @load="isImageLoaded = true"
             @error="isImageLoaded = false"
-          >
+          />
         </picture>
       </NuxtLink>
     </div>

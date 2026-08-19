@@ -18,13 +18,7 @@ const props = withDefaults(defineProps<{
   showMore: true,
 })
 
-const mobileHeroes = computed(() => props.heroes.slice(0, 6))
-const visibleHeroes = computed(() => {
-  const featured = props.heroes.length <= 3 ? props.heroes : props.heroes.slice(2, 6)
-  const visibleCount = featured.length - (featured.length % 3)
-
-  return visibleCount > 0 ? featured.slice(0, visibleCount) : featured
-})
+const visibleHeroes = computed(() => props.heroes.slice(0, 6))
 const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>
 
@@ -53,24 +47,17 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
       </div>
 
       <LandingSlider
-        :items-count="mobileHeroes.length"
+        :items-count="visibleHeroes.length"
         aria-label="Мобильный слайдер секции Наши герои"
+        desktop-track-class="md:grid md:grid-cols-2 md:gap-3 xl:grid-cols-3"
       >
-        <LandingHeroCardItem
-          v-for="hero in mobileHeroes"
-          :key="hero.id"
-          :hero="hero"
-          class="w-[70%] max-w-[70%] shrink-0 snap-center overflow-hidden bg-surface"
-        />
-      </LandingSlider>
-
-      <div class="hidden gap-3 md:grid md:grid-cols-2 xl:grid-cols-3">
         <LandingHeroCardItem
           v-for="hero in visibleHeroes"
           :key="hero.id"
           :hero="hero"
+          class="w-[70%] max-w-[70%] shrink-0 snap-center overflow-hidden bg-surface md:w-auto md:max-w-none"
         />
-      </div>
+      </LandingSlider>
     </div>
   </section>
 </template>

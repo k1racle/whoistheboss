@@ -1,6 +1,6 @@
 import prisma from '~~/lib/prisma'
 
-export function getPublishedEntrepreneurs() {
+export function getPublishedEntrepreneurs(take?: number) {
   return prisma.entrepreneur.findMany({
     where: { isPublished: true },
     orderBy: { createdAt: 'desc' },
@@ -12,5 +12,6 @@ export function getPublishedEntrepreneurs() {
       hoverPhoto: true,
       quote: true,
     },
+    take,
   })
 }

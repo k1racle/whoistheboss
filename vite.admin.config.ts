@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import autoprefixer from 'autoprefixer'
 
 export default defineConfig({
-  root: resolve(__dirname, 'src/admin'),
+  root: resolve(import.meta.dirname, 'src/admin'),
   plugins: [tailwindcss()],
   css: {
     postcss: {
@@ -13,7 +13,7 @@ export default defineConfig({
   },
   base: '/admin/',
   build: {
-    outDir: resolve(__dirname, 'dist/admin'),
+    outDir: resolve(import.meta.dirname, 'dist/admin'),
     emptyOutDir: true,
   },
   server: {

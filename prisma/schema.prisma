@@ -17,8 +17,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  comments  Comment[]
-  likes     Like[]
+  comments Comment[]
+  likes    Like[]
 
   @@map("users")
 }
@@ -30,58 +30,59 @@ enum Role {
 }
 
 model Entrepreneur {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  name        String
-  title       String
-  heroLeftTeaser  String?
-  heroRightTeaser String?
-  heroBottomRightTeaser String?
-  heroMarquee     String?  @db.Text
-  aboutIntroTitle String?
-  aboutIntroDescription String? @db.Text
-  aboutMenuLabels String? @db.Text
-  aboutMenuDescriptions String? @db.Text
-  biographyTextOne String? @db.Text
-  biographyTextTwo String? @db.Text
-  biographyTextThree String? @db.Text
-  biographyPhoto String?
-  childhoodTitle String?
-  childhoodTextOne String? @db.Text
-  childhoodTextTwo String? @db.Text
-  educationTitle String? @db.Text
-  educationText String? @db.Text
-  educationAsideText String? @db.Text
-  educationPhoto String?
-  turnoverTitle String? @db.Text
-  turnoverText String? @db.Text
-  turnoverBottomText String? @db.Text
-  turnoverPhoto String?
-  storySections Json?
-  moreCardTitles String? @db.Text
-  moreCardLinks String? @db.Text
-  morePhoto String?
+  id                         String     @id @default(cuid())
+  slug                       String     @unique
+  name                       String
+  title                      String
+  heroLeftTeaser             String?
+  heroRightTeaser            String?
+  heroBottomRightTeaser      String?
+  heroMarquee                String?    @db.Text
+  aboutIntroTitle            String?
+  aboutIntroDescription      String?    @db.Text
+  aboutMenuLabels            String?    @db.Text
+  aboutMenuDescriptions      String?    @db.Text
+  biographyTextOne           String?    @db.Text
+  biographyTextTwo           String?    @db.Text
+  biographyTextThree         String?    @db.Text
+  biographyPhoto             String?
+  childhoodTitle             String?
+  childhoodTextOne           String?    @db.Text
+  childhoodTextTwo           String?    @db.Text
+  educationTitle             String?    @db.Text
+  educationText              String?    @db.Text
+  educationAsideText         String?    @db.Text
+  educationPhoto             String?
+  turnoverTitle              String?    @db.Text
+  turnoverText               String?    @db.Text
+  turnoverBottomText         String?    @db.Text
+  turnoverPhoto              String?
+  storySections              Json?
+  moreCardTitles             String?    @db.Text
+  moreCardLinks              String?    @db.Text
+  morePhoto                  String?
   featuredInterviewVideoType VideoType?
-  featuredInterviewVideoUrl String? @db.Text
+  featuredInterviewVideoUrl  String?    @db.Text
   featuredInterviewVideoFile String?
-  photo       String?
-  aboutGalleryPhotos String? @db.Text
-  galleryPhotos String?    @db.Text
-  hoverPhoto  String?
-  bio         String?  @db.Text
-    quote       String?
-    sectionVisibility String? @db.Text
-    sectionOrder String? @db.Text
-    isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  photo                      String?
+  aboutGalleryPhotos         String?    @db.Text
+  galleryPhotos              String?    @db.Text
+  hoverPhoto                 String?
+  bio                        String?    @db.Text
+  quote                      String?
+  sectionVisibility          String?    @db.Text
+  sectionOrder               String?    @db.Text
+  isPublished                Boolean    @default(false)
+  createdAt                  DateTime   @default(now())
+  updatedAt                  DateTime   @updatedAt
 
-  interviews  Interview[]
-  reels       Reel[]
-  articles    Article[]
-  comments    Comment[]
-  businesses  Business[]
+  interviews Interview[]
+  reels      Reel[]
+  articles   Article[]
+  comments   Comment[]
+  businesses Business[]
 
+  @@index([isPublished, createdAt])
   @@map("entrepreneurs")
 }
 
@@ -101,29 +102,31 @@ model AudienceCard {
 }
 
 model Interview {
-  id             String    @id @default(cuid())
-  slug           String    @unique
+  id             String       @id @default(cuid())
+  slug           String       @unique
   title          String
   subtitle       String?
   entrepreneurId String
   entrepreneur   Entrepreneur @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
   coverImage     String?
-  videoType      VideoType @default(EMBED)
+  videoType      VideoType    @default(EMBED)
   videoUrl       String?
   videoFile      String?
-  summary        String?   @db.Text
-  content        String?   @db.Text
+  summary        String?      @db.Text
+  content        String?      @db.Text
   quote          String?
-  isPublished    Boolean   @default(false)
+  isPublished    Boolean      @default(false)
   publishedAt    DateTime?
-  views          Int       @default(0)
+  views          Int          @default(0)
   metaTitle      String?
   metaDesc       String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
-  comments       Comment[]
+  comments Comment[]
 
+  @@index([entrepreneurId])
+  @@index([isPublished, publishedAt])
   @@map("interviews")
 }
 
@@ -142,98 +145,103 @@ model Reel {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  comments       Comment[]
+  comments Comment[]
 
+  @@index([entrepreneurId])
+  @@index([isPublished, createdAt])
   @@map("reels")
 }
 
 model Article {
-  id             String        @id @default(cuid())
-  slug           String        @unique
-  title          String
-  subtitle       String?
-  category       String?
-  entrepreneurId String?
-  entrepreneur   Entrepreneur? @relation(fields: [entrepreneurId], references: [id], onDelete: SetNull)
-  coverImage     String?
-  coverImageSource String?
-  content        String        @db.Text
-  secondaryImage String?
+  id                   String        @id @default(cuid())
+  slug                 String        @unique
+  title                String
+  subtitle             String?
+  category             String?
+  entrepreneurId       String?
+  entrepreneur         Entrepreneur? @relation(fields: [entrepreneurId], references: [id], onDelete: SetNull)
+  coverImage           String?
+  coverImageSource     String?
+  content              String        @db.Text
+  secondaryImage       String?
   secondaryImageSource String?
-  secondaryText  String?       @db.Text
-  relatedTitle   String?
-  relatedMaterials String?     @db.Text
-  sectionVisibility String?    @db.Text
-  sectionOrder    String?      @db.Text
-  isPublished    Boolean       @default(false)
-  publishedAt    DateTime?
-  metaTitle      String?
-  metaDesc       String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  secondaryText        String?       @db.Text
+  relatedTitle         String?
+  relatedMaterials     String?       @db.Text
+  sectionVisibility    String?       @db.Text
+  sectionOrder         String?       @db.Text
+  isPublished          Boolean       @default(false)
+  publishedAt          DateTime?
+  metaTitle            String?
+  metaDesc             String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 
-  comments       Comment[]
+  comments Comment[]
 
+  @@index([entrepreneurId])
+  @@index([isPublished, publishedAt])
   @@map("articles")
 }
 
 model Business {
-  id             String       @id @default(cuid())
-  slug           String       @unique
-  name           String
-  type           String
-  heroTeaser     String?      @db.Text
-  heroMarquee    String?      @db.Text
-  manifestTitle  String?      @db.Text
-  manifestTextOne String?     @db.Text
-  manifestTextTwo String?     @db.Text
-  manifestTextThree String?   @db.Text
+  id                      String       @id @default(cuid())
+  slug                    String       @unique
+  name                    String
+  type                    String
+  heroTeaser              String?      @db.Text
+  heroMarquee             String?      @db.Text
+  manifestTitle           String?      @db.Text
+  manifestTextOne         String?      @db.Text
+  manifestTextTwo         String?      @db.Text
+  manifestTextThree       String?      @db.Text
   manifestBackgroundImage String?
-  manifestSquareImage String?
-  aboutTitle      String?      @db.Text
-  aboutText       String?      @db.Text
-  aboutAsideText  String?      @db.Text
-  aboutPhoto      String?
-  founderPhoto    String?
-  useCustomOwnerBiography Boolean @default(false)
-  ownerBiographyBlocks String? @db.Text
-  storySections   Json?
-  specsTitle      String?      @db.Text
-  specsDescription String?     @db.Text
-  specsItems      String?      @db.Text
-  mapEmbed        String?      @db.Text
-  awardsEnabled   Boolean      @default(true)
-  awardsTitle     String?      @db.Text
-  awardsDescription String?    @db.Text
-  awardsItems     String?      @db.Text
-  factsTitle      String?      @db.Text
-  factsSubtitle   String?      @db.Text
-  factsTextOne    String?      @db.Text
-  factsTextTwo    String?      @db.Text
-  factsPhoto      String?
-  galleryImages   String?      @db.Text
-  moreCardTitles  String?      @db.Text
-  moreCardLinks   String?      @db.Text
-  morePhoto       String?
-    relatedTitle    String?      @db.Text
-    sectionVisibility String?    @db.Text
-    sectionOrder     String?      @db.Text
-    description    String?      @db.Text
-  address        String?
-  city           String?
-  phone          String?
-  email          String?
-  website        String?
-  coverImage     String?
-  isPublished    Boolean      @default(false)
-  placesSortOrder Int         @default(0)
-  entrepreneurId String
-  entrepreneur   Entrepreneur @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  manifestSquareImage     String?
+  aboutTitle              String?      @db.Text
+  aboutText               String?      @db.Text
+  aboutAsideText          String?      @db.Text
+  aboutPhoto              String?
+  founderPhoto            String?
+  useCustomOwnerBiography Boolean      @default(false)
+  ownerBiographyBlocks    String?      @db.Text
+  storySections           Json?
+  specsTitle              String?      @db.Text
+  specsDescription        String?      @db.Text
+  specsItems              String?      @db.Text
+  mapEmbed                String?      @db.Text
+  awardsEnabled           Boolean      @default(true)
+  awardsTitle             String?      @db.Text
+  awardsDescription       String?      @db.Text
+  awardsItems             String?      @db.Text
+  factsTitle              String?      @db.Text
+  factsSubtitle           String?      @db.Text
+  factsTextOne            String?      @db.Text
+  factsTextTwo            String?      @db.Text
+  factsPhoto              String?
+  galleryImages           String?      @db.Text
+  moreCardTitles          String?      @db.Text
+  moreCardLinks           String?      @db.Text
+  morePhoto               String?
+  relatedTitle            String?      @db.Text
+  sectionVisibility       String?      @db.Text
+  sectionOrder            String?      @db.Text
+  description             String?      @db.Text
+  address                 String?
+  city                    String?
+  phone                   String?
+  email                   String?
+  website                 String?
+  coverImage              String?
+  isPublished             Boolean      @default(false)
+  placesSortOrder         Int          @default(0)
+  entrepreneurId          String
+  entrepreneur            Entrepreneur @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
 
   @@index([entrepreneurId])
   @@index([placesSortOrder])
+  @@index([isPublished, placesSortOrder, createdAt])
   @@map("businesses")
 }
 

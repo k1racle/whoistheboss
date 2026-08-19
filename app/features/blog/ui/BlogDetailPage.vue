@@ -59,6 +59,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
             :alt="article.title"
             sizes="320:100vw 480:100vw sm:100vw 2000:1840px"
             format="webp"
+            fetchpriority="high"
             decoding="async"
             class="aspect-[16/9] w-full bg-border-strong object-cover"
           />

@@ -22,22 +22,18 @@ const protectedTitle = computed(() => protectPrepositions(props.title || 'МАТ
         {{ protectedTitle }}
       </SectionTitle>
 
-      <LandingSlider :items-count="materials.length" aria-label="Материалы по теме">
+      <LandingSlider
+        :items-count="materials.length"
+        aria-label="Материалы по теме"
+        desktop-track-class="md:grid md:grid-cols-3 md:gap-5 lg:gap-8"
+      >
         <BlogRelatedMaterialCard
           v-for="material in materials"
           :key="`${material.type}-${material.slug}`"
           :material="material"
-          class="min-w-[82%] shrink-0 snap-center sm:min-w-[420px]"
+          class="min-w-[82%] shrink-0 snap-center sm:min-w-[420px] md:min-w-0"
         />
       </LandingSlider>
-
-      <div class="hidden grid-cols-3 gap-5 md:grid lg:gap-8">
-        <BlogRelatedMaterialCard
-          v-for="material in materials"
-          :key="`${material.type}-${material.slug}`"
-          :material="material"
-        />
-      </div>
     </div>
   </section>
 </template>

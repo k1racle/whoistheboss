@@ -1,4 +1,5 @@
 import type { LandingPageData } from '@features/landing/model/landing.data'
+import prisma from '~~/lib/prisma'
 import { getPublishedEntrepreneurs } from '@server/utils/published-entrepreneurs'
 import { getSiteSettings, getSiteSetting } from '@server/utils/site-settings'
 
@@ -19,6 +20,7 @@ const LANDING_PAGE_KEYS = [
   'HOME_PLACES_TITLE',
   'HOME_PLACES_TEXT',
   'HOME_LATEST_NEWS_TITLE',
+  'HOME_LATEST_NEWS_COUNT',
   'HOME_CTA_TITLE',
   'HOME_CTA_FORM_TITLE',
   'HOME_CTA_FORM_DESCRIPTION',
@@ -27,10 +29,61 @@ const LANDING_PAGE_KEYS = [
   'HOME_BANNER_LINK',
 ] as const
 
+const DEFAULT_LATEST_ARTICLES_COUNT = 6
+const MAX_LATEST_ARTICLES_COUNT = 20
+
+function parseLatestArticlesCount(value: string): number {
+  const parsed = Number.parseInt(value, 10)
+  if (!Number.isFinite(parsed)) return DEFAULT_LATEST_ARTICLES_COUNT
+  return Math.min(Math.max(parsed, 1), MAX_LATEST_ARTICLES_COUNT)
+}
+
 export default defineEventHandler(async (): Promise<LandingPageData> => {
-  const [settings, entrepreneurs] = await Promise.all([
-    getSiteSettings(LANDING_PAGE_KEYS),
-    getPublishedEntrepreneurs(),
+  const settings = await getSiteSettings(LANDING_PAGE_KEYS)
+  const latestArticlesCount = parseLatestArticlesCount(
+    getSiteSetting(settings, 'HOME_LATEST_NEWS_COUNT'),
+  )
+  const [entrepreneurs, audienceCards, places, articleRows] = await Promise.all([
+    getPublishedEntrepreneurs(6),
+    prisma.audienceCard.findMany({
+      where: { isPublished: true },
+      orderBy: { sortOrder: 'asc' },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        hoverTitle: true,
+        hoverDescription: true,
+      },
+    }),
+    prisma.business.findMany({
+      where: { isPublished: true },
+      orderBy: [
+        { placesSortOrder: 'asc' },
+        { createdAt: 'desc' },
+        { id: 'asc' },
+      ],
+      take: 3,
+      select: {
+        slug: true,
+        name: true,
+        type: true,
+        coverImage: true,
+      },
+    }),
+    prisma.article.findMany({
+      where: { isPublished: true },
+      orderBy: { publishedAt: 'desc' },
+      take: latestArticlesCount + 1,
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        coverImage: true,
+        entrepreneur: { select: { name: true } },
+      },
+    }),
   ])
   const aboutVideoFile = getSiteSetting(settings, 'HOME_ABOUT_VIDEO_FILE')
   const aboutHoverVideoFile = getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_FILE')
@@ -89,5 +142,25 @@ export default defineEventHandler(async (): Promise<LandingPageData> => {
     bannerMobileImage: getSiteSetting(settings, 'HOME_BANNER_MOBILE_IMAGE'),
     bannerLink: getSiteSetting(settings, 'HOME_BANNER_LINK', '/entrepreneurs'),
     entrepreneurs,
+    audienceCards: audienceCards.map(card => ({
+      id: card.id,
+      title: card.title,
+      description: card.description ?? undefined,
+      hoverTitle: card.hoverTitle ?? undefined,
+      hoverDescription: card.hoverDescription ?? undefined,
+    })),
+    places,
+    latestArticles: {
+      articles: articleRows.slice(0, latestArticlesCount).map(article => ({
+        id: article.id,
+        slug: article.slug,
+        title: article.title,
+        subtitle: article.subtitle,
+        entrepreneurName: article.entrepreneur?.name ?? null,
+        coverImage: article.coverImage,
+      })),
+      hasMore: articleRows.length > latestArticlesCount,
+      pageSize: latestArticlesCount,
+    },
   }
 })

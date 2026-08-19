@@ -7,7 +7,6 @@ const props = defineProps<{
 
 const formTitleLines = computed(() => props.formTitle.split('\n'))
 const compactFormTitle = computed(() => props.formTitle.replace(/\n/g, ' '))
-const compactCtaTitle = computed(() => props.ctaTitle.replace(/\n/g, ' '))
 </script>
 
 <template>
@@ -27,14 +26,13 @@ const compactCtaTitle = computed(() => props.ctaTitle.replace(/\n/g, ' '))
         {{ compactFormTitle }}
       </p>
 
-      <p class="mt-1 max-w-[520px] font-sans text-xs leading-5 text-text-on-accent/80 lg:mt-5 lg:text-sm lg:leading-5">
+      <p class="mt-1 max-w-[520px] font-sans text-xs leading-5 text-text-on-accent lg:mt-5 lg:text-sm lg:leading-5">
         {{ formDescription }}
       </p>
     </div>
 
     <p
       class="order-1 font-display text-[clamp(4.125rem,15vw,6.875rem)] font-black uppercase leading-none tracking-[-0.03em] whitespace-pre-line md:text-[clamp(5.5rem,13vw,8.5rem)] lg:order-2 lg:text-[clamp(8.5rem,11.35vw,13.625rem)] lg:leading-[0.78]"
-      :aria-label="compactCtaTitle"
     >
       {{ ctaTitle }}
     </p>

@@ -2,6 +2,7 @@
 const props = defineProps<{
   itemsCount: number
   ariaLabel?: string
+  desktopTrackClass?: string
 }>()
 
 const trackRef = ref<HTMLElement | null>(null)
@@ -33,17 +34,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="space-y-5 md:hidden">
+  <div class="space-y-5">
     <div
       ref="trackRef"
-      class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 pt-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 pt-2.5 [scrollbar-width:none] md:snap-none md:overflow-visible md:pb-0 md:pt-0 [&::-webkit-scrollbar]:hidden"
+      :class="desktopTrackClass"
+      :role="ariaLabel ? 'region' : undefined"
       :aria-label="ariaLabel"
     >
       <slot />
     </div>
 
     <div
-      class="flex items-center gap-2"
+      class="flex items-center gap-2 md:hidden"
       aria-hidden="true"
     >
       <span

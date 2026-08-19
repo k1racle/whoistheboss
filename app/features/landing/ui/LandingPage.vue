@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LandingAudienceCard, LandingPageData } from '@features/landing/model/landing.data'
+import type { LandingPageData } from '@features/landing/model/landing.data'
 import { toLandingHeroCard } from '@features/entrepreneurs/model/entrepreneur-card'
 import LandingAboutSection from '@features/landing/ui/sections/LandingAboutSection.vue'
 import LandingArticles from '@features/landing/ui/sections/LandingArticles.vue'
@@ -17,7 +17,6 @@ const props = defineProps<{
 }>()
 
 const heroes = computed(() => props.page.entrepreneurs.map(toLandingHeroCard))
-const { data: audienceCards } = await useFetch<LandingAudienceCard[]>('/api/landing/audience-cards')
 
 const { logoVisible } = useSiteHeader()
 const { isEnabled: isBannerEnabled } = useSiteBanner()
@@ -34,15 +33,26 @@ const updateLogoVisibility = () => {
   logoVisible.value = logoTop < headerHeight
 }
 
+let logoFrameId: number | undefined
+const scheduleLogoVisibilityUpdate = () => {
+  if (logoFrameId !== undefined) return
+
+  logoFrameId = window.requestAnimationFrame(() => {
+    logoFrameId = undefined
+    updateLogoVisibility()
+  })
+}
+
 onMounted(() => {
   updateLogoVisibility()
-  window.addEventListener('scroll', updateLogoVisibility, { passive: true })
-  window.addEventListener('resize', updateLogoVisibility)
+  window.addEventListener('scroll', scheduleLogoVisibilityUpdate, { passive: true })
+  window.addEventListener('resize', scheduleLogoVisibilityUpdate)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', updateLogoVisibility)
-  window.removeEventListener('resize', updateLogoVisibility)
+  if (logoFrameId !== undefined) window.cancelAnimationFrame(logoFrameId)
+  window.removeEventListener('scroll', scheduleLogoVisibilityUpdate)
+  window.removeEventListener('resize', scheduleLogoVisibilityUpdate)
   logoVisible.value = true
 })
 </script>
@@ -75,12 +85,16 @@ onBeforeUnmount(() => {
     <LandingPlacesSection
       :title="page.placesTitle"
       :description="page.placesText"
+      :places="page.places"
     />
-    <LandingArticles :title="page.latestNewsTitle" />
+    <LandingArticles
+      :title="page.latestNewsTitle"
+      :initial-data="page.latestArticles"
+    />
     <LandingAudienceSection
       :title="page.audienceTitle"
       :intro="page.aboutBottomText"
-      :cards="audienceCards ?? []"
+      :cards="page.audienceCards"
     />
     <LandingContactSection
       :cta-title="page.ctaTitle"

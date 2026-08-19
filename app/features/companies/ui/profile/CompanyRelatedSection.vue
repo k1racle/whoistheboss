@@ -20,26 +20,19 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
         {{ protectedTitle }}
       </SectionTitle>
 
-      <div v-if="companies.length" class="mt-12 md:hidden">
-        <LandingSlider :items-count="companies.length" aria-label="Читайте также">
+      <div v-if="companies.length" class="mt-12 md:mt-[72px]">
+        <LandingSlider
+          :items-count="companies.length"
+          aria-label="Читайте также"
+          desktop-track-class="md:grid md:grid-cols-2 md:gap-5 xl:grid-cols-3 xl:gap-8"
+        >
           <CompanyCatalogCard
             v-for="company in companies"
             :key="company.slug"
             :company="company"
-            class="min-w-[82%] shrink-0 snap-center"
+            class="min-w-[82%] shrink-0 snap-center md:min-w-0"
           />
         </LandingSlider>
-      </div>
-
-      <div
-        v-if="companies.length"
-        class="mt-[72px] hidden grid-cols-1 gap-5 md:grid md:grid-cols-2 xl:grid-cols-3 xl:gap-8"
-      >
-        <CompanyCatalogCard
-          v-for="company in companies"
-          :key="company.slug"
-          :company="company"
-        />
       </div>
     </div>
   </section>

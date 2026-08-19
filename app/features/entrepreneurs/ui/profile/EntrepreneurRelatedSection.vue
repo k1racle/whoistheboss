@@ -16,22 +16,18 @@ defineProps<{
         Читайте также
       </SectionTitle>
 
-      <LandingSlider :items-count="articles.length" aria-label="Читайте также">
+      <LandingSlider
+        :items-count="articles.length"
+        aria-label="Читайте также"
+        desktop-track-class="md:grid md:grid-cols-3 md:gap-5"
+      >
         <EntrepreneurRelatedArticleCard
           v-for="article in articles"
           :key="article.id"
           :article="article"
-          class="min-w-[70%] max-w-[70%] shrink-0 snap-center sm:min-w-[420px] sm:max-w-none"
+          class="min-w-[70%] max-w-[70%] shrink-0 snap-center sm:min-w-[420px] sm:max-w-none md:min-w-0"
         />
       </LandingSlider>
-
-      <div class="hidden grid-cols-3 gap-5 md:grid">
-        <EntrepreneurRelatedArticleCard
-          v-for="article in articles"
-          :key="article.id"
-          :article="article"
-        />
-      </div>
     </div>
   </section>
 </template>
