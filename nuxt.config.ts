@@ -110,7 +110,6 @@ export default defineNuxtConfig({
     '/api/contacts': { swr: 60 },
     '/api/shooting-page': { swr: 60 },
     '/_ipx/**': {
-      cache: { maxAge: 31536000, swr: false, base: '/cache/ipx' },
       headers: { 'cache-control': 'public, max-age=31536000, immutable' },
     },
     '/uploads/**': {
@@ -138,10 +137,10 @@ export default defineNuxtConfig({
 
   nitro: {
     compressPublicAssets: true,
-    // The Docker runner copies the complete node_modules tree. Keeping native
-    // dependencies external prevents Nitro tracing Sharp without its libvips package.
+    // Sharp 0.34 keeps Linux libvips in a separate optional package. Include it
+    // explicitly so Nitro does not emit a native addon without its shared library.
     externals: {
-      trace: false,
+      traceInclude: ['@img/sharp-libvips-linux-x64/lib'],
     },
     storage: {
       cache: {
