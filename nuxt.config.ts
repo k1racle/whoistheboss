@@ -15,7 +15,12 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/image',
-    '@nuxtjs/seo',
+    'nuxt-site-config',
+    '@nuxtjs/robots',
+    '@nuxtjs/sitemap',
+    'nuxt-link-checker',
+    'nuxt-schema-org',
+    'nuxt-seo-utils',
   ],
 
   image: {
@@ -29,8 +34,6 @@ export default defineNuxtConfig({
       },
     },
   },
-
-  ogImage: false,
 
   site: {
     url: siteUrl,
@@ -137,11 +140,6 @@ export default defineNuxtConfig({
 
   nitro: {
     compressPublicAssets: true,
-    // Sharp 0.34 keeps Linux libvips in a separate optional package. Include it
-    // explicitly so Nitro does not emit a native addon without its shared library.
-    externals: {
-      traceInclude: ['@img/sharp-libvips-linux-x64/lib'],
-    },
     storage: {
       cache: {
         driver: 'fs',
