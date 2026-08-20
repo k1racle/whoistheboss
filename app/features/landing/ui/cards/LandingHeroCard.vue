@@ -2,9 +2,18 @@
 import type { LandingHeroCard as LandingHeroCardData } from '@features/landing/model/landing.data'
 import { ROUTES } from '@shared/navigation'
 
-defineProps<{
+const props = defineProps<{
   hero: LandingHeroCardData
 }>()
+
+const shouldLoadHover = shallowRef(false)
+const hasDistinctHoverImage = computed(() => Boolean(
+  props.hero.imageHover && props.hero.imageHover !== props.hero.image,
+))
+
+function loadHoverImage() {
+  if (hasDistinctHoverImage.value) shouldLoadHover.value = true
+}
 
 const useImageFallback = (event: string | Event) => {
   if (!(event instanceof Event)) return
@@ -23,6 +32,8 @@ const useImageFallback = (event: string | Event) => {
     :to="hero.href || ROUTES.ENTREPRENEURS"
     class="group block overflow-hidden bg-surface"
     :aria-label="`${hero.name}, ${hero.role}`"
+    @pointerenter="loadHoverImage"
+    @focusin="loadHoverImage"
   >
     <div class="grid h-full w-full">
       <div class="col-start-1 row-start-1 aspect-square bg-linear-to-br from-border-strong to-bg" aria-hidden="true" />
@@ -31,18 +42,20 @@ const useImageFallback = (event: string | Event) => {
         :alt="hero.imageAlt"
         sizes="320:85vw 480:85vw sm:85vw md:50vw xl:33vw 2000:614px"
         format="webp"
-        class="col-start-1 row-start-1 aspect-square h-full w-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+        class="col-start-1 row-start-1 aspect-square h-full w-full object-cover"
         loading="lazy"
         decoding="async"
         @error="useImageFallback"
       />
       <NuxtImg
-        :src="hero.imageHover || hero.image"
+        v-if="shouldLoadHover && hasDistinctHoverImage"
+        :src="hero.imageHover"
         alt=""
         sizes="320:85vw 480:85vw sm:85vw md:50vw xl:33vw 2000:614px"
         format="webp"
         class="col-start-1 row-start-1 aspect-square h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        loading="lazy"
+        loading="eager"
+        fetchpriority="low"
         decoding="async"
         @error="useImageFallback"
       />

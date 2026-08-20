@@ -5,7 +5,6 @@ const siteUrl = process.env.SITE_URL ?? 'https://xn----7sbqzieaghadljej2f.xn--p1
 const siteName = process.env.SITE_NAME ?? 'Маршрут Построен'
 const siteDescription = process.env.SITE_DESCRIPTION ?? 'Интервью с основателями бизнеса. Видео, рилсы, фото.'
 const uploadDir = resolve(process.env.UPLOAD_DIR ?? './public/uploads')
-const imageRootDir = resolve(uploadDir, '..')
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -24,13 +23,11 @@ export default defineNuxtConfig({
   ],
 
   image: {
-    provider: 'ipx',
-    quality: 78,
-    dirs: [imageRootDir],
-    ipx: {
-      fs: {
-        dir: imageRootDir,
-        maxAge: 31536000,
+    provider: 'persistent',
+    quality: 76,
+    providers: {
+      persistent: {
+        provider: './app/shared/image/persistent-provider.ts',
       },
     },
   },
@@ -112,7 +109,7 @@ export default defineNuxtConfig({
     '/api/reels/**': { swr: 60 },
     '/api/contacts': { swr: 60 },
     '/api/shooting-page': { swr: 60 },
-    '/_ipx/**': {
+    '/media/**': {
       headers: { 'cache-control': 'public, max-age=31536000, immutable' },
     },
     '/uploads/**': {

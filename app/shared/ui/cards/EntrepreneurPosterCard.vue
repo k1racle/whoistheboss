@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
 
-defineProps<{
+const props = defineProps<{
   entrepreneur: {
     slug: string
     name: string
@@ -10,12 +10,23 @@ defineProps<{
     hoverPhoto?: string | null
   }
 }>()
+
+const shouldLoadHover = shallowRef(false)
+const hasDistinctHoverPhoto = computed(() => Boolean(
+  props.entrepreneur.hoverPhoto && props.entrepreneur.hoverPhoto !== props.entrepreneur.photo,
+))
+
+function loadHoverImage() {
+  if (hasDistinctHoverPhoto.value) shouldLoadHover.value = true
+}
 </script>
 
 <template>
   <NuxtLink
     :to="ROUTES.ENTREPRENEUR(entrepreneur.slug)"
     class="group relative block min-h-[420px] overflow-hidden rounded-[30px] border border-black/10 bg-text shadow-[0_26px_72px_rgba(7,7,7,0.18)] transition-transform duration-300 hover:-translate-y-1 sm:min-h-[500px]"
+    @pointerenter="loadHoverImage"
+    @focusin="loadHoverImage"
   >
     <NuxtImg
       :src="entrepreneur.photo || '/images/placeholder.svg'"
@@ -27,12 +38,13 @@ defineProps<{
       class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
     />
     <NuxtImg
-      v-if="entrepreneur.hoverPhoto"
-      :src="entrepreneur.hoverPhoto"
+      v-if="shouldLoadHover && hasDistinctHoverPhoto"
+      :src="entrepreneur.hoverPhoto || undefined"
       alt=""
       sizes="320:100vw 480:100vw sm:100vw md:50vw xl:33vw 2000:614px"
       format="webp"
-      loading="lazy"
+      loading="eager"
+      fetchpriority="low"
       decoding="async"
       class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
     />
