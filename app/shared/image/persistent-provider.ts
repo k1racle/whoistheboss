@@ -1,36 +1,33 @@
 import { defineProvider } from '@nuxt/image/runtime'
+import {
+  clampImageQuality,
+  clampImageWidth,
+  DEFAULT_IMAGE_QUALITY,
+  isOptimizableUploadImage,
+} from './image-variants'
 
 const uploadPrefix = '/uploads/'
-const optimizableExtensions = /\.(?:avif|jpe?g|png|webp)$/i
-
-function integerModifier(value: unknown): number | undefined {
-  const parsed = typeof value === 'number' ? value : Number.parseInt(String(value ?? ''), 10)
-  if (!Number.isFinite(parsed) || parsed <= 0) return undefined
-  return Math.min(Math.round(parsed), 2560)
-}
 
 export default defineProvider({
   getImage(src, { modifiers }) {
     const sourcePath = src.split(/[?#]/, 1)[0] ?? ''
-    if (!sourcePath.startsWith(uploadPrefix) || !optimizableExtensions.test(sourcePath)) {
+    if (!sourcePath.startsWith(uploadPrefix) || !isOptimizableUploadImage(src)) {
       return { url: src }
     }
 
     const filename = sourcePath.slice(uploadPrefix.length)
     if (!filename || filename.includes('/')) return { url: src }
 
-    const width = integerModifier(modifiers.width)
-    const height = integerModifier(modifiers.height)
-    const quality = Math.min(Math.max(integerModifier(modifiers.quality) ?? 76, 55), 85)
-    const fit = ['contain', 'cover', 'fill', 'inside', 'outside'].includes(String(modifiers.fit))
-      ? String(modifiers.fit)
-      : 'inside'
+    const width = clampImageWidth(typeof modifiers.width === 'number'
+      ? modifiers.width
+      : Number.parseInt(String(modifiers.width ?? ''), 10))
+    const quality = clampImageQuality(typeof modifiers.quality === 'number'
+      ? modifiers.quality
+      : Number.parseInt(String(modifiers.quality ?? ''), 10))
     const query = new URLSearchParams()
 
     if (width) query.set('w', String(width))
-    if (height) query.set('h', String(height))
-    query.set('q', String(quality))
-    if (width && height) query.set('fit', fit)
+    if (quality !== DEFAULT_IMAGE_QUALITY) query.set('q', String(quality))
 
     return {
       url: `/media/${encodeURIComponent(filename)}?${query.toString()}`,

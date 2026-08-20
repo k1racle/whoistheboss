@@ -1,5 +1,6 @@
 import type { Role } from '@prisma/client'
 import { clearSession, useSession, type H3Event, type SessionConfig } from 'h3'
+import prisma from '~~/lib/prisma'
 import { getReturnToPath } from '@server/utils/request-flow'
 
 export interface PublicSessionUser {
@@ -25,6 +26,14 @@ function getPublicSessionConfig(): SessionConfig {
   return {
     password,
     name: 'nuxt-session',
+    maxAge: 60 * 60 * 12,
+    sessionHeader: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: config.nodeEnv === 'production',
+      path: '/',
+    },
   }
 }
 
@@ -42,7 +51,32 @@ export async function setPublicUserSession(
 
 export async function getPublicSessionUser(event: H3Event): Promise<PublicSessionUser | null> {
   const session = await useSession<SessionShape>(event, getPublicSessionConfig())
-  return session.data.user ?? null
+  const claims = session.data.user
+  if (!claims?.id) return null
+
+  const user = await prisma.user.findUnique({
+    where: { id: claims.id },
+    select: { id: true, email: true, name: true, role: true, isActive: true },
+  })
+  if (!user?.isActive) {
+    await session.clear()
+    return null
+  }
+
+  const current = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+  }
+  if (
+    claims.email !== current.email
+    || claims.name !== current.name
+    || claims.role !== current.role
+  ) {
+    await session.update({ user: current })
+  }
+  return current
 }
 
 export async function clearPublicUserSession(event: H3Event): Promise<void> {

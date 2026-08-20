@@ -4,6 +4,7 @@ import { parseSectionOrder, parseSectionVisibility } from '@shared/lib/section-c
 import { ROUTES } from '@shared/navigation'
 import { safeJsonParse } from '@server/utils/json'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+import { sanitizeRichText } from '@server/utils/content-security'
 
 const BLOG_DETAIL_SETTINGS_KEYS = [
   'HOME_BANNER_IMAGE',
@@ -164,10 +165,10 @@ export default defineEventHandler(async (event): Promise<BlogArticleDetailRespon
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
       coverImageSource: article.coverImageSource,
-      content: article.content,
+      content: sanitizeRichText(article.content),
       secondaryImage: article.secondaryImage,
       secondaryImageSource: article.secondaryImageSource,
-      secondaryText: article.secondaryText,
+      secondaryText: article.secondaryText ? sanitizeRichText(article.secondaryText) : null,
       relatedTitle: article.relatedTitle,
       metaTitle: article.metaTitle,
       metaDesc: article.metaDesc,

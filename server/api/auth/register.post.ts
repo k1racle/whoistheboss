@@ -7,6 +7,9 @@ import {
   normalizeEmail,
   requestWantsJson,
 } from '@server/utils/request-flow'
+import { enforceRateLimit } from '@server/utils/rate-limit'
+import { isPrismaUniqueError } from '@server/utils/prisma-errors'
+import { readLimitedBody } from '@server/utils/request-security'
 
 interface RegisterBody {
   name?: unknown
@@ -15,14 +18,23 @@ interface RegisterBody {
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody<RegisterBody>(event)
+  const body = await readLimitedBody<RegisterBody>(event, 16 * 1024)
 
   const name = getStringValue(body.name)
   const email = normalizeEmail(body.email)
   const password = getStringValue(body.password)
   const wantsJson = requestWantsJson(event)
 
-  if (name.length < 2 || !isValidEmail(email) || password.length < 6) {
+  enforceRateLimit(event, { id: 'auth-register', limit: 5, windowMs: 60 * 60 * 1000 })
+
+  if (
+    name.length < 2
+    || name.length > 120
+    || !isValidEmail(email)
+    || email.length > 254
+    || password.length < 10
+    || password.length > 128
+  ) {
     if (!wantsJson) {
       return sendRedirect(event, '/register?error=1', 303)
     }
@@ -47,6 +59,11 @@ export default defineEventHandler(async (event) => {
       password: hashedPassword,
       role: 'SUBSCRIBER',
     },
+  }).catch((error) => {
+    if (isPrismaUniqueError(error, 'email')) {
+      throw createError({ statusCode: 409, statusMessage: 'Email already registered' })
+    }
+    throw error
   })
 
   const sessionUser = {

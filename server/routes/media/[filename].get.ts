@@ -1,4 +1,6 @@
 import { resolveImageVariant, streamImageVariant } from '@server/utils/image-variant'
+import { clampImageQuality, clampImageWidth } from '~~/app/shared/image/image-variants'
+import { enforceRateLimit } from '@server/utils/rate-limit'
 
 function queryInteger(value: unknown): number | undefined {
   if (typeof value !== 'string' || !/^\d{1,4}$/.test(value)) return undefined
@@ -16,12 +18,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const query = getQuery(event)
+  enforceRateLimit(event, { id: 'media-image', limit: 180, windowMs: 60 * 1000 })
   const result = await resolveImageVariant({
     filename,
-    width: queryInteger(query.w),
-    height: queryInteger(query.h),
-    quality: queryInteger(query.q),
-    fit: typeof query.fit === 'string' ? query.fit : undefined,
+    width: clampImageWidth(queryInteger(query.w)),
+    quality: clampImageQuality(queryInteger(query.q)),
   })
 
   setHeader(event, 'cache-control', 'public, max-age=31536000, immutable')

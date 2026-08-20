@@ -11,3 +11,6 @@ public/uploads/*
 .gitignore
 .vscode/
 coverage/
+tests/
+.github/
+migration_old/

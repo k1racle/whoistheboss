@@ -11,7 +11,10 @@ const { data, error } = await useAsyncData(`blog-article-${slug.value}`, async (
 )
 
 if (error.value || !data.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Article not found' })
+  throw createError({
+    statusCode: error.value?.statusCode || 404,
+    statusMessage: error.value?.statusMessage || 'Article not found',
+  })
 }
 
 const article = data.value.article

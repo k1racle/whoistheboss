@@ -4,6 +4,7 @@ import { ROUTES } from '@shared/navigation'
 
 defineProps<{
   interview: InterviewListItem
+  priority?: boolean
 }>()
 </script>
 
@@ -17,7 +18,8 @@ defineProps<{
       :alt="interview.title"
       sizes="320:100vw 480:100vw sm:100vw md:50vw xl:33vw 2000:614px"
       format="webp"
-      loading="lazy"
+      :loading="priority ? 'eager' : 'lazy'"
+      :fetchpriority="priority ? 'high' : 'auto'"
       decoding="async"
       class="aspect-[4/3] w-full object-cover"
     />

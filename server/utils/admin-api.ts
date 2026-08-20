@@ -2,6 +2,7 @@ import type { Role } from '@prisma/client'
 import type { H3Event } from 'h3'
 import type { ZodType } from 'zod'
 import { getPublicSessionUser } from '@server/utils/auth-session'
+import { readLimitedBody } from '@server/utils/request-security'
 
 const ruToEn: Record<string, string> = {
   '\u0430': 'a',
@@ -57,7 +58,7 @@ export async function requireAdminUser(
 }
 
 export async function readAdminBody<T>(event: H3Event, schema: ZodType<T>): Promise<T> {
-  const result = schema.safeParse(await readBody(event))
+  const result = schema.safeParse(await readLimitedBody(event, 2 * 1024 * 1024))
 
   if (!result.success) {
     throwAdminError(400, 'Invalid input', result.error.issues)

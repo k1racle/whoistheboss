@@ -4,6 +4,7 @@ import { ROUTES } from '@shared/navigation'
 
 const props = defineProps<{
   hero: LandingHeroCardData
+  priority?: boolean
 }>()
 
 const shouldLoadHover = shallowRef(false)
@@ -43,7 +44,8 @@ const useImageFallback = (event: string | Event) => {
         sizes="320:85vw 480:85vw sm:85vw md:50vw xl:33vw 2000:614px"
         format="webp"
         class="col-start-1 row-start-1 aspect-square h-full w-full object-cover"
-        loading="lazy"
+        :loading="priority ? 'eager' : 'lazy'"
+        :fetchpriority="priority ? 'high' : 'auto'"
         decoding="async"
         @error="useImageFallback"
       />

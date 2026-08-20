@@ -15,6 +15,9 @@ import {
 } from '@server/utils/admin-operations-handlers'
 import { requireAdminUser, throwAdminError } from '@server/utils/admin-api'
 import { handleUploads } from '@server/utils/admin-upload-handler'
+import { invalidatePublicCache } from '@server/utils/public-cache'
+import { toHttpPrismaError } from '@server/utils/prisma-errors'
+import { assertSameOriginMutation } from '@server/utils/request-security'
 
 export default defineEventHandler(async (event) => {
   const routePath = getRouterParam(event, 'path') || ''
@@ -22,34 +25,60 @@ export default defineEventHandler(async (event) => {
 
   if (!resource) throwAdminError(404, 'Not found')
 
-  await requireAdminUser(event, resource === 'users' ? ['ADMIN'] : ['ADMIN', 'EDITOR'])
+  const adminUser = await requireAdminUser(event, resource === 'users' ? ['ADMIN'] : ['ADMIN', 'EDITOR'])
+  assertSameOriginMutation(event)
 
-  switch (resource) {
-    case 'users':
-      return handleUsers(event, path)
-    case 'entrepreneurs':
-      return handleEntrepreneurs(event, path)
-    case 'interviews':
-      return handleInterviews(event, path)
-    case 'reels':
-      return handleReels(event, path)
-    case 'articles':
-      return handleArticles(event, path)
-    case 'businesses':
-      return handleBusinesses(event, path)
-    case 'audience-cards':
-      return handleAudienceCards(event, path)
-    case 'comments':
-      return handleComments(event, path)
-    case 'shooting-requests':
-      return handleShootingRequests(event, path)
-    case 'subscribers':
-      return handleSubscribers(event, path)
-    case 'settings':
-      return handleSettings(event, path)
-    case 'upload':
-      return handleUploads(event, path)
-    default:
-      throwAdminError(404, 'Not found')
+  try {
+    let result: unknown
+    switch (resource) {
+      case 'users':
+        result = await handleUsers(event, path, adminUser)
+        break
+      case 'entrepreneurs':
+        result = await handleEntrepreneurs(event, path)
+        break
+      case 'interviews':
+        result = await handleInterviews(event, path)
+        break
+      case 'reels':
+        result = await handleReels(event, path)
+        break
+      case 'articles':
+        result = await handleArticles(event, path)
+        break
+      case 'businesses':
+        result = await handleBusinesses(event, path)
+        break
+      case 'audience-cards':
+        result = await handleAudienceCards(event, path)
+        break
+      case 'comments':
+        result = await handleComments(event, path)
+        break
+      case 'shooting-requests':
+        result = await handleShootingRequests(event, path)
+        break
+      case 'subscribers':
+        result = await handleSubscribers(event, path)
+        break
+      case 'settings':
+        result = await handleSettings(event, path, adminUser)
+        break
+      case 'upload':
+        result = await handleUploads(event, path)
+        break
+      default:
+        throwAdminError(404, 'Not found')
+    }
+
+    if (!['GET', 'HEAD'].includes(event.method.toUpperCase())) {
+      await invalidatePublicCache()
+    }
+    return result
+  }
+  catch (error) {
+    const mapped = toHttpPrismaError(error)
+    if (mapped) throw mapped
+    throw error
   }
 })

@@ -14,8 +14,12 @@ const props = defineProps<{
   imageAlt: string
 }>()
 
-const backdropStyle = computed(() => props.backgroundImage
-  ? { backgroundImage: `url('${props.backgroundImage}')` }
+const image = useImage()
+const backgroundImageUrl = computed(() => props.backgroundImage
+  ? image(props.backgroundImage, { width: 1920, quality: 76, format: 'webp' })
+  : '')
+const backdropStyle = computed(() => backgroundImageUrl.value
+  ? { backgroundImage: `url('${backgroundImageUrl.value}')` }
   : undefined)
 const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>

@@ -1,4 +1,5 @@
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+import { getTrustedEmbedUrl } from '@shared/lib/media-url'
 
 const CONTACT_SETTING_KEYS = [
   'CONTACT_ADDRESS',
@@ -12,7 +13,7 @@ export default defineEventHandler(async () => {
 
   return {
     address: getSiteSetting(settings, 'CONTACT_ADDRESS'),
-    mapSrc: getSiteSetting(settings, 'CONTACT_MAP_EMBED'),
+    mapSrc: getTrustedEmbedUrl(getSiteSetting(settings, 'CONTACT_MAP_EMBED')),
     phone: getSiteSetting(settings, 'CONTACT_PHONE'),
     email: getSiteSetting(settings, 'CONTACT_EMAIL'),
   }

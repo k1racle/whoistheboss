@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-url'
 interface Props {
   title: string
   videoType?: 'EMBED' | 'SELF_HOSTED' | null
@@ -7,12 +8,15 @@ interface Props {
   aspectClass?: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   videoType: 'EMBED',
   videoUrl: '',
   videoFile: '',
   aspectClass: 'aspect-video',
 })
+
+const safeVideoUrl = computed(() => getTrustedEmbedUrl(props.videoUrl))
+const safeVideoFile = computed(() => getSafeUploadedMediaUrl(props.videoFile))
 </script>
 
 <template>
@@ -21,19 +25,21 @@ withDefaults(defineProps<Props>(), {
     :class="aspectClass"
   >
     <iframe
-      v-if="videoType === 'EMBED' && videoUrl"
-      :src="videoUrl"
+      v-if="videoType === 'EMBED' && safeVideoUrl"
+      :src="safeVideoUrl"
       :title="title"
       class="h-full w-full"
       allow="autoplay; fullscreen"
       allowfullscreen
+      sandbox="allow-scripts allow-same-origin allow-presentation"
+      referrerpolicy="strict-origin-when-cross-origin"
       loading="lazy"
       frameborder="0"
     />
 
     <video
-      v-else-if="videoFile"
-      :src="videoFile"
+      v-else-if="safeVideoFile"
+      :src="safeVideoFile"
       :title="title"
       class="h-full w-full object-cover"
       controls

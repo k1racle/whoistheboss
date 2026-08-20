@@ -55,7 +55,7 @@ onBeforeUnmount(() => {
 
       <div v-if="reels.length" class="mt-14 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <button
-          v-for="reel in reels"
+          v-for="(reel, index) in reels"
           :key="reel.id"
           type="button"
           class="group relative aspect-[9/16] overflow-hidden bg-surface text-left text-text"
@@ -66,7 +66,8 @@ onBeforeUnmount(() => {
             :alt="reel.title"
             sizes="320:100vw 480:100vw sm:50vw xl:25vw 2000:460px"
             format="webp"
-            loading="lazy"
+            :loading="index < 4 ? 'eager' : 'lazy'"
+            :fetchpriority="index < 4 ? 'high' : 'auto'"
             decoding="async"
             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
           />

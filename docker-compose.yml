@@ -16,6 +16,8 @@ services:
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin123}
       UPLOAD_DIR: ${UPLOAD_DIR:-./public/uploads}
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-100}
+      MAX_IMAGE_UPLOAD_SIZE_MB: ${MAX_IMAGE_UPLOAD_SIZE_MB:-20}
+      IMAGE_CACHE_MAX_MB: ${IMAGE_CACHE_MAX_MB:-512}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
@@ -24,6 +26,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      MIGRATE_ON_START: ${MIGRATE_ON_START:-true}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
       SITE_NAME: ${SITE_NAME:-Маршрут Построен}
       SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Интервью с основателями бизнеса. Видео, рилсы, фото.}

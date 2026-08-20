@@ -14,6 +14,9 @@ const props = withDefaults(defineProps<{
 const imageSource = computed(() => props.desktopImage || props.mobileImage)
 const isImageLoaded = shallowRef(false)
 const image = useImage()
+const desktopImageSrc = computed(() => imageSource.value
+  ? image(imageSource.value, { width: 1920, quality: 76, format: 'webp' })
+  : '')
 const mobileImageSrcset = computed(() => {
   if (!props.mobileImage) return undefined
 
@@ -57,7 +60,7 @@ watch(
             sizes="100vw"
           >
           <NuxtImg
-            :src="imageSource"
+            :src="desktopImageSrc || imageSource"
             alt=""
             sizes="320:100vw 768:100vw lg:100vw 2000:1920px"
             format="webp"

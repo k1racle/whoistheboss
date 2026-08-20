@@ -55,6 +55,7 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
           v-for="hero in visibleHeroes"
           :key="hero.id"
           :hero="hero"
+          :priority="visibleHeroes.indexOf(hero) < 3"
           class="w-[70%] max-w-[70%] shrink-0 snap-center overflow-hidden bg-surface md:w-auto md:max-w-none"
         />
       </LandingSlider>

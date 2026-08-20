@@ -1,4 +1,6 @@
 import prisma from '~~/lib/prisma'
+import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-url'
+import { sanitizeRichText } from '@server/utils/content-security'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -56,11 +58,11 @@ export default defineEventHandler(async (event) => {
       publishedAt: interview.publishedAt?.toISOString() ?? null,
       updatedAt: interview.updatedAt.toISOString(),
       entrepreneur: interview.entrepreneur,
-      summary: interview.summary,
-      content: interview.content,
+      summary: interview.summary ? sanitizeRichText(interview.summary) : null,
+      content: interview.content ? sanitizeRichText(interview.content) : null,
       videoType: interview.videoType,
-      videoUrl: interview.videoUrl,
-      videoFile: interview.videoFile,
+      videoUrl: interview.videoType === 'EMBED' ? getTrustedEmbedUrl(interview.videoUrl) : null,
+      videoFile: interview.videoType === 'SELF_HOSTED' ? getSafeUploadedMediaUrl(interview.videoFile) : null,
       metaTitle: interview.metaTitle,
       metaDesc: interview.metaDesc,
     },

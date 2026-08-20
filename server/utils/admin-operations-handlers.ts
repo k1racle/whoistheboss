@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import type { Prisma } from '@prisma/client'
+import type { PublicSessionUser } from '@server/utils/auth-session'
 import prisma from '~~/lib/prisma'
 import {
   audienceCardSchema,
@@ -20,6 +21,7 @@ import {
   footerMetaItemsSchema,
   isSafeFooterHref,
 } from '@server/utils/site-footer'
+import { readPagination } from '@server/utils/pagination'
 
 const publicUserSelect = {
   id: true,
@@ -78,7 +80,10 @@ export async function handleAudienceCards(event: H3Event, path: readonly string[
 export async function handleComments(event: H3Event, path: readonly string[]) {
   if (path.length === 0) {
     requireAdminMethod(event, ['GET'])
+    const { limit, offset } = readPagination(event, { defaultLimit: 100, maxLimit: 250 })
     return prisma.comment.findMany({
+      skip: offset,
+      take: limit,
       orderBy: { createdAt: 'desc' },
       include: commentInclude,
     })
@@ -111,7 +116,12 @@ export async function handleComments(event: H3Event, path: readonly string[]) {
 export async function handleShootingRequests(event: H3Event, path: readonly string[]) {
   if (path.length === 0) {
     requireAdminMethod(event, ['GET'])
-    return prisma.shootingRequest.findMany({ orderBy: { createdAt: 'desc' } })
+    const { limit, offset } = readPagination(event, { defaultLimit: 100, maxLimit: 250 })
+    return prisma.shootingRequest.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    })
   }
 
   const [id, action] = path
@@ -137,7 +147,12 @@ export async function handleSubscribers(event: H3Event, path: readonly string[])
   requireAdminMethod(event, path[0] === 'export.csv' || path.length === 0 ? ['GET'] : ['DELETE'])
 
   if (path.length === 0) {
-    return prisma.subscriber.findMany({ orderBy: { createdAt: 'desc' } })
+    const { limit, offset } = readPagination(event, { defaultLimit: 100, maxLimit: 500 })
+    return prisma.subscriber.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    })
   }
 
   if (path.length !== 1) throwAdminError(404, 'Not found')
@@ -167,16 +182,36 @@ export async function handleSubscribers(event: H3Event, path: readonly string[])
   return { ok: true }
 }
 
-export async function handleSettings(event: H3Event, path: readonly string[]) {
+const ADMIN_ONLY_SETTING_KEYS = new Set([
+  'ADMIN_EMAIL',
+  'SITE_URL',
+  'TELEGRAM_BOT_TOKEN',
+  'TELEGRAM_CHAT_ID',
+  'YANDEX_METRIKA',
+])
+
+export async function handleSettings(
+  event: H3Event,
+  path: readonly string[],
+  currentUser: PublicSessionUser,
+) {
   if (path.length !== 0) throwAdminError(404, 'Not found')
   const method = requireAdminMethod(event, ['GET', 'PUT'])
 
   if (method === 'GET') {
     const settings = await prisma.siteSetting.findMany()
-    return Object.fromEntries(settings.map(setting => [setting.key, setting.value]))
+    return Object.fromEntries(settings
+      .filter(setting => currentUser.role === 'ADMIN' || !ADMIN_ONLY_SETTING_KEYS.has(setting.key))
+      .map(setting => [setting.key, setting.value]))
   }
 
   const data = await readAdminBody(event, settingsSchema)
+  if (
+    currentUser.role !== 'ADMIN'
+    && Object.keys(data).some(key => ADMIN_ONLY_SETTING_KEYS.has(key))
+  ) {
+    throwAdminError(403, 'Only administrators can change system settings')
+  }
   if (Object.hasOwn(data, FOOTER_META_ITEMS_KEY)) {
     try {
       data[FOOTER_META_ITEMS_KEY] = JSON.stringify(
@@ -203,12 +238,19 @@ export async function handleSettings(event: H3Event, path: readonly string[]) {
   return data
 }
 
-export async function handleUsers(event: H3Event, path: readonly string[]) {
+export async function handleUsers(
+  event: H3Event,
+  path: readonly string[],
+  currentUser: PublicSessionUser,
+) {
   const id = singleId(path)
   const method = requireAdminMethod(event, id ? ['GET', 'PUT', 'DELETE'] : ['GET', 'POST'])
 
   if (!id && method === 'GET') {
+    const { limit, offset } = readPagination(event, { defaultLimit: 100, maxLimit: 250 })
     return prisma.user.findMany({
+      skip: offset,
+      take: limit,
       orderBy: { createdAt: 'desc' },
       select: publicUserSelect,
     })
@@ -231,11 +273,32 @@ export async function handleUsers(event: H3Event, path: readonly string[]) {
   }
 
   if (method === 'DELETE') {
+    if (existing.id === currentUser.id) {
+      throwAdminError(409, 'You cannot delete your own account')
+    }
+    if (existing.role === 'ADMIN' && existing.isActive) {
+      const otherAdmins = await prisma.user.count({
+        where: { role: 'ADMIN', isActive: true, id: { not: existing.id } },
+      })
+      if (otherAdmins === 0) throwAdminError(409, 'The last active administrator cannot be deleted')
+    }
     await prisma.user.delete({ where: { id: id! } })
     return { ok: true }
   }
 
   const { password, ...data } = await readAdminBody(event, updateUserSchema)
+  const removesAdminAccess = existing.role === 'ADMIN'
+    && existing.isActive
+    && ((Boolean(data.role) && data.role !== 'ADMIN') || data.isActive === false)
+  if (removesAdminAccess) {
+    const otherAdmins = await prisma.user.count({
+      where: { role: 'ADMIN', isActive: true, id: { not: existing.id } },
+    })
+    if (otherAdmins === 0) throwAdminError(409, 'The last active administrator cannot be disabled')
+  }
+  if (existing.id === currentUser.id && removesAdminAccess) {
+    throwAdminError(409, 'You cannot remove your own administrator access')
+  }
   const update: Prisma.UserUpdateInput = { ...data }
   if (password) update.password = await hashPassword(password, 10)
   return prisma.user.update({ where: { id: id! }, data: update, select: publicUserSelect })

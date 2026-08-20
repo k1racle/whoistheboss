@@ -1,56 +1,59 @@
 import { z } from 'zod'
 
-const nullableText = z.string().optional().nullable()
-const publishedAt = z.union([z.string().min(1), z.literal('')]).optional().nullable()
+const MAX_SHORT_TEXT = 500
+const MAX_LONG_TEXT = 250_000
+const nullableText = z.string().max(MAX_LONG_TEXT).optional().nullable()
+const shortText = z.string().trim().max(MAX_SHORT_TEXT)
+const publishedAt = z.union([z.string().datetime(), z.literal('')]).optional().nullable()
 
 const storySectionBase = {
-  id: z.string().min(1),
+  id: z.string().min(1).max(100),
   isVisible: z.boolean().default(true),
-  menuLabel: z.string().default(''),
-  menuDescription: z.string().default(''),
-  menuImage: z.string().nullable().default(null),
+  menuLabel: shortText.default(''),
+  menuDescription: shortText.default(''),
+  menuImage: z.string().max(2048).nullable().default(null),
 }
 
 export const storySectionSchema = z.discriminatedUnion('type', [
   z.object({
     ...storySectionBase,
     type: z.literal('BIOGRAPHY'),
-    eyebrow: z.string().default('Биография'),
-    title: z.string().default(''),
-    textOne: z.string().default(''),
-    textTwo: z.string().default(''),
-    textThree: z.string().default(''),
-    image: z.string().nullable().default(null),
+    eyebrow: shortText.default('Биография'),
+    title: shortText.default(''),
+    textOne: z.string().max(MAX_LONG_TEXT).default(''),
+    textTwo: z.string().max(MAX_LONG_TEXT).default(''),
+    textThree: z.string().max(MAX_LONG_TEXT).default(''),
+    image: z.string().max(2048).nullable().default(null),
   }),
   z.object({
     ...storySectionBase,
     type: z.literal('ACCENT'),
-    title: z.string().default(''),
-    textOne: z.string().default(''),
-    textTwo: z.string().default(''),
+    title: shortText.default(''),
+    textOne: z.string().max(MAX_LONG_TEXT).default(''),
+    textTwo: z.string().max(MAX_LONG_TEXT).default(''),
   }),
   z.object({
     ...storySectionBase,
     type: z.literal('PORTRAIT'),
-    title: z.string().default(''),
-    text: z.string().default(''),
-    asideText: z.string().default(''),
-    image: z.string().nullable().default(null),
+    title: shortText.default(''),
+    text: z.string().max(MAX_LONG_TEXT).default(''),
+    asideText: z.string().max(MAX_LONG_TEXT).default(''),
+    image: z.string().max(2048).nullable().default(null),
   }),
   z.object({
     ...storySectionBase,
     type: z.literal('WIDE'),
-    title: z.string().default(''),
-    text: z.string().default(''),
-    bottomText: z.string().default(''),
-    image: z.string().nullable().default(null),
+    title: shortText.default(''),
+    text: z.string().max(MAX_LONG_TEXT).default(''),
+    bottomText: z.string().max(MAX_LONG_TEXT).default(''),
+    image: z.string().max(2048).nullable().default(null),
   }),
 ])
 
 export const entrepreneurSchema = z.object({
-  slug: z.string().optional(),
-  name: z.string().min(1),
-  title: z.string(),
+  slug: z.string().max(200).optional(),
+  name: shortText.min(1),
+  title: shortText,
   heroLeftTeaser: nullableText,
   heroRightTeaser: nullableText,
   heroBottomRightTeaser: nullableText,
@@ -93,10 +96,10 @@ export const entrepreneurSchema = z.object({
 })
 
 export const interviewSchema = z.object({
-  slug: z.string().optional(),
-  title: z.string().min(1),
+  slug: z.string().max(200).optional(),
+  title: shortText.min(1),
   subtitle: nullableText,
-  entrepreneurId: z.string().min(1),
+  entrepreneurId: z.string().min(1).max(100),
   coverImage: nullableText,
   videoType: z.enum(['EMBED', 'SELF_HOSTED']),
   videoUrl: nullableText,
@@ -111,8 +114,8 @@ export const interviewSchema = z.object({
 })
 
 export const reelSchema = z.object({
-  slug: z.string().optional(),
-  title: z.string().min(1),
+  slug: z.string().max(200).optional(),
+  title: shortText.min(1),
   entrepreneurId: nullableText,
   coverImage: nullableText,
   videoType: z.enum(['EMBED', 'SELF_HOSTED']),
@@ -123,14 +126,14 @@ export const reelSchema = z.object({
 })
 
 export const articleSchema = z.object({
-  slug: z.string().optional(),
-  title: z.string().min(1),
+  slug: z.string().max(200).optional(),
+  title: shortText.min(1),
   subtitle: nullableText,
   category: nullableText,
   entrepreneurId: nullableText,
   coverImage: nullableText,
   coverImageSource: nullableText,
-  content: z.string().min(1),
+  content: z.string().min(1).max(MAX_LONG_TEXT),
   secondaryImage: nullableText,
   secondaryImageSource: nullableText,
   secondaryText: nullableText,
@@ -145,9 +148,9 @@ export const articleSchema = z.object({
 })
 
 export const businessSchema = z.object({
-  slug: z.string().optional(),
-  name: z.string().min(1),
-  type: z.string().min(1),
+  slug: z.string().max(200).optional(),
+  name: shortText.min(1),
+  type: shortText.min(1),
   heroTeaser: nullableText,
   heroMarquee: nullableText,
   manifestTitle: nullableText,
@@ -191,7 +194,7 @@ export const businessSchema = z.object({
   email: z.string().email().optional().nullable().or(z.literal('')),
   website: z.string().url().optional().nullable().or(z.literal('')),
   coverImage: nullableText,
-  entrepreneurId: z.string().min(1),
+  entrepreneurId: z.string().min(1).max(100),
   isPublished: z.boolean().default(false),
 })
 
@@ -203,7 +206,7 @@ export const businessOrderSchema = z.object({
 })
 
 export const audienceCardSchema = z.object({
-  title: z.string().min(1),
+  title: shortText.min(1),
   description: nullableText,
   hoverTitle: nullableText,
   hoverDescription: nullableText,
@@ -219,22 +222,29 @@ export const shootingRequestStatusSchema = z.object({
   status: z.enum(['NEW', 'IN_PROGRESS', 'COMPLETED', 'ARCHIVED']),
 })
 
-export const settingsSchema = z.record(z.string(), z.string())
+export const settingsSchema = z.record(
+  z.string().regex(/^[A-Z][A-Z0-9_]{1,79}$/),
+  z.string().max(MAX_LONG_TEXT),
+).superRefine((settings, context) => {
+  if (Object.keys(settings).length > 200) {
+    context.addIssue({ code: 'custom', message: 'Too many settings in one request' })
+  }
+})
 
 const roleSchema = z.enum(['ADMIN', 'EDITOR', 'SUBSCRIBER'])
 
 export const createUserSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  name: z.string().min(1),
+  email: z.string().email().max(254),
+  password: z.string().min(10).max(128),
+  name: shortText.min(1),
   role: roleSchema,
   isActive: z.boolean().default(true),
 })
 
 export const updateUserSchema = z.object({
-  email: z.string().email().optional(),
-  password: z.string().min(6).optional(),
-  name: z.string().min(1).optional(),
+  email: z.string().email().max(254).optional(),
+  password: z.string().min(10).max(128).optional(),
+  name: shortText.min(1).optional(),
   role: roleSchema.optional(),
   isActive: z.boolean().optional(),
 })

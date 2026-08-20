@@ -16,9 +16,10 @@ defineProps<{
 
       <div v-if="interviews.length" class="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         <InterviewCard
-          v-for="interview in interviews"
+          v-for="(interview, index) in interviews"
           :key="interview.id"
           :interview="interview"
+          :priority="index < 3"
         />
       </div>
 

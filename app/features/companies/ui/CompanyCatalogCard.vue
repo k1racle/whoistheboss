@@ -4,6 +4,7 @@ import { ROUTES } from '@shared/navigation'
 
 const props = defineProps<{
   company: CompanyCatalogItem
+  priority?: boolean
 }>()
 
 const imageSrc = computed(() => props.company.coverImage || '/images/placeholder.svg')
@@ -26,7 +27,8 @@ const imageSrc = computed(() => props.company.coverImage || '/images/placeholder
         sizes="320:100vw 480:100vw sm:100vw md:50vw xl:33vw 2000:614px"
         format="webp"
         class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025] group-focus-visible:scale-[1.025]"
-        loading="lazy"
+        :loading="priority ? 'eager' : 'lazy'"
+        :fetchpriority="priority ? 'high' : 'auto'"
         decoding="async"
       />
     </div>

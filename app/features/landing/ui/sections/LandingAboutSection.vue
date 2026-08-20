@@ -4,6 +4,7 @@ import { protectPrepositions } from '@shared/lib/typography'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
+import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-url'
 
 const props = defineProps<{
   title: string
@@ -36,7 +37,9 @@ function resolveMedia(
   url: string,
   file: string,
 ): AboutMedia | null {
-  const source = type === 'SELF_HOSTED' ? file || url : url || file
+  const source = type === 'SELF_HOSTED'
+    ? getSafeUploadedMediaUrl(file || url)
+    : getTrustedEmbedUrl(url || file)
 
   return source ? { type, source } : null
 }
@@ -121,6 +124,8 @@ function hideBrokenFallback() {
           class="h-full w-full border-0"
           allow="autoplay; fullscreen"
           allowfullscreen
+          sandbox="allow-scripts allow-same-origin allow-presentation"
+          referrerpolicy="strict-origin-when-cross-origin"
           loading="lazy"
         />
         <video

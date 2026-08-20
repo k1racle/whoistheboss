@@ -6,14 +6,15 @@ import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const config = useRuntimeConfig()
 
-const { data } = await useAsyncData('interviews-list', async () => {
-  try {
-    return await $fetch<InterviewListItem[]>('/api/interviews')
-  }
-  catch {
-    return []
-  }
-})
+const { data, error } = await useAsyncData('interviews-list', async () =>
+  await $fetch<InterviewListItem[]>('/api/interviews'))
+
+if (error.value) {
+  throw createError({
+    statusCode: error.value.statusCode || 503,
+    statusMessage: 'Interviews are unavailable',
+  })
+}
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
 useSeoMeta({

@@ -2,15 +2,17 @@ import { createHash, randomUUID } from 'node:crypto'
 import { createReadStream, promises as fs } from 'node:fs'
 import { basename, extname, join, resolve } from 'node:path'
 import sharp from 'sharp'
-
-type ImageFit = 'contain' | 'cover' | 'fill' | 'inside' | 'outside'
+import {
+  clampImageQuality,
+  clampImageWidth,
+  DEFAULT_IMAGE_QUALITY,
+} from '~~/app/shared/image/image-variants'
 
 const supportedExtensions = new Set(['.avif', '.jpeg', '.jpg', '.png', '.webp'])
-const allowedFits = new Set<ImageFit>(['contain', 'cover', 'fill', 'inside', 'outside'])
 const pendingVariants = new Map<string, Promise<void>>()
-const MAX_DIMENSION = 2560
 const CACHE_VERSION = 'v1'
-const MAX_PARALLEL_TRANSFORMS = 2
+const MAX_PARALLEL_TRANSFORMS = 4
+const MAX_PENDING_QUEUE = 64
 
 let activeTransforms = 0
 const transformQueue: Array<() => void> = []
@@ -18,9 +20,7 @@ const transformQueue: Array<() => void> = []
 export interface ImageVariantOptions {
   filename: string
   width?: number
-  height?: number
   quality?: number
-  fit?: string
 }
 
 export interface ImageVariantResult {
@@ -29,17 +29,11 @@ export interface ImageVariantResult {
   size: number
 }
 
-function normalizedInteger(value: number | undefined, fallback?: number): number | undefined {
-  if (!Number.isFinite(value) || (value ?? 0) <= 0) return fallback
-  return Math.min(Math.round(value!), MAX_DIMENSION)
-}
-
-function isImageFit(value: string | undefined): value is ImageFit {
-  return Boolean(value && allowedFits.has(value as ImageFit))
-}
-
 async function withTransformSlot(task: () => Promise<void>): Promise<void> {
   if (activeTransforms >= MAX_PARALLEL_TRANSFORMS) {
+    if (transformQueue.length >= MAX_PENDING_QUEUE) {
+      throw createError({ statusCode: 503, statusMessage: 'Image transformation queue is full' })
+    }
     await new Promise<void>(resolveSlot => transformQueue.push(resolveSlot))
   }
 
@@ -55,6 +49,30 @@ async function withTransformSlot(task: () => Promise<void>): Promise<void> {
 
 async function fileExists(path: string): Promise<boolean> {
   return fs.access(path).then(() => true).catch(() => false)
+}
+
+async function pruneImageCache(cacheDir: string): Promise<void> {
+  const maxBytes = useRuntimeConfig().imageCacheMaxMb * 1024 * 1024
+  if (!Number.isFinite(maxBytes) || maxBytes <= 0) return
+
+  const entries = await fs.readdir(cacheDir, { withFileTypes: true }).catch(() => [])
+  const files = await Promise.all(entries
+    .filter(entry => entry.isFile() && entry.name.endsWith('.webp'))
+    .map(async (entry) => {
+      const path = join(cacheDir, entry.name)
+      const stat = await fs.stat(path).catch(() => null)
+      return stat ? { path, size: stat.size, mtimeMs: stat.mtimeMs } : null
+    }))
+  const existingFiles = files.filter((file): file is NonNullable<typeof file> => Boolean(file))
+  const totalSize = existingFiles.reduce((sum, file) => sum + file.size, 0)
+  if (totalSize <= maxBytes) return
+
+  let currentSize = totalSize
+  for (const file of existingFiles.sort((a, b) => a.mtimeMs - b.mtimeMs)) {
+    await fs.rm(file.path, { force: true }).catch(() => undefined)
+    currentSize -= file.size
+    if (currentSize <= maxBytes * 0.9) break
+  }
 }
 
 export async function resolveImageVariant(options: ImageVariantOptions): Promise<ImageVariantResult> {
@@ -75,10 +93,8 @@ export async function resolveImageVariant(options: ImageVariantOptions): Promise
     throw createError({ statusCode: 404, statusMessage: 'Image not found' })
   }
 
-  const width = normalizedInteger(options.width)
-  const height = normalizedInteger(options.height)
-  const quality = Math.min(Math.max(normalizedInteger(options.quality, 76)!, 55), 85)
-  const fit: ImageFit = isImageFit(options.fit) ? options.fit : 'inside'
+  const width = clampImageWidth(options.width)
+  const quality = clampImageQuality(options.quality)
   const cacheKey = createHash('sha256')
     .update([
       CACHE_VERSION,
@@ -86,9 +102,7 @@ export async function resolveImageVariant(options: ImageVariantOptions): Promise
       sourceStat.size,
       Math.trunc(sourceStat.mtimeMs),
       width ?? 0,
-      height ?? 0,
       quality,
-      fit,
     ].join(':'))
     .digest('hex')
     .slice(0, 32)
@@ -114,12 +128,10 @@ export async function resolveImageVariant(options: ImageVariantOptions): Promise
           sequentialRead: true,
         }).rotate()
 
-        if (width || height) {
+        if (width) {
           transformer = transformer.resize({
             width,
-            height,
-            fit,
-            position: 'centre',
+            fit: 'inside',
             withoutEnlargement: true,
             fastShrinkOnLoad: true,
           })
@@ -134,6 +146,9 @@ export async function resolveImageVariant(options: ImageVariantOptions): Promise
           })
           .toFile(temporaryPath)
         await fs.rename(temporaryPath, cachePath)
+        if (quality === DEFAULT_IMAGE_QUALITY) {
+          await pruneImageCache(cacheDir)
+        }
       }
       finally {
         await fs.rm(temporaryPath, { force: true }).catch(() => undefined)

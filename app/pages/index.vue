@@ -5,14 +5,15 @@ import LandingPage from '@features/landing/ui/LandingPage.vue'
 
 const config = useRuntimeConfig()
 
-const { data } = await useAsyncData('landing-page', async () => {
-  try {
-    return await $fetch<LandingPageData>('/api/landing-page')
-  }
-  catch {
-    return landingPageFallback
-  }
-})
+const { data, error } = await useAsyncData('landing-page', async () =>
+  await $fetch<LandingPageData>('/api/landing-page'))
+
+if (error.value) {
+  throw createError({
+    statusCode: error.value.statusCode || 503,
+    statusMessage: 'Landing page is unavailable',
+  })
+}
 
 const page = computed(() => data.value ?? landingPageFallback)
 

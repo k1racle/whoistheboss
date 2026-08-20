@@ -1,11 +1,13 @@
 #!/bin/sh
 set -e
 
-echo "Generating Prisma client..."
-npx prisma generate
+mkdir -p /app/public/uploads /app/public/uploads/.cache
+chown -R app:app /app/public/uploads /home/app
 
-echo "Applying database migrations..."
-npx prisma migrate deploy
+if [ "${MIGRATE_ON_START:-true}" = "true" ]; then
+  echo "Applying database migrations..."
+  npx prisma migrate deploy
+fi
 
 echo "Starting application..."
-exec node .output/server/index.mjs
+exec gosu app:app node .output/server/index.mjs

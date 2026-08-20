@@ -6,14 +6,15 @@ import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const config = useRuntimeConfig()
 
-const { data } = await useAsyncData('reels-list', async () => {
-  try {
-    return await $fetch<ReelItem[]>('/api/reels')
-  }
-  catch {
-    return []
-  }
-})
+const { data, error } = await useAsyncData('reels-list', async () =>
+  await $fetch<ReelItem[]>('/api/reels'))
+
+if (error.value) {
+  throw createError({
+    statusCode: error.value.statusCode || 503,
+    statusMessage: 'Reels are unavailable',
+  })
+}
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
 useSeoMeta({

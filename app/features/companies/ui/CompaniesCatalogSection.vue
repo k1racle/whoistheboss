@@ -15,9 +15,10 @@ defineProps<{
         class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 xl:gap-8"
       >
         <CompanyCatalogCard
-          v-for="company in companies"
+          v-for="(company, index) in companies"
           :key="company.slug"
           :company="company"
+          :priority="index < 3"
         />
       </div>
 

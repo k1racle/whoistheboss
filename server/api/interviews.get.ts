@@ -1,8 +1,12 @@
 import prisma from '~~/lib/prisma'
+import { readPagination } from '@server/utils/pagination'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  const { limit, offset } = readPagination(event, { defaultLimit: 48, maxLimit: 120 })
   const interviews = await prisma.interview.findMany({
     where: { isPublished: true },
+    skip: offset,
+    take: limit,
     orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
     include: {
       entrepreneur: {

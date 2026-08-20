@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/guessboss?schema=public
+      SESSION_SECRET: test-session-secret-0123456789
+      NUXT_SESSION_PASSWORD: test-session-secret-0123456789
+      SITE_URL: https://example.com
+      SITE_NAME: Маршрут Построен
+      SITE_DESCRIPTION: Test build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --include=optional
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run build

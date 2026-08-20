@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npm run build:admin && nuxt build",
     "build:admin": "vite build --config vite.admin.config.ts",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build",
     "dev": "concurrently -n site,admin -c cyan,magenta \"npm run dev:site\" \"npm run dev:admin\"",
     "dev:site": "nuxt dev --port 3001 --host 127.0.0.1",
     "dev:admin": "vite --config vite.admin.config.ts",
@@ -13,6 +14,7 @@
     "lint:fix": "eslint . --fix",
     "preview": "nuxt preview",
     "postinstall": "prisma generate && nuxt prepare",
+    "test": "vitest run",
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
@@ -30,6 +32,7 @@
     "nuxt-seo-utils": "^8.3.3",
     "nuxt-site-config": "^4.2.1",
     "quill": "^2.0.3",
+    "sanitize-html": "^2.17.7",
     "sharp": "^0.35.3",
     "sortablejs": "^1.15.7",
     "vue": "^3.5.40",
@@ -42,12 +45,14 @@
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^26.1.2",
     "@types/quill": "^2.0.14",
+    "@types/sanitize-html": "^2.16.1",
     "@types/sortablejs": "^1.15.9",
     "autoprefixer": "^10.4.19",
     "concurrently": "^8.2.2",
     "eslint": "^10.8.0",
     "prisma": "^5.15.0",
     "tailwindcss": "^4.3.3",
+    "vitest": "^4.1.11",
     "vue-tsc": "^3.3.8"
   }
 }

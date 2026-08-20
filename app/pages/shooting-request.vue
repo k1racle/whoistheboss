@@ -24,14 +24,15 @@ const fallbackPage: ShootingPageData = {
   sectionVisibility: {},
 }
 
-const { data } = await useAsyncData('shooting-page', async () => {
-  try {
-    return await $fetch<ShootingPageData>('/api/shooting-page')
-  }
-  catch {
-    return fallbackPage
-  }
-})
+const { data, error } = await useAsyncData('shooting-page', async () =>
+  await $fetch<ShootingPageData>('/api/shooting-page'))
+
+if (error.value) {
+  throw createError({
+    statusCode: error.value.statusCode || 503,
+    statusMessage: 'Shooting page is unavailable',
+  })
+}
 
 const page = computed(() => data.value ?? fallbackPage)
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()

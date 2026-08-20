@@ -14,6 +14,12 @@ import {
   requireAdminMethod,
   throwAdminError,
 } from '@server/utils/admin-api'
+import {
+  normalizeArticleContent,
+  normalizeFeaturedInterview,
+  normalizeInterviewContent,
+  normalizeVideoFields,
+} from '@server/utils/admin-normalizers'
 
 const entrepreneurSummary = { select: { id: true, name: true } } as const
 
@@ -40,7 +46,7 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
   }
 
   if (!id && method === 'POST') {
-    const data = await readAdminBody(event, entrepreneurSchema)
+    const data = normalizeFeaturedInterview(await readAdminBody(event, entrepreneurSchema))
     const slug = await createUniqueSlug(data.name, async candidate => Boolean(
       await prisma.entrepreneur.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
@@ -58,7 +64,7 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
     return { ok: true }
   }
 
-  const data = await readAdminBody(event, entrepreneurSchema)
+  const data = normalizeFeaturedInterview(await readAdminBody(event, entrepreneurSchema))
   const slug = await createUniqueSlug(data.name, async candidate => Boolean(
     await prisma.entrepreneur.findFirst({
       where: { slug: candidate, id: { not: id! } },
@@ -80,7 +86,8 @@ export async function handleInterviews(event: H3Event, path: readonly string[]) 
   }
 
   if (!id && method === 'POST') {
-    const { publishedAt, ...data } = await readAdminBody(event, interviewSchema)
+    const { publishedAt, ...rawData } = await readAdminBody(event, interviewSchema)
+    const data = normalizeVideoFields(normalizeInterviewContent(rawData))
     const slug = await createUniqueSlug(data.title, async candidate => Boolean(
       await prisma.interview.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
@@ -101,7 +108,8 @@ export async function handleInterviews(event: H3Event, path: readonly string[]) 
     return { ok: true }
   }
 
-  const { publishedAt, ...data } = await readAdminBody(event, interviewSchema)
+  const { publishedAt, ...rawData } = await readAdminBody(event, interviewSchema)
+  const data = normalizeVideoFields(normalizeInterviewContent(rawData))
   const slug = await createUniqueSlug(data.title, async candidate => Boolean(
     await prisma.interview.findFirst({
       where: { slug: candidate, id: { not: id! } },
@@ -127,7 +135,7 @@ export async function handleReels(event: H3Event, path: readonly string[]) {
   }
 
   if (!id && method === 'POST') {
-    const data = await readAdminBody(event, reelSchema)
+    const data = normalizeVideoFields(await readAdminBody(event, reelSchema))
     const slug = await createUniqueSlug(data.title, async candidate => Boolean(
       await prisma.reel.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
@@ -148,7 +156,7 @@ export async function handleReels(event: H3Event, path: readonly string[]) {
     return { ok: true }
   }
 
-  const data = await readAdminBody(event, reelSchema)
+  const data = normalizeVideoFields(await readAdminBody(event, reelSchema))
   const slug = await createUniqueSlug(data.title, async candidate => Boolean(
     await prisma.reel.findFirst({
       where: { slug: candidate, id: { not: id! } },
@@ -174,7 +182,8 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
   }
 
   if (!id && method === 'POST') {
-    const { publishedAt, ...data } = await readAdminBody(event, articleSchema)
+    const { publishedAt, ...rawData } = await readAdminBody(event, articleSchema)
+    const data = normalizeArticleContent(rawData)
     const slug = await createUniqueSlug(data.title, async candidate => Boolean(
       await prisma.article.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
@@ -195,7 +204,8 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
     return { ok: true }
   }
 
-  const { publishedAt, ...data } = await readAdminBody(event, articleSchema)
+  const { publishedAt, ...rawData } = await readAdminBody(event, articleSchema)
+  const data = normalizeArticleContent(rawData)
   const slug = await createUniqueSlug(data.title, async candidate => Boolean(
     await prisma.article.findFirst({
       where: { slug: candidate, id: { not: id! } },
