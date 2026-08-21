@@ -23,7 +23,7 @@ const displayNameSize = computed(() => getDisplayNameSize(props.entrepreneur.nam
       <div class="flex w-full flex-col gap-[clamp(1rem,1.5vw,2rem)]">
         <div class="flex w-full items-end justify-between gap-10">
           <span class="whitespace-nowrap font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
-            WHO'S THE
+            МАРШРУТ
           </span>
           <p
             v-if="entrepreneur.heroRightTeaser || entrepreneur.quote"
@@ -51,7 +51,7 @@ const displayNameSize = computed(() => getDisplayNameSize(props.entrepreneur.nam
           </h1>
           <p
             v-if="entrepreneur.heroBottomRightTeaser || entrepreneur.title"
-            class="w-[min(500px,32vw)] max-w-[500px] self-center font-sans text-base font-bold uppercase leading-4 text-text"
+            class="w-[min(500px,32vw)] max-w-[500px] self-end font-sans text-base font-bold uppercase leading-4 text-text"
           >
             {{ entrepreneur.heroBottomRightTeaser || entrepreneur.title }}
           </p>
@@ -70,7 +70,7 @@ const displayNameSize = computed(() => getDisplayNameSize(props.entrepreneur.nam
 
         <div class="flex w-full flex-col">
           <span class="whitespace-nowrap font-display text-[clamp(54px,15vw,86px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
-            WHO'S THE
+            МАРШРУТ
           </span>
           <h1 class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
             {{ entrepreneur.heroLastName }}

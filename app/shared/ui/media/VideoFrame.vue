@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-url'
+import MediaPlayBadge from '@shared/ui/media/MediaPlayBadge.vue'
+
 interface Props {
   title: string
   videoType?: 'EMBED' | 'SELF_HOSTED' | null
@@ -17,16 +19,48 @@ const props = withDefaults(defineProps<Props>(), {
 
 const safeVideoUrl = computed(() => getTrustedEmbedUrl(props.videoUrl))
 const safeVideoFile = computed(() => getSafeUploadedMediaUrl(props.videoFile))
+const videoElement = useTemplateRef<HTMLVideoElement>('videoElement')
+const hasStarted = shallowRef(false)
+const hasPlayableMedia = computed(() => Boolean(
+  (props.videoType === 'EMBED' && safeVideoUrl.value)
+  || safeVideoFile.value,
+))
+const embedPlaybackUrl = computed(() => {
+  if (!safeVideoUrl.value || !hasStarted.value) return safeVideoUrl.value
+
+  const url = new URL(safeVideoUrl.value)
+  url.searchParams.set('autoplay', '1')
+  return url.toString()
+})
+
+const startPlayback = async () => {
+  hasStarted.value = true
+  if (props.videoType !== 'SELF_HOSTED') return
+
+  try {
+    await videoElement.value?.play()
+  }
+  catch {
+    hasStarted.value = false
+  }
+}
+
+watch(
+  () => [props.videoType, props.videoUrl, props.videoFile],
+  () => {
+    hasStarted.value = false
+  },
+)
 </script>
 
 <template>
   <div
-    class="overflow-hidden border border-border-strong bg-surface"
+    class="relative overflow-hidden border border-border-strong bg-surface"
     :class="aspectClass"
   >
     <iframe
       v-if="videoType === 'EMBED' && safeVideoUrl"
-      :src="safeVideoUrl"
+      :src="embedPlaybackUrl"
       :title="title"
       class="h-full w-full"
       allow="autoplay; fullscreen"
@@ -39,12 +73,14 @@ const safeVideoFile = computed(() => getSafeUploadedMediaUrl(props.videoFile))
 
     <video
       v-else-if="safeVideoFile"
+      ref="videoElement"
       :src="safeVideoFile"
       :title="title"
       class="h-full w-full object-cover"
       controls
       playsinline
       preload="metadata"
+      @play="hasStarted = true"
     />
 
     <div
@@ -53,5 +89,15 @@ const safeVideoFile = computed(() => getSafeUploadedMediaUrl(props.videoFile))
     >
       Видео пока не добавлено.
     </div>
+
+    <button
+      v-if="hasPlayableMedia && !hasStarted"
+      type="button"
+      class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center border-0 bg-transparent p-0"
+      :aria-label="`Воспроизвести: ${title}`"
+      @click="startPlayback"
+    >
+      <MediaPlayBadge class="size-16 hover:scale-110 sm:size-20" />
+    </button>
   </div>
 </template>

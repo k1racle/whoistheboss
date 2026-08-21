@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ReelItem } from '@features/reels/model/reel.types'
 import ReelModal from '@features/reels/ui/ReelModal.vue'
+import MediaPlayBadge from '@shared/ui/media/MediaPlayBadge.vue'
 
 const props = defineProps<{
   reels: ReelItem[]
@@ -71,6 +72,7 @@ onBeforeUnmount(() => {
             decoding="async"
             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
           />
+          <MediaPlayBadge class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:scale-110" />
           <span class="absolute inset-x-0 bottom-0 bg-text/80 p-4 font-sans text-base font-bold uppercase leading-5 text-white">
             {{ reel.title }}
           </span>
