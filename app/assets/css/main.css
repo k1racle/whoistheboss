@@ -110,7 +110,7 @@
 }
 
 .display-title-size--lg {
-  font-size: clamp(96px, 13vw, 250px);
+  font-size: clamp(96px, 15vw, 288px);
 }
 
 .display-title-size--md {

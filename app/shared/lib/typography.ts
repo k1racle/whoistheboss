@@ -19,11 +19,11 @@ export type DisplayNameSize =
 
 export function getDisplayNameSize(text: string): DisplayNameSize {
   const words = text.trim().split(/\s+/).filter(Boolean)
-  if (words.length !== 2) return 'display-title-size--xl'
+  if (!words.length) return 'display-title-size--sm'
 
   const longestWordLength = Math.max(...words.map(word => word.length))
-  if (longestWordLength <= 12) return 'display-title-size--xl'
-  if (longestWordLength <= 20) return 'display-title-size--lg'
-  if (longestWordLength <= 30) return 'display-title-size--md'
+  if (longestWordLength <= 7) return 'display-title-size--xl'
+  if (longestWordLength <= 10) return 'display-title-size--lg'
+  if (longestWordLength <= 14) return 'display-title-size--md'
   return 'display-title-size--sm'
 }
