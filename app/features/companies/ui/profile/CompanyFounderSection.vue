@@ -35,20 +35,20 @@ const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
       </div>
 
       <div class="mt-11 hidden lg:block">
-        <div class="flex w-full items-center justify-between gap-10">
-          <p class="m-0 w-[500px] max-w-[500px] shrink-0 whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text">
+        <div class="flex min-w-0 w-full items-center justify-between gap-[clamp(20px,2vw,40px)]">
+          <p class="m-0 w-[min(500px,27%)] shrink-0 whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text [overflow-wrap:anywhere]">
             {{ topText }}
           </p>
-          <h2 class="m-0 ml-auto whitespace-nowrap text-right font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
+          <h2 class="m-0 ml-auto min-w-0 whitespace-nowrap text-right font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
             {{ lastName }}
           </h2>
         </div>
 
-        <div class="-mt-[clamp(24px,3vw,58px)] flex w-full items-center justify-between gap-10">
-          <h2 class="m-0 whitespace-nowrap font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
+        <div class="-mt-[clamp(24px,3vw,58px)] flex min-w-0 w-full items-center justify-between gap-[clamp(20px,2vw,40px)]">
+          <h2 class="m-0 min-w-0 whitespace-nowrap font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
             {{ firstName }}
           </h2>
-          <p class="m-0 ml-auto w-[500px] max-w-[500px] shrink-0 whitespace-pre-line text-left font-sans text-base font-bold uppercase leading-4 text-text">
+          <p class="m-0 ml-auto w-[min(500px,27%)] shrink-0 whitespace-pre-line text-left font-sans text-base font-bold uppercase leading-4 text-text [overflow-wrap:anywhere]">
             {{ bottomText }}
           </p>
         </div>

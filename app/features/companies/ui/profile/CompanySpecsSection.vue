@@ -27,9 +27,9 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
         <article
           v-for="(item, index) in items"
           :key="`${item.title}-${index}`"
-          class="group flex min-h-[100px] items-center justify-between gap-6 border border-accent bg-accent px-5 py-4 text-text-on-accent transition-colors duration-200 hover:border-text hover:bg-surface hover:text-text lg:px-7"
+          class="group flex min-h-[100px] min-w-0 items-center justify-between gap-6 overflow-hidden border border-accent bg-accent px-5 py-4 text-text-on-accent transition-colors duration-200 hover:border-text hover:bg-surface hover:text-text lg:px-7"
         >
-          <div class="flex min-w-0 items-center gap-5">
+          <div class="flex min-w-0 flex-1 items-center gap-5">
             <img
               v-if="item.icon"
               :src="item.icon"
@@ -37,10 +37,10 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
               class="h-8 w-12 shrink-0 object-contain"
             >
             <span class="min-w-0">
-              <strong class="block whitespace-pre-line font-sans text-[20px] font-bold uppercase leading-[21px] lg:text-[25px] lg:leading-[25px]">
+              <strong class="block min-w-0 max-w-full whitespace-pre-line font-sans text-[20px] font-bold uppercase leading-[21px] [overflow-wrap:anywhere] hyphens-auto lg:text-[25px] lg:leading-[25px]">
                 {{ item.title }}
               </strong>
-              <small v-if="item.note" class="mt-1 block whitespace-pre-line font-sans text-xs uppercase leading-3">
+              <small v-if="item.note" class="mt-1 block min-w-0 max-w-full whitespace-pre-line font-sans text-xs uppercase leading-3 [overflow-wrap:anywhere] hyphens-auto">
                 {{ item.note }}
               </small>
             </span>

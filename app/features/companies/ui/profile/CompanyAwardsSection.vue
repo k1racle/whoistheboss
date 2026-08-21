@@ -31,7 +31,7 @@ const visibleAwards = computed(() => props.awards.length < 3
         <article
           v-for="(award, index) in visibleAwards"
           :key="`${award.nominations}-${index}`"
-          class="flex min-h-[320px] flex-col justify-between bg-accent p-5 text-text-on-accent lg:aspect-square lg:min-h-0 lg:w-full lg:p-7"
+          class="flex min-h-[320px] min-w-0 flex-col justify-between overflow-hidden bg-accent p-5 text-text-on-accent lg:aspect-square lg:min-h-0 lg:w-full lg:p-7"
         >
           <div class="flex items-start justify-between gap-5">
             <p class="m-0 whitespace-pre-line font-sans text-base uppercase leading-4">
@@ -44,7 +44,7 @@ const visibleAwards = computed(() => props.awards.length < 3
               class="h-[90px] w-[82px] shrink-0 object-contain"
             >
           </div>
-          <strong class="whitespace-pre-line font-display text-[56px] font-black uppercase leading-[0.88] tracking-[-0.03em] lg:text-[96px]">
+          <strong class="block min-w-0 max-w-full whitespace-pre-line font-display text-[56px] font-black uppercase leading-[0.88] tracking-[-0.03em] [overflow-wrap:anywhere] hyphens-auto md:text-[clamp(40px,5vw,56px)] lg:text-[clamp(48px,5vw,96px)]">
             {{ award.place }}
           </strong>
         </article>
