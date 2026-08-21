@@ -35,8 +35,8 @@ const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
       </div>
 
       <div class="mt-11 hidden lg:block">
-        <div class="flex w-full items-start justify-between gap-10">
-          <p class="m-0 w-[500px] max-w-[500px] shrink-0 translate-y-3 whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text">
+        <div class="flex w-full items-center justify-between gap-10">
+          <p class="m-0 w-[500px] max-w-[500px] shrink-0 whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text">
             {{ topText }}
           </p>
           <h2 class="m-0 ml-auto whitespace-nowrap text-right font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
@@ -44,11 +44,11 @@ const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
           </h2>
         </div>
 
-        <div class="flex w-full items-end justify-between gap-10">
+        <div class="-mt-[clamp(24px,3vw,58px)] flex w-full items-center justify-between gap-10">
           <h2 class="m-0 whitespace-nowrap font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
             {{ firstName }}
           </h2>
-          <p class="m-0 ml-auto w-[500px] max-w-[500px] shrink-0 -translate-y-20 whitespace-pre-line text-left font-sans text-base font-bold uppercase leading-4 text-text">
+          <p class="m-0 ml-auto w-[500px] max-w-[500px] shrink-0 whitespace-pre-line text-left font-sans text-base font-bold uppercase leading-4 text-text">
             {{ bottomText }}
           </p>
         </div>

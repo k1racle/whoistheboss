@@ -2,14 +2,11 @@
 import { ROUTES } from '@shared/navigation'
 import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
-import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 
 withDefaults(defineProps<{
-  logoSrc?: string
   logoVisible?: boolean
   socialLinks?: SocialLink[]
 }>(), {
-  logoSrc: '',
   logoVisible: true,
   socialLinks: () => SOCIAL_LINKS,
 })
@@ -73,7 +70,7 @@ onBeforeUnmount(() => {
           aria-label="Маршрут Построен"
           class="shrink-0"
         >
-          <SiteLogo :src="logoSrc" class="lg:hidden" />
+          <span aria-hidden="true" class="block size-9 bg-accent sm:size-10 lg:hidden" />
           <Transition
             enter-active-class="transition-[opacity,transform] duration-150 ease-out"
             enter-from-class="-translate-y-1 opacity-0"
@@ -83,11 +80,11 @@ onBeforeUnmount(() => {
             leave-to-class="-translate-y-1 opacity-0"
             mode="out-in"
           >
-            <SiteLogo
+            <span
               v-if="logoVisible"
               key="site-logo"
-              :src="logoSrc"
-              class="hidden lg:block"
+              aria-hidden="true"
+              class="hidden size-11 bg-accent lg:block"
             />
             <span
               v-else

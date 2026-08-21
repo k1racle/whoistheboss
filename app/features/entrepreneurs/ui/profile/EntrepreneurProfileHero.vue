@@ -20,9 +20,9 @@ const displayNameSize = computed(() => getDisplayNameSize(props.entrepreneur.nam
 <template>
   <section id="top" class="relative min-h-[calc(100svh-142px)] overflow-hidden bg-bg">
     <div class="mx-auto hidden min-h-[calc(100svh-142px)] w-[min(calc(100%_-_80px),1920px)] items-end lg:flex">
-      <div class="flex w-full flex-col">
-        <div class="mb-[-4.65rem] flex w-full items-end justify-between gap-10">
-          <span class="whitespace-nowrap font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-none tracking-[-0.03em] text-accent">
+      <div class="flex w-full flex-col gap-[clamp(1rem,1.5vw,2rem)]">
+        <div class="flex w-full items-end justify-between gap-10">
+          <span class="whitespace-nowrap font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
             WHO'S THE
           </span>
           <p
@@ -33,20 +33,20 @@ const displayNameSize = computed(() => getDisplayNameSize(props.entrepreneur.nam
           </p>
         </div>
 
-        <div class="mb-[-5.05rem] flex w-full items-end justify-between gap-10">
+        <div class="flex w-full items-end justify-between gap-10">
           <p
             v-if="entrepreneur.heroLeftTeaser || entrepreneur.title"
             class="w-[min(500px,32vw)] max-w-[500px] self-center text-right font-sans text-base font-bold uppercase leading-4 text-text"
           >
             {{ entrepreneur.heroLeftTeaser || entrepreneur.title }}
           </p>
-          <h1 class="m-0 whitespace-nowrap text-right font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
+          <h1 class="m-0 whitespace-nowrap text-right font-display font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent" :class="displayNameSize">
             {{ entrepreneur.heroLastName }}
           </h1>
         </div>
 
         <div class="flex w-full items-end justify-between gap-10">
-          <h1 class="m-0 whitespace-nowrap text-left font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
+          <h1 class="m-0 whitespace-nowrap text-left font-display font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent" :class="displayNameSize">
             {{ entrepreneur.heroFirstName }}
           </h1>
           <p

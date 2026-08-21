@@ -16,7 +16,7 @@ const imageSrc = computed(() => props.company.coverImage || '/images/placeholder
     class="group relative grid aspect-square min-w-0 grid-rows-[minmax(0,1fr)_104px] bg-accent text-text-on-accent no-underline md:grid-rows-[minmax(0,1fr)_132px]"
     :aria-label="`${company.name}, ${company.type}`"
   >
-    <h3 class="absolute top-0 left-[17px] z-[1] max-w-[calc(100%_-_34px)] overflow-hidden bg-accent px-2.5 py-2 font-sans text-[25px] font-normal uppercase leading-[27px] tracking-normal text-text-on-accent md:px-3 md:text-[32px] md:leading-8">
+    <h3 class="absolute left-0 top-0 z-[1] max-w-full overflow-hidden bg-accent px-[17px] py-2 font-sans text-[25px] font-normal uppercase leading-[27px] tracking-normal text-text-on-accent md:text-[32px] md:leading-8">
       {{ company.name }}
     </h3>
 

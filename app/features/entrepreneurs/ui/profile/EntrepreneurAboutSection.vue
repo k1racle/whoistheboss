@@ -62,17 +62,17 @@ const itemClass = (index: number) => {
           v-for="(item, index) in items"
           :key="item.href"
           :to="item.href"
-          class="relative flex min-h-[10.75rem] flex-col justify-between border p-4 no-underline transition-colors duration-200 max-md:min-h-28"
+          class="relative flex min-h-[10.75rem] min-w-0 flex-col justify-between border p-4 no-underline transition-colors duration-200 max-md:min-h-28"
           :class="itemClass(index)"
           @blur="clearActive"
           @mouseenter="setActive(index)"
           @mouseleave="clearActive"
           @focus="setActive(index)"
         >
-          <strong class="block w-[64%] self-end text-right font-sans text-[32px] font-bold uppercase leading-8 tracking-[-1.25px] max-md:text-2xl max-md:leading-6">
+          <strong class="block min-w-0 max-w-full w-[68%] self-end text-right font-sans text-[clamp(1.5rem,2.35vw,2rem)] font-bold uppercase leading-none tracking-[-0.04em] [overflow-wrap:anywhere] hyphens-auto">
             {{ item.label }}
           </strong>
-          <small class="block w-3/5 font-sans text-base uppercase leading-4 text-current max-md:text-[13px] max-md:leading-[14px]">
+          <small class="block min-w-0 w-3/5 font-sans text-base uppercase leading-4 text-current [overflow-wrap:anywhere] hyphens-auto max-md:text-[13px] max-md:leading-[14px]">
             {{ item.note }}
           </small>
           <span class="absolute bottom-3.5 right-4 text-[22px] leading-none" aria-hidden="true">[↗]</span>

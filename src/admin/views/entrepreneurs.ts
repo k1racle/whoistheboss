@@ -359,7 +359,7 @@ function createStorySection(type: EntrepreneurStorySection['type'], name = ''): 
   const base = {
     id,
     isVisible: true,
-    menuLabel: storySectionTypeLabels[type],
+    menuLabel: type === 'BIOGRAPHY' ? `Маршрут ${name}`.trim() : storySectionTypeLabels[type],
     menuDescription: '',
     menuImage: null,
   };
@@ -386,7 +386,7 @@ function normalizeAdminStorySections(item: Entrepreneur): EntrepreneurStorySecti
       id: 'legacy-biography',
       type: 'BIOGRAPHY',
       isVisible: parseVisibility(item.sectionVisibility).biography !== false,
-      menuLabel: labels[0] || `Who's the ${item.name}?`,
+      menuLabel: labels[0] || `Маршрут ${item.name}`,
       menuDescription: descriptions[0] || 'Краткая информация и навигация по странице героя.',
       menuImage: gallery[0] || fallbackImage,
       eyebrow: 'Биография',

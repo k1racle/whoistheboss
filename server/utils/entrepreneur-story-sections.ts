@@ -61,6 +61,7 @@ function normalizeStoredSection(
       return {
         ...base,
         type: 'BIOGRAPHY',
+        menuLabel: text(value.menuLabel, `Маршрут ${entrepreneurName}`),
         eyebrow: text(value.eyebrow, 'Биография'),
         title: text(value.title, entrepreneurName.toUpperCase()),
         textOne: text(value.textOne),
@@ -129,7 +130,7 @@ export function normalizeEntrepreneurStorySections(
       id: LEGACY_SECTION_IDS.biography,
       type: 'BIOGRAPHY',
       isVisible: sectionVisibility.biography !== false,
-      menuLabel: labels[0] || `Who's the ${entrepreneur.name}?`,
+      menuLabel: labels[0] || `Маршрут ${entrepreneur.name}`,
       menuDescription: descriptions[0] || 'Краткая информация и навигация по странице героя.',
       menuImage: galleryImages[0] || fallbackImage,
       eyebrow: 'Биография',
