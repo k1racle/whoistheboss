@@ -14,14 +14,15 @@ const fallbackData: ContactPageData = {
   email: '',
 }
 
-const { data } = await useAsyncData('contacts-page', async () => {
-  try {
-    return await $fetch<ContactPageData>('/api/contacts')
-  }
-  catch {
-    return fallbackData
-  }
-})
+const { data, error: pageError } = await useAsyncData('contacts-page', async () =>
+  await $fetch<ContactPageData>('/api/contacts'))
+
+if (pageError.value) {
+  throw createError({
+    statusCode: pageError.value.statusCode || 503,
+    statusMessage: 'Contacts page is unavailable',
+  })
+}
 
 useSeoMeta({
   title: `Контакты — ${config.public.siteName}`,

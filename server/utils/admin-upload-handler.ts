@@ -5,7 +5,7 @@ import sharp from 'sharp'
 import type { H3Event } from 'h3'
 import { requireAdminMethod, throwAdminError } from '@server/utils/admin-api'
 import { prewarmImageVariants } from '@server/utils/image-prewarm'
-import { assertContentLength } from '@server/utils/request-security'
+import { readLimitedRawBody } from '@server/utils/request-security'
 
 const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'])
 const videoExtensions = new Set(['.mp4', '.webm', '.mov', '.m4v'])
@@ -99,7 +99,7 @@ export async function handleUploads(event: H3Event, path: readonly string[]) {
   const kind = path[0]
   const config = useRuntimeConfig()
   const configuredMaxSizeMb = kind === 'image' ? config.maxImageUploadSizeMb : config.maxUploadSizeMb
-  assertContentLength(event, configuredMaxSizeMb * 1024 * 1024 + 64 * 1024)
+  await readLimitedRawBody(event, configuredMaxSizeMb * 1024 * 1024 + 64 * 1024)
   const parts = await readMultipartFormData(event)
   const file = parts?.find(part => part.name === 'file' && part.filename)
   if (!file?.filename) throwAdminError(400, 'No file uploaded')

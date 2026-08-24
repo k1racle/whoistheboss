@@ -17,14 +17,15 @@ const fallbackPage: CompaniesPageData = {
   sectionVisibility: {},
 }
 
-const { data } = await useAsyncData('companies-page', async () => {
-  try {
-    return await $fetch<CompaniesPageData>('/api/companies-page')
-  }
-  catch {
-    return fallbackPage
-  }
-})
+const { data, error: pageError } = await useAsyncData('companies-page', async () =>
+  await $fetch<CompaniesPageData>('/api/companies-page'))
+
+if (pageError.value) {
+  throw createError({
+    statusCode: pageError.value.statusCode || 503,
+    statusMessage: 'Companies page is unavailable',
+  })
+}
 
 const page = computed(() => data.value ?? fallbackPage)
 const success = computed(() => route.query.success === '1')
