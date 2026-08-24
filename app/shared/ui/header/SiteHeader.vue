@@ -68,10 +68,10 @@ onBeforeUnmount(() => {
         <NuxtLink
           :to="ROUTES.LANDING"
           aria-label="Маршрут Построен"
-          class="shrink-0"
+          class="relative block size-4 shrink-0 before:absolute before:-inset-2 before:content-['']"
         >
-          <span aria-hidden="true" class="block size-8 bg-accent sm:size-9 lg:hidden" />
-          <span aria-hidden="true" class="hidden size-9 shrink-0 lg:block">
+          <span aria-hidden="true" class="block size-full bg-accent lg:hidden" />
+          <span aria-hidden="true" class="hidden size-full shrink-0 lg:block">
             <Transition
               enter-active-class="transition-[opacity,transform] duration-150 ease-out"
               enter-from-class="-translate-y-1 opacity-0"

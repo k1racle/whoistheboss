@@ -51,7 +51,7 @@ const displayNameSize = computed(() => getDisplayNameSize(props.entrepreneur.nam
           </h1>
           <p
             v-if="entrepreneur.heroBottomRightTeaser || entrepreneur.title"
-            class="w-[min(500px,32vw)] max-w-[500px] self-end font-sans text-base font-bold uppercase leading-4 text-text"
+            class="w-[min(500px,32vw)] max-w-[500px] self-center font-sans text-base font-bold uppercase leading-4 text-text"
           >
             {{ entrepreneur.heroBottomRightTeaser || entrepreneur.title }}
           </p>

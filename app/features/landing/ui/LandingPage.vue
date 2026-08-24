@@ -9,7 +9,6 @@ import LandingFeaturedHeroSection from '@features/landing/ui/sections/LandingFea
 import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection.vue'
 import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHeroesSection.vue'
 import LandingPlacesSection from '@features/landing/ui/sections/LandingPlacesSection.vue'
-import { useSiteHeader } from '@shared/ui/header/useSiteHeader'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const props = defineProps<{
@@ -18,50 +17,13 @@ const props = defineProps<{
 
 const heroes = computed(() => props.page.entrepreneurs.map(toLandingHeroCard))
 
-const { logoVisible } = useSiteHeader()
 const { isEnabled: isBannerEnabled } = useSiteBanner()
-
-const aboutSectionRef = ref<InstanceType<typeof LandingAboutSection> | null>(null)
-
-const updateLogoVisibility = () => {
-  const logoEl = aboutSectionRef.value?.logoRef
-  if (!logoEl) return
-
-  const headerHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0
-  const logoTop = logoEl.getBoundingClientRect().top
-
-  logoVisible.value = logoTop < headerHeight
-}
-
-let logoFrameId: number | undefined
-const scheduleLogoVisibilityUpdate = () => {
-  if (logoFrameId !== undefined) return
-
-  logoFrameId = window.requestAnimationFrame(() => {
-    logoFrameId = undefined
-    updateLogoVisibility()
-  })
-}
-
-onMounted(() => {
-  updateLogoVisibility()
-  window.addEventListener('scroll', scheduleLogoVisibilityUpdate, { passive: true })
-  window.addEventListener('resize', scheduleLogoVisibilityUpdate)
-})
-
-onBeforeUnmount(() => {
-  if (logoFrameId !== undefined) window.cancelAnimationFrame(logoFrameId)
-  window.removeEventListener('scroll', scheduleLogoVisibilityUpdate)
-  window.removeEventListener('resize', scheduleLogoVisibilityUpdate)
-  logoVisible.value = true
-})
 </script>
 
 <template>
   <div class="flex flex-col">
     <LandingHeroSection :title="page.heroTitle" />
     <LandingAboutSection
-      ref="aboutSectionRef"
       :title="page.aboutTitle"
       :text="page.aboutText"
       :video-type="page.aboutVideoType"
