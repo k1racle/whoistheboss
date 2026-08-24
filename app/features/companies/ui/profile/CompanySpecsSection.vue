@@ -11,6 +11,7 @@ const props = defineProps<{
 }>()
 
 const protectedTitle = computed(() => protectPrepositions(props.title))
+const protectedDescription = computed(() => protectPrepositions(props.description))
 </script>
 
 <template>
@@ -20,7 +21,7 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
         {{ protectedTitle }}
       </SectionTitle>
       <p class="mt-3 whitespace-pre-line font-sans text-base uppercase leading-4 text-text">
-        {{ description }}
+        {{ protectedDescription }}
       </p>
 
       <div class="mt-8 grid gap-2.5">
@@ -38,10 +39,10 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
             >
             <span class="min-w-0">
               <strong class="block min-w-0 max-w-full whitespace-pre-line font-sans text-[20px] font-bold uppercase leading-[21px] [overflow-wrap:anywhere] hyphens-auto lg:text-[25px] lg:leading-[25px]">
-                {{ item.title }}
+                {{ protectPrepositions(item.title) }}
               </strong>
               <small v-if="item.note" class="mt-1 block min-w-0 max-w-full whitespace-pre-line font-sans text-xs uppercase leading-3 [overflow-wrap:anywhere] hyphens-auto">
-                {{ item.note }}
+                {{ protectPrepositions(item.note) }}
               </small>
             </span>
           </div>

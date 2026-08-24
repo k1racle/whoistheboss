@@ -10,6 +10,7 @@ const props = defineProps<{
 }>()
 
 const protectedTitle = computed(() => protectPrepositions(props.title))
+const protectedDescription = computed(() => protectPrepositions(props.description))
 const visibleAwards = computed(() => props.awards.length < 3
   ? props.awards
   : props.awards.slice(0, Math.floor(props.awards.length / 3) * 3))
@@ -23,7 +24,7 @@ const visibleAwards = computed(() => props.awards.length < 3
           {{ protectedTitle }}
         </SectionTitle>
         <p v-if="description" class="mt-4 max-w-[640px] whitespace-pre-line font-sans text-base leading-4 text-text">
-          {{ description }}
+          {{ protectedDescription }}
         </p>
       </div>
 
@@ -35,7 +36,7 @@ const visibleAwards = computed(() => props.awards.length < 3
         >
           <div class="flex items-start justify-between gap-5">
             <p class="m-0 whitespace-pre-line font-sans text-base uppercase leading-4">
-              {{ award.nominations }}
+              {{ protectPrepositions(award.nominations) }}
             </p>
             <img
               v-if="award.icon"
@@ -45,7 +46,7 @@ const visibleAwards = computed(() => props.awards.length < 3
             >
           </div>
           <strong class="block min-w-0 max-w-full whitespace-pre-line font-display text-[56px] font-black uppercase leading-[0.88] tracking-[-0.03em] [overflow-wrap:anywhere] hyphens-auto md:text-[clamp(40px,5vw,56px)] lg:text-[clamp(48px,5vw,96px)]">
-            {{ award.place }}
+            {{ protectPrepositions(award.place) }}
           </strong>
         </article>
       </div>

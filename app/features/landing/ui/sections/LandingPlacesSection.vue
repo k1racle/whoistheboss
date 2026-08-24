@@ -14,29 +14,22 @@ const props = defineProps<{
 }>()
 
 const protectedTitle = computed(() => protectPrepositions(props.title))
+const protectedDescription = computed(() => protectPrepositions(props.description))
 
 </script>
 
 <template>
-  <section class="border-b border-border-strong bg-bg">
+  <section class="relative border-b border-border-strong bg-bg">
     <div class="mx-auto w-full max-w-[1920px] px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
-      <div class="mb-8 flex flex-col gap-5 lg:mb-10">
-        <div class="flex items-center justify-between gap-6">
+      <div class="mb-8 flex flex-col gap-5 lg:mb-10 lg:pr-40">
+        <div>
           <SectionTitle>
             {{ protectedTitle }}
           </SectionTitle>
-
-          <ButtonLink
-            :to="ROUTES.COMPANIES"
-            desktop-only
-            class="w-fit shrink-0"
-          >
-            Еще
-          </ButtonLink>
         </div>
 
         <p class="max-w-[860px] font-sans text-base leading-4 text-text/78">
-          {{ description }}
+          {{ protectedDescription }}
         </p>
       </div>
 
@@ -62,5 +55,13 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
         Места появятся после первой публикации
       </p>
     </div>
+
+    <ButtonLink
+      :to="ROUTES.COMPANIES"
+      desktop-only
+      class="absolute right-4 top-12 w-fit sm:right-6 lg:right-10 lg:top-16"
+    >
+      Еще
+    </ButtonLink>
   </section>
 </template>

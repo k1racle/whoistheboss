@@ -70,29 +70,29 @@ onBeforeUnmount(() => {
           aria-label="Маршрут Построен"
           class="shrink-0"
         >
-          <span aria-hidden="true" class="block size-9 bg-accent sm:size-10 lg:hidden" />
-          <Transition
-            enter-active-class="transition-[opacity,transform] duration-150 ease-out"
-            enter-from-class="-translate-y-1 opacity-0"
-            enter-to-class="translate-y-0 opacity-100"
-            leave-active-class="transition-[opacity,transform] duration-150 ease-out"
-            leave-from-class="translate-y-0 opacity-100"
-            leave-to-class="-translate-y-1 opacity-0"
-            mode="out-in"
-          >
-            <span
-              v-if="logoVisible"
-              key="site-logo"
-              aria-hidden="true"
-              class="hidden size-11 bg-accent lg:block"
-            />
-            <span
-              v-else
-              key="logo-placeholder"
-              aria-hidden="true"
-              class="hidden size-4 bg-accent lg:block"
-            />
-          </Transition>
+          <span aria-hidden="true" class="block size-8 bg-accent sm:size-9 lg:hidden" />
+          <span aria-hidden="true" class="hidden size-9 shrink-0 lg:block">
+            <Transition
+              enter-active-class="transition-[opacity,transform] duration-150 ease-out"
+              enter-from-class="-translate-y-1 opacity-0"
+              enter-to-class="translate-y-0 opacity-100"
+              leave-active-class="transition-[opacity,transform] duration-150 ease-out"
+              leave-from-class="translate-y-0 opacity-100"
+              leave-to-class="-translate-y-1 opacity-0"
+              mode="out-in"
+            >
+              <span
+                v-if="logoVisible"
+                key="site-logo"
+                class="block size-full bg-accent"
+              />
+              <span
+                v-else
+                key="logo-placeholder"
+                class="block size-full bg-accent"
+              />
+            </Transition>
+          </span>
         </NuxtLink>
 
         <nav

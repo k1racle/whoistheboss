@@ -22,6 +22,9 @@ const backdropStyle = computed(() => backgroundImageUrl.value
   ? { backgroundImage: `url('${backgroundImageUrl.value}')` }
   : undefined)
 const protectedTitle = computed(() => protectPrepositions(props.title))
+const protectedTextOne = computed(() => protectPrepositions(props.textOne))
+const protectedTextTwo = computed(() => protectPrepositions(props.textTwo))
+const protectedTextThree = computed(() => protectPrepositions(props.textThree))
 </script>
 
 <template>
@@ -50,12 +53,12 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
       </SectionTitle>
 
       <p class="mx-auto mt-6 w-[min(520px,100%)] whitespace-pre-line font-sans text-base leading-4 text-text lg:w-[min(520px,42vw)]">
-        {{ textOne }}
+        {{ protectedTextOne }}
       </p>
 
       <div class="mt-16 grid items-end gap-7 text-left lg:mt-[88px] lg:grid-cols-[1fr_auto_1fr] lg:gap-20">
         <p class="m-0 max-w-[420px] whitespace-pre-line font-sans text-base leading-4 text-text">
-          {{ textTwo }}
+          {{ protectedTextTwo }}
         </p>
 
         <NuxtLink
@@ -67,7 +70,7 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
         </NuxtLink>
 
         <p class="m-0 max-w-[420px] justify-self-start whitespace-pre-line font-sans text-base leading-4 text-text lg:justify-self-end lg:text-right">
-          {{ textThree }}
+          {{ protectedTextThree }}
         </p>
       </div>
     </div>

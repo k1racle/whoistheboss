@@ -11,7 +11,8 @@ const paragraphs = computed(() =>
   props.text
     .split(/\n\s*\n/)
     .map(paragraph => paragraph.trim())
-    .filter(Boolean),
+    .filter(Boolean)
+    .map(protectPrepositions),
 )
 const protectedTitle = computed(() => protectPrepositions(props.title))
 </script>

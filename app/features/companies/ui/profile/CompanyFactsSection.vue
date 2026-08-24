@@ -12,6 +12,9 @@ const props = defineProps<{
 }>()
 
 const protectedTitle = computed(() => protectPrepositions(props.title))
+const protectedSubtitle = computed(() => protectPrepositions(props.subtitle))
+const protectedTextOne = computed(() => protectPrepositions(props.textOne))
+const protectedTextTwo = computed(() => protectPrepositions(props.textTwo))
 </script>
 
 <template>
@@ -22,7 +25,7 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
           {{ protectedTitle }}
         </SectionTitle>
         <p v-if="subtitle" class="mt-5 max-w-[760px] whitespace-pre-line font-sans text-base font-bold uppercase leading-4 text-text">
-          {{ subtitle }}
+          {{ protectedSubtitle }}
         </p>
         <div class="mt-10 aspect-video overflow-hidden bg-border-strong">
           <NuxtImg
@@ -40,10 +43,10 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
 
       <div class="flex flex-col gap-8 lg:pt-4">
         <p class="m-0 whitespace-pre-line font-sans text-base leading-4 text-text">
-          {{ textOne }}
+          {{ protectedTextOne }}
         </p>
         <p class="m-0 whitespace-pre-line font-sans text-base leading-4 text-text lg:mt-auto">
-          {{ textTwo }}
+          {{ protectedTextTwo }}
         </p>
       </div>
     </div>

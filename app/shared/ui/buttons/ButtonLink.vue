@@ -36,9 +36,9 @@ const props = withDefaults(defineProps<{
 const displayClass = computed(() => props.desktopOnly ? 'hidden lg:inline-flex' : 'inline-flex')
 
 const sizeClasses: Record<ButtonLinkSize, string> = {
-  md: 'min-h-11 gap-2 px-4 py-2.5 text-sm leading-4',
-  header: 'min-h-9 gap-2 px-3 py-2 text-[13px] leading-4 sm:min-h-10 sm:px-4 sm:text-sm lg:text-base',
-  story: 'min-h-[42px] gap-3 px-4 py-2 text-base leading-4',
+  md: 'h-11 text-sm leading-4',
+  header: 'h-[38px] text-[13px] leading-4 sm:h-10 sm:text-sm lg:text-base',
+  story: 'h-[42px] text-base leading-4',
 }
 
 const variantClasses: Record<ButtonLinkVariant, string> = {
@@ -48,11 +48,14 @@ const variantClasses: Record<ButtonLinkVariant, string> = {
 }
 
 const weightClass = computed(() => props.emphasis ? 'font-bold tracking-[0.12em]' : 'font-normal tracking-normal')
+const horizontalPaddingClass = computed(() => props.size === 'header' ? 'px-3 sm:px-4' : 'px-4')
+const contentGapClass = computed(() => props.size === 'story' ? 'gap-3' : 'gap-2')
 
 const buttonClasses = computed(() => [
   displayClass.value,
   'group items-center justify-center bg-accent font-sans uppercase text-text-on-accent no-underline transition-colors hover:bg-surface hover:text-accent focus-visible:bg-surface focus-visible:text-accent',
   sizeClasses[props.size],
+  horizontalPaddingClass.value,
   variantClasses[props.variant],
   weightClass.value,
 ])
@@ -63,20 +66,25 @@ const buttonClasses = computed(() => [
     :to="to"
     :class="buttonClasses"
   >
-    <span class="inline-flex h-[22px] items-center">
-      <slot />
-    </span>
     <span
-      v-if="arrow === 'badge'"
-      aria-hidden="true"
-      class="inline-flex h-[22px] items-center justify-center bg-accent px-2 text-text-on-accent transition-colors group-hover:bg-surface group-hover:text-accent group-focus-visible:bg-surface group-focus-visible:text-accent"
+      class="inline-flex h-full items-center justify-center"
+      :class="contentGapClass"
     >
-      <span class="block h-[19px] w-[34px] shrink-0 bg-current [-webkit-mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat] [mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat]" />
+      <span class="inline-flex items-center justify-center">
+        <slot />
+      </span>
+      <span
+        v-if="arrow === 'badge'"
+        aria-hidden="true"
+        class="inline-flex h-[17px] w-[30px] shrink-0 items-center justify-center bg-accent text-text-on-accent transition-colors group-hover:bg-surface group-hover:text-accent group-focus-visible:bg-surface group-focus-visible:text-accent"
+      >
+        <span class="block size-full bg-current [-webkit-mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat] [mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat]" />
+      </span>
+      <span
+        v-else-if="arrow === 'mark'"
+        aria-hidden="true"
+        class="inline-block h-[17px] w-[30px] shrink-0 bg-current [-webkit-mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat] [mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat]"
+      />
     </span>
-    <span
-      v-else-if="arrow === 'mark'"
-      aria-hidden="true"
-      class="inline-block h-[1.35rem] w-[2.15rem] shrink-0 bg-current [-webkit-mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat] [mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat]"
-    />
   </NuxtLink>
 </template>

@@ -32,7 +32,7 @@ const compactFormTitle = computed(() => props.formTitle.replace(/\n/g, ' '))
     </div>
 
     <p
-      class="order-1 max-w-full whitespace-pre-line font-display text-[clamp(4.125rem,15vw,6.875rem)] font-black uppercase leading-none tracking-[-0.03em] md:text-[clamp(5.5rem,13vw,8.5rem)] lg:order-2 lg:translate-y-[clamp(11px,2.55cqw,22px)] lg:text-[clamp(4.875rem,18cqw,13.625rem)] lg:leading-[0.78]"
+      class="order-1 max-w-full whitespace-pre-line font-display text-[clamp(4.125rem,15vw,6.875rem)] font-black uppercase leading-none tracking-[-0.03em] md:text-[clamp(5.5rem,13vw,8.5rem)] lg:order-2 lg:translate-y-[0.13em] lg:text-[clamp(4.875rem,18cqw,13.625rem)] lg:leading-[0.78]"
     >
       {{ ctaTitle }}
     </p>

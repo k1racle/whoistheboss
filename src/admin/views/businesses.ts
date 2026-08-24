@@ -872,7 +872,7 @@ function normalizeBusinessStorySections(item: Partial<Business>): EntrepreneurSt
   return Array.isArray(item.storySections) ? item.storySections : [];
 }
 
-function createBusinessStorySection(type: EntrepreneurStorySection['type'], name = ''): EntrepreneurStorySection {
+function createBusinessStorySection(type: EntrepreneurStorySection['type']): EntrepreneurStorySection {
   const id = globalThis.crypto?.randomUUID?.() || `story-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const base = {
     id,
@@ -883,7 +883,7 @@ function createBusinessStorySection(type: EntrepreneurStorySection['type'], name
   };
 
   if (type === 'BIOGRAPHY') {
-    return { ...base, type, eyebrow: 'Биография', title: name.toUpperCase(), textOne: '', textTwo: '', textThree: '', image: null };
+    return { ...base, type, eyebrow: 'Биография', title: '', textOne: '', textTwo: '', textThree: '', image: null };
   }
   if (type === 'ACCENT') return { ...base, type, title: '', textOne: '', textTwo: '' };
   if (type === 'PORTRAIT') return { ...base, type, title: '', text: '', asideText: '', image: null };
@@ -926,7 +926,7 @@ function renderBusinessStorySectionRow(section: EntrepreneurStorySection, index:
   if (section.type === 'BIOGRAPHY') {
     fields = [
       renderBusinessStoryTextField('Надзаголовок', 'eyebrow', section.eyebrow, 2),
-      renderBusinessStoryTextField('Имя в заголовке', 'title', section.title, 2),
+      renderBusinessStoryTextField('Заголовок', 'title', section.title, 2),
       renderBusinessStoryTextField('Первый текст', 'textOne', section.textOne, 6),
       renderBusinessStoryTextField('Второй текст', 'textTwo', section.textTwo, 6),
       renderBusinessStoryTextField('Третий текст', 'textThree', section.textThree, 6),
@@ -1067,8 +1067,7 @@ function attachBusinessStorySections(form: HTMLFormElement) {
   addButton.addEventListener('click', () => {
     if (!typeSelect.value) return;
     const type = typeSelect.value as EntrepreneurStorySection['type'];
-    const name = form.querySelector<HTMLInputElement>('input[name="name"]')?.value.trim() || '';
-    const section = createBusinessStorySection(type, name);
+    const section = createBusinessStorySection(type);
     list.insertAdjacentHTML('beforeend', renderBusinessStorySectionRow(section, list.children.length));
     const orderItem = renderBusinessOrderItem(
       businessStoryOrderKey(section.id),

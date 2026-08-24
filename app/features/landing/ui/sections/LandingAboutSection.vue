@@ -23,7 +23,10 @@ const fallbackImageFailed = shallowRef(false)
 
 defineExpose({ logoRef })
 
-const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
+const paragraphs = computed(() => props.text
+  .split(/\n{2,}/)
+  .filter(Boolean)
+  .map(protectPrepositions))
 const protectedTitle = computed(() => protectPrepositions(props.title))
 const fallbackImageSrc = '/images/placeholder.svg'
 

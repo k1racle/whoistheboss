@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AdditionalSectionData } from '@shared/types/additional-section'
+import { protectPrepositions } from '@shared/lib/typography'
 import AdditionalSectionAccent from './AdditionalSectionAccent.vue'
 import AdditionalSectionBiography from './AdditionalSectionBiography.vue'
 import AdditionalSectionPortrait from './AdditionalSectionPortrait.vue'
@@ -20,7 +21,9 @@ const props = withDefaults(defineProps<{
 const attrs = useAttrs()
 const biographyBlocks = computed(() => {
   if (props.section.type !== 'BIOGRAPHY') return []
-  return [props.section.textOne, props.section.textTwo, props.section.textThree].filter(Boolean)
+  return [props.section.textOne, props.section.textTwo, props.section.textThree]
+    .filter(Boolean)
+    .map(protectPrepositions)
 })
 </script>
 
@@ -29,7 +32,7 @@ const biographyBlocks = computed(() => {
     v-if="section.type === 'BIOGRAPHY'"
     v-bind="attrs"
     :eyebrow="section.eyebrow"
-    :title="section.title || subjectName"
+    :title="protectPrepositions(section.title)"
     :image="section.image"
     :image-alt="subjectName"
     :blocks="biographyBlocks"
@@ -39,16 +42,16 @@ const biographyBlocks = computed(() => {
   <AdditionalSectionAccent
     v-else-if="section.type === 'ACCENT'"
     v-bind="attrs"
-    :title="section.title"
-    :text-one="section.textOne"
-    :text-two="section.textTwo"
+    :title="protectPrepositions(section.title)"
+    :text-one="protectPrepositions(section.textOne)"
+    :text-two="protectPrepositions(section.textTwo)"
   />
   <AdditionalSectionPortrait
     v-else-if="section.type === 'PORTRAIT'"
     v-bind="attrs"
-    :title="section.title"
-    :text="section.text"
-    :aside-text="section.asideText"
+    :title="protectPrepositions(section.title)"
+    :text="protectPrepositions(section.text)"
+    :aside-text="protectPrepositions(section.asideText)"
     :image="section.image"
     :image-alt="subjectName"
     :button-href="buttonHref"
@@ -57,9 +60,9 @@ const biographyBlocks = computed(() => {
   <AdditionalSectionWide
     v-else
     v-bind="attrs"
-    :title="section.title"
-    :text="section.text"
-    :bottom-text="section.bottomText"
+    :title="protectPrepositions(section.title)"
+    :text="protectPrepositions(section.text)"
+    :bottom-text="protectPrepositions(section.bottomText)"
     :image="section.image"
     :image-alt="subjectName"
   />

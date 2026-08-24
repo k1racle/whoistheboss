@@ -127,16 +127,11 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
 
   const sectionVisibility = parseSectionVisibility(entrepreneur.sectionVisibility)
   const hasStoredStorySections = Array.isArray(entrepreneur.storySections)
-  const biographyFallback = (entrepreneur.bio || entrepreneur.quote || '')
-    .split(/\n\s*\n/)
-    .map((item) => stripHtml(item))
-    .filter(Boolean)
   const educationFallback = stripHtml(entrepreneur.bio || entrepreneur.quote || '')
   const storySections = normalizeEntrepreneurStorySections(
     entrepreneur,
     sectionVisibility,
     aboutGalleryImages,
-    biographyFallback,
     educationFallback,
   )
   const customLabels = (entrepreneur.aboutMenuLabels || '').split(/\r?\n/).map(item => item.trim())

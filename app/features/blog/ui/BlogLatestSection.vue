@@ -20,6 +20,7 @@ const articleRows = computed<ArticleRowItem[]>(() => props.articles.map(article 
   coverImage: article.coverImage,
 })))
 const protectedTitle = computed(() => protectPrepositions(props.title))
+const protectedDescription = computed(() => protectPrepositions(props.description))
 </script>
 
 <template>
@@ -30,7 +31,7 @@ const protectedTitle = computed(() => protectPrepositions(props.title))
           {{ protectedTitle }}
         </SectionTitle>
         <p class="m-0 mt-6 max-w-[720px] font-sans text-base leading-4 text-text">
-          {{ description }}
+          {{ protectedDescription }}
         </p>
       </div>
 

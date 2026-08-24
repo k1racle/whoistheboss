@@ -18,7 +18,7 @@ export const storySectionSchema = z.discriminatedUnion('type', [
   z.object({
     ...storySectionBase,
     type: z.literal('BIOGRAPHY'),
-    eyebrow: shortText.default('Биография'),
+    eyebrow: shortText.default(''),
     title: shortText.default(''),
     textOne: z.string().max(MAX_LONG_TEXT).default(''),
     textTwo: z.string().max(MAX_LONG_TEXT).default(''),

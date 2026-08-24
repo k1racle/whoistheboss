@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { EntrepreneurAboutMenuItem } from '@features/entrepreneurs/model/entrepreneur.types'
+import { protectPrepositions } from '@shared/lib/typography'
 
 const props = defineProps<{
   intro: string
@@ -10,6 +11,7 @@ const props = defineProps<{
 
 const defaultImageIndex = computed(() => props.items.length > 1 ? 1 : 0)
 const hoveredIndex = shallowRef<number | null>(null)
+const protectedIntro = computed(() => protectPrepositions(props.intro))
 
 const activeImage = computed(() => {
   const imageIndex = hoveredIndex.value ?? defaultImageIndex.value
@@ -40,7 +42,7 @@ const itemClass = (index: number) => {
   <section id="about" class="min-h-svh bg-bg py-10 pb-[90px] max-lg:min-h-0 max-lg:px-5 max-lg:pb-20">
     <div class="mx-auto mb-[90px] w-[min(calc(100%_-_80px),1920px)] max-lg:mb-10 max-lg:w-full">
       <p v-if="intro" class="m-0 w-[min(720px,42%)] whitespace-pre-line font-sans text-base leading-4 text-text max-lg:w-full">
-        {{ intro }}
+        {{ protectedIntro }}
       </p>
     </div>
 
@@ -70,10 +72,10 @@ const itemClass = (index: number) => {
           @focus="setActive(index)"
         >
           <strong class="block min-w-0 max-w-full w-[68%] self-end text-right font-sans text-[clamp(1.5rem,2.35vw,2rem)] font-bold uppercase leading-none tracking-[-0.04em] [overflow-wrap:anywhere] hyphens-auto">
-            {{ item.label }}
+            {{ protectPrepositions(item.label) }}
           </strong>
           <small class="block min-w-0 w-3/5 font-sans text-base uppercase leading-4 text-current [overflow-wrap:anywhere] hyphens-auto max-md:text-[13px] max-md:leading-[14px]">
-            {{ item.note }}
+            {{ protectPrepositions(item.note) }}
           </small>
           <span class="absolute bottom-3.5 right-4 text-[22px] leading-none" aria-hidden="true">[↗]</span>
         </NuxtLink>

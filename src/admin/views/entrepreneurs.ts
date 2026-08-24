@@ -354,18 +354,18 @@ function renderForm(item: Partial<Entrepreneur>): string {
   `;
 }
 
-function createStorySection(type: EntrepreneurStorySection['type'], name = ''): EntrepreneurStorySection {
+function createStorySection(type: EntrepreneurStorySection['type']): EntrepreneurStorySection {
   const id = globalThis.crypto?.randomUUID?.() || `story-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const base = {
     id,
     isVisible: true,
-    menuLabel: type === 'BIOGRAPHY' ? `Маршрут ${name}`.trim() : storySectionTypeLabels[type],
+    menuLabel: storySectionTypeLabels[type],
     menuDescription: '',
     menuImage: null,
   };
 
   if (type === 'BIOGRAPHY') {
-    return { ...base, type, eyebrow: 'Биография', title: name.toUpperCase(), textOne: '', textTwo: '', textThree: '', image: null };
+    return { ...base, type, eyebrow: '', title: '', textOne: '', textTwo: '', textThree: '', image: null };
   }
   if (type === 'ACCENT') return { ...base, type, title: '', textOne: '', textTwo: '' };
   if (type === 'PORTRAIT') return { ...base, type, title: '', text: '', asideText: '', image: null };
@@ -386,15 +386,15 @@ function normalizeAdminStorySections(item: Entrepreneur): EntrepreneurStorySecti
       id: 'legacy-biography',
       type: 'BIOGRAPHY',
       isVisible: parseVisibility(item.sectionVisibility).biography !== false,
-      menuLabel: labels[0] || `Маршрут ${item.name}`,
-      menuDescription: descriptions[0] || 'Краткая информация и навигация по странице героя.',
-      menuImage: gallery[0] || fallbackImage,
-      eyebrow: 'Биография',
-      title: item.name.toUpperCase(),
-      textOne: item.biographyTextOne || biographyFallback,
+      menuLabel: labels[0] || 'Биография',
+      menuDescription: descriptions[0] || '',
+      menuImage: null,
+      eyebrow: '',
+      title: '',
+      textOne: item.biographyTextOne || '',
       textTwo: item.biographyTextTwo || '',
       textThree: item.biographyTextThree || '',
-      image: item.biographyPhoto || fallbackImage,
+      image: item.biographyPhoto || null,
     },
     {
       id: 'legacy-childhood',
@@ -403,7 +403,7 @@ function normalizeAdminStorySections(item: Entrepreneur): EntrepreneurStorySecti
       menuLabel: labels[1] || 'Краткая биография',
       menuDescription: descriptions[1] || 'Детство, интересы и обстоятельства, которые сформировали взгляд на дело.',
       menuImage: gallery[1] || fallbackImage,
-      title: item.childhoodTitle || 'Детство, среда и первые ориентиры',
+      title: item.childhoodTitle || '',
       textOne: item.childhoodTextOne || biographyFallback,
       textTwo: item.childhoodTextTwo || '',
     },
@@ -414,7 +414,7 @@ function normalizeAdminStorySections(item: Entrepreneur): EntrepreneurStorySecti
       menuLabel: labels[2] || 'Начало карьеры',
       menuDescription: descriptions[2] || 'Образование, первые роли и профессиональный опыт.',
       menuImage: gallery[2] || fallbackImage,
-      title: item.educationTitle || 'Образование\nи опыт\nработы',
+      title: item.educationTitle || '',
       text: item.educationText || biographyFallback || item.title,
       asideText: item.educationAsideText || '',
       image: item.educationPhoto || fallbackImage,
@@ -426,7 +426,7 @@ function normalizeAdminStorySections(item: Entrepreneur): EntrepreneurStorySecti
       menuLabel: labels[3] || 'Первые успехи в бизнесе',
       menuDescription: descriptions[3] || 'Решения, которые привели к первым заметным результатам.',
       menuImage: gallery[3] || fallbackImage,
-      title: item.turnoverTitle || 'Первые успехи\nв бизнесе',
+      title: item.turnoverTitle || '',
       text: item.turnoverText || biographyFallback || item.title,
       bottomText: item.turnoverBottomText || '',
       image: item.turnoverPhoto || fallbackImage,
@@ -507,8 +507,8 @@ function renderStorySectionRow(section: EntrepreneurStorySection, index: number)
   let fields: string;
   if (section.type === 'BIOGRAPHY') {
     fields = [
-      renderStoryTextField('Надзаголовок', 'eyebrow', section.eyebrow, 2),
-      renderStoryTextField('Имя в заголовке', 'title', section.title, 2),
+      renderStoryTextField('Надзаголовок (необязательно)', 'eyebrow', section.eyebrow, 2),
+      renderStoryTextField('Заголовок', 'title', section.title, 2),
       renderStoryTextField('Первый текст', 'textOne', section.textOne, 6),
       renderStoryTextField('Второй текст', 'textTwo', section.textTwo, 6),
       renderStoryTextField('Третий текст', 'textThree', section.textThree, 6),
@@ -663,8 +663,7 @@ function attachStorySections() {
   addButton.addEventListener('click', () => {
     if (!typeSelect.value) return;
     const type = typeSelect.value as EntrepreneurStorySection['type'];
-    const name = form.querySelector<HTMLInputElement>('input[name="name"]')?.value.trim() || '';
-    const section = createStorySection(type, name);
+    const section = createStorySection(type);
     list.insertAdjacentHTML('beforeend', renderStorySectionRow(section, list.children.length));
     const row = list.lastElementChild as HTMLElement | null;
     row?.querySelectorAll<HTMLElement>('[data-media-field]').forEach(field => bindDynamicMediaField?.(field));
@@ -975,7 +974,7 @@ async function collectStorySections(form: HTMLFormElement): Promise<Entrepreneur
     const isVisible = form.querySelector<HTMLInputElement>(`input[name="story_visible_${CSS.escape(id)}"]`)?.checked !== false;
     const menuImageInput = row.querySelector<HTMLInputElement>('[data-story-menu-image]');
     const menuImageFile = row.querySelector<HTMLInputElement>('[data-story-menu-image-file]')?.files?.[0];
-    let menuImage = menuImageInput?.value.trim() || image;
+    let menuImage = menuImageInput?.value.trim() || null;
     if (menuImageFile) menuImage = (await api.uploadImage(menuImageFile)).url;
     const base = {
       id,

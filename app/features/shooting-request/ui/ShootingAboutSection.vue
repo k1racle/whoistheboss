@@ -15,8 +15,12 @@ const props = defineProps<{
 }>()
 
 const logoRef = ref<HTMLElement | null>(null)
-const paragraphs = computed(() => props.text.split(/\n{2,}/).filter(Boolean))
+const paragraphs = computed(() => props.text
+  .split(/\n{2,}/)
+  .filter(Boolean)
+  .map(protectPrepositions))
 const protectedTitle = computed(() => protectPrepositions(props.title))
+const protectedBottomText = computed(() => protectPrepositions(props.bottomText))
 
 defineExpose({ logoRef })
 </script>
@@ -56,7 +60,7 @@ defineExpose({ logoRef })
     </div>
 
     <p class="mx-auto mt-16 w-full max-w-[1920px] font-display text-[clamp(3.5rem,9vw,10rem)] font-black uppercase leading-[0.8] tracking-[-0.04em] text-accent lg:mt-24">
-      {{ bottomText }}
+      {{ protectedBottomText }}
     </p>
   </section>
 </template>

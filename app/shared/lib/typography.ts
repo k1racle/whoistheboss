@@ -1,5 +1,7 @@
 const protectedShortWords = [
-  'а', 'в', 'во', 'да', 'до', 'за', 'и', 'из', 'к', 'ко', 'на', 'не', 'ни', 'но', 'о', 'об', 'от', 'по', 'с', 'со', 'у',
+  'а', 'без', 'близ', 'в', 'вместо', 'вне', 'во', 'да', 'для', 'до', 'за', 'и', 'из-за', 'из-под', 'из', 'или', 'к', 'ко',
+  'кроме', 'либо', 'между', 'на', 'над', 'не', 'ни', 'но', 'о', 'об', 'обо', 'от', 'перед', 'по', 'под', 'при', 'про',
+  'ради', 'с', 'сквозь', 'со', 'среди', 'у', 'через',
 ] as const
 
 const shortWordPattern = new RegExp(
@@ -8,7 +10,13 @@ const shortWordPattern = new RegExp(
 )
 
 export function protectPrepositions(text: string): string {
-  return text.replace(shortWordPattern, '$1$2\u00A0')
+  let result = text
+
+  while (true) {
+    const next = result.replace(shortWordPattern, '$1$2\u00A0')
+    if (next === result) return result
+    result = next
+  }
 }
 
 export type DisplayNameSize =

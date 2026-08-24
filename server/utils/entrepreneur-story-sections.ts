@@ -28,8 +28,8 @@ function text(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback
 }
 
-function nullableText(value: unknown, fallback: string | null = null): string | null {
-  return typeof value === 'string' ? value : fallback
+function nullableText(value: unknown): string | null {
+  return typeof value === 'string' ? value : null
 }
 
 function boolean(value: unknown, fallback = true): boolean {
@@ -43,8 +43,6 @@ function splitLines(value: string | null | undefined): string[] {
 function normalizeStoredSection(
   value: unknown,
   index: number,
-  entrepreneurName: string,
-  fallbackImage: string | null,
 ): AdditionalSectionData | null {
   if (!isRecord(value) || typeof value.id !== 'string') return null
 
@@ -53,7 +51,7 @@ function normalizeStoredSection(
     isVisible: boolean(value.isVisible),
     menuLabel: text(value.menuLabel, `Раздел ${index + 1}`),
     menuDescription: text(value.menuDescription),
-    menuImage: nullableText(value.menuImage, fallbackImage),
+    menuImage: nullableText(value.menuImage),
   }
 
   switch (value.type) {
@@ -61,13 +59,13 @@ function normalizeStoredSection(
       return {
         ...base,
         type: 'BIOGRAPHY',
-        menuLabel: text(value.menuLabel, `Маршрут ${entrepreneurName}`),
-        eyebrow: text(value.eyebrow, 'Биография'),
-        title: text(value.title, entrepreneurName.toUpperCase()),
+        menuLabel: text(value.menuLabel, 'Биография'),
+        eyebrow: text(value.eyebrow),
+        title: text(value.title),
         textOne: text(value.textOne),
         textTwo: text(value.textTwo),
         textThree: text(value.textThree),
-        image: nullableText(value.image, fallbackImage),
+        image: nullableText(value.image),
       }
     case 'ACCENT':
       return {
@@ -84,7 +82,7 @@ function normalizeStoredSection(
         title: text(value.title),
         text: text(value.text),
         asideText: text(value.asideText),
-        image: nullableText(value.image, fallbackImage),
+        image: nullableText(value.image),
       }
     case 'WIDE':
       return {
@@ -93,7 +91,7 @@ function normalizeStoredSection(
         title: text(value.title),
         text: text(value.text),
         bottomText: text(value.bottomText),
-        image: nullableText(value.image, fallbackImage),
+        image: nullableText(value.image),
       }
     default:
       return null
@@ -104,7 +102,6 @@ export function normalizeEntrepreneurStorySections(
   entrepreneur: Entrepreneur,
   sectionVisibility: Record<string, boolean>,
   galleryImages: string[],
-  biographyFallback: string[],
   bodyFallback: string,
 ): AdditionalSectionData[] {
   const raw = entrepreneur.storySections as Prisma.JsonValue | null
@@ -112,33 +109,26 @@ export function normalizeEntrepreneurStorySections(
 
   if (Array.isArray(raw)) {
     return raw
-      .map((item, index) => normalizeStoredSection(item, index, entrepreneur.name, fallbackImage))
+      .map((item, index) => normalizeStoredSection(item, index))
       .filter((item): item is AdditionalSectionData => item !== null)
   }
 
   const labels = splitLines(entrepreneur.aboutMenuLabels)
   const descriptions = splitLines(entrepreneur.aboutMenuDescriptions)
-  const biographyTexts = [
-    entrepreneur.biographyTextOne,
-    entrepreneur.biographyTextTwo,
-    entrepreneur.biographyTextThree,
-  ].map(item => (item || '').trim()).filter(Boolean)
-  const biographyBlocks = biographyTexts.length ? biographyTexts : biographyFallback
-
   return [
     {
       id: LEGACY_SECTION_IDS.biography,
       type: 'BIOGRAPHY',
       isVisible: sectionVisibility.biography !== false,
-      menuLabel: labels[0] || `Маршрут ${entrepreneur.name}`,
-      menuDescription: descriptions[0] || 'Краткая информация и навигация по странице героя.',
-      menuImage: galleryImages[0] || fallbackImage,
-      eyebrow: 'Биография',
-      title: entrepreneur.name.toUpperCase(),
-      textOne: biographyBlocks[0] || '',
-      textTwo: biographyBlocks[1] || '',
-      textThree: biographyBlocks[2] || '',
-      image: entrepreneur.biographyPhoto || fallbackImage,
+      menuLabel: labels[0] || 'Биография',
+      menuDescription: descriptions[0] || '',
+      menuImage: null,
+      eyebrow: '',
+      title: '',
+      textOne: entrepreneur.biographyTextOne || '',
+      textTwo: entrepreneur.biographyTextTwo || '',
+      textThree: entrepreneur.biographyTextThree || '',
+      image: entrepreneur.biographyPhoto || null,
     },
     {
       id: LEGACY_SECTION_IDS.childhood,
@@ -147,7 +137,7 @@ export function normalizeEntrepreneurStorySections(
       menuLabel: labels[1] || 'Краткая биография',
       menuDescription: descriptions[1] || 'Детство, интересы и обстоятельства, которые сформировали взгляд на дело.',
       menuImage: galleryImages[1] || fallbackImage,
-      title: entrepreneur.childhoodTitle || 'Детство, среда и первые ориентиры',
+      title: entrepreneur.childhoodTitle || '',
       textOne: entrepreneur.childhoodTextOne || bodyFallback || entrepreneur.quote || '',
       textTwo: entrepreneur.childhoodTextTwo || '',
     },
@@ -158,7 +148,7 @@ export function normalizeEntrepreneurStorySections(
       menuLabel: labels[2] || 'Начало карьеры',
       menuDescription: descriptions[2] || 'Образование, первые роли и профессиональный опыт.',
       menuImage: galleryImages[2] || fallbackImage,
-      title: entrepreneur.educationTitle || 'Образование\nи опыт\nработы',
+      title: entrepreneur.educationTitle || '',
       text: entrepreneur.educationText || bodyFallback || entrepreneur.title,
       asideText: entrepreneur.educationAsideText || '',
       image: entrepreneur.educationPhoto || fallbackImage,
@@ -170,7 +160,7 @@ export function normalizeEntrepreneurStorySections(
       menuLabel: labels[3] || 'Первые успехи в бизнесе',
       menuDescription: descriptions[3] || 'Решения, которые привели к первым заметным результатам.',
       menuImage: galleryImages[3] || fallbackImage,
-      title: entrepreneur.turnoverTitle || 'Первые успехи\nв бизнесе',
+      title: entrepreneur.turnoverTitle || '',
       text: entrepreneur.turnoverText || bodyFallback || entrepreneur.title,
       bottomText: entrepreneur.turnoverBottomText || '',
       image: entrepreneur.turnoverPhoto || fallbackImage,
