@@ -32,7 +32,7 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
           format="webp"
           loading="lazy"
           decoding="async"
-          class="aspect-video w-full object-cover lg:w-[90%]"
+          class="mt-12 aspect-video w-full object-cover lg:w-[90%]"
         />
       </div>
 
