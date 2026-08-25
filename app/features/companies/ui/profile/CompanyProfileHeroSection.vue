@@ -21,7 +21,7 @@ defineProps<{
 
         <p
           v-if="teaser"
-          class="order-1 mb-5 w-[min(500px,100%)] font-sans text-[13px] font-bold uppercase leading-[14px] text-text lg:col-start-1 lg:row-start-2 lg:mb-0 lg:justify-self-end lg:pb-[clamp(20px,1.8vw,35px)] lg:text-right lg:text-base lg:leading-4"
+          class="order-1 mb-5 w-[min(500px,100%)] font-sans text-[13px] font-bold uppercase leading-[14px] text-text lg:col-start-1 lg:row-start-2 lg:mb-0 lg:self-center lg:justify-self-end lg:text-right lg:text-base lg:leading-4"
         >
           {{ teaser }}
         </p>
