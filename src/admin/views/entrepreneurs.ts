@@ -924,17 +924,22 @@ function attachMediaEditor() {
 function attachSubmit(id: string | null) {
   const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
   if (!form) return;
+  let currentId = id;
 
   const autosave = attachFormAutosave({
     form,
-    available: Boolean(id),
+    available: () => Boolean(currentId),
     canAutosave: () => !hasSelectedFiles(form),
     blockedMessage: 'Сначала сохраните выбранные файлы вручную',
     save: async () => {
       const bioHtml = getHtml('bio');
       const data = await collectFormData(form, bioHtml);
-      if (id) await api.entrepreneurs.update(id, data);
-      else await api.entrepreneurs.create(data);
+      if (currentId) {
+        await api.entrepreneurs.update(currentId, data);
+        return;
+      }
+      const created = await api.entrepreneurs.create(data);
+      currentId = created.id;
     },
   });
 
@@ -945,7 +950,7 @@ function attachSubmit(id: string | null) {
 
     try {
       await autosave.saveNow();
-      location.href = '/admin/entrepreneurs';
+      if (msg) msg.innerHTML = pageAlert('Предприниматель сохранён');
     } catch (err) {
       if (msg) {
         msg.innerHTML = pageAlert(err instanceof Error ? err.message : 'Ошибка сохранения', 'error');

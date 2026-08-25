@@ -19,7 +19,7 @@ withDefaults(defineProps<{
   <section class="bg-bg py-14 max-lg:px-5 2xl:py-20">
     <div class="mx-auto grid w-[min(calc(100%_-_80px),1920px)] grid-cols-[minmax(0,62.5rem)_minmax(17.5rem,31.25rem)] justify-between gap-[clamp(2rem,4vw,6rem)] max-lg:w-full max-lg:grid-cols-1 max-lg:gap-10">
       <div class="flex min-w-0 flex-col items-start">
-        <p v-if="eyebrow" class="m-0 font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-lg:text-[clamp(42px,10vw,72px)] max-lg:leading-[0.88]">
+        <p v-if="eyebrow" class="m-0 whitespace-pre-line font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-lg:text-[clamp(42px,10vw,72px)] max-lg:leading-[0.88]">
           {{ eyebrow }}
         </p>
         <h2 class="m-0 whitespace-pre-line font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-lg:text-[clamp(42px,10vw,72px)] max-lg:leading-[0.88]">

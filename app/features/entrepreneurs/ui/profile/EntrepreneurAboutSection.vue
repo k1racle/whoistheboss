@@ -71,10 +71,10 @@ const itemClass = (index: number) => {
           @mouseleave="clearActive"
           @focus="setActive(index)"
         >
-          <strong class="block min-w-0 max-w-full w-[68%] self-end text-right font-sans text-[clamp(1.5rem,2.35vw,2rem)] font-bold uppercase leading-none tracking-[-0.04em] [overflow-wrap:anywhere] hyphens-auto">
+          <strong class="block min-w-0 max-w-full w-[68%] self-end whitespace-pre-line text-right font-sans text-[clamp(1.5rem,2.35vw,2rem)] font-bold uppercase leading-none tracking-[-0.04em] [overflow-wrap:anywhere] hyphens-auto">
             {{ protectPrepositions(item.label) }}
           </strong>
-          <small class="block min-w-0 w-3/5 font-sans text-base uppercase leading-4 text-current [overflow-wrap:anywhere] hyphens-auto max-md:text-[13px] max-md:leading-[14px]">
+          <small class="block min-w-0 w-3/5 whitespace-pre-line font-sans text-base uppercase leading-4 text-current [overflow-wrap:anywhere] hyphens-auto max-md:text-[13px] max-md:leading-[14px]">
             {{ protectPrepositions(item.note) }}
           </small>
           <span class="absolute bottom-3.5 right-4 text-[22px] leading-none" aria-hidden="true">[↗]</span>

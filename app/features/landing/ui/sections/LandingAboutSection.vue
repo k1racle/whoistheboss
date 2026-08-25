@@ -3,6 +3,7 @@ import { ROUTES } from '@shared/navigation'
 import { protectPrepositions } from '@shared/lib/typography'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
+import PlainTextWithBreaks from '@shared/ui/text/PlainTextWithBreaks.vue'
 import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-url'
 
 const props = defineProps<{
@@ -19,10 +20,7 @@ const props = defineProps<{
 const isMediaHovered = shallowRef(false)
 const fallbackImageFailed = shallowRef(false)
 
-const paragraphs = computed(() => props.text
-  .split(/\n{2,}/)
-  .filter(Boolean)
-  .map(protectPrepositions))
+const protectedText = computed(() => protectPrepositions(props.text))
 const protectedTitle = computed(() => protectPrepositions(props.title))
 const fallbackImageSrc = '/images/placeholder.svg'
 
@@ -85,12 +83,9 @@ function hideBrokenFallback() {
             <SectionTitle>
               {{ protectedTitle }}
             </SectionTitle>
-            <div class="space-y-4 font-sans text-base leading-4 text-text/78">
-              <p
-                v-for="paragraph in paragraphs"
-                :key="paragraph"
-              >
-                {{ paragraph }}
+            <div class="font-sans text-base leading-4 text-text/78">
+              <p>
+                <PlainTextWithBreaks :text="protectedText" />
               </p>
             </div>
           </div>

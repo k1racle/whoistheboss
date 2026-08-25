@@ -28,7 +28,7 @@ const protectedDescription = computed(() => protectPrepositions(props.descriptio
           </SectionTitle>
         </div>
 
-        <p class="max-w-[860px] font-sans text-base leading-4 text-text/78">
+        <p class="max-w-[860px] whitespace-pre-line font-sans text-base leading-4 text-text/78">
           {{ protectedDescription }}
         </p>
       </div>

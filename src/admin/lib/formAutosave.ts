@@ -11,7 +11,7 @@ const intervals = [
 type AutosaveOptions = {
   form: HTMLFormElement;
   save: () => Promise<unknown>;
-  available?: boolean;
+  available?: boolean | (() => boolean);
   canAutosave?: () => boolean;
   blockedMessage?: string;
 };
@@ -33,6 +33,7 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
     canAutosave = () => true,
     blockedMessage = 'Автосохранение ждёт заполнения обязательных полей',
   } = options;
+  const isAvailable = () => typeof available === 'function' ? available() : available;
   const actions = form.querySelector<HTMLElement>('.entrepreneur-editor__actions, .standalone-editor__actions');
   const message = form.querySelector<HTMLElement>('#form-message, #shooting-page-message');
   let baseline = getFormSnapshot(form);
@@ -46,7 +47,7 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
   control.dataset.autosaveIgnore = 'true';
   control.innerHTML = `
     <span class="autosave-control__label">Автосохранение</span>
-    <select class="autosave-control__select" aria-label="Интервал автосохранения" ${available ? '' : 'disabled'}>
+    <select class="autosave-control__select" aria-label="Интервал автосохранения" ${isAvailable() ? '' : 'disabled'}>
       ${intervals.map((item) => `<option value="${item.value}">${item.label}</option>`).join('')}
     </select>
     <span class="autosave-control__status" aria-live="polite"></span>
@@ -83,7 +84,8 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
   }
 
   function updateStatus(): void {
-    if (!available) {
+    select.disabled = !isAvailable();
+    if (!isAvailable()) {
       status.textContent = 'Доступно после первого сохранения';
       return;
     }
@@ -114,7 +116,7 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
       if (!isDirty()) return;
     }
     if (mode === 'auto') {
-      if (!available || !isDirty()) return;
+      if (!isAvailable() || !isDirty()) return;
       if (!form.checkValidity() || !canAutosave()) {
         status.textContent = blockedMessage;
         return;
@@ -127,6 +129,7 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
       lastResult = 'idle';
       try {
         await save();
+        select.disabled = !isAvailable();
         baseline = savedSnapshot;
         lastResult = 'saved';
         clearAutosaveError();
@@ -155,7 +158,7 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
   }
 
   function scheduleAutosave(update = true): void {
-    if (timer !== null || !available || !isDirty()) return;
+    if (timer !== null || !isAvailable() || !isDirty()) return;
     const interval = intervals.find((item) => item.value === select.value)?.milliseconds || 0;
     if (interval === 0) return;
     timer = window.setTimeout(() => {

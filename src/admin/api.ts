@@ -295,7 +295,7 @@ export const api = {
   entrepreneurs: {
     list: (): Promise<Entrepreneur[]> => fetchJson('/admin/entrepreneurs'),
     get: (id: string): Promise<Entrepreneur> => fetchJson(`/admin/entrepreneurs/${id}`),
-    create: (data: Partial<Entrepreneur>) =>
+    create: (data: Partial<Entrepreneur>): Promise<Entrepreneur> =>
       fetchJson('/admin/entrepreneurs', { method: 'POST', body: JSON.stringify(data) }),
     update: (id: string, data: Partial<Entrepreneur>) =>
       fetchJson(`/admin/entrepreneurs/${id}`, { method: 'PUT', body: JSON.stringify(data) }),

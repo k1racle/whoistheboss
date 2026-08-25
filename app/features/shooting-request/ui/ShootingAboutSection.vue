@@ -4,6 +4,7 @@ import { protectPrepositions } from '@shared/lib/typography'
 import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
+import PlainTextWithBreaks from '@shared/ui/text/PlainTextWithBreaks.vue'
 
 const props = defineProps<{
   title: string
@@ -15,10 +16,7 @@ const props = defineProps<{
 }>()
 
 const logoRef = ref<HTMLElement | null>(null)
-const paragraphs = computed(() => props.text
-  .split(/\n{2,}/)
-  .filter(Boolean)
-  .map(protectPrepositions))
+const protectedText = computed(() => protectPrepositions(props.text))
 const protectedTitle = computed(() => protectPrepositions(props.title))
 const protectedBottomText = computed(() => protectPrepositions(props.bottomText))
 
@@ -37,8 +35,8 @@ defineExpose({ logoRef })
           <SectionTitle>
             {{ protectedTitle }}
           </SectionTitle>
-          <div class="mt-6 space-y-4 font-sans text-base leading-4 text-text/78">
-            <p v-for="paragraph in paragraphs" :key="paragraph">{{ paragraph }}</p>
+          <div class="mt-6 font-sans text-base leading-4 text-text/78">
+            <p><PlainTextWithBreaks :text="protectedText" /></p>
           </div>
         </div>
 
@@ -59,7 +57,7 @@ defineExpose({ logoRef })
       />
     </div>
 
-    <p class="mx-auto mt-16 w-full max-w-[1920px] font-display text-[clamp(3.5rem,9vw,10rem)] font-black uppercase leading-[0.8] tracking-[-0.04em] text-accent lg:mt-24">
+    <p class="mx-auto mt-16 w-full max-w-[1920px] whitespace-pre-line font-display text-[clamp(3.5rem,9vw,10rem)] font-black uppercase leading-[0.8] tracking-[-0.04em] text-accent lg:mt-24">
       {{ protectedBottomText }}
     </p>
   </section>

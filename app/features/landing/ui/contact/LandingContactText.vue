@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import { protectPrepositions } from '@shared/lib/typography'
+
 const props = defineProps<{
   ctaTitle: string
   formTitle: string
   formDescription: string
 }>()
 
-const formTitleLines = computed(() => props.formTitle.split('\n'))
-const compactFormTitle = computed(() => props.formTitle.replace(/\n/g, ' '))
+const protectedFormTitle = computed(() => protectPrepositions(props.formTitle))
+const formTitleLines = computed(() => protectedFormTitle.value.split('\n'))
+const compactFormTitle = computed(() => protectedFormTitle.value.replace(/\n/g, ' '))
+const protectedFormDescription = computed(() => protectPrepositions(props.formDescription))
+const protectedCtaTitle = computed(() => protectPrepositions(props.ctaTitle))
 </script>
 
 <template>
@@ -26,15 +31,15 @@ const compactFormTitle = computed(() => props.formTitle.replace(/\n/g, ' '))
         {{ compactFormTitle }}
       </p>
 
-      <p class="mt-1 max-w-[520px] font-sans text-xs leading-5 text-text-on-accent lg:mt-5 lg:text-sm lg:leading-5">
-        {{ formDescription }}
+      <p class="mt-1 max-w-[520px] whitespace-pre-line font-sans text-xs leading-5 text-text-on-accent lg:mt-5 lg:text-sm lg:leading-5">
+        {{ protectedFormDescription }}
       </p>
     </div>
 
     <p
       class="order-1 max-w-full whitespace-pre-line font-display text-[clamp(4.125rem,15vw,6.875rem)] font-black uppercase leading-none tracking-[-0.03em] md:text-[clamp(5.5rem,13vw,8.5rem)] lg:order-2 lg:translate-y-[0.13em] lg:text-[clamp(4.875rem,18cqw,13.625rem)] lg:leading-[0.78]"
     >
-      {{ ctaTitle }}
+      {{ protectedCtaTitle }}
     </p>
   </div>
 </template>

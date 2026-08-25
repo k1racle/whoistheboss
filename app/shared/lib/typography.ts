@@ -9,8 +9,18 @@ const shortWordPattern = new RegExp(
   'giu',
 )
 
+const textLineBreakMarkerPattern = /\\n/gu
+
+export function normalizeTextLineBreaks(text: string): string {
+  return text.replace(textLineBreakMarkerPattern, '\n')
+}
+
+export function splitPlainTextLines(text: string): string[] {
+  return normalizeTextLineBreaks(text).split('\n')
+}
+
 export function protectPrepositions(text: string): string {
-  let result = text
+  let result = normalizeTextLineBreaks(text)
 
   while (true) {
     const next = result.replace(shortWordPattern, '$1$2\u00A0')

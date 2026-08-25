@@ -12,7 +12,7 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
 
 <template>
   <section class="bg-bg py-14 max-lg:px-5 lg:py-20">
-    <div class="mx-auto grid min-h-[760px] w-[min(calc(100%_-_80px),1920px)] grid-cols-[minmax(0,60%)_minmax(0,40%)] items-stretch gap-10 max-lg:min-h-0 max-lg:w-full max-lg:grid-cols-1">
+    <div class="mx-auto grid w-[min(calc(100%_-_80px),1920px)] grid-cols-[minmax(0,60%)_minmax(0,40%)] items-stretch gap-10 max-lg:w-full max-lg:grid-cols-1">
       <div class="flex min-h-full flex-col items-start">
         <h2 class="m-0 font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-lg:text-[clamp(43px,10vw,74px)] max-lg:leading-[0.92]">
           <span
@@ -32,7 +32,7 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
           format="webp"
           loading="lazy"
           decoding="async"
-          class="mt-auto aspect-video w-full object-cover pt-10 lg:w-[90%]"
+          class="aspect-video w-full object-cover lg:w-[90%]"
         />
       </div>
 

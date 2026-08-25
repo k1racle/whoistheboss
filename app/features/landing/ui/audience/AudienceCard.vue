@@ -30,24 +30,24 @@ const hoverDescription = computed(() => protectPrepositions(props.card.hoverDesc
     />
 
     <div class="absolute inset-4 flex flex-col justify-end transition-[opacity,transform] duration-350 group-hover:-translate-y-2.5 group-hover:opacity-0">
-      <strong class="max-w-[88%] font-display text-[clamp(2rem,2.8vw,2.8rem)] font-black uppercase leading-[0.88] tracking-[-0.05em]">
+      <strong class="max-w-[88%] whitespace-pre-line font-display text-[clamp(2rem,2.8vw,2.8rem)] font-black uppercase leading-[0.88] tracking-[-0.05em]">
         {{ title }}
       </strong>
       <small
         v-if="description"
-        class="mt-2 max-w-[88%] font-sans text-sm leading-5"
+        class="mt-2 max-w-[88%] whitespace-pre-line font-sans text-sm leading-5"
       >
         {{ description }}
       </small>
     </div>
 
     <div class="absolute inset-4 flex translate-y-2.5 flex-col justify-end opacity-0 transition-[opacity,transform] duration-350 group-hover:translate-y-0 group-hover:opacity-100">
-      <strong class="font-sans text-base font-normal uppercase leading-4 tracking-normal">
+      <strong class="whitespace-pre-line font-sans text-base font-normal uppercase leading-4 tracking-normal">
         {{ hoverTitle }}
       </strong>
       <small
         v-if="hoverDescription"
-        class="mt-2 max-w-[88%] font-sans text-sm leading-5"
+        class="mt-2 max-w-[88%] whitespace-pre-line font-sans text-sm leading-5"
       >
         {{ hoverDescription }}
       </small>

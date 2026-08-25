@@ -31,7 +31,7 @@ const biographyBlocks = computed(() => {
   <AdditionalSectionBiography
     v-if="section.type === 'BIOGRAPHY'"
     v-bind="attrs"
-    :eyebrow="section.eyebrow"
+    :eyebrow="protectPrepositions(section.eyebrow)"
     :title="protectPrepositions(section.title)"
     :image="section.image"
     :image-alt="subjectName"
