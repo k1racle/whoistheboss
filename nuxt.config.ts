@@ -5,6 +5,45 @@ const siteUrl = process.env.SITE_URL ?? 'https://xn----7sbqzieaghadljej2f.xn--p1
 const siteName = process.env.SITE_NAME ?? 'Маршрут Построен'
 const siteDescription = process.env.SITE_DESCRIPTION ?? 'Интервью с основателями бизнеса. Видео, рилсы, фото.'
 const uploadDir = resolve(process.env.UPLOAD_DIR ?? './public/uploads')
+const nitroCacheDir = resolve('./.data/nitro-cache')
+
+const cachedRouteRules: Record<string, { swr: number }> = {
+  '/': { swr: 60 },
+  '/blog': { swr: 60 },
+  '/blog/**': { swr: 60 },
+  '/companies': { swr: 60 },
+  '/companies/**': { swr: 60 },
+  '/entrepreneurs': { swr: 60 },
+  '/entrepreneurs/**': { swr: 60 },
+  '/interviews': { swr: 60 },
+  '/interviews/**': { swr: 60 },
+  '/reels': { swr: 60 },
+  '/reels/**': { swr: 60 },
+  '/contacts': { swr: 60 },
+  '/shooting-request': { swr: 60 },
+  '/api/site-footer': { swr: 300 },
+  '/api/site-banner': { swr: 60 },
+  '/api/landing-page': { swr: 60 },
+  '/api/landing/audience-cards': { swr: 60 },
+  '/api/articles/latest': { swr: 60 },
+  '/api/businesses': { swr: 60 },
+  '/api/blog-page': { swr: 60 },
+  '/api/blog/**': { swr: 60 },
+  '/api/companies-page': { swr: 60 },
+  '/api/companies/**': { swr: 60 },
+  '/api/entrepreneurs-page': { swr: 60 },
+  '/api/entrepreneurs/**': { swr: 60 },
+  '/api/interviews': { swr: 60 },
+  '/api/interviews/**': { swr: 60 },
+  '/api/reels': { swr: 60 },
+  '/api/reels/**': { swr: 60 },
+  '/api/contacts': { swr: 60 },
+  '/api/shooting-page': { swr: 60 },
+}
+
+const developmentRouteRules = Object.fromEntries(
+  Object.keys(cachedRouteRules).map(route => [route, { swr: false }]),
+)
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -78,37 +117,7 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/': { swr: 60 },
-    '/blog': { swr: 60 },
-    '/blog/**': { swr: 60 },
-    '/companies': { swr: 60 },
-    '/companies/**': { swr: 60 },
-    '/entrepreneurs': { swr: 60 },
-    '/entrepreneurs/**': { swr: 60 },
-    '/interviews': { swr: 60 },
-    '/interviews/**': { swr: 60 },
-    '/reels': { swr: 60 },
-    '/reels/**': { swr: 60 },
-    '/contacts': { swr: 60 },
-    '/shooting-request': { swr: 60 },
-    '/api/site-footer': { swr: 300 },
-    '/api/site-banner': { swr: 60 },
-    '/api/landing-page': { swr: 60 },
-    '/api/landing/audience-cards': { swr: 60 },
-    '/api/articles/latest': { swr: 60 },
-    '/api/businesses': { swr: 60 },
-    '/api/blog-page': { swr: 60 },
-    '/api/blog/**': { swr: 60 },
-    '/api/companies-page': { swr: 60 },
-    '/api/companies/**': { swr: 60 },
-    '/api/entrepreneurs-page': { swr: 60 },
-    '/api/entrepreneurs/**': { swr: 60 },
-    '/api/interviews': { swr: 60 },
-    '/api/interviews/**': { swr: 60 },
-    '/api/reels': { swr: 60 },
-    '/api/reels/**': { swr: 60 },
-    '/api/contacts': { swr: 60 },
-    '/api/shooting-page': { swr: 60 },
+    ...cachedRouteRules,
     '/media/**': {
       headers: { 'cache-control': 'public, max-age=31536000, immutable' },
     },
@@ -131,6 +140,7 @@ export default defineNuxtConfig({
 
   $development: {
     routeRules: {
+      ...developmentRouteRules,
       '/admin/**': { proxy: 'http://127.0.0.1:5173/admin/**' },
     },
   },
@@ -140,7 +150,7 @@ export default defineNuxtConfig({
     storage: {
       cache: {
         driver: 'fs',
-        base: resolve(uploadDir, '.cache/nitro'),
+        base: nitroCacheDir,
       },
     },
     publicAssets: [

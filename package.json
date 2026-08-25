@@ -14,6 +14,7 @@
     "lint:fix": "eslint . --fix",
     "preview": "nuxt preview",
     "postinstall": "prisma generate && nuxt prepare",
+    "smoke:assets": "node scripts/check-deployed-assets.mjs",
     "test": "vitest run",
     "typecheck": "nuxt typecheck"
   },
