@@ -162,7 +162,7 @@ onBeforeUnmount(() => {
         >
         <div class="mx-auto flex w-full max-w-[1920px] justify-center px-4 pt-14 sm:px-6 lg:hidden">
           <div class="flex w-full justify-center">
-            <p class="mx-auto max-w-[800px] whitespace-pre-line text-center font-sans text-[14px] font-normal uppercase leading-8 tracking-[-2.5px] text-text/78">
+            <p class="mx-auto max-w-[800px] whitespace-pre-line text-center font-sans text-base font-normal uppercase leading-6 tracking-normal text-text/78">
               {{ protectedIntro }}
             </p>
           </div>
