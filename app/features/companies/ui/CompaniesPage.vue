@@ -26,7 +26,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
     <CompaniesHeroSection
       v-if="isVisible('hero')"
       :style="sectionStyle('hero')"
-      :title="page.heroTitle"
+      :title="page.heroTitle
     />
 
     <CompaniesAboutSection
