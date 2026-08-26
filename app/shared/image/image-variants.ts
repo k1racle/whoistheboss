@@ -10,7 +10,8 @@ export const HOT_IMAGE_WIDTHS = [320, 640, 960, 1280, 1600] as const
 export function clampImageWidth(value: number | undefined): number | undefined {
   if (!Number.isFinite(value) || (value ?? 0) <= 0) return undefined
   const normalized = Math.round(value!)
-  return IMAGE_WIDTH_STEPS.find(width => width >= normalized) ?? IMAGE_WIDTH_STEPS.at(-1)
+  return IMAGE_WIDTH_STEPS.find(width => width >= normalized)
+    ?? IMAGE_WIDTH_STEPS[IMAGE_WIDTH_STEPS.length - 1]
 }
 
 export function clampImageQuality(value: number | undefined): number {

@@ -16,7 +16,7 @@ defineProps<{
     <figure
       v-for="(image, index) in images"
       :key="`${image}-${index}`"
-      class="h-[28rem] min-w-[85vw] shrink-0 overflow-hidden border border-border bg-surface md:h-[42rem] md:w-[min(440px,88vw)] md:min-w-0"
+      class="aspect-[55/84] h-auto min-w-[85vw] shrink-0 overflow-hidden border border-border bg-surface md:aspect-auto md:h-[42rem] md:w-[min(440px,88vw)] md:min-w-0"
       :class="{ 'md:mt-20': index % 2 === 0 }"
     >
       <NuxtImg

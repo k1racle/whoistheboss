@@ -42,6 +42,30 @@ const handleDesktopChange = (event: MediaQueryListEvent) => {
   if (event.matches) closeMenu()
 }
 
+const addDesktopMediaListener = () => {
+  if (!desktopMedia) return
+  if (typeof desktopMedia.addEventListener === 'function') {
+    desktopMedia.addEventListener('change', handleDesktopChange)
+    return
+  }
+  const legacyMedia = desktopMedia as unknown as {
+    addListener?: (listener: (event: MediaQueryListEvent) => void) => void
+  }
+  legacyMedia.addListener?.(handleDesktopChange)
+}
+
+const removeDesktopMediaListener = () => {
+  if (!desktopMedia) return
+  if (typeof desktopMedia.removeEventListener === 'function') {
+    desktopMedia.removeEventListener('change', handleDesktopChange)
+    return
+  }
+  const legacyMedia = desktopMedia as unknown as {
+    removeListener?: (listener: (event: MediaQueryListEvent) => void) => void
+  }
+  legacyMedia.removeListener?.(handleDesktopChange)
+}
+
 watch(() => route.fullPath, closeMenu)
 
 watch(isMenuOpen, (open) => {
@@ -51,12 +75,12 @@ watch(isMenuOpen, (open) => {
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
   desktopMedia = window.matchMedia('(min-width: 1024px)')
-  desktopMedia.addEventListener('change', handleDesktopChange)
+  addDesktopMediaListener()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown)
-  desktopMedia?.removeEventListener('change', handleDesktopChange)
+  removeDesktopMediaListener()
   document.body.style.overflow = ''
 })
 </script>

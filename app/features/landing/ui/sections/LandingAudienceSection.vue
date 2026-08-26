@@ -169,7 +169,7 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="relative mx-auto w-full max-w-[1920px] px-4 pb-14 sm:px-6 lg:hidden">
-          <div class="pointer-events-none sticky top-0 z-0 flex h-svh items-center justify-center">
+          <div class="pointer-events-none sticky top-0 z-0 flex h-screen h-svh items-center justify-center">
             <h2 class="mx-auto flex w-fit flex-col items-center text-center font-display text-[clamp(72px,21vw,96px)] font-black uppercase leading-[0.86] tracking-[-0.03em] text-text">
               <span
                 v-for="line in titleLines"
@@ -180,7 +180,7 @@ onBeforeUnmount(() => {
             </h2>
           </div>
 
-          <div class="relative z-10 -mt-[100svh] flex flex-col gap-5 pb-[45svh] pt-[65svh]">
+          <div class="mobile-audience-track relative z-10 flex flex-col gap-5">
             <AudienceCard
               v-for="(card, index) in cards"
               :key="card.id"
@@ -237,3 +237,19 @@ onBeforeUnmount(() => {
     </div>
   </section>
 </template>
+
+<style scoped>
+.mobile-audience-track {
+  margin-top: -100vh;
+  padding-bottom: 45vh;
+  padding-top: 65vh;
+}
+
+@supports (height: 100svh) {
+  .mobile-audience-track {
+    margin-top: -100svh;
+    padding-bottom: 45svh;
+    padding-top: 65svh;
+  }
+}
+</style>

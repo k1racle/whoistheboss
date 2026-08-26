@@ -66,6 +66,30 @@ const updateMotionPreference = () => {
   scheduleUpdate()
 }
 
+const addMotionPreferenceListener = () => {
+  if (!motionQuery) return
+  if (typeof motionQuery.addEventListener === 'function') {
+    motionQuery.addEventListener('change', updateMotionPreference)
+    return
+  }
+  const legacyQuery = motionQuery as unknown as {
+    addListener?: (listener: () => void) => void
+  }
+  legacyQuery.addListener?.(updateMotionPreference)
+}
+
+const removeMotionPreferenceListener = () => {
+  if (!motionQuery) return
+  if (typeof motionQuery.removeEventListener === 'function') {
+    motionQuery.removeEventListener('change', updateMotionPreference)
+    return
+  }
+  const legacyQuery = motionQuery as unknown as {
+    removeListener?: (listener: () => void) => void
+  }
+  legacyQuery.removeListener?.(updateMotionPreference)
+}
+
 onMounted(() => {
   motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
   isReducedMotion.value = motionQuery.matches
@@ -73,17 +97,19 @@ onMounted(() => {
 
   window.addEventListener('scroll', scheduleUpdate, { passive: true })
   window.addEventListener('resize', scheduleUpdate)
-  motionQuery.addEventListener('change', updateMotionPreference)
+  addMotionPreferenceListener()
 
-  trackResizeObserver = new ResizeObserver(scheduleUpdate)
-  if (trackRef.value) trackResizeObserver.observe(trackRef.value)
+  if (typeof ResizeObserver !== 'undefined') {
+    trackResizeObserver = new ResizeObserver(scheduleUpdate)
+    if (trackRef.value) trackResizeObserver.observe(trackRef.value)
+  }
 })
 
 onBeforeUnmount(() => {
   if (frameId !== undefined) window.cancelAnimationFrame(frameId)
   window.removeEventListener('scroll', scheduleUpdate)
   window.removeEventListener('resize', scheduleUpdate)
-  motionQuery?.removeEventListener('change', updateMotionPreference)
+  removeMotionPreferenceListener()
   trackResizeObserver?.disconnect()
 })
 </script>
@@ -99,7 +125,7 @@ onBeforeUnmount(() => {
     <div class="relative h-full min-h-0">
       <div
         v-if="!isReducedMotion"
-        class="sticky top-0 block h-dvh w-full overflow-hidden bg-bg"
+        class="sticky top-0 block h-screen h-dvh w-full overflow-hidden bg-bg"
       >
         <div class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
           <h2 class="font-display text-[clamp(8rem,20vw,24rem)] font-black uppercase leading-none tracking-[-0.03em] text-text">
