@@ -15,7 +15,7 @@ const props = defineProps<{
   error: boolean
 }>()
 
-const sectionOrder = computed(() => new Map(props.page.sectionOrder.map((key, index) => [key, index]))
+const sectionOrder = computed(() => new Map(props.page.sectionOrder.map((key, index) => [key, index])))
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => isSectionVisible(props.page.sectionVisibility, key)
 const { isEnabled: isBannerEnabled } = useSiteBanner()
