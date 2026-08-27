@@ -54,6 +54,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
     />
     <LandingArticles
       :title="page.latestNewsTitle"
+      :description="page.latestNewsDescription"
       :initial-data="page.latestArticles"
     />
     <LandingAudienceSection

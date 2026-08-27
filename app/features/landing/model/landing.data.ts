@@ -59,6 +59,7 @@ export type LandingPageData = {
   placesTitle: string
   placesText: string
   latestNewsTitle: string
+  latestNewsDescription: string
   ctaTitle: string
   ctaFormTitle: string
   ctaFormDescription: string
@@ -104,6 +105,7 @@ export const landingPageFallback: LandingPageData = {
   placesTitle: 'Места',
   placesText: landingPlacesDescription,
   latestNewsTitle: 'Главные статьи',
+  latestNewsDescription: '',
   ctaTitle: 'Стать\nучастником',
   ctaFormTitle: 'Заполните ваши данные\nдля связи',
   ctaFormDescription: 'Отправьте нам заявку и мы перезвоним.',

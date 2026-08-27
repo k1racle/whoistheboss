@@ -20,6 +20,7 @@ const LANDING_PAGE_KEYS = [
   'HOME_PLACES_TITLE',
   'HOME_PLACES_TEXT',
   'HOME_LATEST_NEWS_TITLE',
+  'HOME_LATEST_NEWS_DESCRIPTION',
   'HOME_LATEST_NEWS_COUNT',
   'HOME_CTA_TITLE',
   'HOME_CTA_FORM_TITLE',
@@ -127,6 +128,7 @@ export default defineEventHandler(async (): Promise<LandingPageData> => {
       'Компании и проекты наших героев: места, бренды и команды, за которыми стоят реальные предпринимательские истории.',
     ),
     latestNewsTitle: getSiteSetting(settings, 'HOME_LATEST_NEWS_TITLE', 'Главные статьи'),
+    latestNewsDescription: getSiteSetting(settings, 'HOME_LATEST_NEWS_DESCRIPTION'),
     ctaTitle: getSiteSetting(settings, 'HOME_CTA_TITLE', 'Стать\nучастником'),
     ctaFormTitle: getSiteSetting(
       settings,

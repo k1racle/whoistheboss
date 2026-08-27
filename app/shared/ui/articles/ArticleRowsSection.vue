@@ -6,11 +6,13 @@ import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 const props = withDefaults(defineProps<{
   title: string
+  description?: string
   articles: ArticleRowItem[]
   emptyText?: string
   hasMore?: boolean
   loading?: boolean
 }>(), {
+  description: '',
   emptyText: 'Статьи появятся после первой публикации',
   hasMore: false,
   loading: false,
@@ -21,14 +23,24 @@ const emit = defineEmits<{
 }>()
 
 const protectedTitle = computed(() => protectPrepositions(props.title))
+const protectedDescription = computed(() => protectPrepositions(props.description))
 </script>
 
 <template>
   <section class="bg-bg">
     <div class="mx-auto w-full max-w-[1920px]">
-      <SectionTitle class="mb-10 px-4 pt-12 sm:px-6 lg:mb-12 lg:px-10 lg:pt-16">
-        {{ protectedTitle }}
-      </SectionTitle>
+      <div class="mb-10 flex flex-col gap-5 px-4 pt-12 sm:px-6 lg:mb-12 lg:flex-row lg:items-end lg:justify-between lg:px-10 lg:pt-16">
+        <SectionTitle>
+          {{ protectedTitle }}
+        </SectionTitle>
+
+        <p
+          v-if="protectedDescription"
+          class="max-w-[860px] whitespace-pre-line font-sans text-base leading-4 text-text/78 lg:max-w-[50%]"
+        >
+          {{ protectedDescription }}
+        </p>
+      </div>
 
       <div class="bg-bg md:border md:border-border-strong md:bg-surface">
         <ul

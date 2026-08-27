@@ -5,6 +5,7 @@ import ArticleRowsSection from '@shared/ui/articles/ArticleRowsSection.vue'
 
 const props = defineProps<{
   title: string
+  description: string
   initialData: LandingLatestArticles
 }>()
 
@@ -47,6 +48,7 @@ async function loadMore() {
 <template>
   <ArticleRowsSection
     :title="title"
+    :description="description"
     :articles="articleRows"
     :has-more="hasMore"
     :loading="loading"

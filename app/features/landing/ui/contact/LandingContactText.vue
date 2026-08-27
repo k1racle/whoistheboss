@@ -9,7 +9,6 @@ const props = defineProps<{
 
 const protectedFormTitle = computed(() => protectPrepositions(props.formTitle))
 const formTitleLines = computed(() => protectedFormTitle.value.split('\n'))
-const compactFormTitle = computed(() => protectedFormTitle.value.replace(/\n/g, ' '))
 const protectedFormDescription = computed(() => protectPrepositions(props.formDescription))
 const protectedCtaTitle = computed(() => protectPrepositions(props.ctaTitle))
 </script>
@@ -27,8 +26,8 @@ const protectedCtaTitle = computed(() => protectPrepositions(props.ctaTitle))
         </span>
       </h2>
 
-      <p class="font-sans text-[15.82px] font-bold uppercase leading-[13.84px] lg:hidden">
-        {{ compactFormTitle }}
+      <p class="whitespace-pre-line font-sans text-[15.82px] font-bold uppercase leading-[13.84px] lg:hidden">
+        {{ protectedFormTitle }}
       </p>
 
       <p class="mt-1 max-w-[520px] whitespace-pre-line font-sans text-xs leading-5 text-text-on-accent lg:mt-5 lg:text-sm lg:leading-5">

@@ -49,7 +49,7 @@ function renderHomeForm(settings: Settings): string {
       ${textarea
         ? `<textarea class="editor-control" name="${name}" rows="${rows}">${escapeHtml(settings[name] || '')}</textarea>`
         : `<input class="editor-control" name="${name}" value="${escapeHtml(settings[name] || '')}">`}
-      <span class="editor-field__help">${help}</span>
+      <span class="editor-field__help">${help}${textarea ? ' Enter создаёт новую строку и на сайте.' : ''}</span>
     </label>`;
 
   const media = (label: string, name: string, kind: 'image' | 'video', help: string) => {
@@ -122,7 +122,7 @@ function renderHomeForm(settings: Settings): string {
           `)}
 
           ${section('home-about', '02', 'О проекте', 'Текст и два состояния видео.', `
-            ${field('Заголовок', 'HOME_ABOUT_TITLE', 'Заголовок слева от видео.')}
+            ${field('Заголовок', 'HOME_ABOUT_TITLE', 'Заголовок слева от видео.', true, 3)}
             ${field('Основной текст', 'HOME_ABOUT_TEXT', 'Описание проекта слева.', true, 7)}
             ${field('Нижний текст', 'HOME_ABOUT_BOTTOM_TEXT', 'Строка под основной частью блока.', true, 4)}
             ${field('Ссылка на основное видео', 'HOME_ABOUT_VIDEO_URL', 'Используйте для VK Video или другого embed-источника.')}
@@ -132,7 +132,7 @@ function renderHomeForm(settings: Settings): string {
           `)}
 
           ${section('home-audience', '03', 'Для кого', 'Заголовок секции и управление карточками аудитории.', `
-            ${field('Заголовок', 'HOME_AUDIENCE_TITLE', 'Большой заголовок блока.')}
+            ${field('Заголовок', 'HOME_AUDIENCE_TITLE', 'Большой заголовок блока.', true, 3)}
             <div class="editor-field editor-field--wide home-related-editor">
               <strong>Карточки аудитории</strong>
               <p>Названия, тексты при наведении, публикация и порядок карточек редактируются отдельно.</p>
@@ -141,12 +141,12 @@ function renderHomeForm(settings: Settings): string {
           `)}
 
           ${section('home-heroes', '04', 'Наши герои', 'Заголовок и вводный текст над карточками предпринимателей.', `
-            ${field('Заголовок', 'HOME_HEROES_TITLE', 'Большой заголовок блока.')}
+            ${field('Заголовок', 'HOME_HEROES_TITLE', 'Большой заголовок блока.', true, 3)}
             ${field('Описание', 'HOME_HEROES_TEXT', 'Текст справа от заголовка.', true, 6)}
           `)}
 
           ${section('home-places', '05', 'Места', 'Карточки последних опубликованных компаний в дизайне раздела «Наши герои».', `
-            ${field('Заголовок', 'HOME_PLACES_TITLE', 'Большой заголовок блока компаний.')}
+            ${field('Заголовок', 'HOME_PLACES_TITLE', 'Большой заголовок блока компаний.', true, 3)}
             ${field('Описание', 'HOME_PLACES_TEXT', 'Текст справа от заголовка.', true, 6)}
             <div class="editor-field editor-field--wide home-related-editor">
               <strong>Карточки компаний</strong>
@@ -164,7 +164,7 @@ function renderHomeForm(settings: Settings): string {
           `)}
 
           ${section('home-latest-news', '07', 'Последние новости', 'Блок использует дизайн последних новостей со страницы блога.', `
-            ${field('Заголовок', 'HOME_LATEST_NEWS_TITLE', 'Заголовок слева над списком новостей.')}
+            ${field('Заголовок', 'HOME_LATEST_NEWS_TITLE', 'Заголовок слева над списком новостей.', true, 3)}
             ${field('Описание', 'HOME_LATEST_NEWS_DESCRIPTION', 'Вводный текст справа от заголовка.', true, 4)}
             <label class="editor-field editor-field--wide">
               <span class="editor-field__label">Количество новостей</span>
@@ -174,8 +174,8 @@ function renderHomeForm(settings: Settings): string {
           `)}
 
           ${section('home-cta', '08', 'Стать участником', 'Заголовки и пояснение формы заявки.', `
-            ${field('Заголовок блока', 'HOME_CTA_TITLE', 'Белый заголовок на красном фоне.')}
-            ${field('Заголовок формы', 'HOME_CTA_FORM_TITLE', 'Красный заголовок внутри формы.')}
+            ${field('Заголовок блока', 'HOME_CTA_TITLE', 'Белый заголовок на красном фоне.', true, 3)}
+            ${field('Заголовок формы', 'HOME_CTA_FORM_TITLE', 'Красный заголовок внутри формы.', true, 3)}
             ${field('Описание формы', 'HOME_CTA_FORM_DESCRIPTION', 'Короткое пояснение под заголовком формы.', true, 3)}
           `)}
 
