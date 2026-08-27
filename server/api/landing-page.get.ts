@@ -95,7 +95,7 @@ export default defineEventHandler(async (): Promise<LandingPageData> => {
     : 'EMBED'
 
   return {
-    heroTitle: getSiteSetting(settings, 'HOME_HERO_TITLE', 'Маршрут\nпостроен'),
+    heroTitle: getSiteSetting(settings, 'HOME_HERO_TITLE', 'МЕДИА ГИД\nМАРШРУТ\nПОСТРОЕН'),
     aboutTitle: getSiteSetting(settings, 'HOME_ABOUT_TITLE', 'О проекте'),
     aboutText: getSiteSetting(
       settings,
@@ -105,7 +105,7 @@ export default defineEventHandler(async (): Promise<LandingPageData> => {
     aboutBottomText: getSiteSetting(
       settings,
       'HOME_ABOUT_BOTTOM_TEXT',
-      'Мы убеждены, что каждый успешный бизнес начинается с человека. Поэтому рассказываем не только о компаниях и проектах, но прежде всего о людях, которые их создали.',
+      'Мы убеждены, что каждый успешный бизнес начинается с человека. Поэтому рассказываем не только о компаниях и проектах, но прежде всего о людях, которые их создали',
     ),
     aboutVideoType,
     aboutVideoUrl: getSiteSetting(settings, 'HOME_ABOUT_VIDEO_URL'),

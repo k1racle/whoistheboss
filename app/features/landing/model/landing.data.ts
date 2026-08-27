@@ -73,7 +73,7 @@ export type LandingPageData = {
 
 
 export const landingAudienceIntro =
-  'Мы убеждены, что каждый успешный бизнес начинается с человека. Поэтому рассказываем не только о компаниях и проектах, но прежде всего о людях, которые их создали.'
+  'Мы убеждены, что каждый успешный бизнес начинается с человека. Поэтому рассказываем не только о компаниях и проектах, но прежде всего о людях, которые их создали'
 
 export const landingAudienceFallback: LandingAudienceCard[] = [
   { id: 'entrepreneurs', title: 'Предприниматели', hoverTitle: 'Герои бизнеса' },
@@ -88,7 +88,7 @@ export const landingAudienceFallback: LandingAudienceCard[] = [
 export const landingPlacesDescription = 'Компании и проекты наших героев: места, бренды и команды, за которыми стоят реальные предпринимательские истории.'
 
 export const landingPageFallback: LandingPageData = {
-  heroTitle: 'Маршрут\nпостроен',
+  heroTitle: 'МЕДИА ГИД\nМАРШРУТ\nПОСТРОЕН',
   aboutTitle: 'О проекте',
   aboutText: landingAboutParagraphs.join('\n\n'),
   aboutBottomText: landingAudienceIntro,
