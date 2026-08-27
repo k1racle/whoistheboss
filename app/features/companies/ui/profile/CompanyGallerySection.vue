@@ -16,13 +16,13 @@ defineProps<{
     <figure
       v-for="(image, index) in images"
       :key="`${image}-${index}`"
-      class="aspect-[55/84] h-auto min-w-[85vw] shrink-0 overflow-hidden border border-border bg-surface md:aspect-auto md:h-[42rem] md:w-[min(440px,88vw)] md:min-w-0"
+      class="pinned-portrait-item overflow-hidden border border-border bg-surface"
       :class="{ 'md:mt-20': index % 2 === 0 }"
     >
       <NuxtImg
         :src="image"
         :alt="`${imageAltPrefix} — фото ${index + 1}`"
-        sizes="320:85vw 768:85vw md:440px"
+        sizes="320:260px 480:70vw md:440px"
         format="webp"
         class="h-full w-full object-cover"
         loading="lazy"
