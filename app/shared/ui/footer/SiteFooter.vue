@@ -17,10 +17,9 @@ withDefaults(defineProps<{
 })
 
 const pageLinks = [
-  { label: 'Компании', to: ROUTES.COMPANIES },
-  { label: 'Биография', to: ROUTES.ENTREPRENEURS },
-  // { label: 'Статьи', to: ROUTES.BLOG },
-  { label: 'Блог', to: ROUTES.BLOG },
+  { label: 'Предприниматели', to: ROUTES.ENTREPRENEURS },
+  { label: 'Бизнес', to: ROUTES.COMPANIES },
+  { label: 'Журнал', to: ROUTES.BLOG },
 ] as const
 
 const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта', '?'] as const

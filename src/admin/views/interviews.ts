@@ -2,6 +2,7 @@ import { api, type Interview, type Entrepreneur } from '../api.js';
 import { layout, formatDate, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
 import { bindAutoSlug } from '../lib/slug.js';
+import { formatDateTimeLocal, toIsoDateTime } from '../lib/dateTime.js';
 
 export function interviewsView(user?: UserInfo | null) {
   const html = layout('Интервью', renderLoading(), user);
@@ -284,17 +285,10 @@ async function collectFormData(form: HTMLFormElement, contentHtml: string): Prom
     content: contentHtml || null,
     quote: (fd.get('quote') as string) || null,
     isPublished: fd.has('isPublished'),
-    publishedAt: (fd.get('publishedAt') as string) || null,
+    publishedAt: toIsoDateTime(fd.get('publishedAt')),
     metaTitle: (fd.get('metaTitle') as string) || null,
     metaDesc: (fd.get('metaDesc') as string) || null,
   };
-}
-
-function formatDateTimeLocal(value?: string | null | Date): string {
-  if (!value) return '';
-  const d = typeof value === 'string' ? new Date(value) : value;
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function setContent(html: string) {

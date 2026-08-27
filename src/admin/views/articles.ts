@@ -3,6 +3,7 @@ import { initQuill, getHtml, setHtml } from '../lib/editor.js';
 import { attachFormAutosave } from '../lib/formAutosave.js';
 import { bindAutoSlug } from '../lib/slug.js';
 import { attachSortableList, renderSortableHandle } from '../lib/sortableList.js';
+import { formatDateTimeLocal, toIsoDateTime } from '../lib/dateTime.js';
 import { escapeHtml, formatDate, layout, pageAlert, type UserInfo } from './layout.js';
 
 type RelatedSelection = {
@@ -616,7 +617,7 @@ async function collectFormData(form: HTMLFormElement, content: string): Promise<
     )),
     sectionOrder: String(formData.get('sectionOrder') || JSON.stringify(articleSectionOptions.map(([key]) => key))),
     isPublished: formData.has('isPublished'),
-    publishedAt: nullableString(formData.get('publishedAt')),
+    publishedAt: toIsoDateTime(formData.get('publishedAt')),
     metaTitle: nullableString(formData.get('metaTitle')),
     metaDesc: nullableString(formData.get('metaDesc')),
   };
@@ -693,13 +694,6 @@ function attachListActions(items: Article[], reload: () => Promise<void>) {
       }
     });
   });
-}
-
-function formatDateTimeLocal(value?: string | null | Date): string {
-  if (!value) return '';
-  const date = typeof value === 'string' ? new Date(value) : value;
-  const pad = (part: number) => String(part).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 function setContent(html: string) {

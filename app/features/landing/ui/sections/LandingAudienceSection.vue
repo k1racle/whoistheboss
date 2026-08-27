@@ -170,7 +170,7 @@ onBeforeUnmount(() => {
 
         <div class="relative mx-auto w-full max-w-[1920px] px-4 pb-14 sm:px-6 lg:hidden">
           <div class="pointer-events-none sticky top-0 z-0 flex h-screen h-svh items-center justify-center">
-            <h2 class="mx-auto flex w-fit flex-col items-center text-center font-display text-[clamp(72px,21vw,96px)] font-black uppercase leading-[0.86] tracking-[-0.03em] text-text">
+            <h2 class="mx-auto flex w-fit flex-col items-center text-center font-display text-[clamp(8rem,20vw,24rem)] font-black uppercase leading-none tracking-[-0.03em] text-text">
               <span
                 v-for="line in titleLines"
                 :key="line"
@@ -197,7 +197,7 @@ onBeforeUnmount(() => {
             class="flex flex-col items-center transition-[opacity,transform] duration-300"
             :class="isFinal ? 'opacity-0 -translate-y-6' : 'opacity-100 translate-y-0'"
           >
-            <h2 class="font-display text-[clamp(5rem,13vw,12rem)] font-black uppercase leading-[0.94] tracking-[-0.03em] text-text">
+            <h2 class="font-display text-[clamp(8rem,20vw,24rem)] font-black uppercase leading-none tracking-[-0.03em] text-text">
               {{ desktopTitle }}
             </h2>
           </div>

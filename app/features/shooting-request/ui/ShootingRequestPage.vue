@@ -5,7 +5,6 @@ import ShootingFaqSection from '@features/shooting-request/ui/ShootingFaqSection
 import ShootingStagesSection from '@features/shooting-request/ui/ShootingStagesSection.vue'
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection.vue'
-import { useSiteHeader } from '@shared/ui/header/useSiteHeader'
 
 const props = defineProps<{
   page: ShootingPageData
@@ -15,36 +14,6 @@ const sectionOrder = computed(() => new Map(props.page.sectionOrder.map((key, in
 const sectionStyle = (key: string) => ({ order: sectionOrder.value.get(key) ?? 99 })
 const isVisible = (key: string) => props.page.sectionVisibility[key] !== false
 
-const { logoVisible } = useSiteHeader()
-const aboutSectionRef = ref<InstanceType<typeof ShootingAboutSection> | null>(null)
-
-const updateLogoVisibility = () => {
-  if (!window.matchMedia('(min-width: 1024px)').matches) return
-
-  const logoEl = aboutSectionRef.value?.logoRef
-  if (!logoEl) {
-    logoVisible.value = false
-    return
-  }
-
-  const headerHeight = document.querySelector('header')?.getBoundingClientRect().height ?? 0
-  const logoTop = logoEl.getBoundingClientRect().top
-
-  logoVisible.value = logoTop < headerHeight
-}
-
-onMounted(() => {
-  logoVisible.value = false
-  updateLogoVisibility()
-  window.addEventListener('scroll', updateLogoVisibility, { passive: true })
-  window.addEventListener('resize', updateLogoVisibility)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('scroll', updateLogoVisibility)
-  window.removeEventListener('resize', updateLogoVisibility)
-  logoVisible.value = true
-})
 </script>
 
 <template>
@@ -57,7 +26,6 @@ onBeforeUnmount(() => {
 
     <ShootingAboutSection
       v-if="isVisible('about')"
-      ref="aboutSectionRef"
       :style="sectionStyle('about')"
       :title="page.aboutTitle"
       :text="page.aboutText"

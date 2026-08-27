@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { ROUTES } from '@shared/navigation'
 import { protectPrepositions } from '@shared/lib/typography'
-import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 
 const props = defineProps<{
@@ -56,18 +54,10 @@ const protectedTextThree = computed(() => protectPrepositions(props.textThree))
         {{ protectedTextOne }}
       </p>
 
-      <div class="mt-16 grid items-end gap-7 text-left lg:mt-[88px] lg:grid-cols-[1fr_auto_1fr] lg:gap-20">
+      <div class="mt-16 grid items-end gap-7 text-left lg:mt-[88px] lg:grid-cols-2 lg:gap-20">
         <p class="m-0 max-w-[420px] whitespace-pre-line font-sans text-base leading-4 text-text">
           {{ protectedTextTwo }}
         </p>
-
-        <NuxtLink
-          :to="ROUTES.LANDING"
-          class="block w-[88px] leading-none"
-          aria-label="Маршрут Построен"
-        >
-          <SiteLogo class="h-auto w-full" />
-        </NuxtLink>
 
         <p class="m-0 max-w-[420px] justify-self-start whitespace-pre-line font-sans text-base leading-4 text-text lg:justify-self-end lg:text-right">
           {{ protectedTextThree }}

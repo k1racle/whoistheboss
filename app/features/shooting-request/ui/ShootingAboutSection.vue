@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import { protectPrepositions } from '@shared/lib/typography'
-import SiteLogo from '@shared/ui/logo/SiteLogo.vue'
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 import PlainTextWithBreaks from '@shared/ui/text/PlainTextWithBreaks.vue'
@@ -15,20 +14,14 @@ const props = defineProps<{
   videoFile: string
 }>()
 
-const logoRef = ref<HTMLElement | null>(null)
 const protectedText = computed(() => protectPrepositions(props.text))
 const protectedTitle = computed(() => protectPrepositions(props.title))
 const protectedBottomText = computed(() => protectPrepositions(props.bottomText))
 
-defineExpose({ logoRef })
 </script>
 
 <template>
   <section id="about" class="relative bg-bg px-4 py-14 sm:px-6 lg:px-10 lg:py-20">
-    <span ref="logoRef" class="absolute left-10 top-16 hidden xl:block">
-      <SiteLogo />
-    </span>
-
     <div class="mx-auto grid w-full max-w-[1920px] gap-10 lg:grid-cols-[1fr_2fr] lg:gap-12">
       <div class="flex flex-col justify-end gap-8">
         <div>

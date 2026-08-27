@@ -4,17 +4,15 @@ import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 
 withDefaults(defineProps<{
-  logoVisible?: boolean
   socialLinks?: SocialLink[]
 }>(), {
-  logoVisible: true,
   socialLinks: () => SOCIAL_LINKS,
 })
 
 const navigationItems = [
   { label: 'Предприниматели', to: ROUTES.ENTREPRENEURS },
-  { label: 'Компании', to: ROUTES.COMPANIES },
-  { label: 'Блог', to: ROUTES.BLOG },
+  { label: 'Бизнес', to: ROUTES.COMPANIES },
+  { label: 'Журнал', to: ROUTES.BLOG },
 ] as const
 
 const mobileNavigationItems = [
@@ -95,28 +93,7 @@ onBeforeUnmount(() => {
           class="relative block size-4 shrink-0 before:absolute before:-inset-2 before:content-['']"
         >
           <span aria-hidden="true" class="block size-full bg-accent lg:hidden" />
-          <span aria-hidden="true" class="hidden size-full shrink-0 lg:block">
-            <Transition
-              enter-active-class="transition-[opacity,transform] duration-150 ease-out"
-              enter-from-class="-translate-y-1 opacity-0"
-              enter-to-class="translate-y-0 opacity-100"
-              leave-active-class="transition-[opacity,transform] duration-150 ease-out"
-              leave-from-class="translate-y-0 opacity-100"
-              leave-to-class="-translate-y-1 opacity-0"
-              mode="out-in"
-            >
-              <span
-                v-if="logoVisible"
-                key="site-logo"
-                class="block size-full bg-accent"
-              />
-              <span
-                v-else
-                key="logo-placeholder"
-                class="block size-full bg-accent"
-              />
-            </Transition>
-          </span>
+          <span aria-hidden="true" class="hidden size-full bg-accent lg:block" />
         </NuxtLink>
 
         <nav
