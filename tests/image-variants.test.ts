@@ -7,15 +7,15 @@ import {
 
 describe('image variants', () => {
   it('rounds widths to the nearest supported step above', () => {
-    expect(clampImageWidth(333)).toBe(480)
+    expect(clampImageWidth(333)).toBe(360)
     expect(clampImageWidth(960)).toBe(960)
-    expect(clampImageWidth(5000)).toBe(2560)
+    expect(clampImageWidth(5000)).toBe(3840)
   })
 
   it('rounds quality to the nearest preset', () => {
     expect(clampImageQuality(70)).toBe(68)
     expect(clampImageQuality(79)).toBe(76)
-    expect(clampImageQuality(90)).toBe(82)
+    expect(clampImageQuality(90)).toBe(90)
   })
 
   it('recognizes only optimizable upload paths', () => {

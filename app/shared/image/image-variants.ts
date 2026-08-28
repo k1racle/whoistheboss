@@ -1,10 +1,10 @@
-const IMAGE_WIDTH_STEPS = [180, 320, 480, 640, 768, 960, 1280, 1600, 1920, 2560] as const
-const IMAGE_QUALITY_STEPS = [68, 76, 82] as const
+const IMAGE_WIDTH_STEPS = [180, 320, 360, 480, 640, 768, 960, 1280, 1600, 1920, 2560, 3200, 3840] as const
+const IMAGE_QUALITY_STEPS = [68, 76, 82, 88, 90, 92] as const
 
 const UPLOAD_IMAGE_PATTERN = /^\/uploads\/[^/?#]+\.(avif|jpe?g|png|webp)$/i
 
 export const DEFAULT_IMAGE_WIDTH = 960
-export const DEFAULT_IMAGE_QUALITY = 76
+export const DEFAULT_IMAGE_QUALITY = 90
 export const HOT_IMAGE_WIDTHS = [320, 640, 960, 1280, 1600] as const
 
 export function clampImageWidth(value: number | undefined): number | undefined {

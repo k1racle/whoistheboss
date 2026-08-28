@@ -100,7 +100,6 @@ const randomizeHoverImage = () => {
             fit="cover"
             sizes="180px"
             densities="1x 2x"
-            quality="78"
             format="webp"
             loading="lazy"
             decoding="async"

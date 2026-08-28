@@ -89,7 +89,7 @@ export default defineNuxtConfig({
 
   image: {
     provider: 'persistent',
-    quality: 76,
+    quality: 90,
     providers: {
       persistent: {
         provider: './app/shared/image/persistent-provider.ts',

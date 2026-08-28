@@ -2,7 +2,6 @@ import { defineProvider } from '@nuxt/image/runtime'
 import {
   clampImageQuality,
   clampImageWidth,
-  DEFAULT_IMAGE_QUALITY,
   isOptimizableUploadImage,
 } from './image-variants'
 
@@ -27,7 +26,9 @@ export default defineProvider({
     const query = new URLSearchParams()
 
     if (width) query.set('w', String(width))
-    if (quality !== DEFAULT_IMAGE_QUALITY) query.set('q', String(quality))
+    // Keep quality in the public URL even for the default preset. This busts
+    // immutable browser/CDN caches when the project-wide default is raised.
+    query.set('q', String(quality))
 
     return {
       url: `/media/${encodeURIComponent(filename)}?${query.toString()}`,
