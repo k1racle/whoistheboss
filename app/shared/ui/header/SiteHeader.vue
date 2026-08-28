@@ -229,39 +229,6 @@ onBeforeUnmount(() => {
         @click="closeMenu"
       />
       <div class="relative flex h-full flex-col items-end gap-8 overflow-y-auto px-5 pb-8 pt-24 sm:px-8">
-        <section
-          v-if="cities.length"
-          class="w-full border-y border-text/15 py-5"
-          aria-labelledby="mobile-city-title"
-        >
-          <div class="mb-3 flex items-center justify-between">
-            <h2 id="mobile-city-title" class="font-sans text-xs uppercase tracking-[0.08em] text-text-muted">
-              Город
-            </h2>
-            <span class="font-sans text-xs uppercase text-accent">{{ currentCity?.name || 'Все' }}</span>
-          </div>
-          <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            <button
-              type="button"
-              class="flex min-h-12 items-center justify-between border border-text/15 bg-surface px-3 py-3 font-sans text-sm uppercase"
-              :class="{ 'border-accent bg-accent text-text-on-accent': !currentCitySlug }"
-              @click="selectCity()"
-            >
-              <span>Все</span><span>[ ↗ ]</span>
-            </button>
-            <button
-              v-for="city in cities"
-              :key="city.id"
-              type="button"
-              class="flex min-h-12 items-center justify-between border border-text/15 bg-surface px-3 py-3 font-sans text-sm uppercase"
-              :class="{ 'border-accent bg-accent text-text-on-accent': city.slug === currentCitySlug }"
-              @click="selectCity(city.slug)"
-            >
-              <span>{{ city.name }}</span><span class="text-xs">{{ city.slug }}</span>
-            </button>
-          </div>
-        </section>
-
         <nav
           class="flex w-full flex-col items-end gap-4"
           aria-label="Мобильная навигация"
@@ -279,9 +246,36 @@ onBeforeUnmount(() => {
           </NuxtLink>
         </nav>
 
+        <section
+          v-if="cities.length"
+          class="mt-auto w-full border-y border-text/15 py-4"
+          aria-label="Выбор города"
+        >
+          <div class="flex flex-col gap-1">
+            <button
+              type="button"
+              class="flex min-h-11 w-full items-center justify-between px-3 text-left font-sans text-sm uppercase transition-colors hover:bg-surface"
+              :class="{ 'bg-accent text-text-on-accent': !currentCitySlug }"
+              @click="selectCity()"
+            >
+              <span>Все города</span><span>[ ↗ ]</span>
+            </button>
+            <button
+              v-for="city in cities"
+              :key="city.id"
+              type="button"
+              class="flex min-h-11 w-full items-center justify-between px-3 text-left font-sans text-sm uppercase transition-colors hover:bg-surface"
+              :class="{ 'bg-accent text-text-on-accent': city.slug === currentCitySlug }"
+              @click="selectCity(city.slug)"
+            >
+              <span>{{ city.name }}</span><span class="text-xs">{{ city.slug }}</span>
+            </button>
+          </div>
+        </section>
+
         <div
           v-if="socialLinks.length"
-          class="mt-auto flex flex-wrap justify-end gap-3"
+          class="flex flex-wrap justify-end gap-3"
         >
           <a
             v-for="(link, index) in socialLinks"

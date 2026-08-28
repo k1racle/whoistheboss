@@ -16,10 +16,10 @@ defineProps<{
   >
     <template v-if="variant === 'summary'">
       <span class="font-sans text-base leading-4">[ {{ stage.index }} ]</span>
-      <strong class="min-w-0 self-end font-sans text-[30px] font-bold uppercase leading-8 tracking-[-1.25px] [overflow-wrap:anywhere]">
+      <strong class="min-w-0 self-end font-sans text-[22px] font-bold uppercase leading-[1.05] tracking-[-0.6px] sm:text-[26px] sm:leading-7 md:text-[30px] md:leading-8 md:tracking-[-1.25px]">
         {{ stage.title }}
       </strong>
-      <small class="ml-10 min-w-0 font-sans text-[30px] font-bold uppercase leading-8 tracking-[-1.25px] [overflow-wrap:anywhere]">
+      <small class="ml-6 min-w-0 font-sans text-[22px] font-bold uppercase leading-[1.05] tracking-[-0.6px] sm:ml-8 sm:text-[26px] sm:leading-7 md:ml-10 md:text-[30px] md:leading-8 md:tracking-[-1.25px]">
         {{ stage.subtitle }}
       </small>
     </template>

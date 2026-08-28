@@ -17,11 +17,20 @@ export default defineEventHandler(async (event) => {
   }
 
   const query = getQuery(event)
-  const result = await resolveImageVariant({
-    filename,
-    width: clampImageWidth(queryInteger(query.w)),
-    quality: clampImageQuality(queryInteger(query.q)),
-  })
+  let result: Awaited<ReturnType<typeof resolveImageVariant>>
+  try {
+    result = await resolveImageVariant({
+      filename,
+      width: clampImageWidth(queryInteger(query.w)),
+      quality: clampImageQuality(queryInteger(query.q)),
+    })
+  }
+  catch {
+    // Never replace valid content with a broken image when the optimization
+    // cache is temporarily unavailable (permissions, disk space, Sharp, etc.).
+    setHeader(event, 'cache-control', 'no-store')
+    return sendRedirect(event, `/uploads/${encodeURIComponent(filename)}`, 307)
+  }
 
   setHeader(event, 'cache-control', 'public, max-age=31536000, immutable')
   setHeader(event, 'content-type', 'image/webp')

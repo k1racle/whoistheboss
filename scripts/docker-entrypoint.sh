@@ -3,6 +3,7 @@ set -e
 
 upload_dir="/app/public/uploads"
 upload_cache_dir="$upload_dir/.cache"
+image_cache_dir="$upload_cache_dir/images"
 nitro_cache_dir="/app/.data/nitro-cache"
 legacy_nitro_cache_dir="/app/public/uploads/.cache/nitro"
 
@@ -16,8 +17,8 @@ if [ -d "$legacy_nitro_cache_dir" ]; then
   rm -rf -- "$legacy_nitro_cache_dir"
 fi
 
-mkdir -p "$upload_dir" "$upload_cache_dir" "$nitro_cache_dir" /home/app
-chown app:app "$upload_dir" "$upload_cache_dir" /app/.data "$nitro_cache_dir" /home/app
+mkdir -p "$upload_dir" "$upload_cache_dir" "$image_cache_dir" "$nitro_cache_dir" /home/app
+chown app:app "$upload_dir" "$upload_cache_dir" "$image_cache_dir" /app/.data "$nitro_cache_dir" /home/app
 
 # Existing files are created by the app user and do not need to be traversed on
 # every deploy. Enable this only for a restored volume with incorrect owners.
