@@ -107,7 +107,7 @@ Portainer должен хранить production-значения в Environment
 | Переменная | Назначение |
 | --- | --- |
 | `NODE_ENV=production` | Включает production-режим. |
-| `PORT` | Задаёт опубликованный порт хоста. Внутри контейнера Nitro всегда слушает `3000`. |
+| `PORT` | Задаёт порт Nitro и опубликованный порт контейнера. |
 | `POSTGRES_USER` | Задаёт пользователя PostgreSQL. |
 | `POSTGRES_PASSWORD` | Задаёт пароль PostgreSQL. |
 | `POSTGRES_DB` | Задаёт имя базы. |

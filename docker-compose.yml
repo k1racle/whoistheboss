@@ -6,12 +6,10 @@ services:
     container_name: guessboss-app
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT:-3000}:${PORT:-3000}"
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      # Keep Nitro's container port stable for reverse proxies. PORT controls
-      # only the published host port (5337 in production).
-      PORT: 3000
+      PORT: ${PORT:-3000}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-guessboss}?schema=public
       SESSION_SECRET: ${SESSION_SECRET}
       NUXT_SESSION_PASSWORD: ${SESSION_SECRET}
