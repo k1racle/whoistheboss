@@ -12,12 +12,27 @@ const props = defineProps<{
 }>()
 
 const shouldLoadHover = shallowRef(false)
+const hoverImageFailed = shallowRef(false)
 const hasDistinctHoverPhoto = computed(() => Boolean(
   props.entrepreneur.hoverPhoto && props.entrepreneur.hoverPhoto !== props.entrepreneur.photo,
 ))
 
 function loadHoverImage() {
   if (hasDistinctHoverPhoto.value) shouldLoadHover.value = true
+}
+
+let hoverPreloadTimer: ReturnType<typeof setTimeout> | undefined
+
+onMounted(() => {
+  hoverPreloadTimer = setTimeout(loadHoverImage, 400)
+})
+
+onBeforeUnmount(() => {
+  if (hoverPreloadTimer) clearTimeout(hoverPreloadTimer)
+})
+
+function hideBrokenHoverImage() {
+  hoverImageFailed.value = true
 }
 </script>
 
@@ -38,7 +53,7 @@ function loadHoverImage() {
       class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
     />
     <NuxtImg
-      v-if="shouldLoadHover && hasDistinctHoverPhoto"
+      v-if="shouldLoadHover && hasDistinctHoverPhoto && !hoverImageFailed"
       :src="entrepreneur.hoverPhoto || undefined"
       alt=""
       sizes="320:100vw 480:100vw sm:100vw md:50vw xl:33vw 2000:614px"
@@ -47,6 +62,7 @@ function loadHoverImage() {
       fetchpriority="low"
       decoding="async"
       class="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      @error="hideBrokenHoverImage"
     />
 
     <div class="absolute inset-0 bg-linear-to-b from-black/15 via-transparent to-black/90" />

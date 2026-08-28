@@ -9,12 +9,27 @@ const props = defineProps<{
 const imageSrc = computed(() => props.entrepreneur.photo || '/images/placeholder.svg')
 const hoverImageSrc = computed(() => props.entrepreneur.hoverPhoto || '')
 const shouldLoadHover = shallowRef(false)
+const hoverImageFailed = shallowRef(false)
 const hasDistinctHoverImage = computed(() => Boolean(
   hoverImageSrc.value && hoverImageSrc.value !== imageSrc.value,
 ))
 
 function loadHoverImage() {
   if (hasDistinctHoverImage.value) shouldLoadHover.value = true
+}
+
+let hoverPreloadTimer: ReturnType<typeof setTimeout> | undefined
+
+onMounted(() => {
+  hoverPreloadTimer = setTimeout(loadHoverImage, 400)
+})
+
+onBeforeUnmount(() => {
+  if (hoverPreloadTimer) clearTimeout(hoverPreloadTimer)
+})
+
+function hideBrokenHoverImage() {
+  hoverImageFailed.value = true
 }
 </script>
 
@@ -37,7 +52,7 @@ function loadHoverImage() {
       decoding="async"
     />
     <NuxtImg
-      v-if="shouldLoadHover && hasDistinctHoverImage"
+      v-if="shouldLoadHover && hasDistinctHoverImage && !hoverImageFailed"
       :src="hoverImageSrc"
       alt=""
       sizes="320:100vw 480:100vw sm:100vw md:33vw 2000:614px"
@@ -46,6 +61,7 @@ function loadHoverImage() {
       loading="eager"
       fetchpriority="low"
       decoding="async"
+      @error="hideBrokenHoverImage"
     />
   </NuxtLink>
 </template>

@@ -8,6 +8,7 @@ const props = defineProps<{
 }>()
 
 const shouldLoadHover = shallowRef(false)
+const hoverImageFailed = shallowRef(false)
 const hasDistinctHoverImage = computed(() => Boolean(
   props.hero.imageHover && props.hero.imageHover !== props.hero.image,
 ))
@@ -15,6 +16,16 @@ const hasDistinctHoverImage = computed(() => Boolean(
 function loadHoverImage() {
   if (hasDistinctHoverImage.value) shouldLoadHover.value = true
 }
+
+let hoverPreloadTimer: ReturnType<typeof setTimeout> | undefined
+
+onMounted(() => {
+  hoverPreloadTimer = setTimeout(loadHoverImage, 400)
+})
+
+onBeforeUnmount(() => {
+  if (hoverPreloadTimer) clearTimeout(hoverPreloadTimer)
+})
 
 const useImageFallback = (event: string | Event) => {
   if (!(event instanceof Event)) return
@@ -25,6 +36,15 @@ const useImageFallback = (event: string | Event) => {
   image.removeAttribute('srcset')
   image.removeAttribute('sizes')
   image.src = '/images/placeholder.svg'
+}
+
+const hideBrokenHoverImage = (event: string | Event) => {
+  if (!(event instanceof Event)) return
+
+  const image = event.currentTarget
+  if (!(image instanceof HTMLImageElement)) return
+
+  hoverImageFailed.value = true
 }
 </script>
 
@@ -50,7 +70,7 @@ const useImageFallback = (event: string | Event) => {
         @error="useImageFallback"
       />
       <NuxtImg
-        v-if="shouldLoadHover && hasDistinctHoverImage"
+        v-if="shouldLoadHover && hasDistinctHoverImage && !hoverImageFailed"
         :src="hero.imageHover"
         alt=""
         sizes="320:85vw 480:85vw sm:85vw md:50vw xl:33vw 2000:614px"
@@ -59,7 +79,7 @@ const useImageFallback = (event: string | Event) => {
         loading="eager"
         fetchpriority="low"
         decoding="async"
-        @error="useImageFallback"
+        @error="hideBrokenHoverImage"
       />
     </div>
   </NuxtLink>

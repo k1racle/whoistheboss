@@ -20,6 +20,7 @@ defineProps<{
 }>()
 
 const animationRef = useTemplateRef<HTMLElement>('animationBlock')
+const shouldLoadCover = shallowRef(false)
 const hoverStyle = shallowRef<Record<string, string>>({
   '--hover-image-left': '0px',
   '--hover-image-top': '0px',
@@ -29,6 +30,8 @@ const hoverStyle = shallowRef<Record<string, string>>({
 const randomizeHoverImage = () => {
   const animationBlock = animationRef.value
   if (!animationBlock || !window.matchMedia('(min-width: 1024px)').matches) return
+
+  shouldLoadCover.value = true
 
   const { width, height } = animationBlock.getBoundingClientRect()
   const mediaWidth = 180
@@ -93,15 +96,16 @@ const randomizeHoverImage = () => {
           :style="hoverStyle"
         >
           <NuxtImg
+            v-if="shouldLoadCover"
             :src="article.coverImage || '/images/placeholder.svg'"
             alt=""
-            width="180"
-            height="225"
+            width="960"
+            height="1200"
             fit="cover"
-            sizes="180px"
-            densities="1x 2x"
+            sizes="960px"
+            quality="92"
             format="webp"
-            loading="lazy"
+            loading="eager"
             decoding="async"
             class="h-full w-full object-cover"
           />

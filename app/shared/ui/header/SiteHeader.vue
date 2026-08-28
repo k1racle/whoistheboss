@@ -139,29 +139,27 @@ onBeforeUnmount(() => {
           </NuxtLink>
         </nav>
 
+      </div>
+
+      <div class="flex shrink-0 items-center gap-2 sm:gap-3">
         <div
           v-if="cities.length"
           class="relative hidden lg:block"
         >
           <button
             type="button"
-            class="inline-flex min-h-11 items-center gap-3 border-l border-text/20 pl-6 font-sans text-sm uppercase leading-4 text-text transition-colors hover:text-accent xl:text-base"
+            class="inline-flex min-h-11 items-center gap-3 px-2 font-sans text-sm uppercase leading-4 text-text transition-colors hover:text-accent xl:text-base"
             :aria-expanded="isCityMenuOpen"
             aria-controls="desktop-city-menu"
             @click="isCityMenuOpen = !isCityMenuOpen"
           >
-            <span class="size-2.5 bg-accent" aria-hidden="true" />
+            <span class="size-4 shrink-0 bg-accent" aria-hidden="true" />
             {{ currentCity?.name || 'Все города' }}
-            <span
-              aria-hidden="true"
-              class="text-lg leading-none transition-transform"
-              :class="{ 'rotate-45': isCityMenuOpen }"
-            >+</span>
           </button>
 
           <div
             id="desktop-city-menu"
-            class="absolute left-6 top-[calc(100%+0.75rem)] min-w-56 border border-text/15 bg-surface p-2 shadow-[0_16px_40px_rgba(0,0,0,0.14)] transition-[opacity,transform,visibility]"
+            class="absolute right-0 top-[calc(100%+0.75rem)] min-w-56 border border-text/15 bg-surface p-2 shadow-[0_16px_40px_rgba(0,0,0,0.14)] transition-[opacity,transform,visibility]"
             :class="isCityMenuOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-2 opacity-0'"
           >
             <button
@@ -184,9 +182,7 @@ onBeforeUnmount(() => {
             </button>
           </div>
         </div>
-      </div>
 
-      <div class="flex shrink-0 items-center gap-2 sm:gap-3">
         <ButtonLink
           :to="ROUTES.SHOOTING_REQUEST"
           size="header"
