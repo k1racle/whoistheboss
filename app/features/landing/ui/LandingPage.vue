@@ -24,7 +24,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
   <div class="flex flex-col">
     <LandingHeroSection
       :title="page.heroTitle"
-      staggered-lines
+      brand-lockup
     />
     <LandingAboutSection
       :title="page.aboutTitle"
