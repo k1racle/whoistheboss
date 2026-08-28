@@ -5,6 +5,7 @@ const MAX_LONG_TEXT = 250_000
 const nullableText = z.string().max(MAX_LONG_TEXT).optional().nullable()
 const shortText = z.string().trim().max(MAX_SHORT_TEXT)
 const publishedAt = z.union([z.string().datetime(), z.literal('')]).optional().nullable()
+const expectedUpdatedAt = z.string().datetime().optional()
 
 const storySectionBase = {
   id: z.string().min(1).max(100),
@@ -51,6 +52,7 @@ export const storySectionSchema = z.discriminatedUnion('type', [
 ])
 
 export const entrepreneurSchema = z.object({
+  expectedUpdatedAt,
   slug: z.string().max(200).optional(),
   name: shortText.min(1),
   title: shortText,
@@ -137,6 +139,7 @@ export const reelSchema = z.object({
 })
 
 export const articleSchema = z.object({
+  expectedUpdatedAt,
   slug: z.string().max(200).optional(),
   title: shortText.min(1),
   subtitle: nullableText,
@@ -159,6 +162,7 @@ export const articleSchema = z.object({
 })
 
 export const businessSchema = z.object({
+  expectedUpdatedAt,
   slug: z.string().max(200).optional(),
   name: shortText.min(1),
   type: shortText.min(1),

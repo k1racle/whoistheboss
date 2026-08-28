@@ -21,7 +21,7 @@ const articleSectionOptions = [
 ] as const;
 
 export function articlesView(user?: UserInfo | null) {
-  const html = layout('Записи блога', renderLoading(), user);
+  const html = layout('Записи журнала', renderLoading(), user);
 
   async function init() {
     try {
@@ -30,7 +30,7 @@ export function articlesView(user?: UserInfo | null) {
         <div class="mb-5 flex items-center justify-between gap-4">
           <div>
             <p class="text-xs font-semibold uppercase tracking-wide text-[#DB2A00]">Контент</p>
-            <h1 class="mt-1 text-2xl font-semibold text-gray-950">Записи блога</h1>
+            <h1 class="mt-1 text-2xl font-semibold text-gray-950">Записи журнала</h1>
           </div>
           <a href="/admin/articles/new" class="admin-primary-button" data-link>Добавить запись</a>
         </div>
@@ -51,7 +51,7 @@ export function articlesView(user?: UserInfo | null) {
           </table>
         </div>
         <div class="mt-4">
-          <a href="/admin/pages/blog" class="admin-secondary-button" data-link>Настроить страницу блога: порядок, видимость и популярные записи</a>
+          <a href="/admin/pages/blog" class="admin-secondary-button" data-link>Настроить страницу журнала: порядок, видимость и популярные записи</a>
         </div>
       `);
       attachListActions(items, init);
@@ -83,7 +83,7 @@ export function articleFormView(id: string | null, user?: UserInfo | null) {
       attachArticleSectionNavigation();
       attachSectionOrderEditor('article-form');
       attachArticleMediaEditor();
-      attachSubmit(id);
+      attachSubmit(id, item?.updatedAt);
     } catch (error) {
       setContent(pageAlert(error instanceof Error ? error.message : 'Не удалось открыть форму', 'error'));
     }
@@ -139,9 +139,9 @@ function renderForm(
             'Настройка публичной страницы записи так же, как у остальных редакторов.',
             `
               <div class="editor-field editor-field--wide home-related-editor">
-                <strong>Страница блога</strong>
-                <p>Общие секции самой страницы блога, популярные записи и порядок блоков главного списка настраиваются отдельно.</p>
-                <a href="/admin/pages/blog" class="editor-button editor-button--primary" data-link>Открыть страницу блога</a>
+                <strong>Страница журнала</strong>
+                <p>Общие секции самой страницы журнала, популярные записи и порядок блоков главного списка настраиваются отдельно.</p>
+                <a href="/admin/pages/blog" class="editor-button editor-button--primary" data-link>Открыть страницу журнала</a>
               </div>
               <div class="editor-field editor-field--wide">
                 <input type="hidden" name="sectionOrder" value="${escapeHtml(JSON.stringify(sectionOrder))}" data-section-order-value>
@@ -188,7 +188,7 @@ function renderForm(
                 'subtitle',
                 item.subtitle,
                 false,
-                'Используется в карточках блога и в SEO, если отдельное описание не задано.',
+                'Используется в карточках журнала и в SEO, если отдельное описание не задано.',
                 'text',
                 true,
               )}
@@ -247,7 +247,7 @@ function renderForm(
             'article-editor-related',
             '04',
             'Материалы по теме',
-            'Выберите до трёх карточек. Можно смешивать героев и компании; порядок сохраняется.',
+            'Выберите до трёх карточек. Можно смешивать героев и бизнес; порядок сохраняется.',
             `
               ${textField('Заголовок блока', 'relatedTitle', item.relatedTitle || 'МАТЕРИАЛЫ ПО ТЕМЕ', false, '', 'text', true)}
               <div class="article-related-grid">
@@ -398,7 +398,7 @@ function relatedSelect(
             </option>
           `).join('')}
         </optgroup>
-        <optgroup label="Компании">
+        <optgroup label="Бизнес">
           ${businesses.map((entry) => `
             <option value="business:${entry.id}" ${value === `business:${entry.id}` ? 'selected' : ''}>
               ${escapeHtml(entry.name)}
@@ -534,9 +534,10 @@ function attachArticleMediaEditor() {
   });
 }
 
-function attachSubmit(id: string | null) {
+function attachSubmit(id: string | null, initialUpdatedAt?: string) {
   const form = document.getElementById('article-form') as HTMLFormElement | null;
   if (!form) return;
+  let expectedUpdatedAt = initialUpdatedAt;
 
   const hasContent = () => {
     const content = getHtml('content');
@@ -551,7 +552,10 @@ function attachSubmit(id: string | null) {
       const content = getHtml('content');
       if (!content || content === '<p><br></p>') throw new Error('Добавьте основной текст статьи');
       const data = await collectFormData(form, content);
-      if (id) await api.articles.update(id, data);
+      if (id) {
+        const updated = await api.articles.update(id, { ...data, expectedUpdatedAt });
+        expectedUpdatedAt = updated.updatedAt;
+      }
       else await api.articles.create(data);
     },
   });

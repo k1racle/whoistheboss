@@ -12,7 +12,7 @@ withDefaults(defineProps<{
   metaItems: () => [
     { text: 'ИП Батагов А.А.', href: '' },
     { text: 'Пошта Почта', href: '' },
-    { text: 'Политика конф-ти', href: '' },
+    { text: 'Политика конф-ти', href: '/privacy-policy' },
   ],
 })
 

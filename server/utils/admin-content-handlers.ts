@@ -36,6 +36,30 @@ function normalizePublishedAt(value: string | null | undefined): Date | null {
   return value ? new Date(value) : null
 }
 
+function assertRecordIsCurrent(expectedUpdatedAt: string | undefined, actualUpdatedAt: Date): void {
+  if (expectedUpdatedAt && expectedUpdatedAt !== actualUpdatedAt.toISOString()) {
+    throwAdminError(409, 'Запись уже изменена в другой вкладке или другим пользователем. Обновите страницу и повторите изменения.')
+  }
+}
+
+async function updateVersionedRecord<T>(expectedUpdatedAt: string | undefined, update: () => Promise<T>): Promise<T> {
+  try {
+    return await update()
+  }
+  catch (error) {
+    if (
+      expectedUpdatedAt
+      && typeof error === 'object'
+      && error !== null
+      && 'code' in error
+      && error.code === 'P2025'
+    ) {
+      throwAdminError(409, 'Запись уже изменена в другой вкладке или другим пользователем. Обновите страницу и повторите изменения.')
+    }
+    throw error
+  }
+}
+
 export async function handleEntrepreneurs(event: H3Event, path: readonly string[]) {
   const id = singleId(path)
   const method = requireAdminMethod(event, id ? ['GET', 'PUT', 'DELETE'] : ['GET', 'POST'])
@@ -51,7 +75,8 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
   }
 
   if (!id && method === 'POST') {
-    const { cityIds, ...rawData } = await readAdminBody(event, entrepreneurSchema)
+    const { cityIds, expectedUpdatedAt, ...rawData } = await readAdminBody(event, entrepreneurSchema)
+    void expectedUpdatedAt
     const data = normalizeFeaturedInterview(rawData)
     const slug = await createUniqueSlug(data.name, async candidate => Boolean(
       await prisma.entrepreneur.findUnique({ where: { slug: candidate }, select: { id: true } }),
@@ -80,7 +105,8 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
     return { ok: true }
   }
 
-  const { cityIds, ...rawData } = await readAdminBody(event, entrepreneurSchema)
+  const { cityIds, expectedUpdatedAt, ...rawData } = await readAdminBody(event, entrepreneurSchema)
+  assertRecordIsCurrent(expectedUpdatedAt, existing.updatedAt)
   const data = normalizeFeaturedInterview(rawData)
   const slug = await createUniqueSlug(data.name, async candidate => Boolean(
     await prisma.entrepreneur.findFirst({
@@ -88,8 +114,11 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
       select: { id: true },
     }),
   ))
-  return prisma.entrepreneur.update({
-    where: { id: id! },
+  return updateVersionedRecord(expectedUpdatedAt, () => prisma.entrepreneur.update({
+    where: {
+      id: id!,
+      ...(expectedUpdatedAt ? { updatedAt: new Date(expectedUpdatedAt) } : {}),
+    },
     data: {
       ...data,
       slug,
@@ -99,7 +128,7 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
       },
     },
     include: entrepreneurCityInclude,
-  })
+  }))
 }
 
 export async function handleInterviews(event: H3Event, path: readonly string[]) {
@@ -210,7 +239,8 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
   }
 
   if (!id && method === 'POST') {
-    const { publishedAt, ...rawData } = await readAdminBody(event, articleSchema)
+    const { publishedAt, expectedUpdatedAt, ...rawData } = await readAdminBody(event, articleSchema)
+    void expectedUpdatedAt
     const data = normalizeArticleContent(rawData)
     const slug = await createUniqueSlug(data.title, async candidate => Boolean(
       await prisma.article.findUnique({ where: { slug: candidate }, select: { id: true } }),
@@ -232,7 +262,8 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
     return { ok: true }
   }
 
-  const { publishedAt, ...rawData } = await readAdminBody(event, articleSchema)
+  const { publishedAt, expectedUpdatedAt, ...rawData } = await readAdminBody(event, articleSchema)
+  assertRecordIsCurrent(expectedUpdatedAt, existing.updatedAt)
   const data = normalizeArticleContent(rawData)
   const slug = await createUniqueSlug(data.title, async candidate => Boolean(
     await prisma.article.findFirst({
@@ -240,11 +271,14 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
       select: { id: true },
     }),
   ))
-  return prisma.article.update({
-    where: { id: id! },
+  return updateVersionedRecord(expectedUpdatedAt, () => prisma.article.update({
+    where: {
+      id: id!,
+      ...(expectedUpdatedAt ? { updatedAt: new Date(expectedUpdatedAt) } : {}),
+    },
     data: { ...data, slug, publishedAt: normalizePublishedAt(publishedAt) },
     include: { entrepreneur: entrepreneurSummary },
-  })
+  }))
 }
 
 export async function handleBusinesses(event: H3Event, path: readonly string[]) {
@@ -294,7 +328,12 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
     return { ok: true }
   }
 
-  const data = await readAdminBody(event, businessSchema)
+  const { expectedUpdatedAt, ...data } = await readAdminBody(event, businessSchema)
+  if (id) {
+    const existing = await prisma.business.findUnique({ where: { id }, select: { updatedAt: true } })
+    if (!existing) throwAdminError(404, 'Business not found')
+    assertRecordIsCurrent(expectedUpdatedAt, existing.updatedAt)
+  }
   const slug = await createUniqueSlug(data.name, async candidate => Boolean(
     await prisma.business.findFirst({
       where: { slug: candidate, ...(id ? { id: { not: id } } : {}) },
@@ -323,9 +362,12 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
     })
   }
 
-  return prisma.business.update({
-    where: { id },
+  return updateVersionedRecord(expectedUpdatedAt, () => prisma.business.update({
+    where: {
+      id,
+      ...(expectedUpdatedAt ? { updatedAt: new Date(expectedUpdatedAt) } : {}),
+    },
     data: normalized,
     include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
-  })
+  }))
 }

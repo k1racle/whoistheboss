@@ -145,13 +145,13 @@ function renderHomeForm(settings: Settings): string {
             ${field('Описание', 'HOME_HEROES_TEXT', 'Текст справа от заголовка.', true, 6)}
           `)}
 
-          ${section('home-places', '05', 'Места', 'Карточки последних опубликованных компаний в дизайне раздела «Наши герои».', `
-            ${field('Заголовок', 'HOME_PLACES_TITLE', 'Большой заголовок блока компаний.', true, 3)}
+          ${section('home-places', '05', 'Места', 'Карточки последнего опубликованного бизнеса в дизайне раздела «Наши герои».', `
+            ${field('Заголовок', 'HOME_PLACES_TITLE', 'Большой заголовок блока бизнеса.', true, 3)}
             ${field('Описание', 'HOME_PLACES_TEXT', 'Текст справа от заголовка.', true, 6)}
             <div class="editor-field editor-field--wide home-related-editor">
-              <strong>Карточки компаний</strong>
-              <p>В блок автоматически попадают последние опубликованные компании. Содержимое карточек редактируется в разделе «Компании».</p>
-              <a href="/admin/businesses" class="editor-button editor-button--primary" data-link>Открыть компании</a>
+              <strong>Карточки бизнеса</strong>
+              <p>В блок автоматически попадает последний опубликованный бизнес. Содержимое карточек редактируется в разделе «Бизнес».</p>
+              <a href="/admin/businesses" class="editor-button editor-button--primary" data-link>Открыть бизнес</a>
             </div>
           `)}
 
@@ -163,7 +163,7 @@ function renderHomeForm(settings: Settings): string {
             </div>
           `)}
 
-          ${section('home-latest-news', '07', 'Последние новости', 'Блок использует дизайн последних новостей со страницы блога.', `
+          ${section('home-latest-news', '07', 'Последние новости', 'Блок использует дизайн последних новостей со страницы журнала.', `
             ${field('Заголовок', 'HOME_LATEST_NEWS_TITLE', 'Заголовок слева над списком новостей.', true, 3)}
             ${field('Описание', 'HOME_LATEST_NEWS_DESCRIPTION', 'Вводный текст справа от заголовка.', true, 4)}
             <label class="editor-field editor-field--wide">

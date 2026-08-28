@@ -49,14 +49,14 @@ const entrepreneursConfig: PageEditorConfig = {
 };
 
 const companiesConfig: PageEditorConfig = {
-  title: 'Страница «Компании»',
+  title: 'Страница «Бизнес»',
   formId: 'companies-page-form',
   keyPrefix: 'COMPANIES_PAGE',
-  saveMessage: 'Страница компаний сохранена',
+  saveMessage: 'Страница бизнеса сохранена',
   sections: [
     ['hero', 'Херо', 'Полноэкранный заголовок страницы.'],
     ['about', 'О проекте', 'Заголовок и описание проекта.'],
-    ['catalog', 'Компании', 'Карточки опубликованных компаний.'],
+    ['catalog', 'Бизнес', 'Карточки опубликованных бизнесов.'],
     ['cta', 'Стать участником', 'Общая форма заявки.'],
     ['banner', 'Баннер', 'Общий заключительный баннер.'],
   ],
@@ -68,17 +68,17 @@ const companiesConfig: PageEditorConfig = {
 };
 
 const blogConfig: PageEditorConfig = {
-  title: 'Страница «Блог»',
+  title: 'Страница «Журнал»',
   formId: 'blog-page-form',
   keyPrefix: 'BLOG_PAGE',
-  saveMessage: 'Страница блога сохранена',
+  saveMessage: 'Страница журнала сохранена',
   articleSelection: true,
   sections: [
     ['hero', 'Херо', 'Полноэкранный заголовок страницы.'],
-    ['popular', 'Популярное', 'Шесть выбранных записей блога в заданном порядке.'],
+    ['popular', 'Популярное', 'Шесть выбранных записей журнала в заданном порядке.'],
     ['mainNews', 'Главные новости', 'Две крупные новости с фотографиями и зеркальной компоновкой.'],
     ['latestNews', 'Последние новости', 'Автоматический список последних опубликованных записей.'],
-    ['related', 'Читайте также', 'Три последних предпринимателя и три последние компании.'],
+    ['related', 'Читайте также', 'Три последних предпринимателя и три последних бизнеса.'],
     ['cta', 'Стать участником', 'Общая форма заявки, используемая на остальных страницах сайта.'],
   ],
   fields: [
@@ -168,7 +168,7 @@ const blogConfig: PageEditorConfig = {
       name: 'BLOG_PAGE_LATEST_DESCRIPTION',
       help: 'Текст справа от заголовка. Регистр сохраняется как введён.',
       textarea: true,
-      defaultValue: 'Новости проекта, истории предпринимателей и материалы о компаниях.',
+      defaultValue: 'Новости проекта, истории предпринимателей и материалы о бизнесе.',
     },
     {
       section: 'latestNews',
@@ -184,7 +184,7 @@ const blogConfig: PageEditorConfig = {
       section: 'related',
       label: 'Заголовок блока',
       name: 'BLOG_PAGE_RELATED_TITLE',
-      help: 'Заголовок над карточками предпринимателей и компаний.',
+      help: 'Заголовок над карточками предпринимателей и бизнеса.',
       defaultValue: 'ЧИТАЙТЕ ТАКЖЕ',
     },
   ],
@@ -417,7 +417,7 @@ function renderPopularArticleSelection(settings: Settings, articles: Article[]):
             </label>`;
         }).join('')}
       </div>
-      <a href="/admin/articles" class="editor-button editor-button--primary" data-link>Открыть записи блога</a>
+      <a href="/admin/articles" class="editor-button editor-button--primary" data-link>Открыть записи журнала</a>
     </div>`;
 }
 
@@ -427,7 +427,7 @@ function renderMainNewsManualFields(fields: PageEditorConfig['fields'], settings
   return `
     <div class="editor-field editor-field--wide">
       <span class="editor-field__label">Две независимые карточки</span>
-      <p class="editor-field__help">Карточки не связаны с записями блога. Для каждой вручную задаются текст, фотография и адрес перехода.</p>
+      <p class="editor-field__help">Карточки не связаны с записями журнала. Для каждой вручную задаются текст, фотография и адрес перехода.</p>
       <div class="blog-main-settings">
         <section class="blog-main-settings__card">
           <h3>01. Первая карточка</h3>

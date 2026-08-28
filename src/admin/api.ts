@@ -240,6 +240,17 @@ export interface ShootingRequest {
 }
 
 export type Settings = Record<string, string>;
+export type VersionedUpdate<T> = Partial<T> & { expectedUpdatedAt?: string };
+
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
 
 async function fetchJson(input: string, init?: RequestInit) {
   const isFormData = init?.body instanceof FormData;
@@ -266,7 +277,7 @@ async function fetchJson(input: string, init?: RequestInit) {
         .filter(Boolean)
       : [];
     const issueDetails = issues.length ? ` (${issues.join(', ')})` : '';
-    throw new Error(`${details.error || err.statusMessage || 'Request failed'}${issueDetails}`);
+    throw new ApiError(`${details.error || err.statusMessage || 'Request failed'}${issueDetails}`, res.status);
   }
   return res.json();
 }
@@ -310,7 +321,7 @@ export const api = {
     get: (id: string): Promise<Entrepreneur> => fetchJson(`/admin/entrepreneurs/${id}`),
     create: (data: Partial<Entrepreneur>): Promise<Entrepreneur> =>
       fetchJson('/admin/entrepreneurs', { method: 'POST', body: JSON.stringify(data) }),
-    update: (id: string, data: Partial<Entrepreneur>) =>
+    update: (id: string, data: VersionedUpdate<Entrepreneur>): Promise<Entrepreneur> =>
       fetchJson(`/admin/entrepreneurs/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string) => fetchJson(`/admin/entrepreneurs/${id}`, { method: 'DELETE' }),
   },
@@ -350,7 +361,7 @@ export const api = {
     get: (id: string): Promise<Article> => fetchJson(`/admin/articles/${id}`),
     create: (data: Partial<Article>) =>
       fetchJson('/admin/articles', { method: 'POST', body: JSON.stringify(data) }),
-    update: (id: string, data: Partial<Article>) =>
+    update: (id: string, data: VersionedUpdate<Article>): Promise<Article> =>
       fetchJson(`/admin/articles/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string) => fetchJson(`/admin/articles/${id}`, { method: 'DELETE' }),
   },
@@ -360,7 +371,7 @@ export const api = {
     get: (id: string): Promise<Business> => fetchJson(`/admin/businesses/${id}`),
     create: (data: Partial<Business>) =>
       fetchJson('/admin/businesses', { method: 'POST', body: JSON.stringify(data) }),
-    update: (id: string, data: Partial<Business>) =>
+    update: (id: string, data: VersionedUpdate<Business>): Promise<Business> =>
       fetchJson(`/admin/businesses/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     reorder: (ids: string[]): Promise<{ ok: true }> =>
       fetchJson('/admin/businesses/order', { method: 'PUT', body: JSON.stringify({ ids }) }),

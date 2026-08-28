@@ -1,6 +1,6 @@
 import './styles/admin.css';
 import { router } from './router.js';
-import { api } from './api.js';
+import { api, ApiError } from './api.js';
 import { confirmFormNavigation, deactivateFormAutosave } from './lib/formAutosave.js';
 import type { UserInfo } from './views/layout.js';
 
@@ -15,14 +15,36 @@ async function init() {
     try {
       const user = await api.getMe();
       currentUser = { role: user.role, name: user.name, email: user.email };
-    } catch {
-      location.href = '/admin/login';
+    } catch (error) {
+      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+        location.href = '/admin/login';
+        return;
+      }
+      renderStartupError(error);
       return;
     }
   }
 
   render(path);
   setupNavigation();
+}
+
+function renderStartupError(error: unknown) {
+  const app = document.getElementById('app');
+  if (!app) return;
+  const reason = error instanceof Error ? error.message : 'Сервер временно недоступен';
+  app.innerHTML = `
+    <main class="min-h-screen bg-gray-100 px-4 py-16 sm:px-6">
+      <section class="mx-auto max-w-xl border border-gray-200 bg-white p-6 sm:p-8" role="alert">
+        <p class="text-sm font-medium uppercase text-[#DB2A00]">Админ-панель</p>
+        <h1 class="mt-2 text-2xl font-semibold text-gray-950">Не удалось проверить сессию</h1>
+        <p class="mt-3 text-base leading-6 text-gray-600"></p>
+        <button type="button" class="admin-primary-button mt-6 min-h-12" id="admin-retry-button">Повторить</button>
+      </section>
+    </main>`;
+  const message = app.querySelector<HTMLParagraphElement>('p.text-gray-600');
+  if (message) message.textContent = `${reason}. Данные авторизации не сброшены.`;
+  app.querySelector<HTMLButtonElement>('#admin-retry-button')?.addEventListener('click', () => location.reload());
 }
 
 async function render(path: string) {

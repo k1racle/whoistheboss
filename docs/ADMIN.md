@@ -114,6 +114,7 @@ Nitro раздает файлы `dist/admin` как public assets. Обрабо�
 | Стать героем | `server/api/shooting-page.get.ts` | `app/features/shooting-request/` |
 | Баннер | `server/api/site-banner.get.ts` | Общий UI публичных страниц |
 | Футер | `server/api/site-footer.get.ts` | `app/shared/ui/footer/SiteFooter.vue` через `LayoutDefault.vue` |
+| Политика конфиденциальности | `server/api/privacy-policy.get.ts` | `app/pages/privacy-policy.vue` |
 
 ## Маршруты экранов
 
@@ -127,6 +128,7 @@ Nitro раздает файлы `dist/admin` как public assets. Обрабо�
 | `/admin/pages/companies` | `views/pageEditors.ts` | `COMPANIES_PAGE_*` |
 | `/admin/pages/blog` | `views/pageEditors.ts` | `BLOG_PAGE_*` и список статей |
 | `/admin/pages/shooting-request` | `views/shootingPageEditor.ts` | `SHOOTING_PAGE_*` |
+| `/admin/pages/privacy-policy` | `views/privacyPolicy.ts` | `PRIVACY_POLICY_TEXT` |
 | `/admin/entrepreneurs` и формы | `views/entrepreneurs.ts` | `Entrepreneur` |
 | `/admin/cities` и формы | `views/cities.ts` | `City`, города присутствия |
 | `/admin/businesses` и формы | `views/businesses.ts` | `Business` |
@@ -342,6 +344,8 @@ textarea -> строка с \n -> JSON или SiteSetting/Prisma -> public API -
 Большинство CRUD-форм собирает `FormData`, загружает выбранные файлы, формирует объект API и вызывает `create` или `update`. Чекбокс отсутствует в `FormData`, когда он выключен, поэтому boolean-поля обычно читаются через `formData.has(name)`.
 
 Некоторые формы используют `attachFormAutosave()`. Автосохранение сравнивает снимок формы, блокирует уход при несохраненных изменениях и может быть недоступно до первого ручного сохранения новой записи.
+
+Ручное сохранение является отдельной повторной попыткой: если параллельное автосохранение завершилось ошибкой, helper дожидается его и отправляет новый запрос. Формы предпринимателя, бизнеса и записи журнала передают `expectedUpdatedAt`; сервер возвращает `409`, если запись успела измениться в другой вкладке или другим пользователем, вместо тихой перезаписи более свежих данных.
 
 Форма предпринимателя после ручного сохранения остаётся открытой и не перенаправляет пользователя к списку. При первом сохранении новой записи форма запоминает созданный `id`, поэтому следующие ручные и автоматические сохранения обновляют ту же запись.
 

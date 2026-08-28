@@ -2,6 +2,7 @@ import type { SiteFooterData } from '@shared/types/site-footer'
 import { SOCIAL_LINKS } from '@shared/social'
 import {
   FOOTER_META_ITEMS_KEY,
+  ensurePrivacyPolicyLink,
   isSafeFooterHref,
   parseFooterMetaItems,
   parseSocialLinks,
@@ -38,6 +39,6 @@ export default defineEventHandler(async (): Promise<SiteFooterData> => {
 
   return {
     socialLinks,
-    metaItems: parseFooterMetaItems(settings[FOOTER_META_ITEMS_KEY]),
+    metaItems: ensurePrivacyPolicyLink(parseFooterMetaItems(settings[FOOTER_META_ITEMS_KEY])),
   }
 })

@@ -6,12 +6,12 @@ type BannerFieldName = 'HOME_BANNER_IMAGE' | 'HOME_BANNER_MOBILE_IMAGE';
 
 const bannerPageOptions = [
   ['/', 'Главная'],
-  ['/companies', 'Компании'],
-  ['/companies/SLUG', 'Страница компании'],
+  ['/companies', 'Бизнес'],
+  ['/companies/SLUG', 'Страница бизнеса'],
   ['/entrepreneurs', 'Предприниматели'],
   ['/entrepreneurs/SLUG', 'Страница предпринимателя'],
-  ['/blog', 'Блог'],
-  ['/blog/SLUG', 'Статья блога'],
+  ['/blog', 'Журнал'],
+  ['/blog/SLUG', 'Статья журнала'],
   ['/shooting-request', 'Заявка на съёмку'],
   ['/contacts', 'Контакты'],
   ['/reels', 'Рилсы'],
@@ -84,7 +84,7 @@ function renderBannerEditor(settings: Settings): string {
           <div>
             <span class="standalone-editor__eyebrow">Общий элемент сайта</span>
             <h2>Заключительный баннер</h2>
-            <p>Баннер используется на главной, странице предпринимателей, страницах компаний и в блоге. Для мобильной версии можно загрузить отдельное изображение.</p>
+            <p>Баннер используется на главной, странице предпринимателей, страницах бизнеса и в журнале. Для мобильной версии можно загрузить отдельное изображение.</p>
           </div>
           <div class="standalone-editor__header-actions">
             <a href="/" target="_blank" rel="noopener" class="editor-button">Посмотреть на сайте ↗</a>

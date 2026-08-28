@@ -119,7 +119,7 @@ export function entrepreneurFormView(id: string | null, user?: UserInfo | null) 
     attachMediaEditor();
     attachStorySections();
     bindAutoSlug('entrepreneur-form', 'name');
-    attachSubmit(id);
+    attachSubmit(id, item?.updatedAt);
   }
 
   return { html, init };
@@ -937,10 +937,11 @@ function attachMediaEditor() {
   });
 }
 
-function attachSubmit(id: string | null) {
+function attachSubmit(id: string | null, initialUpdatedAt?: string) {
   const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
   if (!form) return;
   let currentId = id;
+  let expectedUpdatedAt = initialUpdatedAt;
 
   const autosave = attachFormAutosave({
     form,
@@ -951,11 +952,13 @@ function attachSubmit(id: string | null) {
       const bioHtml = getHtml('bio');
       const data = await collectFormData(form, bioHtml);
       if (currentId) {
-        await api.entrepreneurs.update(currentId, data);
+        const updated = await api.entrepreneurs.update(currentId, { ...data, expectedUpdatedAt });
+        expectedUpdatedAt = updated.updatedAt;
         return;
       }
       const created = await api.entrepreneurs.create(data);
       currentId = created.id;
+      expectedUpdatedAt = created.updatedAt;
     },
   });
 

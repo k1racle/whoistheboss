@@ -21,6 +21,7 @@ const cachedRouteRules: Record<string, { swr: number }> = {
   '/reels/**': { swr: 60 },
   '/contacts': { swr: 60 },
   '/shooting-request': { swr: 60 },
+  '/privacy-policy': { swr: 300 },
   '/api/site-footer': { swr: 300 },
   '/api/site-banner': { swr: 60 },
   '/api/landing-page': { swr: 60 },
@@ -39,6 +40,7 @@ const cachedRouteRules: Record<string, { swr: number }> = {
   '/api/reels/**': { swr: 60 },
   '/api/contacts': { swr: 60 },
   '/api/shooting-page': { swr: 60 },
+  '/api/privacy-policy': { swr: 300 },
 }
 
 const developmentRouteRules = Object.fromEntries(

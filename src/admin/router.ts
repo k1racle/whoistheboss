@@ -13,6 +13,7 @@ import { usersView, userFormView } from './views/users.js';
 import { settingsView } from './views/settings.js';
 import { blogPageView, companiesPageView, entrepreneursPageView, shootingPageView } from './views/pageEditors.js';
 import { citiesView, cityFormView } from './views/cities.js';
+import { privacyPolicyView } from './views/privacyPolicy.js';
 import type { UserInfo } from './views/layout.js';
 
 export interface RouteResult {
@@ -45,6 +46,7 @@ export const router = {
     if (path === '/admin/pages/companies') return companiesPageView(user);
     if (path === '/admin/pages/blog') return blogPageView(user);
     if (path === '/admin/pages/shooting-request') return shootingPageView(user);
+    if (path === '/admin/pages/privacy-policy') return privacyPolicyView(user);
 
     if (path === '/admin/entrepreneurs') return entrepreneursView(user);
     if (match(path, '/admin/entrepreneurs/new')) return entrepreneurFormView(null, user);

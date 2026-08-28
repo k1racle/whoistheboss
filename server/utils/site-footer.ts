@@ -8,7 +8,7 @@ export const SOCIAL_LINKS_KEY = 'SOCIAL_LINKS'
 export const DEFAULT_FOOTER_META_ITEMS: FooterMetaItem[] = [
   { text: 'ИП Батагов А.А.', href: '' },
   { text: 'Пошта Почта', href: '' },
-  { text: 'Политика конф-ти', href: '' },
+  { text: 'Политика конф-ти', href: '/privacy-policy' },
 ]
 
 export function isSafeFooterHref(href: string): boolean {
@@ -48,6 +48,14 @@ export function parseFooterMetaItems(value: string | undefined): FooterMetaItem[
   catch {
     return DEFAULT_FOOTER_META_ITEMS
   }
+}
+
+export function ensurePrivacyPolicyLink(items: FooterMetaItem[]): FooterMetaItem[] {
+  return items.map(item => (
+    !item.href && item.text.trim().toLowerCase().startsWith('политика')
+      ? { ...item, href: '/privacy-policy' }
+      : item
+  ))
 }
 
 export function parseSocialLinks(value: string | undefined, fallback: SocialLink[]): SocialLink[] {

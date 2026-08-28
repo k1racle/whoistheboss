@@ -15,7 +15,7 @@ export function shootingRequestsView(user?: UserInfo | null) {
               <tr>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Имя</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Контакты</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Компания</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Бизнес</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Сообщение</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Статус</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Дата</th>

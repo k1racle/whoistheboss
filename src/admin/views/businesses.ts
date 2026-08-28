@@ -8,8 +8,8 @@ import { attachSortableList, renderSortableHandle } from '../lib/sortableList.js
 const businessSectionOptions = [
   ['hero', 'Херо'],
   ['manifest', 'Эксперимент'],
-  ['titleBand', 'Красный блок «О компании»'],
-  ['about', 'О компании'],
+  ['titleBand', 'Красный блок «О бизнесе»'],
+  ['about', 'О бизнесе'],
   ['founder', 'Основатель'],
   ['ownerBiography', 'Биография предпринимателя'],
   ['specs', 'Характеристики'],
@@ -32,7 +32,7 @@ const storySectionTypeLabels: Record<EntrepreneurStorySection['type'], string> =
 };
 
 export function businessesView(user?: UserInfo | null) {
-  const html = layout('Компании', renderLoading(), user);
+  const html = layout('Бизнес', renderLoading(), user);
 
   async function init() {
     try {
@@ -41,7 +41,7 @@ export function businessesView(user?: UserInfo | null) {
       setContent(`
         <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-sm text-gray-700">Перетаскивайте строки, чтобы менять порядок компаний в блоке «Места». На сайте отображаются первые три опубликованные компании.</p>
+            <p class="text-sm text-gray-700">Перетаскивайте строки, чтобы менять порядок бизнеса в блоке «Места». На сайте отображаются первые три опубликованные карточки.</p>
             <p class="mt-1 min-h-5 text-xs text-gray-500" data-business-order-status aria-live="polite"></p>
           </div>
           <a href="/admin/businesses/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить</a>
@@ -75,7 +75,7 @@ export function businessesView(user?: UserInfo | null) {
       <tr data-id="${item.id}" data-business-order-row>
         <td class="px-4 py-3 text-sm text-gray-600">
           <div class="flex items-center gap-2">
-            ${renderSortableHandle('Изменить порядок компаний в блоке «Места»')}
+            ${renderSortableHandle('Изменить порядок бизнеса в блоке «Места»')}
             <span class="min-w-6 tabular-nums" data-business-order-number>${String(index + 1).padStart(2, '0')}</span>
           </div>
         </td>
@@ -119,7 +119,7 @@ export function businessesView(user?: UserInfo | null) {
         setStatus('Порядок сохранён');
       } catch (err) {
         pendingOrder = null;
-        alert(err instanceof Error ? err.message : 'Не удалось сохранить порядок компаний');
+        alert(err instanceof Error ? err.message : 'Не удалось сохранить порядок бизнеса');
         await init();
       } finally {
         isSaving = false;
@@ -169,9 +169,10 @@ export function businessesView(user?: UserInfo | null) {
 
 export function businessFormView(id: string | null, user?: UserInfo | null) {
   const isEdit = id !== null;
-  const html = layout(isEdit ? 'Редактировать компанию' : 'Новая компания', renderForm({}, [], []), user);
+  const html = layout(isEdit ? 'Редактировать бизнес' : 'Новый бизнес', renderForm({}, [], []), user);
 
   async function init() {
+    let item: Business | undefined;
     try {
       const [entrepreneurs, cities] = await Promise.all([
         api.entrepreneurs.list(),
@@ -180,11 +181,11 @@ export function businessFormView(id: string | null, user?: UserInfo | null) {
       setContent(renderForm({}, entrepreneurs, cities));
       initQuill('description');
       if (isEdit && id) {
-        const item = await api.businesses.get(id);
+        item = await api.businesses.get(id);
         fillForm(item);
       }
       bindAutoSlug('business-form', 'name');
-      attachSubmit(id);
+      attachSubmit(id, item?.updatedAt);
       attachSectionOrderEditor('business-form');
     } catch (err) {
       setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
@@ -274,8 +275,8 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
           <a href="#business-editor-main">01. Основное</a>
           <a href="#business-editor-hero">02. Херо</a>
           <a href="#business-editor-manifest">03. Эксперимент</a>
-          <a href="#business-editor-about">04. О компании</a>
-          <a href="#business-editor-about-layout">05. Блок «О компании»</a>
+          <a href="#business-editor-about">04. О бизнесе</a>
+          <a href="#business-editor-about-layout">05. Блок «О бизнесе»</a>
           <a href="#business-editor-founder">06. Основатель</a>
           <a href="#business-editor-stories">07. Дополнительные секции</a>
           <a href="#business-editor-specs">08. Характеристики</a>
@@ -287,7 +288,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
           <a href="#business-editor-related">14. Читайте также</a>
         </aside>
         <div class="entrepreneur-editor__sections">
-          ${section('business-editor-visibility', '00', 'Видимость блоков', 'Включайте только те разделы, которые нужны на публичной странице компании.', `
+          ${section('business-editor-visibility', '00', 'Видимость блоков', 'Включайте только те разделы, которые нужны на публичной странице бизнеса.', `
             <div class="editor-field editor-field--wide">
               <input type="hidden" name="sectionOrder" value="${escapeHtml(JSON.stringify(sectionOrder))}" data-section-order-value>
               <div class="editor-visibility-grid editor-order-list" data-section-order-list>
@@ -297,16 +298,16 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
           `, true)}
 
           ${section('business-editor-main', '01', 'Основное', 'Название, адрес страницы, подпись карточки и связанный предприниматель.', `
-            ${field('Название компании', 'name', item.name, { required: true, help: 'Формирует большой заголовок херо и название карточки.' })}
+            ${field('Название бизнеса', 'name', item.name, { required: true, help: 'Формирует большой заголовок херо и название карточки.' })}
             ${field('Адрес страницы (формируется автоматически)', 'slug', item.slug, { required: true, help: 'Создаётся из названия латиницей. При совпадении адресов система добавит номер.' })}
-            ${field('Подпись карточки', 'type', item.type, { required: true, help: 'Короткий текст внизу карточки на странице «Компании».' })}
+            ${field('Подпись карточки', 'type', item.type, { required: true, help: 'Короткий текст внизу карточки на странице «Бизнес».' })}
             <div class="editor-field">
               <label for="entrepreneurId" class="editor-field__label">Предприниматель <span class="text-[#DB2A00]">*</span></label>
               <select id="entrepreneurId" name="entrepreneurId" required class="editor-control">
                 <option value="">Выберите предпринимателя</option>
                 ${entrepreneurs.map((e) => `<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('')}
               </select>
-              <p class="editor-field__help">Связывает компанию со страницей основателя.</p>
+              <p class="editor-field__help">Связывает бизнес со страницей основателя.</p>
             </div>
             <div class="editor-field">
               <label for="cityId" class="editor-field__label">Город присутствия <span class="text-[#DB2A00]">*</span></label>
@@ -318,7 +319,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             </div>
           `, true)}
 
-          ${section('business-editor-hero', '02', 'Херо', 'Первый полноэкранный блок страницы компании. Заголовок берётся из названия.', `
+          ${section('business-editor-hero', '02', 'Херо', 'Первый полноэкранный блок страницы бизнеса. Заголовок берётся из названия.', `
             ${field('Мелкий текст в херо', 'heroTeaser', item.heroTeaser, {
               textarea: true,
               rows: 4,
@@ -358,10 +359,10 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             ${mediaField('Квадратное изображение', 'manifestSquareImage', 'manifestSquareImageFile', item.manifestSquareImage, 'Квадрат по центру нижней границы фона, выступает вниз на 120 px.')}
           `)}
 
-          ${section('business-editor-about', '04', 'О компании', 'Описание, контакты и основное изображение компании.', `
+          ${section('business-editor-about', '04', 'О бизнесе', 'Описание, контакты и основное изображение бизнеса.', `
             <div class="editor-field editor-field--wide">
-              <label class="editor-field__label">Описание компании</label>
-              <p class="editor-field__help">Основной текст для блока «О компании» и метаописания страницы.</p>
+              <label class="editor-field__label">Описание бизнеса</label>
+              <p class="editor-field__help">Основной текст для блока «О бизнесе» и метаописания страницы.</p>
               <input type="hidden" name="description">
               <div id="editor-description" class="bg-white">${item.description || ''}</div>
             </div>
@@ -372,7 +373,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             ${field('Сайт', 'website', item.website, { type: 'url', wide: true })}
             <div class="editor-field editor-field--wide">
               <span class="editor-field__label">Основное изображение</span>
-              <p class="editor-field__help">Используется в карточке компании и текущих фотоблоках страницы. Рекомендуется горизонтальный кадр.</p>
+              <p class="editor-field__help">Используется в карточке бизнеса и текущих фотоблоках страницы. Рекомендуется горизонтальный кадр.</p>
               <div id="company-cover-preview" class="mb-3 aspect-video overflow-hidden border border-gray-200 bg-gray-100">
                 <img src="${escapeHtml(item.coverImage || '')}" alt="" class="${item.coverImage ? 'block' : 'hidden'} h-full w-full object-cover">
                 <span class="${item.coverImage ? 'hidden' : 'flex'} h-full items-center justify-center text-sm text-gray-400">Изображение не выбрано</span>
@@ -382,7 +383,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             </div>
           `)}
 
-          ${section('business-editor-about-layout', '05', 'Блок «О компании»', 'По структуре и внешнему виду совпадает с блоком «Образование и опыт» на странице предпринимателя.', `
+          ${section('business-editor-about-layout', '05', 'Блок «О бизнесе»', 'По структуре и внешнему виду совпадает с блоком «Образование и опыт» на странице предпринимателя.', `
             ${field('Заголовок', 'aboutTitle', item.aboutTitle, {
               textarea: true,
               rows: 4,
@@ -399,14 +400,14 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
               rows: 5,
               help: 'Нижний текст справа от кнопки «Смотреть интервью».'
             })}
-            ${mediaField('Фото блока', 'aboutPhoto', 'aboutPhotoFile', item.aboutPhoto, 'Фотография в правой колонке блока «О компании».')}
+            ${mediaField('Фото блока', 'aboutPhoto', 'aboutPhotoFile', item.aboutPhoto, 'Фотография в правой колонке блока «О бизнесе».')}
           `)}
 
           ${section('business-editor-founder', '06', 'Основатель', 'Центральное фото и имя связанного предпринимателя. Тексты берутся из его настроек hero.', `
             ${mediaField('Фото основателя', 'founderPhoto', 'founderPhotoFile', item.founderPhoto, 'Вертикальная фотография по центру блока. Если поле пустое, используется основное фото связанного предпринимателя.')}
             <div class="editor-field editor-field--wide">
               <span class="editor-field__label">Источник биографии владельца</span>
-              <p class="editor-field__help">По умолчанию тексты берутся из связанного предпринимателя. Собственные тексты компании используются только после явного переключения.</p>
+              <p class="editor-field__help">По умолчанию тексты берутся из связанного предпринимателя. Собственные тексты бизнеса используются только после явного переключения.</p>
               <div class="editor-segmented">
                 <label><input type="radio" name="ownerBiographySource" value="ENTREPRENEUR" ${item.useCustomOwnerBiography ? '' : 'checked'}><span>Из предпринимателя</span></label>
                 <label><input type="radio" name="ownerBiographySource" value="CUSTOM" ${item.useCustomOwnerBiography ? 'checked' : ''}><span>Свои блоки</span></label>
@@ -419,7 +420,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             })).join('')}
           `)}
 
-          ${section('business-editor-stories', '07', 'Дополнительные секции', 'Добавляйте текстовые секции с фотографиями. Существующие блоки компании остаются без изменений.', `
+          ${section('business-editor-stories', '07', 'Дополнительные секции', 'Добавляйте текстовые секции с фотографиями. Существующие блоки бизнеса остаются без изменений.', `
             <div class="editor-field editor-field--wide story-sections-editor">
               <div class="story-sections-editor__list" data-business-story-list>
                 ${storySections.map(renderBusinessStorySectionRow).join('')}
@@ -438,7 +439,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             </div>
           `)}
 
-          ${section('business-editor-specs', '08', 'Характеристики', 'Заголовок, пояснение и управляемый список плашек на странице компании.', `
+          ${section('business-editor-specs', '08', 'Характеристики', 'Заголовок, пояснение и управляемый список плашек на странице бизнеса.', `
             ${field('Заголовок блока', 'specsTitle', item.specsTitle, {
               textarea: true,
               rows: 3,
@@ -466,7 +467,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             </div>
           `)}
 
-          ${section('business-editor-addresses', '09', 'Адреса', 'Карта расположения компании на публичной странице.', `
+          ${section('business-editor-addresses', '09', 'Адреса', 'Карта расположения бизнеса на публичной странице.', `
             ${field('Координаты Яндекс Карт', 'mapEmbed', item.mapEmbed, {
               textarea: true,
               rows: 6,
@@ -476,7 +477,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             })}
           `)}
 
-          ${section('business-editor-awards', '10', 'Достижения', 'Отключаемый блок с наградами и номинациями компании.', `
+          ${section('business-editor-awards', '10', 'Достижения', 'Отключаемый блок с наградами и номинациями бизнеса.', `
             ${field('Заголовок блока', 'awardsTitle', item.awardsTitle, {
               textarea: true,
               rows: 3,
@@ -553,7 +554,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             ${field('Тексты четырёх карточек', 'moreCardTitles', item.moreCardTitles, {
               textarea: true,
               rows: 6,
-              help: 'Ровно четыре строки: одна строка — одна карточка. Эти значения относятся только к данной компании.'
+              help: 'Ровно четыре строки: одна строка — одна карточка. Эти значения относятся только к данному бизнесу.'
             })}
             ${field('Ссылки четырёх карточек', 'moreCardLinks', item.moreCardLinks, {
               textarea: true,
@@ -563,7 +564,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             ${mediaField('Широкая фотография', 'morePhoto', 'morePhotoFile', item.morePhoto, 'Фото во втором ряду, занимает ширину двух карточек. Настройка не связана с фотографией блока предпринимателя.')}
           `)}
 
-          ${section('business-editor-related', '14', 'Читайте также', 'Три карточки компаний подбираются автоматически: сначала компании этого же предпринимателя, затем остальные опубликованные компании.', `
+          ${section('business-editor-related', '14', 'Читайте также', 'Три карточки бизнеса подбираются автоматически: сначала бизнес этого же предпринимателя, затем остальные опубликованные карточки.', `
             ${field('Заголовок блока', 'relatedTitle', item.relatedTitle, {
               help: 'Показывается над карточками. Если оставить пустым, будет использовано «Читайте также».',
               wide: true
@@ -574,7 +575,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             <label class="editor-switch">
               <input type="checkbox" name="isPublished" id="isPublished" ${item.isPublished ? 'checked' : ''}>
               <span class="editor-switch__track"></span>
-              <span><strong>Опубликовать страницу</strong><small>Если выключено, компания останется черновиком.</small></span>
+              <span><strong>Опубликовать страницу</strong><small>Если выключено, бизнес останется черновиком.</small></span>
             </label>
           </div>
         </div>
@@ -657,9 +658,10 @@ function fillForm(item: Business) {
   form.querySelector<HTMLInputElement>('input[name="isPublished"]')!.checked = item.isPublished;
 }
 
-function attachSubmit(id: string | null) {
+function attachSubmit(id: string | null, initialUpdatedAt?: string) {
   const form = document.getElementById('business-form') as HTMLFormElement | null;
   if (!form) return;
+  let expectedUpdatedAt = initialUpdatedAt;
   attachCoverPreview(form);
   attachBusinessMediaFields(form);
   attachBusinessSpecs(form);
@@ -674,7 +676,10 @@ function attachSubmit(id: string | null) {
     save: async () => {
       const descriptionHtml = getHtml('description');
       const data = await collectFormData(form, descriptionHtml);
-      if (id) await api.businesses.update(id, data);
+      if (id) {
+        const updated = await api.businesses.update(id, { ...data, expectedUpdatedAt });
+        expectedUpdatedAt = updated.updatedAt;
+      }
       else await api.businesses.create(data);
     },
   });

@@ -13,10 +13,17 @@ type SocialLinkItem = { label: string; href: string };
 
 const FOOTER_META_ITEMS_KEY = 'FOOTER_META_ITEMS';
 const SOCIAL_LINKS_KEY = 'SOCIAL_LINKS';
+const ADMIN_ONLY_SETTING_KEYS = new Set([
+  'ADMIN_EMAIL',
+  'SITE_URL',
+  'TELEGRAM_BOT_TOKEN',
+  'TELEGRAM_CHAT_ID',
+  'YANDEX_METRIKA',
+]);
 const DEFAULT_FOOTER_META_ITEMS: FooterMetaItem[] = [
   { text: 'ИП Батагов А.А.', href: '' },
   { text: 'Пошта Почта', href: '' },
-  { text: 'Политика конф-ти', href: '' },
+  { text: 'Политика конф-ти', href: '/privacy-policy' },
 ];
 
 const SETTING_GROUPS: { title: string; description: string; fields: SettingField[] }[] = [
@@ -78,7 +85,7 @@ export function settingsView(user?: UserInfo | null) {
   async function init() {
     try {
       const settings = await api.settings.get();
-      setContent(renderForm(settings));
+      setContent(renderForm(settings, user?.role === 'ADMIN'));
       attachSubmit();
       attachVideoUploads();
       attachLogoUploads();
@@ -92,8 +99,14 @@ export function settingsView(user?: UserInfo | null) {
   return { html, init };
 }
 
-function renderForm(settings: Settings): string {
-  const groups = SETTING_GROUPS.map(group => `
+function renderForm(settings: Settings, isAdmin: boolean): string {
+  const visibleGroups = SETTING_GROUPS
+    .map(group => ({
+      ...group,
+      fields: group.fields.filter(field => isAdmin || !ADMIN_ONLY_SETTING_KEYS.has(field.key)),
+    }))
+    .filter(group => group.fields.length);
+  const groups = visibleGroups.map(group => `
     <section class="grid gap-4 border-b border-gray-200 pb-7 last:border-0">
       <div>
         <h2 class="text-lg font-semibold text-gray-900">${escapeHtml(group.title)}</h2>
@@ -348,7 +361,8 @@ function attachSubmit() {
       const fd = new FormData(form);
       const data: Settings = {};
       for (const { key } of KNOWN_KEYS) {
-        data[key] = (fd.get(key) as string) || '';
+        const value = fd.get(key);
+        if (typeof value === 'string') data[key] = value;
       }
       data[FOOTER_META_ITEMS_KEY] = (fd.get(FOOTER_META_ITEMS_KEY) as string) || '[]';
       data[SOCIAL_LINKS_KEY] = (fd.get(SOCIAL_LINKS_KEY) as string) || '[]';

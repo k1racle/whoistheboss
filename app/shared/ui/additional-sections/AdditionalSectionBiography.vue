@@ -43,7 +43,7 @@ withDefaults(defineProps<{
           format="webp"
           loading="lazy"
           decoding="async"
-          class="mt-7 aspect-[20/11] w-full bg-[#dedede] object-contain"
+          class="mt-7 aspect-[20/11] w-full bg-[#dedede] object-cover object-center"
         />
       </div>
 

@@ -112,8 +112,13 @@ export function attachFormAutosave(options: AutosaveOptions): FormAutosaveContro
     if (disposed) return;
     if (inFlight) {
       if (mode === 'auto') return;
-      await inFlight;
-      if (!isDirty()) return;
+      try {
+        await inFlight;
+      } catch {
+        // A manual save is an explicit retry. Do not let a failed autosave
+        // prevent the user from sending a fresh request with the current form.
+      }
+      if (!isDirty() && lastResult === 'saved') return;
     }
     if (mode === 'auto') {
       if (!isAvailable() || !isDirty()) return;
