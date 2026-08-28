@@ -3,7 +3,7 @@ useHead({
   noscript: [
     {
       innerHTML:
-        '<div><img src="https://mc.yandex.ru/watch/111314136" style="position:absolute; left:-9999px;" alt="" /></div>',
+        '<div><img src="https://mc.yandex.ru/watch/112035140" style="position:absolute; left:-9999px;" alt="" /></div>',
     },
   ],
 })

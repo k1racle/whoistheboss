@@ -23,12 +23,32 @@ const updateMetrics = () => {
   offsetHeight.value = document.querySelector(props.offsetSelector)?.getBoundingClientRect().height ?? 0
 }
 
-const nextSection = computed(() => {
+const getNextSection = () => {
   const section = rootRef.value
   if (!section) return null
 
-  return (section.nextElementSibling ?? section.parentElement?.nextElementSibling) as HTMLElement | null
-})
+  const parent = section.parentElement
+  if (!parent) return null
+
+  const visualSiblings = Array.from(parent.children)
+    .filter((element): element is HTMLElement => element instanceof HTMLElement)
+    .map((element, domIndex) => {
+      const parsedOrder = Number.parseFloat(window.getComputedStyle(element).order)
+
+      return {
+        element,
+        domIndex,
+        order: Number.isFinite(parsedOrder) ? parsedOrder : 0,
+      }
+    })
+    .sort((left, right) => left.order - right.order || left.domIndex - right.domIndex)
+
+  const currentIndex = visualSiblings.findIndex(item => item.element === section)
+
+  return currentIndex >= 0
+    ? visualSiblings[currentIndex + 1]?.element ?? null
+    : null
+}
 
 const sectionStyle = computed(() => ({
   '--full-page-min-height': `${props.minHeight}px`,
@@ -50,10 +70,10 @@ const releaseAnimationLock = () => {
   }, 700)
 }
 
-const scrollToNext = () => {
-  if (!nextSection.value || isAnimating.value) return
+const scrollToNext = (nextSection: HTMLElement) => {
+  if (isAnimating.value) return
 
-  const nextTop = nextSection.value.getBoundingClientRect().top + window.scrollY
+  const nextTop = nextSection.getBoundingClientRect().top + window.scrollY
   const targetTop = Math.max(nextTop - offsetHeight.value + 1, 0)
 
   isAnimating.value = true
@@ -66,10 +86,11 @@ const scrollToNext = () => {
 }
 
 const handleWheel = (event: WheelEvent) => {
-  if (event.deltaY <= 14 || !isActiveSection() || !nextSection.value) return
+  const nextSection = getNextSection()
+  if (event.deltaY <= 14 || !isActiveSection() || !nextSection) return
 
   event.preventDefault()
-  scrollToNext()
+  scrollToNext(nextSection)
 }
 
 const handleTouchStart = (event: TouchEvent) => {
@@ -82,10 +103,11 @@ const handleTouchEnd = (event: TouchEvent) => {
 
   touchStartY.value = null
 
-  if (startY === null || endY === null || !isActiveSection() || !nextSection.value) return
+  const nextSection = getNextSection()
+  if (startY === null || endY === null || !isActiveSection() || !nextSection) return
   if (startY - endY < 48) return
 
-  scrollToNext()
+  scrollToNext(nextSection)
 }
 
 onMounted(() => {

@@ -1,6 +1,6 @@
 import { nextTick } from 'vue'
 
-const METRIKA_ID = 111314136
+const METRIKA_ID = 112035140
 const METRIKA_SCRIPT_URL =
   `https://mc.yandex.ru/metrika/tag.js?id=${METRIKA_ID}`
 
@@ -24,12 +24,14 @@ declare global {
 
 export default defineNuxtPlugin((nuxtApp) => {
   const router = useRouter()
+  const isAdminPath = () => window.location.pathname === '/admin'
+    || window.location.pathname.startsWith('/admin/')
 
   /*
    * Не грузим Метрику в development-режиме: не загружаем tag.js,
    * не инициализируем счётчик и не отправляем просмотры.
    */
-  if (import.meta.dev) {
+  if (import.meta.dev || isAdminPath()) {
     return {
       provide: {
         ym: () => {},
@@ -107,10 +109,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   window.ym(METRIKA_ID, 'init', {
     ssr: true,
 
-    // Отключаем автоматический просмотр.
-    // Все просмотры ниже отправляем через hit.
-    defer: true,
-
+    // Первый просмотр отправляет сам счётчик; SPA-переходы ниже идут через hit.
     webvisor: true,
     clickmap: true,
     trackLinks: true,
@@ -118,9 +117,11 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     // Удалите, если ecommerce не используется.
     ecommerce: 'dataLayer',
+    referrer: document.referrer,
+    url: window.location.href,
   })
 
-  let lastTrackedUrl = ''
+  let lastTrackedUrl = window.location.href
   let referer = document.referrer
 
   const trackPageView = async () => {

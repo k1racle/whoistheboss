@@ -208,6 +208,8 @@ export default defineNuxtConfig({
       meta: [
         { name: 'format-detection', content: 'telephone=no' },
         { name: 'apple-mobile-web-app-title', content: siteName },
+        { name: 'yandex-verification', content: 'd15d7d69e47dbfb4' },
+        { name: 'google-site-verification', content: 'ugG76OtpW7X-EHnACfPGilxtEPg26YLw6VNkDCd95uk' },
       ],
       link: [
         { rel: 'preload', href: '/fonts/DexaPro-Condensed-900-Black.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
