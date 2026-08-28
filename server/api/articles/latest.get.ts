@@ -1,4 +1,5 @@
 import prisma from '~~/lib/prisma'
+import { entrepreneurCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 const DEFAULT_LATEST_NEWS_COUNT = 6
 const MAX_LATEST_NEWS_COUNT = 20
@@ -16,6 +17,7 @@ function parseSkip(raw: string | undefined): number {
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
+  const citySlug = getRequestedCitySlug(event)
   const setting = await prisma.siteSetting.findUnique({
     where: { key: 'HOME_LATEST_NEWS_COUNT' },
     select: { value: true },
@@ -25,7 +27,10 @@ export default defineEventHandler(async (event) => {
   const skip = parseSkip(String(query.skip ?? ''))
 
   const articleRows = await prisma.article.findMany({
-    where: { isPublished: true },
+    where: {
+      isPublished: true,
+      ...(citySlug ? { entrepreneur: entrepreneurCityFilter(citySlug) } : {}),
+    },
     include: { entrepreneur: { select: { name: true } } },
     orderBy: { publishedAt: 'desc' },
     skip,

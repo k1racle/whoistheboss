@@ -30,5 +30,8 @@ useSeoMeta({
 </script>
 
 <template>
-  <LandingPage :page="page" />
+  <LandingPage
+    :page="page"
+    :city="city"
+  />
 </template>

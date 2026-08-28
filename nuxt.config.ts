@@ -144,8 +144,9 @@ export default defineNuxtConfig({
 
   routeRules: {
     ...cachedRouteRules,
-    '/:city': { swr: 60 },
-    '/:city/**': { swr: 60 },
+    // Do not attach SWR to `/:city/**`: that wildcard also matches service
+    // routes such as /api, /admin, /uploads and /media. City pages remain
+    // dynamic so binary responses and mutation endpoints bypass page caching.
     '/api/cities': { swr: 300 },
     '/media/**': {
       headers: { 'cache-control': 'public, max-age=31536000, immutable' },

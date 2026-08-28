@@ -7,6 +7,7 @@ const props = defineProps<{
   title: string
   description: string
   initialData: LandingLatestArticles
+  city?: string
 }>()
 
 interface LatestArticlesResponse {
@@ -33,7 +34,11 @@ async function loadMore() {
 
   try {
     const response = await $fetch<LatestArticlesResponse>('/api/articles/latest', {
-      query: { limit: props.initialData.pageSize, skip: articles.value.length },
+      query: {
+        limit: props.initialData.pageSize,
+        skip: articles.value.length,
+        city: props.city,
+      },
     })
 
     articles.value.push(...response.articles)

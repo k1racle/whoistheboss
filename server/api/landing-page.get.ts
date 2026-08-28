@@ -2,7 +2,11 @@ import type { LandingPageData } from '@features/landing/model/landing.data'
 import prisma from '~~/lib/prisma'
 import { getPublishedEntrepreneurs } from '@server/utils/published-entrepreneurs'
 import { getSiteSettings, getSiteSetting } from '@server/utils/site-settings'
-import { businessCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
+import {
+  businessCityFilter,
+  entrepreneurCityFilter,
+  getRequestedCitySlug,
+} from '@server/utils/presence-city'
 
 const LANDING_PAGE_KEYS = [
   'HOME_HERO_TITLE',
@@ -49,7 +53,7 @@ export default defineEventHandler(async (event): Promise<LandingPageData> => {
   const [entrepreneurs, audienceCards, places, articleRows] = await Promise.all([
     getPublishedEntrepreneurs(6, citySlug),
     prisma.audienceCard.findMany({
-      where: { isPublished: true, ...businessCityFilter(citySlug) },
+      where: { isPublished: true },
       orderBy: { sortOrder: 'asc' },
       select: {
         id: true,
@@ -60,7 +64,7 @@ export default defineEventHandler(async (event): Promise<LandingPageData> => {
       },
     }),
     prisma.business.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...businessCityFilter(citySlug) },
       orderBy: [
         { placesSortOrder: 'asc' },
         { createdAt: 'desc' },
@@ -75,7 +79,10 @@ export default defineEventHandler(async (event): Promise<LandingPageData> => {
       },
     }),
     prisma.article.findMany({
-      where: { isPublished: true },
+      where: {
+        isPublished: true,
+        ...(citySlug ? { entrepreneur: entrepreneurCityFilter(citySlug) } : {}),
+      },
       orderBy: { publishedAt: 'desc' },
       take: latestArticlesCount + 1,
       select: {

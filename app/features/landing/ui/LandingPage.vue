@@ -13,6 +13,7 @@ import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const props = defineProps<{
   page: LandingPageData
+  city?: string
 }>()
 
 const heroes = computed(() => props.page.entrepreneurs.map(toLandingHeroCard))
@@ -56,6 +57,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
       :title="page.latestNewsTitle"
       :description="page.latestNewsDescription"
       :initial-data="page.latestArticles"
+      :city="city"
     />
     <LandingAudienceSection
       :title="page.audienceTitle"
