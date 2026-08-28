@@ -73,6 +73,7 @@ model Entrepreneur {
   sectionVisibility          String?    @db.Text
   sectionOrder               String?    @db.Text
   isPublished                Boolean    @default(false)
+  sortOrder                  Int        @default(0)
   createdAt                  DateTime   @default(now())
   updatedAt                  DateTime   @updatedAt
 
@@ -83,7 +84,8 @@ model Entrepreneur {
   businesses Business[]
   cityLinks  EntrepreneurCity[]
 
-  @@index([isPublished, createdAt])
+  @@index([sortOrder])
+  @@index([isPublished, sortOrder, createdAt])
   @@map("entrepreneurs")
 }
 

@@ -214,10 +214,10 @@ export const businessSchema = z.object({
   isPublished: z.boolean().default(false),
 })
 
-export const businessOrderSchema = z.object({
+export const contentOrderSchema = z.object({
   ids: z.array(z.string().min(1)).min(1).refine(
     ids => new Set(ids).size === ids.length,
-    'Business ids must be unique',
+    'Content ids must be unique',
   ),
 })
 

@@ -24,7 +24,11 @@ export default defineEventHandler(async (event): Promise<CompaniesPageData> => {
     getSiteSettings(COMPANIES_PAGE_KEYS),
     prisma.business.findMany({
       where: { isPublished: true, ...businessCityFilter(citySlug) },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { placesSortOrder: 'asc' },
+        { createdAt: 'desc' },
+        { id: 'asc' },
+      ],
       select: {
         slug: true,
         name: true,

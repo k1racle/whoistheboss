@@ -41,7 +41,7 @@ export function businessesView(user?: UserInfo | null) {
       setContent(`
         <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-sm text-gray-700">Перетаскивайте строки, чтобы менять порядок бизнеса в блоке «Места». На сайте отображаются первые три опубликованные карточки.</p>
+            <p class="text-sm text-gray-700">Перетаскивайте строки, чтобы менять порядок бизнеса во всех автоматических блоках сайта. На главной отображаются первые три опубликованные карточки.</p>
             <p class="mt-1 min-h-5 text-xs text-gray-500" data-business-order-status aria-live="polite"></p>
           </div>
           <a href="/admin/businesses/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить</a>
@@ -75,7 +75,7 @@ export function businessesView(user?: UserInfo | null) {
       <tr data-id="${item.id}" data-business-order-row>
         <td class="px-4 py-3 text-sm text-gray-600">
           <div class="flex items-center gap-2">
-            ${renderSortableHandle('Изменить порядок бизнеса в блоке «Места»')}
+            ${renderSortableHandle('Изменить порядок бизнеса на сайте')}
             <span class="min-w-6 tabular-nums" data-business-order-number>${String(index + 1).padStart(2, '0')}</span>
           </div>
         </td>

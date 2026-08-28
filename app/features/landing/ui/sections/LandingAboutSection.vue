@@ -9,20 +9,18 @@ import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-u
 const props = defineProps<{
   title: string
   text: string
+  coverImage: string
   videoType: 'EMBED' | 'SELF_HOSTED'
   videoUrl: string
   videoFile: string
-  hoverVideoType: 'EMBED' | 'SELF_HOSTED'
-  hoverVideoUrl: string
-  hoverVideoFile: string
 }>()
 
-const isMediaHovered = shallowRef(false)
-const fallbackImageFailed = shallowRef(false)
+const isVideoActive = shallowRef(false)
+const coverImageFailed = shallowRef(false)
 
 const protectedText = computed(() => protectPrepositions(props.text))
 const protectedTitle = computed(() => protectPrepositions(props.title))
-const fallbackImageSrc = '/images/placeholder.svg'
+const coverImageSrc = computed(() => props.coverImage || '/images/placeholder.svg')
 
 interface AboutMedia {
   type: 'EMBED' | 'SELF_HOSTED'
@@ -41,33 +39,27 @@ function resolveMedia(
   return source ? { type, source } : null
 }
 
-const defaultMedia = computed(() => resolveMedia(
+const videoMedia = computed(() => resolveMedia(
   props.videoType,
   props.videoUrl,
   props.videoFile,
 ))
 
-const hoverMedia = computed(() => resolveMedia(
-  props.hoverVideoType,
-  props.hoverVideoUrl,
-  props.hoverVideoFile,
-))
-
-const activeMedia = computed(() => (
-  isMediaHovered.value ? hoverMedia.value ?? defaultMedia.value : defaultMedia.value
-))
-
-function showHoverMedia() {
-  isMediaHovered.value = true
+function showVideo() {
+  if (videoMedia.value) isVideoActive.value = true
 }
 
-function showDefaultMedia() {
-  isMediaHovered.value = false
+function showCover() {
+  isVideoActive.value = false
 }
 
-function hideBrokenFallback() {
-  fallbackImageFailed.value = true
+function hideBrokenCover() {
+  coverImageFailed.value = true
 }
+
+watch(() => props.coverImage, () => {
+  coverImageFailed.value = false
+})
 </script>
 
 <template>
@@ -101,13 +93,13 @@ function hideBrokenFallback() {
 
       <div
         class="relative aspect-video overflow-hidden border border-border-strong bg-surface lg:w-2/3"
-        @mouseenter="showHoverMedia"
-        @mouseleave="showDefaultMedia"
+        @mouseenter="showVideo"
+        @mouseleave="showCover"
       >
         <iframe
-          v-if="activeMedia?.type === 'EMBED'"
-          :key="activeMedia.source"
-          :src="activeMedia.source"
+          v-if="isVideoActive && videoMedia?.type === 'EMBED'"
+          :key="videoMedia.source"
+          :src="videoMedia.source"
           title="О проекте"
           class="h-full w-full border-0"
           allow="autoplay; fullscreen"
@@ -117,35 +109,44 @@ function hideBrokenFallback() {
           loading="lazy"
         />
         <video
-          v-else-if="activeMedia"
-          :key="activeMedia.source"
-          :src="activeMedia.source"
+          v-else-if="isVideoActive && videoMedia"
+          :key="videoMedia.source"
+          :src="videoMedia.source"
           title="О проекте"
           class="h-full w-full object-cover"
           controls
           muted
+          autoplay
+          loop
           playsinline
           preload="metadata"
         />
         <NuxtImg
-          v-else-if="!fallbackImageFailed"
-          :src="fallbackImageSrc"
-          alt="Превью видео проекта Маршрут Построен"
+          v-else-if="!coverImageFailed"
+          :src="coverImageSrc"
+          alt="Обложка видео проекта Маршрут Построен"
           sizes="320:100vw 480:100vw sm:100vw lg:67vw 2000:1220px"
           format="webp"
           loading="lazy"
           decoding="async"
           class="h-full w-full object-cover"
-          @error="hideBrokenFallback"
+          @error="hideBrokenCover"
         />
         <div
           v-else
           role="img"
-          aria-label="Видео пока не добавлено"
+          aria-label="Обложка пока не добавлена"
           class="flex h-full w-full animate-pulse items-center justify-center bg-linear-to-br from-surface via-border/45 to-surface px-6"
         >
           <span class="h-2/3 w-2/3 rounded-sm bg-border-strong/45" aria-hidden="true" />
         </div>
+        <button
+          v-if="!isVideoActive && videoMedia"
+          type="button"
+          class="absolute inset-0 z-10 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-accent"
+          aria-label="Показать видео о проекте"
+          @click="showVideo"
+        />
       </div>
     </div>
   </section>

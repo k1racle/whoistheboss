@@ -13,6 +13,7 @@ const LANDING_PAGE_KEYS = [
   'HOME_ABOUT_TITLE',
   'HOME_ABOUT_TEXT',
   'HOME_ABOUT_BOTTOM_TEXT',
+  'HOME_ABOUT_COVER_IMAGE',
   'HOME_ABOUT_VIDEO_TYPE',
   'HOME_ABOUT_VIDEO_URL',
   'HOME_ABOUT_VIDEO_FILE',
@@ -95,12 +96,19 @@ export default defineEventHandler(async (event): Promise<LandingPageData> => {
       },
     }),
   ])
-  const aboutVideoFile = getSiteSetting(settings, 'HOME_ABOUT_VIDEO_FILE')
-  const aboutHoverVideoFile = getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_FILE')
-  const aboutVideoType = aboutVideoFile || getSiteSetting(settings, 'HOME_ABOUT_VIDEO_TYPE') === 'SELF_HOSTED'
-    ? 'SELF_HOSTED'
-    : 'EMBED'
-  const aboutHoverVideoType = aboutHoverVideoFile || getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_TYPE') === 'SELF_HOSTED'
+  const legacyHoverVideoFile = getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_FILE')
+  const legacyHoverVideoUrl = getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_URL')
+  const hasLegacyHoverVideo = Boolean(legacyHoverVideoFile || legacyHoverVideoUrl)
+  const aboutVideoFile = hasLegacyHoverVideo
+    ? legacyHoverVideoFile
+    : getSiteSetting(settings, 'HOME_ABOUT_VIDEO_FILE')
+  const aboutVideoUrl = hasLegacyHoverVideo
+    ? legacyHoverVideoUrl
+    : getSiteSetting(settings, 'HOME_ABOUT_VIDEO_URL')
+  const savedVideoType = hasLegacyHoverVideo
+    ? getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_TYPE')
+    : getSiteSetting(settings, 'HOME_ABOUT_VIDEO_TYPE')
+  const aboutVideoType = aboutVideoFile || savedVideoType === 'SELF_HOSTED'
     ? 'SELF_HOSTED'
     : 'EMBED'
 
@@ -117,12 +125,10 @@ export default defineEventHandler(async (event): Promise<LandingPageData> => {
       'HOME_ABOUT_BOTTOM_TEXT',
       'Мы убеждены, что каждый успешный бизнес начинается с человека. Поэтому рассказываем не только о компаниях и проектах, но прежде всего о людях, которые их создали',
     ),
+    aboutCoverImage: getSiteSetting(settings, 'HOME_ABOUT_COVER_IMAGE'),
     aboutVideoType,
-    aboutVideoUrl: getSiteSetting(settings, 'HOME_ABOUT_VIDEO_URL'),
+    aboutVideoUrl,
     aboutVideoFile,
-    aboutHoverVideoType,
-    aboutHoverVideoUrl: getSiteSetting(settings, 'HOME_ABOUT_HOVER_VIDEO_URL'),
-    aboutHoverVideoFile,
     audienceTitle: getSiteSetting(settings, 'HOME_AUDIENCE_TITLE', 'ДЛЯ\nКОГО'),
     heroesTitle: getSiteSetting(settings, 'HOME_HEROES_TITLE', 'Наши герои'),
     heroesText: getSiteSetting(

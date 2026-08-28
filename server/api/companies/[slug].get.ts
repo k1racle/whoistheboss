@@ -178,7 +178,11 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
       id: { not: business.id },
       entrepreneurId: business.entrepreneurId,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: [
+      { placesSortOrder: 'asc' },
+      { createdAt: 'desc' },
+      { id: 'asc' },
+    ],
     take: 3,
     select: {
       id: true,
@@ -196,7 +200,11 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
         id: { notIn: [business.id, ...sameOwnerRelated.map((item) => item.id)] },
         entrepreneurId: { not: business.entrepreneurId },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { placesSortOrder: 'asc' },
+        { createdAt: 'desc' },
+        { id: 'asc' },
+      ],
       take: 3,
       select: {
         id: true,

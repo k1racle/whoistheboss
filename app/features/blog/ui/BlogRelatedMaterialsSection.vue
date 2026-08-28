@@ -31,7 +31,7 @@ const protectedTitle = computed(() => protectPrepositions(props.title || 'МАТ
           v-for="material in materials"
           :key="`${material.type}-${material.slug}`"
           :material="material"
-          class="min-w-[82%] shrink-0 snap-center sm:min-w-[420px] md:min-w-0"
+          class="aspect-square min-h-0 w-[82%] min-w-[82%] shrink-0 self-start snap-center sm:w-[420px] sm:min-w-[420px] md:w-auto md:min-w-0"
         />
       </LandingSlider>
     </div>

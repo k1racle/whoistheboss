@@ -30,12 +30,10 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
     <LandingAboutSection
       :title="page.aboutTitle"
       :text="page.aboutText"
+      :cover-image="page.aboutCoverImage"
       :video-type="page.aboutVideoType"
       :video-url="page.aboutVideoUrl"
       :video-file="page.aboutVideoFile"
-      :hover-video-type="page.aboutHoverVideoType"
-      :hover-video-url="page.aboutHoverVideoUrl"
-      :hover-video-file="page.aboutHoverVideoFile"
     />
     <LandingFeaturedHeroSection
       v-if="isBannerEnabled('/')"

@@ -20,13 +20,13 @@ useSeoMeta({
       <p class="font-sans text-sm uppercase leading-4 text-accent sm:text-base">
         Документы
       </p>
-      <h1 class="mt-5 max-w-[70rem] font-display text-[clamp(2.75rem,7vw,7rem)] font-black uppercase leading-[0.9] tracking-[-0.04em]">
+      <h1 class="mt-5 max-w-full font-display text-[min(9vw,2.2rem)] font-black uppercase leading-[0.9] tracking-[-0.04em] [overflow-wrap:anywhere] sm:max-w-[70rem] sm:text-[clamp(2.75rem,7vw,7rem)]">
         Политика конфиденциальности
       </h1>
       <div class="mt-12 border-t border-border-strong pt-8 sm:mt-16 sm:pt-10">
         <p
           v-if="data?.text"
-          class="max-w-[75ch] whitespace-pre-wrap font-sans text-base leading-6 text-text sm:text-lg sm:leading-7"
+          class="max-w-[75ch] whitespace-pre-wrap font-sans text-base leading-6 text-text [overflow-wrap:anywhere] sm:text-lg sm:leading-7"
         >{{ data.text }}</p>
         <p v-else class="font-sans text-base leading-6 text-text-muted">
           Текст политики конфиденциальности пока не опубликован.

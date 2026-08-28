@@ -4,7 +4,11 @@ import { entrepreneurCityFilter } from '@server/utils/presence-city'
 export function getPublishedEntrepreneurs(take?: number, citySlug?: string) {
   return prisma.entrepreneur.findMany({
     where: { isPublished: true, ...entrepreneurCityFilter(citySlug) },
-    orderBy: { createdAt: 'desc' },
+    orderBy: [
+      { sortOrder: 'asc' },
+      { createdAt: 'desc' },
+      { id: 'asc' },
+    ],
     select: {
       slug: true,
       name: true,

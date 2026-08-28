@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import prisma from '~~/lib/prisma'
 import {
   articleSchema,
-  businessOrderSchema,
+  contentOrderSchema,
   businessSchema,
   entrepreneurSchema,
   interviewSchema,
@@ -61,12 +61,34 @@ async function updateVersionedRecord<T>(expectedUpdatedAt: string | undefined, u
 }
 
 export async function handleEntrepreneurs(event: H3Event, path: readonly string[]) {
+  if (path.length === 1 && path[0] === 'order') {
+    requireAdminMethod(event, ['PUT'])
+    const { ids } = await readAdminBody(event, contentOrderSchema)
+    const entrepreneurs = await prisma.entrepreneur.findMany({ select: { id: true } })
+    const existingIds = new Set(entrepreneurs.map(entrepreneur => entrepreneur.id))
+
+    if (ids.length !== entrepreneurs.length || ids.some(id => !existingIds.has(id))) {
+      throwAdminError(400, 'Entrepreneur order must include every entrepreneur exactly once')
+    }
+
+    await prisma.$transaction(ids.map((id, sortOrder) => prisma.entrepreneur.update({
+      where: { id },
+      data: { sortOrder },
+    })))
+
+    return { ok: true }
+  }
+
   const id = singleId(path)
   const method = requireAdminMethod(event, id ? ['GET', 'PUT', 'DELETE'] : ['GET', 'POST'])
 
   if (!id && method === 'GET') {
     return prisma.entrepreneur.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { sortOrder: 'asc' },
+        { createdAt: 'desc' },
+        { id: 'asc' },
+      ],
       include: {
         _count: { select: { interviews: true, reels: true, articles: true } },
         ...entrepreneurCityInclude,
@@ -81,11 +103,15 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
     const slug = await createUniqueSlug(data.name, async candidate => Boolean(
       await prisma.entrepreneur.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
+    const lastEntrepreneur = await prisma.entrepreneur.aggregate({
+      _max: { sortOrder: true },
+    })
     setResponseStatus(event, 201)
     return prisma.entrepreneur.create({
       data: {
         ...data,
         slug,
+        sortOrder: (lastEntrepreneur._max.sortOrder ?? -1) + 1,
         cityLinks: { create: cityIds.map(cityId => ({ cityId })) },
       },
       include: entrepreneurCityInclude,
@@ -284,7 +310,7 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
 export async function handleBusinesses(event: H3Event, path: readonly string[]) {
   if (path.length === 1 && path[0] === 'order') {
     requireAdminMethod(event, ['PUT'])
-    const { ids } = await readAdminBody(event, businessOrderSchema)
+    const { ids } = await readAdminBody(event, contentOrderSchema)
     const businesses = await prisma.business.findMany({ select: { id: true } })
     const existingIds = new Set(businesses.map(business => business.id))
 

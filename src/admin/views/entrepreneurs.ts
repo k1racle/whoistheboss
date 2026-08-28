@@ -30,15 +30,20 @@ export function entrepreneursView(user?: UserInfo | null) {
   async function init() {
     try {
       const items = await api.entrepreneurs.list();
-      const rows = items.map((item) => renderRow(item)).join('');
+      const rows = items.map((item, index) => renderRow(item, index)).join('');
       setContent(`
-        <div class="mb-4 flex justify-end">
+        <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700">Перетаскивайте строки, чтобы менять порядок предпринимателей во всех автоматических блоках сайта.</p>
+            <p class="mt-1 min-h-5 text-xs text-gray-500" data-entrepreneur-order-status aria-live="polite"></p>
+          </div>
           <a href="/admin/entrepreneurs/new" class="inline-flex items-center px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600" data-link>Добавить</a>
         </div>
         <div class="bg-white border border-gray-200 rounded-sm overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Порядок</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Имя</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Должность</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Статус</th>
@@ -46,19 +51,26 @@ export function entrepreneursView(user?: UserInfo | null) {
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Действия</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">${rows || emptyRow()}</tbody>
+            <tbody class="divide-y divide-gray-200" data-entrepreneur-order-list>${rows || emptyRow()}</tbody>
           </table>
         </div>
       `);
+      attachEntrepreneurOrder();
       attachActions(items);
     } catch (err) {
       setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
     }
   }
 
-  function renderRow(item: Entrepreneur): string {
+  function renderRow(item: Entrepreneur, index: number): string {
     return `
-      <tr data-id="${item.id}">
+      <tr data-id="${item.id}" data-entrepreneur-order-row>
+        <td class="px-4 py-3 text-sm text-gray-600">
+          <div class="flex items-center gap-2">
+            ${renderSortableHandle('Изменить порядок предпринимателя на сайте')}
+            <span class="min-w-6 tabular-nums" data-entrepreneur-order-number>${String(index + 1).padStart(2, '0')}</span>
+          </div>
+        </td>
         <td class="px-4 py-3 text-sm font-medium text-gray-900">
           ${item.photo ? `<img src="${escapeHtml(item.photo)}" class="w-8 h-8 rounded-full object-cover inline-block mr-2 align-middle" alt="">` : ''}
           ${escapeHtml(item.name)}
@@ -72,6 +84,61 @@ export function entrepreneursView(user?: UserInfo | null) {
         </td>
       </tr>
     `;
+  }
+
+  function attachEntrepreneurOrder() {
+    const list = document.querySelector<HTMLElement>('[data-entrepreneur-order-list]');
+    const status = document.querySelector<HTMLElement>('[data-entrepreneur-order-status]');
+    if (!list?.querySelector('[data-entrepreneur-order-row]')) return;
+
+    let initialized = false;
+    let isSaving = false;
+    let pendingOrder: string[] | null = null;
+
+    const setStatus = (message: string) => {
+      if (status) status.textContent = message;
+    };
+
+    const savePendingOrder = async () => {
+      if (isSaving) return;
+      isSaving = true;
+
+      try {
+        while (pendingOrder) {
+          const ids = pendingOrder;
+          pendingOrder = null;
+          setStatus('Сохраняем порядок…');
+          await api.entrepreneurs.reorder(ids);
+        }
+        setStatus('Порядок сохранён');
+      } catch (err) {
+        pendingOrder = null;
+        alert(err instanceof Error ? err.message : 'Не удалось сохранить порядок предпринимателей');
+        await init();
+      } finally {
+        isSaving = false;
+      }
+    };
+
+    attachSortableList({
+      list,
+      itemSelector: '[data-entrepreneur-order-row]',
+      onChange: () => {
+        const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-entrepreneur-order-row]'));
+        rows.forEach((row, index) => {
+          const number = row.querySelector<HTMLElement>('[data-entrepreneur-order-number]');
+          if (number) number.textContent = String(index + 1).padStart(2, '0');
+        });
+
+        if (!initialized) {
+          initialized = true;
+          return;
+        }
+
+        pendingOrder = rows.map(row => row.dataset.id || '').filter(Boolean);
+        void savePendingOrder();
+      },
+    });
   }
 
   function attachActions(items: Entrepreneur[]) {
@@ -1148,7 +1215,7 @@ function renderLoading(): string {
 }
 
 function emptyRow(): string {
-  return `<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">Нет записей</td></tr>`;
+  return `<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Нет записей</td></tr>`;
 }
 
 function statusBadge(published: boolean): string {

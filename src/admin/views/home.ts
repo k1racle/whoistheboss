@@ -40,6 +40,12 @@ export function homeView(user?: UserInfo | null) {
 }
 
 function renderHomeForm(settings: Settings): string {
+  const hasLegacyHoverVideo = Boolean(settings.HOME_ABOUT_HOVER_VIDEO_URL || settings.HOME_ABOUT_HOVER_VIDEO_FILE);
+  const values: Settings = {
+    ...settings,
+    HOME_ABOUT_VIDEO_URL: hasLegacyHoverVideo ? settings.HOME_ABOUT_HOVER_VIDEO_URL || '' : settings.HOME_ABOUT_VIDEO_URL || '',
+    HOME_ABOUT_VIDEO_FILE: hasLegacyHoverVideo ? settings.HOME_ABOUT_HOVER_VIDEO_FILE || '' : settings.HOME_ABOUT_VIDEO_FILE || '',
+  };
   const visibility = parseObject(settings.HOME_SECTION_VISIBILITY);
   const order = parseOrder(settings.HOME_SECTION_ORDER);
   const orderedSections = order.map((key) => homeSections.find(([candidate]) => candidate === key)!);
@@ -47,13 +53,13 @@ function renderHomeForm(settings: Settings): string {
     <label class="editor-field editor-field--wide">
       <span class="editor-field__label">${label}</span>
       ${textarea
-        ? `<textarea class="editor-control" name="${name}" rows="${rows}">${escapeHtml(settings[name] || '')}</textarea>`
-        : `<input class="editor-control" name="${name}" value="${escapeHtml(settings[name] || '')}">`}
+        ? `<textarea class="editor-control" name="${name}" rows="${rows}">${escapeHtml(values[name] || '')}</textarea>`
+        : `<input class="editor-control" name="${name}" value="${escapeHtml(values[name] || '')}">`}
       <span class="editor-field__help">${help}${textarea ? ' Enter создаёт новую строку и на сайте.' : ''}</span>
     </label>`;
 
   const media = (label: string, name: string, kind: 'image' | 'video', help: string) => {
-    const value = settings[name] || '';
+    const value = values[name] || '';
     return `
       <div class="editor-field editor-field--wide home-media-field" data-home-media data-media-kind="${kind}">
         <div>
@@ -121,14 +127,13 @@ function renderHomeForm(settings: Settings): string {
             ${field('Заголовок', 'HOME_HERO_TITLE', 'Перенос строки задает деление большого заголовка.', true, 3)}
           `)}
 
-          ${section('home-about', '02', 'О проекте', 'Текст и два состояния видео.', `
+          ${section('home-about', '02', 'О проекте', 'Текст, обложка-картинка и видео.', `
             ${field('Заголовок', 'HOME_ABOUT_TITLE', 'Заголовок слева от видео.', true, 3)}
             ${field('Основной текст', 'HOME_ABOUT_TEXT', 'Описание проекта слева.', true, 7)}
             ${field('Нижний текст', 'HOME_ABOUT_BOTTOM_TEXT', 'Строка под основной частью блока.', true, 4)}
-            ${field('Ссылка на основное видео', 'HOME_ABOUT_VIDEO_URL', 'Используйте для VK Video или другого embed-источника.')}
-            ${media('Основное видео-файл', 'HOME_ABOUT_VIDEO_FILE', 'video', 'Загруженный файл имеет приоритет над ссылкой.')}
-            ${field('Ссылка на видео при наведении', 'HOME_ABOUT_HOVER_VIDEO_URL', 'Необязательное второе состояние видео.')}
-            ${media('Hover-видео-файл', 'HOME_ABOUT_HOVER_VIDEO_FILE', 'video', 'Необязательный загруженный файл для наведения.')}
+            ${media('Обложка', 'HOME_ABOUT_COVER_IMAGE', 'image', 'Картинка показывается до наведения или запуска видео.')}
+            ${field('Ссылка на видео', 'HOME_ABOUT_VIDEO_URL', 'Используйте для VK Video или другого embed-источника.')}
+            ${media('Видео-файл', 'HOME_ABOUT_VIDEO_FILE', 'video', 'Загруженный файл имеет приоритет над ссылкой.')}
           `)}
 
           ${section('home-audience', '03', 'Для кого', 'Заголовок секции и управление карточками аудитории.', `
@@ -262,7 +267,9 @@ function collectHomeSettings(form: HTMLFormElement): Settings {
   });
   data.HOME_SECTION_VISIBILITY = JSON.stringify(Object.fromEntries(homeSections.map(([key]) => [key, fd.has(`home_section_${key}`)])));
   data.HOME_ABOUT_VIDEO_TYPE = data.HOME_ABOUT_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED';
-  data.HOME_ABOUT_HOVER_VIDEO_TYPE = data.HOME_ABOUT_HOVER_VIDEO_FILE ? 'SELF_HOSTED' : 'EMBED';
+  data.HOME_ABOUT_HOVER_VIDEO_TYPE = 'EMBED';
+  data.HOME_ABOUT_HOVER_VIDEO_URL = '';
+  data.HOME_ABOUT_HOVER_VIDEO_FILE = '';
   return data;
 }
 

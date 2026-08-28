@@ -81,7 +81,11 @@ export default defineEventHandler(async (event): Promise<BlogPageData> => {
     }),
     prisma.entrepreneur.findMany({
       where: { isPublished: true, ...entrepreneurCityFilter(citySlug) },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { sortOrder: 'asc' },
+        { createdAt: 'desc' },
+        { id: 'asc' },
+      ],
       take: 3,
       select: {
         slug: true,
@@ -93,7 +97,11 @@ export default defineEventHandler(async (event): Promise<BlogPageData> => {
     }),
     prisma.business.findMany({
       where: { isPublished: true, ...businessCityFilter(citySlug) },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { placesSortOrder: 'asc' },
+        { createdAt: 'desc' },
+        { id: 'asc' },
+      ],
       take: 3,
       select: {
         slug: true,

@@ -78,6 +78,7 @@ export interface Entrepreneur {
   sectionVisibility?: string | null;
   sectionOrder?: string | null;
   isPublished: boolean;
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
   _count?: { interviews: number; reels: number; articles: number };
@@ -323,6 +324,8 @@ export const api = {
       fetchJson('/admin/entrepreneurs', { method: 'POST', body: JSON.stringify(data) }),
     update: (id: string, data: VersionedUpdate<Entrepreneur>): Promise<Entrepreneur> =>
       fetchJson(`/admin/entrepreneurs/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    reorder: (ids: string[]): Promise<{ ok: true }> =>
+      fetchJson('/admin/entrepreneurs/order', { method: 'PUT', body: JSON.stringify({ ids }) }),
     delete: (id: string) => fetchJson(`/admin/entrepreneurs/${id}`, { method: 'DELETE' }),
   },
 
