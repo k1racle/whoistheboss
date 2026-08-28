@@ -34,7 +34,7 @@ const brandTitleLines = computed(() => titleLines.value.slice(1))
             {{ line }}
           </span>
           <span
-            class="col-start-2 row-span-2 row-start-1 ml-[0.06em] -translate-y-[0.103em] scale-y-[0.972] self-center whitespace-nowrap text-[0.34em] leading-none tracking-[-0.02em] [text-orientation:mixed] [writing-mode:vertical-rl] rotate-180"
+            class="col-start-2 row-span-2 row-start-1 ml-[0.06em] -translate-y-[0.303em] scale-y-[0.984] self-center whitespace-nowrap text-[0.34em] leading-none tracking-[-0.02em] [text-orientation:mixed] [writing-mode:vertical-rl] rotate-180"
           >
             {{ brandLabel }}
           </span>

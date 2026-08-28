@@ -63,6 +63,10 @@
 
 Nitro раздает файлы `dist/admin` как public assets. Обработчик `server/routes/admin/[...path].get.ts` возвращает `index.html` для `/admin/*` и обеспечивает SPA fallback.
 
+Docker-сборка использует BuildKit cache для npm и apt. Финальный образ не копирует полный builder `node_modules`: runtime-зависимости находятся в `.output/server/node_modules`, а Prisma CLI для `migrate deploy` устанавливается отдельно из `docker/prisma-cli/package-lock.json`. При обновлении Prisma синхронно обновляйте версии в основном lock-файле и в `docker/prisma-cli/`.
+
+Entrypoint не выполняет рекурсивный `chown` persistent uploads при каждом запуске. Файлы, созданные приложением, уже принадлежат пользователю `app`. Для разового восстановления прав после импорта или ручного копирования volume установите `FIX_UPLOAD_PERMISSIONS=true`, дождитесь успешного запуска, затем верните значение `false`. Автоматические миграции по-прежнему управляются через `MIGRATE_ON_START`.
+
 ## Карта ключевых файлов
 
 ### Клиент админки

@@ -1,0 +1,7 @@
+{
+  "name": "guessboss-prisma-cli",
+  "private": true,
+  "dependencies": {
+    "prisma": "5.22.0"
+  }
+}

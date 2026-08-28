@@ -15,3 +15,11 @@ coverage/
 tests/
 .github/
 migration_old/
+.agents/
+tasks/
+docs/
+AGENTS.md
+DESIGN.md
+README.md
+todo.md
+skills-lock.json

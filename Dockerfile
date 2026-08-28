@@ -1,52 +1,67 @@
-# Stage 1: Build
-FROM node:24.19.0-bookworm-slim AS builder
+# syntax=docker/dockerfile:1.7
+
+ARG NODE_IMAGE=node:24.19.0-bookworm-slim
+
+# Build the admin client and the standalone Nitro server.
+FROM ${NODE_IMAGE} AS builder
 WORKDIR /app
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends python3 make g++ openssl ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+  apt-get update \
+  && apt-get install -y --no-install-recommends python3 make g++ openssl ca-certificates
 
 COPY package*.json ./
-COPY prisma ./prisma
-RUN echo "PORTAINER_NODE24_BUILD_2026-08-07_3" \
+RUN --mount=type=cache,target=/root/.npm,sharing=locked \
+  echo "PORTAINER_NODE24_BUILD_2026-08-28_1" \
   && node --version \
   && npm --version \
-  && npm ci --include=optional \
+  && npm ci --include=optional --ignore-scripts
+
+# Prisma changes no longer invalidate the expensive npm dependency layer.
+COPY prisma ./prisma
+RUN npm exec -- prisma generate \
   && node -e "const sharp = require('sharp'); console.log('Sharp/libvips:', sharp.versions.sharp, sharp.versions.vips)"
 
-COPY . .
-RUN npx prisma generate
+COPY --link . .
 
-RUN echo "PORTAINER_ADMIN_BUILD_2026-08-07_2" \
+RUN echo "PORTAINER_ADMIN_BUILD_2026-08-28_1" \
   && npm run build:admin
 
-RUN echo "PORTAINER_NUXT_BUILD_2026-08-07_3" \
+RUN echo "PORTAINER_NUXT_BUILD_2026-08-28_1" \
   && npm exec -- nuxt build
 
-# Stage 2: Production
-FROM node:24.19.0-bookworm-slim AS runner
+# Keep the migration CLI isolated from the much larger build dependency tree.
+FROM ${NODE_IMAGE} AS prisma-cli
+WORKDIR /opt/prisma-cli
+
+COPY docker/prisma-cli/package*.json ./
+RUN --mount=type=cache,target=/root/.npm,sharing=locked \
+  npm ci --omit=dev --include=optional
+
+# Production image: Nitro already places runtime dependencies in
+# .output/server/node_modules, so the builder's full node_modules is unnecessary.
+FROM ${NODE_IMAGE} AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV MIGRATE_ON_START=true
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends dumb-init ca-certificates gosu \
-  && rm -rf /var/lib/apt/lists/*
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
+  apt-get update \
+  && apt-get install -y --no-install-recommends dumb-init ca-certificates gosu
 
-RUN groupadd --system app && useradd --system --gid app --create-home --home-dir /home/app app
+RUN groupadd --gid 10001 app \
+  && useradd --uid 10001 --gid app --create-home --home-dir /home/app --shell /usr/sbin/nologin app \
+  && mkdir -p /app/public/uploads/.cache /app/.data/nitro-cache /home/app \
+  && chown app:app /app /app/public /app/public/uploads /app/public/uploads/.cache /app/.data /app/.data/nitro-cache /home/app
 
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.output ./.output
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/scripts ./scripts
-
-RUN mkdir -p /app/public/uploads /app/public/uploads/.cache /home/app \
-  && chown -R app:app /app /home/app \
-  && chmod +x ./scripts/docker-entrypoint.sh
+COPY --link --chown=10001:10001 --from=builder /app/.output ./.output
+COPY --link --chown=10001:10001 --from=builder /app/prisma ./prisma
+COPY --link --chown=10001:10001 --chmod=755 --from=builder /app/scripts ./scripts
+COPY --link --chown=10001:10001 --from=prisma-cli /opt/prisma-cli/node_modules /opt/prisma-cli/node_modules
 
 EXPOSE 3000
 

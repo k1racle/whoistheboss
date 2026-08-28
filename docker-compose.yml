@@ -27,6 +27,7 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
       MIGRATE_ON_START: ${MIGRATE_ON_START:-true}
+      FIX_UPLOAD_PERMISSIONS: ${FIX_UPLOAD_PERMISSIONS:-false}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
       SITE_NAME: ${SITE_NAME:-Маршрут Построен}
       SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Интервью с основателями бизнеса. Видео, рилсы, фото.}
@@ -42,6 +43,8 @@ services:
     image: postgres:16-alpine
     container_name: guessboss-db
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
