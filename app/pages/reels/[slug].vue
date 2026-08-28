@@ -3,9 +3,10 @@ import { ROUTES } from '@shared/navigation'
 
 const route = useRoute()
 const slug = String(route.params.slug)
+const city = typeof route.params.city === 'string' ? route.params.city : undefined
 
-const { error } = await useAsyncData(`reel-${slug}`, async () =>
-  await $fetch(`/api/reels/${slug}`)
+const { error } = await useAsyncData(`reel-${city || 'all'}-${slug}`, async () =>
+  await $fetch(`/api/reels/${slug}`, { query: { city } })
 )
 
 if (error.value) {
@@ -13,7 +14,7 @@ if (error.value) {
 }
 
 await navigateTo({
-  path: ROUTES.REELS,
+  path: city ? `/${city}${ROUTES.REELS}` : ROUTES.REELS,
   query: {
     play: slug,
   },

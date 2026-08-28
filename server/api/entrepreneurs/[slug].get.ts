@@ -11,6 +11,7 @@ import {
   normalizeEntrepreneurStorySections,
 } from '@server/utils/entrepreneur-story-sections'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+import { entrepreneurCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 const ENTREPRENEUR_DETAIL_SETTINGS_KEYS = [
   'HOME_BANNER_IMAGE',
@@ -57,12 +58,13 @@ function parseMoreItems(titlesRaw: string | null | undefined, linksRaw: string |
 
 export default defineEventHandler(async (event): Promise<EntrepreneurDetailData> => {
   const slug = getRouterParam(event, 'slug')
+  const citySlug = getRequestedCitySlug(event)
   if (!slug) {
     throw createError({ statusCode: 400, statusMessage: 'Entrepreneur slug is required' })
   }
 
   const entrepreneur = await prisma.entrepreneur.findFirst({
-    where: { slug, isPublished: true },
+    where: { slug, isPublished: true, ...entrepreneurCityFilter(citySlug) },
   })
 
   if (!entrepreneur) {

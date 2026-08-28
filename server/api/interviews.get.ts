@@ -1,10 +1,12 @@
 import prisma from '~~/lib/prisma'
 import { readPagination } from '@server/utils/pagination'
+import { entrepreneurCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 export default defineEventHandler(async (event) => {
   const { limit, offset } = readPagination(event, { defaultLimit: 48, maxLimit: 120 })
+  const citySlug = getRequestedCitySlug(event)
   const interviews = await prisma.interview.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, entrepreneur: entrepreneurCityFilter(citySlug) },
     skip: offset,
     take: limit,
     orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],

@@ -1,4 +1,4 @@
-import { api, type Entrepreneur, type EntrepreneurStorySection } from '../api.js';
+import { api, type City, type Entrepreneur, type EntrepreneurStorySection } from '../api.js';
 import { layout, formatDate, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
 import { attachFormAutosave } from '../lib/formAutosave.js';
@@ -96,19 +96,24 @@ export function entrepreneursView(user?: UserInfo | null) {
 
 export function entrepreneurFormView(id: string | null, user?: UserInfo | null) {
   const isEdit = id !== null;
-  const html = layout(isEdit ? 'Редактировать предпринимателя' : 'Новый предприниматель', renderForm({}), user);
+  const html = layout(isEdit ? 'Редактировать предпринимателя' : 'Новый предприниматель', renderForm({}, []), user);
 
   async function init() {
+    let item: Entrepreneur | undefined;
+    try {
+      const [cities, loadedItem] = await Promise.all([
+        api.cities.list(),
+        isEdit && id ? api.entrepreneurs.get(id) : Promise.resolve(undefined),
+      ]);
+      item = loadedItem;
+      setContent(renderForm(item || {}, cities));
+    } catch (err) {
+      setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
+      return;
+    }
     initQuill('bio');
     attachFeaturedInterviewVideoTypeToggle();
-    if (isEdit && id) {
-      try {
-        const item = await api.entrepreneurs.get(id);
-        fillForm(item);
-      } catch (err) {
-        setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
-      }
-    }
+    if (item) fillForm(item);
     attachSectionNavigation();
     attachSectionOrderEditor('entrepreneur-form');
     attachMediaEditor();
@@ -120,7 +125,7 @@ export function entrepreneurFormView(id: string | null, user?: UserInfo | null) 
   return { html, init };
 }
 
-function renderForm(item: Partial<Entrepreneur>): string {
+function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
   const sectionVisibility = parseVisibility(item.sectionVisibility);
   const sectionOrder = parseSectionOrder(item.sectionOrder, entrepreneurSectionOptions.map(([key]) => key));
   const orderedSectionOptions = sectionOrder.map((key) => entrepreneurSectionOptions.find(([optionKey]) => optionKey === key)!);
@@ -249,6 +254,13 @@ function renderForm(item: Partial<Entrepreneur>): string {
             ${field('Имя и фамилия', 'name', item.name, { required: true, help: 'Выводится в заголовках и карточках героя.' })}
             ${field('Адрес страницы (формируется автоматически)', 'slug', item.slug, { required: true, help: 'Создаётся из имени латиницей. При совпадении адресов система добавит номер.' })}
             ${field('Должность / подпись', 'title', item.title, { help: 'Короткая роль героя: «Управляющий партнер». Поле можно оставить пустым.' })}
+            <fieldset class="editor-field editor-field--wide">
+              <legend class="editor-field__label">Города присутствия <span class="text-[#DB2A00]">*</span></legend>
+              <p class="editor-field__help">Предприниматель может показываться сразу в нескольких городских разделах.</p>
+              <div class="mt-3 grid gap-2 sm:grid-cols-2">
+                ${cities.map(city => `<label class="flex min-h-11 items-center gap-3 border border-gray-200 px-3 py-2 text-sm"><input type="checkbox" name="cityIds" value="${city.id}"><span>${escapeHtml(city.name)} <small class="text-gray-500">/${escapeHtml(city.slug)}</small></span></label>`).join('') || '<p class="text-sm text-[#DB2A00]">Сначала добавьте город в разделе «Города присутствия».</p>'}
+              </div>
+            </fieldset>
             ${field('Цитата', 'quote', item.quote, { help: 'Используется как запасной тизер в блоках страницы.' })}
             ${mediaField('Главное фото героя', 'photo', 'photoFile', item.photo, 'Основной портрет для карточки героя и связанных блоков. Рекомендуется вертикальное изображение.')}
           `, true)}
@@ -699,6 +711,10 @@ function attachStorySections() {
 function fillForm(item: Entrepreneur) {
   const form = document.getElementById('entrepreneur-form') as HTMLFormElement | null;
   if (!form) return;
+  const selectedCityIds = new Set(item.cityLinks?.map(link => link.cityId) || []);
+  form.querySelectorAll<HTMLInputElement>('input[name="cityIds"]').forEach((input) => {
+    input.checked = selectedCityIds.has(input.value);
+  });
 
   form.querySelector<HTMLInputElement>('input[name="name"]')!.value = item.name;
   form.querySelector<HTMLInputElement>('input[name="slug"]')!.value = item.slug;
@@ -1014,6 +1030,8 @@ async function collectStorySections(form: HTMLFormElement): Promise<Entrepreneur
 
 async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<Partial<Entrepreneur>> {
   const fd = new FormData(form);
+  const cityIds = fd.getAll('cityIds').map(String).filter(Boolean);
+  if (!cityIds.length) throw new Error('Выберите хотя бы один город присутствия');
 
   const photoFile = fd.get('photoFile') as File | null;
   let photo = (fd.get('photo') as string) || null;
@@ -1047,6 +1065,7 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
   const storySections = await collectStorySections(form);
 
   return {
+    cityIds,
     name: fd.get('name') as string,
     slug: fd.get('slug') as string,
     title: fd.get('title') as string,

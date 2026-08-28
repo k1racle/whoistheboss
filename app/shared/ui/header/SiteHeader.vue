@@ -2,11 +2,14 @@
 import { ROUTES } from '@shared/navigation'
 import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
+import type { PresenceCity } from '@shared/types/city'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   socialLinks?: SocialLink[]
+  cities?: PresenceCity[]
 }>(), {
   socialLinks: () => SOCIAL_LINKS,
+  cities: () => [],
 })
 
 const navigationItems = [
@@ -22,9 +25,35 @@ const mobileNavigationItems = [
 
 const route = useRoute()
 const isMenuOpen = ref(false)
+const isCityMenuOpen = ref(false)
+const currentCitySlug = computed(() => typeof route.params.city === 'string' ? route.params.city : '')
+const currentCity = computed(() => props.cities.find(city => city.slug === currentCitySlug.value))
+
+const pathWithoutCity = computed(() => {
+  if (!currentCitySlug.value) return route.path
+  const segments = route.path.split('/').filter(Boolean)
+  const rest = segments.slice(1)
+  return rest.length ? `/${rest.join('/')}` : '/'
+})
+
+const selectCity = async (slug?: string) => {
+  isCityMenuOpen.value = false
+  closeMenu()
+  if (!slug) {
+    sessionStorage.setItem('marshrut-city-navigation-bypass', '1')
+    await navigateTo({ path: pathWithoutCity.value, query: route.query })
+    return
+  }
+  localStorage.setItem('marshrut-presence-city-v1', slug)
+  await navigateTo({
+    path: `/${slug}${pathWithoutCity.value === '/' ? '' : pathWithoutCity.value}`,
+    query: route.query,
+  })
+}
 
 const closeMenu = () => {
   isMenuOpen.value = false
+  isCityMenuOpen.value = false
 }
 
 const toggleMenu = () => {
@@ -109,6 +138,52 @@ onBeforeUnmount(() => {
             {{ item.label }}
           </NuxtLink>
         </nav>
+
+        <div
+          v-if="cities.length"
+          class="relative hidden lg:block"
+        >
+          <button
+            type="button"
+            class="inline-flex min-h-11 items-center gap-3 border-l border-text/20 pl-6 font-sans text-sm uppercase leading-4 text-text transition-colors hover:text-accent xl:text-base"
+            :aria-expanded="isCityMenuOpen"
+            aria-controls="desktop-city-menu"
+            @click="isCityMenuOpen = !isCityMenuOpen"
+          >
+            <span class="size-2.5 bg-accent" aria-hidden="true" />
+            {{ currentCity?.name || 'Все города' }}
+            <span
+              aria-hidden="true"
+              class="text-lg leading-none transition-transform"
+              :class="{ 'rotate-45': isCityMenuOpen }"
+            >+</span>
+          </button>
+
+          <div
+            id="desktop-city-menu"
+            class="absolute left-6 top-[calc(100%+0.75rem)] min-w-56 border border-text/15 bg-surface p-2 shadow-[0_16px_40px_rgba(0,0,0,0.14)] transition-[opacity,transform,visibility]"
+            :class="isCityMenuOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-2 opacity-0'"
+          >
+            <button
+              type="button"
+              class="flex min-h-11 w-full items-center justify-between px-3 text-left font-sans text-sm uppercase hover:bg-bg"
+              :class="{ 'text-accent': !currentCitySlug }"
+              @click="selectCity()"
+            >
+              <span>Все города</span><span>[ ↗ ]</span>
+            </button>
+            <button
+              v-for="city in cities"
+              :key="city.id"
+              type="button"
+              class="flex min-h-11 w-full items-center justify-between px-3 text-left font-sans text-sm uppercase hover:bg-bg"
+              :class="{ 'bg-accent text-text-on-accent': city.slug === currentCitySlug }"
+              @click="selectCity(city.slug)"
+            >
+              <span>{{ city.name }}</span><span>{{ city.slug }}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="flex shrink-0 items-center gap-2 sm:gap-3">
@@ -154,6 +229,39 @@ onBeforeUnmount(() => {
         @click="closeMenu"
       />
       <div class="relative flex h-full flex-col items-end gap-8 overflow-y-auto px-5 pb-8 pt-24 sm:px-8">
+        <section
+          v-if="cities.length"
+          class="w-full border-y border-text/15 py-5"
+          aria-labelledby="mobile-city-title"
+        >
+          <div class="mb-3 flex items-center justify-between">
+            <h2 id="mobile-city-title" class="font-sans text-xs uppercase tracking-[0.08em] text-text-muted">
+              Город
+            </h2>
+            <span class="font-sans text-xs uppercase text-accent">{{ currentCity?.name || 'Все' }}</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              class="flex min-h-12 items-center justify-between border border-text/15 bg-surface px-3 py-3 font-sans text-sm uppercase"
+              :class="{ 'border-accent bg-accent text-text-on-accent': !currentCitySlug }"
+              @click="selectCity()"
+            >
+              <span>Все</span><span>[ ↗ ]</span>
+            </button>
+            <button
+              v-for="city in cities"
+              :key="city.id"
+              type="button"
+              class="flex min-h-12 items-center justify-between border border-text/15 bg-surface px-3 py-3 font-sans text-sm uppercase"
+              :class="{ 'border-accent bg-accent text-text-on-accent': city.slug === currentCitySlug }"
+              @click="selectCity(city.slug)"
+            >
+              <span>{{ city.name }}</span><span class="text-xs">{{ city.slug }}</span>
+            </button>
+          </div>
+        </section>
+
         <nav
           class="flex w-full flex-col items-end gap-4"
           aria-label="Мобильная навигация"

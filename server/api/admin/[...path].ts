@@ -7,6 +7,7 @@ import {
 } from '@server/utils/admin-content-handlers'
 import {
   handleAudienceCards,
+  handleCities,
   handleComments,
   handleSettings,
   handleShootingRequests,
@@ -51,6 +52,9 @@ export default defineEventHandler(async (event) => {
         break
       case 'audience-cards':
         result = await handleAudienceCards(event, path)
+        break
+      case 'cities':
+        result = await handleCities(event, path)
         break
       case 'comments':
         result = await handleComments(event, path)

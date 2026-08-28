@@ -128,6 +128,7 @@ Nitro раздает файлы `dist/admin` как public assets. Обрабо�
 | `/admin/pages/blog` | `views/pageEditors.ts` | `BLOG_PAGE_*` и список статей |
 | `/admin/pages/shooting-request` | `views/shootingPageEditor.ts` | `SHOOTING_PAGE_*` |
 | `/admin/entrepreneurs` и формы | `views/entrepreneurs.ts` | `Entrepreneur` |
+| `/admin/cities` и формы | `views/cities.ts` | `City`, города присутствия |
 | `/admin/businesses` и формы | `views/businesses.ts` | `Business` |
 | `/admin/interviews` и формы | `views/interviews.ts` | `Interview` |
 | `/admin/articles` и формы | `views/articles.ts` | `Article` |
@@ -180,6 +181,7 @@ Catch-all admin API выполняет серверную проверку ро�
 
 - `users`;
 - `entrepreneurs`;
+- `cities`;
 - `interviews`;
 - `reels`;
 - `articles`;
@@ -233,7 +235,11 @@ Catch-all admin API выполняет серверную проверку ро�
 
 Настройка `FOOTER_META_ITEMS` хранит массив объектов `{ text, href }`. Форма сериализует массив, `server/utils/admin-operations-handlers.ts` проверяет JSON перед сохранением, а `server/utils/site-footer.ts` нормализует публичный результат и fallback. Ссылки принимают только безопасный внутренний путь или протоколы `http:`, `https:`, `mailto:` и `tel:`.
 
-`server/api/site-footer.get.ts` публикует только заполненные `SOCIAL_TELEGRAM`, `SOCIAL_INSTAGRAM`, `SOCIAL_VK`, `SOCIAL_YOUTUBE`, `SOCIAL_PINTEREST` и `SOCIAL_DZEN`. Поля `SOCIAL_X` и `SOCIAL_WHATSAPP` хранятся отдельно и сейчас не выводятся в футере. `LayoutDefault.vue` загружает этот endpoint и передает типизированные данные в `SiteFooter.vue`; если настройка сохраняется, но не появляется на сайте, проверьте всю эту цепочку.
+`SOCIAL_LINKS` хранит единый сортируемый массив `{ label, href }` для футера и мобильного меню. `server/api/site-footer.get.ts` читает его через whitelist. Фиксированные `SOCIAL_*` ключи сохранены только как legacy fallback до первого сохранения нового списка. `LayoutDefault.vue` передает один и тот же массив в `SiteFooter.vue` и `SiteHeader.vue`.
+
+## Города присутствия
+
+`City` хранит название и короткий уникальный `slug`. `Business.cityId` задает один город места, а join-таблица `EntrepreneurCity` позволяет привязать предпринимателя к нескольким городам. Маршруты с городом имеют вид `/:city/...`; маршруты без города сохраняют общую выборку. Публичные API принимают optional query `city`.
 
 ## Порядок компаний в блоке «Места»
 

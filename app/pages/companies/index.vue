@@ -4,6 +4,7 @@ import CompaniesPage from '@features/companies/ui/CompaniesPage.vue'
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
 const fallbackPage: CompaniesPageData = {
   heroTitle: 'ГЛАВНЫЕ\nКОМПАНИИ',
@@ -17,8 +18,8 @@ const fallbackPage: CompaniesPageData = {
   sectionVisibility: {},
 }
 
-const { data, error: pageError } = await useAsyncData('companies-page', async () =>
-  await $fetch<CompaniesPageData>('/api/companies-page'))
+const { data, error: pageError } = await useAsyncData(`companies-page-${city.value || 'all'}`, async () =>
+  await $fetch<CompaniesPageData>('/api/companies-page', { query: { city: city.value } }))
 
 if (pageError.value) {
   throw createError({

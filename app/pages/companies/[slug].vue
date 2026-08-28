@@ -5,9 +5,10 @@ import CompanyProfilePage from '@features/companies/ui/CompanyProfilePage.vue'
 const route = useRoute()
 const config = useRuntimeConfig()
 const slug = computed(() => String(route.params.slug))
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
-const { data, error } = await useAsyncData(`company-${slug.value}`, async () =>
-  await $fetch<CompanyProfileData>(`/api/companies/${slug.value}`)
+const { data, error } = await useAsyncData(`company-${city.value || 'all'}-${slug.value}`, async () =>
+  await $fetch<CompanyProfileData>(`/api/companies/${slug.value}`, { query: { city: city.value } })
 )
 
 if (error.value || !data.value) {

@@ -81,9 +81,34 @@ model Entrepreneur {
   articles   Article[]
   comments   Comment[]
   businesses Business[]
+  cityLinks  EntrepreneurCity[]
 
   @@index([isPublished, createdAt])
   @@map("entrepreneurs")
+}
+
+model City {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  businesses       Business[]
+  entrepreneurLinks EntrepreneurCity[]
+
+  @@map("cities")
+}
+
+model EntrepreneurCity {
+  entrepreneurId String
+  cityId         String
+  entrepreneur   Entrepreneur @relation(fields: [entrepreneurId], references: [id], onDelete: Cascade)
+  city           City         @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@id([entrepreneurId, cityId])
+  @@index([cityId])
+  @@map("entrepreneur_cities")
 }
 
 model AudienceCard {
@@ -228,6 +253,8 @@ model Business {
   description             String?      @db.Text
   address                 String?
   city                    String?
+  cityId                  String
+  presenceCity            City         @relation(fields: [cityId], references: [id], onDelete: Restrict)
   phone                   String?
   email                   String?
   website                 String?
@@ -240,6 +267,7 @@ model Business {
   updatedAt               DateTime     @updatedAt
 
   @@index([entrepreneurId])
+  @@index([cityId])
   @@index([placesSortOrder])
   @@index([isPublished, placesSortOrder, createdAt])
   @@map("businesses")

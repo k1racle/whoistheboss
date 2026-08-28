@@ -5,9 +5,10 @@ import BlogDetailPage from '@features/blog/ui/BlogDetailPage.vue'
 const route = useRoute()
 const config = useRuntimeConfig()
 const slug = computed(() => String(route.params.slug))
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
-const { data, error } = await useAsyncData(`blog-article-${slug.value}`, async () =>
-  await $fetch<BlogArticleDetailResponse>(`/api/blog/${slug.value}`)
+const { data, error } = await useAsyncData(`blog-article-${city.value || 'all'}-${slug.value}`, async () =>
+  await $fetch<BlogArticleDetailResponse>(`/api/blog/${slug.value}`, { query: { city: city.value } })
 )
 
 if (error.value || !data.value) {

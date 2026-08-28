@@ -9,8 +9,10 @@ type SettingField = {
 };
 
 type FooterMetaItem = { text: string; href: string };
+type SocialLinkItem = { label: string; href: string };
 
 const FOOTER_META_ITEMS_KEY = 'FOOTER_META_ITEMS';
+const SOCIAL_LINKS_KEY = 'SOCIAL_LINKS';
 const DEFAULT_FOOTER_META_ITEMS: FooterMetaItem[] = [
   { text: 'ИП Батагов А.А.', href: '' },
   { text: 'Пошта Почта', href: '' },
@@ -50,26 +52,6 @@ const SETTING_GROUPS: { title: string; description: string; fields: SettingField
     ],
   },
   {
-    title: 'Социальные сети в футере',
-    description: 'Заполненные ссылки появляются в футере по три в строке. Пустые поля скрываются.',
-    fields: [
-      { key: 'SOCIAL_TELEGRAM', label: 'Telegram' },
-      { key: 'SOCIAL_INSTAGRAM', label: 'Instagram' },
-      { key: 'SOCIAL_VK', label: 'VK' },
-      { key: 'SOCIAL_YOUTUBE', label: 'YouTube' },
-      { key: 'SOCIAL_PINTEREST', label: 'Pinterest' },
-      { key: 'SOCIAL_DZEN', label: 'Dzen' },
-    ],
-  },
-  {
-    title: 'Прочие социальные ссылки',
-    description: 'Дополнительные ссылки хранятся отдельно и сейчас не выводятся в футере.',
-    fields: [
-      { key: 'SOCIAL_X', label: 'X (Twitter)' },
-      { key: 'SOCIAL_WHATSAPP', label: 'WhatsApp' },
-    ],
-  },
-  {
     title: 'Интеграция Telegram',
     description: 'Служебные данные Telegram-бота; они не выводятся в футере.',
     fields: [
@@ -100,6 +82,7 @@ export function settingsView(user?: UserInfo | null) {
       attachSubmit();
       attachVideoUploads();
       attachLogoUploads();
+      attachSocialLinksEditor();
       attachFooterMetaEditor();
     } catch (err) {
       setContent(pageAlert(err instanceof Error ? err.message : 'Ошибка загрузки', 'error'));
@@ -125,6 +108,7 @@ function renderForm(settings: Settings): string {
       <div id="form-message"></div>
       <div class="grid grid-cols-1 gap-7">
         ${groups}
+        ${renderSocialLinksSection(settings)}
         ${renderFooterMetaSection(settings[FOOTER_META_ITEMS_KEY])}
         <div class="pt-4 flex gap-3">
           <button type="submit" class="px-4 py-2 bg-terracotta text-white text-sm font-medium rounded-sm hover:bg-terracotta-600">Сохранить</button>
@@ -182,6 +166,47 @@ function renderSettingField({ key, label, type }: SettingField, value: string): 
       <input type="text" name="${key}" value="${escapeHtml(value)}" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
     </div>
   `;
+}
+
+function parseSocialLinks(settings: Settings): SocialLinkItem[] {
+  if (settings[SOCIAL_LINKS_KEY]) {
+    try {
+      const parsed = JSON.parse(settings[SOCIAL_LINKS_KEY]);
+      if (Array.isArray(parsed)) return parsed.filter(item => item && typeof item.label === 'string' && typeof item.href === 'string');
+    } catch { /* use legacy values */ }
+  }
+  const legacy = [
+    ['SOCIAL_TELEGRAM', 'TELEGRAM'], ['SOCIAL_INSTAGRAM', 'INSTAGRAM'], ['SOCIAL_VK', 'VK'],
+    ['SOCIAL_YOUTUBE', 'YOUTUBE'], ['SOCIAL_PINTEREST', 'PINTEREST'], ['SOCIAL_DZEN', 'DZEN'],
+    ['SOCIAL_X', 'X'], ['SOCIAL_WHATSAPP', 'WHATSAPP'],
+  ] as const;
+  return legacy.flatMap(([key, label]) => settings[key]?.trim() ? [{ label, href: settings[key].trim() }] : []);
+}
+
+function renderSocialLinkRow(item: SocialLinkItem): string {
+  return `<article class="grid gap-3 rounded-sm border border-gray-200 p-4 sm:grid-cols-[auto_0.75fr_1.5fr_auto] sm:items-end" data-social-link-row>
+    ${renderSortableHandle('Перетащить социальную сеть')}
+    <label><span class="mb-1 block text-sm font-medium text-gray-700">Название *</span><input type="text" value="${escapeHtml(item.label)}" required class="w-full px-4 py-2 border border-gray-300 rounded-sm" data-social-link-label placeholder="Telegram"></label>
+    <label><span class="mb-1 block text-sm font-medium text-gray-700">Ссылка *</span><input type="url" value="${escapeHtml(item.href)}" required class="w-full px-4 py-2 border border-gray-300 rounded-sm" data-social-link-href placeholder="https://..."></label>
+    <button type="button" class="editor-button editor-button--danger" data-social-link-remove>Удалить</button>
+  </article>`;
+}
+
+function renderSocialLinksSection(settings: Settings): string {
+  const items = parseSocialLinks(settings);
+  return `<section class="grid gap-4 border-b border-gray-200 pb-7"><div><h2 class="text-lg font-semibold text-gray-900">Социальные сети</h2><p class="mt-1 text-sm text-gray-500">Один список для футера и мобильного меню. Можно добавить любую новую сеть.</p></div><input type="hidden" name="${SOCIAL_LINKS_KEY}" value="${escapeHtml(JSON.stringify(items))}" data-social-links-value><div class="grid gap-3" data-social-links-list>${items.map(renderSocialLinkRow).join('')}</div><button type="button" class="editor-button justify-self-start" data-social-link-add>Добавить социальную сеть</button></section>`;
+}
+
+function attachSocialLinksEditor() {
+  const list = document.querySelector<HTMLElement>('[data-social-links-list]');
+  const value = document.querySelector<HTMLInputElement>('[data-social-links-value]');
+  const addButton = document.querySelector<HTMLButtonElement>('[data-social-link-add]');
+  if (!list || !value || !addButton) return;
+  const sync = () => { value.value = JSON.stringify(Array.from(list.querySelectorAll<HTMLElement>('[data-social-link-row]')).map(row => ({ label: row.querySelector<HTMLInputElement>('[data-social-link-label]')?.value.trim() || '', href: row.querySelector<HTMLInputElement>('[data-social-link-href]')?.value.trim() || '' }))); };
+  attachSortableList({ list, itemSelector: '[data-social-link-row]', onChange: sync });
+  addButton.addEventListener('click', () => { list.insertAdjacentHTML('beforeend', renderSocialLinkRow({ label: '', href: '' })); list.querySelector<HTMLInputElement>('[data-social-link-row]:last-child [data-social-link-label]')?.focus(); sync(); });
+  list.addEventListener('input', sync);
+  list.addEventListener('click', (event) => { const remove = (event.target as HTMLElement).closest('[data-social-link-remove]'); if (!remove) return; remove.closest('[data-social-link-row]')?.remove(); sync(); });
 }
 
 function parseFooterMetaItems(value: string | undefined): FooterMetaItem[] {
@@ -326,6 +351,7 @@ function attachSubmit() {
         data[key] = (fd.get(key) as string) || '';
       }
       data[FOOTER_META_ITEMS_KEY] = (fd.get(FOOTER_META_ITEMS_KEY) as string) || '[]';
+      data[SOCIAL_LINKS_KEY] = (fd.get(SOCIAL_LINKS_KEY) as string) || '[]';
       await api.settings.update(data);
       if (msg) msg.innerHTML = pageAlert('Настройки сохранены');
     } catch (err) {

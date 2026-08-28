@@ -3,6 +3,7 @@ import prisma from '~~/lib/prisma'
 import { parseSectionOrder, parseSectionVisibility } from '@shared/lib/section-config'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
 import { safeJsonParse } from '@server/utils/json'
+import { businessCityFilter, entrepreneurCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 const BLOG_PAGE_KEYS = [
   'BLOG_PAGE_HERO_TITLE',
@@ -60,11 +61,12 @@ function mapArticleSummary(article: {
   }
 }
 
-export default defineEventHandler(async (): Promise<BlogPageData> => {
+export default defineEventHandler(async (event): Promise<BlogPageData> => {
+  const citySlug = getRequestedCitySlug(event)
   const [settings, articles, relatedEntrepreneurs, relatedCompanies] = await Promise.all([
     getSiteSettings(BLOG_PAGE_KEYS),
     prisma.article.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...(citySlug ? { entrepreneur: entrepreneurCityFilter(citySlug) } : {}) },
       orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
       include: {
         entrepreneur: {
@@ -78,7 +80,7 @@ export default defineEventHandler(async (): Promise<BlogPageData> => {
       },
     }),
     prisma.entrepreneur.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...entrepreneurCityFilter(citySlug) },
       orderBy: { createdAt: 'desc' },
       take: 3,
       select: {
@@ -90,7 +92,7 @@ export default defineEventHandler(async (): Promise<BlogPageData> => {
       },
     }),
     prisma.business.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...businessCityFilter(citySlug) },
       orderBy: { createdAt: 'desc' },
       take: 3,
       select: {

@@ -3,6 +3,7 @@ import prisma from '~~/lib/prisma'
 import { parseSectionOrder, parseSectionVisibility } from '@shared/lib/section-config'
 import { ROUTES } from '@shared/navigation'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+import { businessCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 const COMPANIES_PAGE_KEYS = [
   'COMPANIES_PAGE_HERO_TITLE',
@@ -17,11 +18,12 @@ const COMPANIES_PAGE_KEYS = [
 
 const DEFAULT_SECTION_ORDER = ['hero', 'about', 'catalog', 'cta', 'banner'] as const
 
-export default defineEventHandler(async (): Promise<CompaniesPageData> => {
+export default defineEventHandler(async (event): Promise<CompaniesPageData> => {
+  const citySlug = getRequestedCitySlug(event)
   const [settings, companies] = await Promise.all([
     getSiteSettings(COMPANIES_PAGE_KEYS),
     prisma.business.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...businessCityFilter(citySlug) },
       orderBy: { createdAt: 'desc' },
       select: {
         slug: true,

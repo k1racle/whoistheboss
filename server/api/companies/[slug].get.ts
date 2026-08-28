@@ -11,6 +11,7 @@ import { storySectionSchema } from '@server/utils/admin-schemas'
 import { safeJsonParse } from '@server/utils/json'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
 import { getYandexMapCoordinates } from '@server/utils/yandex-map'
+import { businessCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 const COMPANY_DETAIL_SETTINGS_KEYS = [
   'HOME_BANNER_IMAGE',
@@ -155,12 +156,13 @@ function parseMoreItems(titlesRaw: string | null | undefined, linksRaw: string |
 
 export default defineEventHandler(async (event): Promise<CompanyProfileData> => {
   const slug = getRouterParam(event, 'slug')
+  const citySlug = getRequestedCitySlug(event)
   if (!slug) {
     throw createError({ statusCode: 400, statusMessage: 'Company slug is required' })
   }
 
   const business = await prisma.business.findFirst({
-    where: { slug, isPublished: true },
+    where: { slug, isPublished: true, ...businessCityFilter(citySlug) },
     include: {
       entrepreneur: true,
     },

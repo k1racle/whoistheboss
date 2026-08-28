@@ -13,6 +13,7 @@ export function layout(title: string, content: string, user?: UserInfo | null): 
     ['/admin/pages/blog', 'Страница «Блог»'],
     ['/admin/pages/shooting-request', 'Страница «Стать героем»'],
     ['/admin/entrepreneurs', 'Предприниматели'],
+    ['/admin/cities', 'Города присутствия'],
     ['/admin/businesses', 'Компании'],
     ['/admin/interviews', 'Интервью'],
     ['/admin/articles', 'Записи блога'],

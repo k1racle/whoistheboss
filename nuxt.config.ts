@@ -50,6 +50,30 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
 
+  hooks: {
+    'pages:extend'(pages) {
+      const cityPages = [
+        ['city-home', '/:city', 'app/pages/index.vue'],
+        ['city-entrepreneurs', '/:city/entrepreneurs', 'app/pages/entrepreneurs/index.vue'],
+        ['city-entrepreneur', '/:city/entrepreneurs/:slug', 'app/pages/entrepreneurs/[slug].vue'],
+        ['city-companies', '/:city/companies', 'app/pages/companies/index.vue'],
+        ['city-company', '/:city/companies/:slug', 'app/pages/companies/[slug].vue'],
+        ['city-businesses', '/:city/businesses', 'app/pages/businesses/index.vue'],
+        ['city-business', '/:city/businesses/:slug', 'app/pages/businesses/[slug].vue'],
+        ['city-blog', '/:city/blog', 'app/pages/blog/index.vue'],
+        ['city-article', '/:city/blog/:slug', 'app/pages/blog/[slug].vue'],
+        ['city-interviews', '/:city/interviews', 'app/pages/interviews/index.vue'],
+        ['city-interview', '/:city/interviews/:slug', 'app/pages/interviews/[slug].vue'],
+        ['city-reels', '/:city/reels', 'app/pages/reels/index.vue'],
+        ['city-reel', '/:city/reels/:slug', 'app/pages/reels/[slug].vue'],
+      ] as const
+
+      cityPages.forEach(([name, path, file]) => {
+        pages.push({ name, path, file: resolve(__dirname, file) })
+      })
+    },
+  },
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/image',
@@ -118,6 +142,9 @@ export default defineNuxtConfig({
 
   routeRules: {
     ...cachedRouteRules,
+    '/:city': { swr: 60 },
+    '/:city/**': { swr: 60 },
+    '/api/cities': { swr: 300 },
     '/media/**': {
       headers: { 'cache-control': 'public, max-age=31536000, immutable' },
     },

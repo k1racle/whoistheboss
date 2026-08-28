@@ -7,9 +7,10 @@ import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 const route = useRoute()
 const config = useRuntimeConfig()
 const slug = computed(() => String(route.params.slug))
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
-const { data, error } = await useAsyncData(`interview-${slug.value}`, async () =>
-  await $fetch<InterviewDetailResponse>(`/api/interviews/${slug.value}`)
+const { data, error } = await useAsyncData(`interview-${city.value || 'all'}-${slug.value}`, async () =>
+  await $fetch<InterviewDetailResponse>(`/api/interviews/${slug.value}`, { query: { city: city.value } })
 )
 
 if (error.value || !data.value) {

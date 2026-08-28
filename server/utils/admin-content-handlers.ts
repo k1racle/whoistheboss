@@ -22,6 +22,10 @@ import {
 } from '@server/utils/admin-normalizers'
 
 const entrepreneurSummary = { select: { id: true, name: true } } as const
+const citySummary = { select: { id: true, name: true, slug: true } } as const
+const entrepreneurCityInclude = {
+  cityLinks: { include: { city: citySummary } },
+} as const
 
 function singleId(path: readonly string[]): string | undefined {
   if (path.length > 1) throwAdminError(404, 'Not found')
@@ -41,20 +45,32 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
       orderBy: { createdAt: 'desc' },
       include: {
         _count: { select: { interviews: true, reels: true, articles: true } },
+        ...entrepreneurCityInclude,
       },
     })
   }
 
   if (!id && method === 'POST') {
-    const data = normalizeFeaturedInterview(await readAdminBody(event, entrepreneurSchema))
+    const { cityIds, ...rawData } = await readAdminBody(event, entrepreneurSchema)
+    const data = normalizeFeaturedInterview(rawData)
     const slug = await createUniqueSlug(data.name, async candidate => Boolean(
       await prisma.entrepreneur.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
     setResponseStatus(event, 201)
-    return prisma.entrepreneur.create({ data: { ...data, slug } })
+    return prisma.entrepreneur.create({
+      data: {
+        ...data,
+        slug,
+        cityLinks: { create: cityIds.map(cityId => ({ cityId })) },
+      },
+      include: entrepreneurCityInclude,
+    })
   }
 
-  const existing = await prisma.entrepreneur.findUnique({ where: { id: id! } })
+  const existing = await prisma.entrepreneur.findUnique({
+    where: { id: id! },
+    include: entrepreneurCityInclude,
+  })
   if (!existing) throwAdminError(404, 'Entrepreneur not found')
 
   if (method === 'GET') return existing
@@ -64,14 +80,26 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
     return { ok: true }
   }
 
-  const data = normalizeFeaturedInterview(await readAdminBody(event, entrepreneurSchema))
+  const { cityIds, ...rawData } = await readAdminBody(event, entrepreneurSchema)
+  const data = normalizeFeaturedInterview(rawData)
   const slug = await createUniqueSlug(data.name, async candidate => Boolean(
     await prisma.entrepreneur.findFirst({
       where: { slug: candidate, id: { not: id! } },
       select: { id: true },
     }),
   ))
-  return prisma.entrepreneur.update({ where: { id: id! }, data: { ...data, slug } })
+  return prisma.entrepreneur.update({
+    where: { id: id! },
+    data: {
+      ...data,
+      slug,
+      cityLinks: {
+        deleteMany: {},
+        create: cityIds.map(cityId => ({ cityId })),
+      },
+    },
+    include: entrepreneurCityInclude,
+  })
 }
 
 export async function handleInterviews(event: H3Event, path: readonly string[]) {
@@ -248,14 +276,14 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
         { createdAt: 'desc' },
         { id: 'asc' },
       ],
-      include: { entrepreneur: entrepreneurSummary },
+      include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
     })
   }
 
   if (id && method === 'GET') {
     const item = await prisma.business.findUnique({
       where: { id },
-      include: { entrepreneur: entrepreneurSummary },
+      include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
     })
     if (!item) throwAdminError(404, 'Not found')
     return item
@@ -291,13 +319,13 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
         ...normalized,
         placesSortOrder: (lastBusiness._max.placesSortOrder ?? -1) + 1,
       },
-      include: { entrepreneur: entrepreneurSummary },
+      include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
     })
   }
 
   return prisma.business.update({
     where: { id },
     data: normalized,
-    include: { entrepreneur: entrepreneurSummary },
+    include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
   })
 }

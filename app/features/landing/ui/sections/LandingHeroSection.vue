@@ -19,13 +19,13 @@ const titleLines = computed(() => protectedTitle.value.split('\n'))
       <div class="flex w-full justify-start">
         <h1
           v-if="staggeredLines"
-          class="flex w-full flex-col text-left font-display text-[clamp(80px,20vw,320px)] font-black uppercase leading-[0.8] tracking-[-0.03em] text-accent"
+          class="flex w-full flex-col text-left font-display text-[clamp(80px,20vw,320px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent"
         >
           <span
             v-for="(line, index) in titleLines"
             :key="`${index}-${line}`"
             class="block whitespace-nowrap"
-            :class="index === 1 ? 'ml-[18%]' : ''"
+            :class="index === 1 ? 'self-end text-right' : ''"
           >
             {{ line }}
           </span>

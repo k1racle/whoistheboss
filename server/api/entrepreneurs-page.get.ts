@@ -4,6 +4,7 @@ import { parseSectionOrder, parseSectionVisibility } from '@shared/lib/section-c
 import { ROUTES } from '@shared/navigation'
 import { getPublishedEntrepreneurs } from '@server/utils/published-entrepreneurs'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+import { getRequestedCitySlug } from '@server/utils/presence-city'
 
 const ENTREPRENEURS_PAGE_KEYS = [
   'ENTREPRENEURS_PAGE_HERO_TITLE',
@@ -30,10 +31,11 @@ const DEFAULT_AUDIENCE_CARDS = [
   { title: 'Создатели нового', hoverTitle: 'Авторы перемен' },
 ] as const
 
-export default defineEventHandler(async (): Promise<EntrepreneursPageData> => {
+export default defineEventHandler(async (event): Promise<EntrepreneursPageData> => {
+  const citySlug = getRequestedCitySlug(event)
   const [settings, entrepreneurs, audienceCards] = await Promise.all([
     getSiteSettings(ENTREPRENEURS_PAGE_KEYS),
-    getPublishedEntrepreneurs(),
+    getPublishedEntrepreneurs(undefined, citySlug),
     prisma.audienceCard.findMany({
       where: { isPublished: true },
       orderBy: { sortOrder: 'asc' },

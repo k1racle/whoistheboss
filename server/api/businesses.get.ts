@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import prisma from '~~/lib/prisma'
 import { stripHtml } from '../utils/stripHtml'
+import { businessCityFilter } from '@server/utils/presence-city'
 
 const DEFAULT_BUSINESSES_COUNT = 3
 const MAX_BUSINESSES_COUNT = 20
@@ -8,16 +9,17 @@ const MAX_BUSINESSES_COUNT = 20
 const businessesQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(MAX_BUSINESSES_COUNT).default(DEFAULT_BUSINESSES_COUNT),
   offset: z.coerce.number().int().min(0).default(0),
+  city: z.string().trim().toLowerCase().max(24).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).optional(),
 })
 
 export default defineEventHandler(async (event) => {
-  const { limit, offset } = await getValidatedQuery(
+  const { limit, offset, city } = await getValidatedQuery(
     event,
     query => businessesQuerySchema.parse(query),
   )
 
   const businesses = await prisma.business.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, ...businessCityFilter(city) },
     select: {
       slug: true,
       name: true,

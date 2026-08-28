@@ -5,6 +5,7 @@ import { ROUTES } from '@shared/navigation'
 import { safeJsonParse } from '@server/utils/json'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
 import { sanitizeRichText } from '@server/utils/content-security'
+import { businessCityFilter, entrepreneurCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 const BLOG_DETAIL_SETTINGS_KEYS = [
   'HOME_BANNER_IMAGE',
@@ -43,12 +44,13 @@ function mapArticleSummary(article: {
 
 export default defineEventHandler(async (event): Promise<BlogArticleDetailResponse> => {
   const slug = getRouterParam(event, 'slug')
+  const citySlug = getRequestedCitySlug(event)
   if (!slug) {
     throw createError({ statusCode: 400, statusMessage: 'Article slug is required' })
   }
 
   const article = await prisma.article.findFirst({
-    where: { slug, isPublished: true },
+    where: { slug, isPublished: true, ...(citySlug ? { entrepreneur: entrepreneurCityFilter(citySlug) } : {}) },
     include: {
       entrepreneur: {
         select: {
@@ -85,7 +87,7 @@ export default defineEventHandler(async (event): Promise<BlogArticleDetailRespon
   const [selectedEntrepreneurs, selectedBusinesses, latestArticles, settings] = await Promise.all([
     entrepreneurIds.length
       ? prisma.entrepreneur.findMany({
-        where: { id: { in: entrepreneurIds }, isPublished: true },
+        where: { id: { in: entrepreneurIds }, isPublished: true, ...entrepreneurCityFilter(citySlug) },
         select: {
           id: true,
           slug: true,
@@ -98,7 +100,7 @@ export default defineEventHandler(async (event): Promise<BlogArticleDetailRespon
       : [],
     businessIds.length
       ? prisma.business.findMany({
-        where: { id: { in: businessIds }, isPublished: true },
+        where: { id: { in: businessIds }, isPublished: true, ...businessCityFilter(citySlug) },
         select: {
           id: true,
           slug: true,
@@ -109,7 +111,7 @@ export default defineEventHandler(async (event): Promise<BlogArticleDetailRespon
       })
       : [],
     prisma.article.findMany({
-      where: { isPublished: true, id: { not: article.id } },
+      where: { isPublished: true, id: { not: article.id }, ...(citySlug ? { entrepreneur: entrepreneurCityFilter(citySlug) } : {}) },
       orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
       take: 5,
       include: {

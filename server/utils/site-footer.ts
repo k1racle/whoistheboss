@@ -1,7 +1,9 @@
 import { z } from 'zod'
 import type { FooterMetaItem } from '@shared/types/site-footer'
+import type { SocialLink } from '@shared/social'
 
 export const FOOTER_META_ITEMS_KEY = 'FOOTER_META_ITEMS'
+export const SOCIAL_LINKS_KEY = 'SOCIAL_LINKS'
 
 export const DEFAULT_FOOTER_META_ITEMS: FooterMetaItem[] = [
   { text: 'ИП Батагов А.А.', href: '' },
@@ -31,6 +33,11 @@ export const footerMetaItemsSchema = z.array(z.object({
   href: footerHrefSchema.default(''),
 })).max(20)
 
+export const socialLinksSchema = z.array(z.object({
+  label: z.string().trim().min(1).max(80),
+  href: footerHrefSchema.refine(value => Boolean(value), 'Ссылка на социальную сеть обязательна'),
+})).max(30)
+
 export function parseFooterMetaItems(value: string | undefined): FooterMetaItem[] {
   if (!value) return DEFAULT_FOOTER_META_ITEMS
 
@@ -40,5 +47,16 @@ export function parseFooterMetaItems(value: string | undefined): FooterMetaItem[
   }
   catch {
     return DEFAULT_FOOTER_META_ITEMS
+  }
+}
+
+export function parseSocialLinks(value: string | undefined, fallback: SocialLink[]): SocialLink[] {
+  if (!value) return fallback
+  try {
+    const parsed = socialLinksSchema.safeParse(JSON.parse(value))
+    return parsed.success ? parsed.data : fallback
+  }
+  catch {
+    return fallback
   }
 }

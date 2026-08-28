@@ -1,4 +1,4 @@
-import { api, type Business, type Entrepreneur, type EntrepreneurStorySection } from '../api.js';
+import { api, type Business, type City, type Entrepreneur, type EntrepreneurStorySection } from '../api.js';
 import { layout, escapeHtml, pageAlert, type UserInfo } from './layout.js';
 import { initQuill, getHtml, setHtml } from '../lib/editor.js';
 import { attachFormAutosave } from '../lib/formAutosave.js';
@@ -169,12 +169,15 @@ export function businessesView(user?: UserInfo | null) {
 
 export function businessFormView(id: string | null, user?: UserInfo | null) {
   const isEdit = id !== null;
-  const html = layout(isEdit ? 'Редактировать компанию' : 'Новая компания', renderForm({}, []), user);
+  const html = layout(isEdit ? 'Редактировать компанию' : 'Новая компания', renderForm({}, [], []), user);
 
   async function init() {
     try {
-      const entrepreneurs = await api.entrepreneurs.list();
-      setContent(renderForm({}, entrepreneurs));
+      const [entrepreneurs, cities] = await Promise.all([
+        api.entrepreneurs.list(),
+        api.cities.list(),
+      ]);
+      setContent(renderForm({}, entrepreneurs, cities));
       initQuill('description');
       if (isEdit && id) {
         const item = await api.businesses.get(id);
@@ -191,7 +194,7 @@ export function businessFormView(id: string | null, user?: UserInfo | null) {
   return { html, init };
 }
 
-function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[]): string {
+function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], cities: City[]): string {
   const specItems = parseBusinessSpecs(item.specsItems);
   const awardItems = parseBusinessAwards(item.awardsItems);
   const galleryImages = parseBusinessGallery(item.galleryImages);
@@ -304,6 +307,14 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[]): str
                 ${entrepreneurs.map((e) => `<option value="${e.id}">${escapeHtml(e.name)}</option>`).join('')}
               </select>
               <p class="editor-field__help">Связывает компанию со страницей основателя.</p>
+            </div>
+            <div class="editor-field">
+              <label for="cityId" class="editor-field__label">Город присутствия <span class="text-[#DB2A00]">*</span></label>
+              <select id="cityId" name="cityId" required class="editor-control">
+                <option value="">Выберите город</option>
+                ${cities.map(city => `<option value="${city.id}">${escapeHtml(city.name)} (/${escapeHtml(city.slug)})</option>`).join('')}
+              </select>
+              <p class="editor-field__help">Определяет, в каком городском каталоге показывается место.</p>
             </div>
           `, true)}
 
@@ -634,6 +645,7 @@ function fillForm(item: Business) {
   });
   renderBusinessSectionOrderEditor(form, storySections, visibility, item.sectionOrder, item.awardsEnabled);
   form.querySelector<HTMLSelectElement>('select[name="entrepreneurId"]')!.value = item.entrepreneurId;
+  form.querySelector<HTMLSelectElement>('select[name="cityId"]')!.value = item.cityId || '';
   setHtml('description', item.description || '');
   form.querySelector<HTMLInputElement>('input[name="city"]')!.value = item.city || '';
   form.querySelector<HTMLInputElement>('input[name="address"]')!.value = item.address || '';
@@ -844,6 +856,7 @@ async function collectFormData(form: HTMLFormElement, descriptionHtml: string): 
     )),
     sectionOrder: (fd.get('sectionOrder') as string) || JSON.stringify(businessSectionOptions.map(([key]) => key)),
     entrepreneurId: fd.get('entrepreneurId') as string,
+    cityId: fd.get('cityId') as string,
     description: descriptionHtml || '',
     city: (fd.get('city') as string) || '',
     address: (fd.get('address') as string) || '',

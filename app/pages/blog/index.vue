@@ -6,6 +6,7 @@ import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
 const fallbackPage: BlogPageData = {
   heroTitle: 'Главные\nновости',
@@ -25,8 +26,8 @@ const fallbackPage: BlogPageData = {
   sectionVisibility: {},
 }
 
-const { data, error: pageError } = await useAsyncData('blog-page', async () =>
-  await $fetch<BlogPageData>('/api/blog-page'))
+const { data, error: pageError } = await useAsyncData(`blog-page-${city.value || 'all'}`, async () =>
+  await $fetch<BlogPageData>('/api/blog-page', { query: { city: city.value } }))
 
 if (pageError.value) {
   throw createError({

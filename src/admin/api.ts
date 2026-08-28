@@ -10,6 +10,15 @@ export interface User {
   updatedAt: string;
 }
 
+export interface City {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+  _count?: { businesses: number; entrepreneurLinks: number };
+}
+
 interface EntrepreneurStorySectionBase {
   id: string;
   isVisible: boolean;
@@ -72,6 +81,8 @@ export interface Entrepreneur {
   createdAt: string;
   updatedAt: string;
   _count?: { interviews: number; reels: number; articles: number };
+  cityLinks?: Array<{ cityId: string; city: City }>;
+  cityIds?: string[];
 }
 
 export interface MediaFile {
@@ -190,6 +201,8 @@ export interface Business {
   description?: string | null;
   address?: string | null;
   city?: string | null;
+  cityId: string;
+  presenceCity?: Pick<City, 'id' | 'name' | 'slug'>;
   phone?: string | null;
   email?: string | null;
   website?: string | null;
@@ -300,6 +313,16 @@ export const api = {
     update: (id: string, data: Partial<Entrepreneur>) =>
       fetchJson(`/admin/entrepreneurs/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id: string) => fetchJson(`/admin/entrepreneurs/${id}`, { method: 'DELETE' }),
+  },
+
+  cities: {
+    list: (): Promise<City[]> => fetchJson('/admin/cities'),
+    get: (id: string): Promise<City> => fetchJson(`/admin/cities/${id}`),
+    create: (data: Pick<City, 'name' | 'slug'>): Promise<City> =>
+      fetchJson('/admin/cities', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id: string, data: Pick<City, 'name' | 'slug'>): Promise<City> =>
+      fetchJson(`/admin/cities/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id: string) => fetchJson(`/admin/cities/${id}`, { method: 'DELETE' }),
   },
 
   interviews: {

@@ -93,6 +93,17 @@ export const entrepreneurSchema = z.object({
   sectionVisibility: nullableText,
   sectionOrder: nullableText,
   isPublished: z.boolean().default(false),
+  cityIds: z.array(z.string().min(1).max(100)).min(1),
+})
+
+export const citySchema = z.object({
+  name: shortText.min(1),
+  slug: z.string()
+    .trim()
+    .toLowerCase()
+    .min(2)
+    .max(24)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must contain lowercase Latin letters, numbers and hyphens only'),
 })
 
 export const interviewSchema = z.object({
@@ -195,6 +206,7 @@ export const businessSchema = z.object({
   website: z.string().url().optional().nullable().or(z.literal('')),
   coverImage: nullableText,
   entrepreneurId: z.string().min(1).max(100),
+  cityId: z.string().min(1).max(100),
   isPublished: z.boolean().default(false),
 })
 

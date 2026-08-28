@@ -5,9 +5,10 @@ import EntrepreneurProfilePage from '@features/entrepreneurs/ui/EntrepreneurProf
 const route = useRoute()
 const config = useRuntimeConfig()
 const slug = computed(() => String(route.params.slug))
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
-const { data, error } = await useAsyncData(`entrepreneur-${slug.value}`, async () =>
-  await $fetch<EntrepreneurDetailData>(`/api/entrepreneurs/${slug.value}`)
+const { data, error } = await useAsyncData(`entrepreneur-${city.value || 'all'}-${slug.value}`, async () =>
+  await $fetch<EntrepreneurDetailData>(`/api/entrepreneurs/${slug.value}`, { query: { city: city.value } })
 )
 
 if (error.value || !data.value) {

@@ -4,6 +4,7 @@ import EntrepreneursPage from '@features/entrepreneurs/ui/EntrepreneursPage.vue'
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
 const fallbackPage: EntrepreneursPageData = {
   heroTitle: 'Маршрут\nпостроен',
@@ -20,8 +21,8 @@ const fallbackPage: EntrepreneursPageData = {
   sectionVisibility: {},
 }
 
-const { data, error: pageError } = await useAsyncData('entrepreneurs-page', async () =>
-  await $fetch<EntrepreneursPageData>('/api/entrepreneurs-page'))
+const { data, error: pageError } = await useAsyncData(`entrepreneurs-page-${city.value || 'all'}`, async () =>
+  await $fetch<EntrepreneursPageData>('/api/entrepreneurs-page', { query: { city: city.value } }))
 
 if (pageError.value) {
   throw createError({

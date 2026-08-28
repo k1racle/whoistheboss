@@ -12,6 +12,7 @@ import { shootingRequestsView } from './views/shootingRequests.js';
 import { usersView, userFormView } from './views/users.js';
 import { settingsView } from './views/settings.js';
 import { blogPageView, companiesPageView, entrepreneursPageView, shootingPageView } from './views/pageEditors.js';
+import { citiesView, cityFormView } from './views/cities.js';
 import type { UserInfo } from './views/layout.js';
 
 export interface RouteResult {
@@ -48,6 +49,10 @@ export const router = {
     if (path === '/admin/entrepreneurs') return entrepreneursView(user);
     if (match(path, '/admin/entrepreneurs/new')) return entrepreneurFormView(null, user);
     if (match(path, '/admin/entrepreneurs/:id/edit')) return entrepreneurFormView(param(path, '/admin/entrepreneurs/:id/edit'), user);
+
+    if (path === '/admin/cities') return citiesView(user);
+    if (match(path, '/admin/cities/new')) return cityFormView(null, user);
+    if (match(path, '/admin/cities/:id/edit')) return cityFormView(param(path, '/admin/cities/:id/edit'), user);
 
     if (path === '/admin/interviews') return interviewsView(user);
     if (match(path, '/admin/interviews/new')) return interviewFormView(null, user);

@@ -4,9 +4,11 @@ import { landingPageFallback } from '@features/landing/model/landing.data'
 import LandingPage from '@features/landing/ui/LandingPage.vue'
 
 const config = useRuntimeConfig()
+const route = useRoute()
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
-const { data, error } = await useAsyncData('landing-page', async () =>
-  await $fetch<LandingPageData>('/api/landing-page'))
+const { data, error } = await useAsyncData(`landing-page-${city.value || 'all'}`, async () =>
+  await $fetch<LandingPageData>('/api/landing-page', { query: { city: city.value } }))
 
 if (error.value) {
   throw createError({

@@ -5,9 +5,11 @@ import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const config = useRuntimeConfig()
+const route = useRoute()
+const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
-const { data, error } = await useAsyncData('reels-list', async () =>
-  await $fetch<ReelItem[]>('/api/reels'))
+const { data, error } = await useAsyncData(`reels-list-${city.value || 'all'}`, async () =>
+  await $fetch<ReelItem[]>('/api/reels', { query: { city: city.value } }))
 
 if (error.value) {
   throw createError({

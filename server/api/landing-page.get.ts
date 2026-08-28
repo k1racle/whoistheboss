@@ -2,6 +2,7 @@ import type { LandingPageData } from '@features/landing/model/landing.data'
 import prisma from '~~/lib/prisma'
 import { getPublishedEntrepreneurs } from '@server/utils/published-entrepreneurs'
 import { getSiteSettings, getSiteSetting } from '@server/utils/site-settings'
+import { businessCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 const LANDING_PAGE_KEYS = [
   'HOME_HERO_TITLE',
@@ -39,15 +40,16 @@ function parseLatestArticlesCount(value: string): number {
   return Math.min(Math.max(parsed, 1), MAX_LATEST_ARTICLES_COUNT)
 }
 
-export default defineEventHandler(async (): Promise<LandingPageData> => {
+export default defineEventHandler(async (event): Promise<LandingPageData> => {
+  const citySlug = getRequestedCitySlug(event)
   const settings = await getSiteSettings(LANDING_PAGE_KEYS)
   const latestArticlesCount = parseLatestArticlesCount(
     getSiteSetting(settings, 'HOME_LATEST_NEWS_COUNT'),
   )
   const [entrepreneurs, audienceCards, places, articleRows] = await Promise.all([
-    getPublishedEntrepreneurs(6),
+    getPublishedEntrepreneurs(6, citySlug),
     prisma.audienceCard.findMany({
-      where: { isPublished: true },
+      where: { isPublished: true, ...businessCityFilter(citySlug) },
       orderBy: { sortOrder: 'asc' },
       select: {
         id: true,

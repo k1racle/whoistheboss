@@ -1,15 +1,17 @@
 import prisma from '~~/lib/prisma'
 import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-url'
 import { sanitizeRichText } from '@server/utils/content-security'
+import { entrepreneurCityFilter, getRequestedCitySlug } from '@server/utils/presence-city'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
+  const citySlug = getRequestedCitySlug(event)
   if (!slug) {
     throw createError({ statusCode: 400, statusMessage: 'Missing slug' })
   }
 
   const interview = await prisma.interview.findFirst({
-    where: { slug, isPublished: true },
+    where: { slug, isPublished: true, entrepreneur: entrepreneurCityFilter(citySlug) },
     include: {
       entrepreneur: {
         select: {
@@ -31,6 +33,7 @@ export default defineEventHandler(async (event) => {
     where: {
       isPublished: true,
       id: { not: interview.id },
+      entrepreneur: entrepreneurCityFilter(citySlug),
     },
     orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
     take: 3,

@@ -4,6 +4,7 @@ import type { PublicSessionUser } from '@server/utils/auth-session'
 import prisma from '~~/lib/prisma'
 import {
   audienceCardSchema,
+  citySchema,
   commentApprovalSchema,
   createUserSchema,
   settingsSchema,
@@ -20,6 +21,8 @@ import {
   FOOTER_META_ITEMS_KEY,
   footerMetaItemsSchema,
   isSafeFooterHref,
+  SOCIAL_LINKS_KEY,
+  socialLinksSchema,
 } from '@server/utils/site-footer'
 import { readPagination } from '@server/utils/pagination'
 
@@ -44,6 +47,47 @@ const commentInclude = {
 function singleId(path: readonly string[]): string | undefined {
   if (path.length > 1) throwAdminError(404, 'Not found')
   return path[0]
+}
+
+export async function handleCities(event: H3Event, path: readonly string[]) {
+  const id = singleId(path)
+  const method = requireAdminMethod(event, id ? ['GET', 'PUT', 'DELETE'] : ['GET', 'POST'])
+
+  if (!id && method === 'GET') {
+    return prisma.city.findMany({
+      orderBy: { name: 'asc' },
+      include: {
+        _count: { select: { businesses: true, entrepreneurLinks: true } },
+      },
+    })
+  }
+
+  if (!id && method === 'POST') {
+    const data = await readAdminBody(event, citySchema)
+    setResponseStatus(event, 201)
+    return prisma.city.create({ data })
+  }
+
+  const existing = await prisma.city.findUnique({
+    where: { id: id! },
+    include: {
+      _count: { select: { businesses: true, entrepreneurLinks: true } },
+    },
+  })
+  if (!existing) throwAdminError(404, 'City not found')
+
+  if (method === 'GET') return existing
+
+  if (method === 'DELETE') {
+    if (existing._count.businesses || existing._count.entrepreneurLinks) {
+      throwAdminError(409, 'Сначала перенесите места и предпринимателей в другой город')
+    }
+    await prisma.city.delete({ where: { id: id! } })
+    return { ok: true }
+  }
+
+  const data = await readAdminBody(event, citySchema)
+  return prisma.city.update({ where: { id: id! }, data })
 }
 
 export async function handleAudienceCards(event: H3Event, path: readonly string[]) {
@@ -222,8 +266,18 @@ export async function handleSettings(
       throwAdminError(400, 'Проверьте текст и ссылки элементов нижней строки футера')
     }
   }
+  if (Object.hasOwn(data, SOCIAL_LINKS_KEY)) {
+    try {
+      data[SOCIAL_LINKS_KEY] = JSON.stringify(
+        socialLinksSchema.parse(JSON.parse(data[SOCIAL_LINKS_KEY] || '[]')),
+      )
+    }
+    catch {
+      throwAdminError(400, 'Проверьте названия и ссылки социальных сетей')
+    }
+  }
   const invalidSocialLink = Object.entries(data).find(([key, value]) => (
-    key.startsWith('SOCIAL_') && value.trim() && !isSafeFooterHref(value.trim())
+    key.startsWith('SOCIAL_') && key !== SOCIAL_LINKS_KEY && value.trim() && !isSafeFooterHref(value.trim())
   ))
   if (invalidSocialLink) {
     throwAdminError(400, `Некорректная ссылка в поле ${invalidSocialLink[0]}`)

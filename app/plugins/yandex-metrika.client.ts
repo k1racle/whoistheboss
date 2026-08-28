@@ -72,6 +72,17 @@ export default defineNuxtPlugin((nuxtApp) => {
     document.head.appendChild(script)
   }
 
+  if (localStorage.getItem('marshrut-cookie-consent-v1') !== 'accepted') {
+    window.addEventListener('marshrut-cookie-consent', ((event: CustomEvent<'accepted' | 'rejected'>) => {
+      if (event.detail === 'accepted') window.location.reload()
+    }) as EventListener, { once: true })
+    return {
+      provide: {
+        ym: () => {},
+      },
+    }
+  }
+
   const scheduleMetrikaScript = () => {
     if ('requestIdleCallback' in window) {
       window.requestIdleCallback(loadMetrikaScript, { timeout: 2_000 })
