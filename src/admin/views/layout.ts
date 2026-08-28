@@ -30,11 +30,7 @@ export function layout(title: string, content: string, user?: UserInfo | null): 
   return `
     <div class="admin-shell">
       <aside class="admin-sidebar">
-        <a href="/admin" class="admin-brand" data-link>
-          <span class="admin-brand__mark" aria-label="Маршрут Построен">МАРШРУТ<br>ПОСТРОЕН</span>
-          <span>Админ-панель</span>
-        </a>
-        <nav class="admin-nav" id="admin-nav">
+        <nav class="admin-nav" id="admin-nav" aria-label="Разделы админ-панели">
           ${navigation.map(([href, label]) => `<a href="${href}" class="admin-nav__link" data-link>${label}</a>`).join('')}
         </nav>
         <div class="admin-sidebar__footer">
