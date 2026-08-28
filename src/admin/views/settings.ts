@@ -18,7 +18,6 @@ const ADMIN_ONLY_SETTING_KEYS = new Set([
   'SITE_URL',
   'TELEGRAM_BOT_TOKEN',
   'TELEGRAM_CHAT_ID',
-  'YANDEX_METRIKA',
 ]);
 const DEFAULT_FOOTER_META_ITEMS: FooterMetaItem[] = [
   { text: 'ИП Батагов А.А.', href: '' },
@@ -36,7 +35,6 @@ const SETTING_GROUPS: { title: string; description: string; fields: SettingField
       { key: 'SITE_URL', label: 'URL сайта' },
       { key: 'ADMIN_EMAIL', label: 'Email администратора' },
       { key: 'FOOTER_TEXT', label: 'Текст в подвале' },
-      { key: 'YANDEX_METRIKA', label: 'Код Яндекс.Метрики' },
     ],
   },
   {
@@ -165,7 +163,7 @@ function renderSettingField({ key, label, type }: SettingField, value: string): 
       </div>
     `;
   }
-  if (type === 'textarea' || key === 'FOOTER_TEXT' || key === 'YANDEX_METRIKA') {
+  if (type === 'textarea' || key === 'FOOTER_TEXT') {
     return `
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">${escapeHtml(label)}</label>
