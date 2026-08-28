@@ -29,12 +29,12 @@ const brandTitleLines = computed(() => titleLines.value.slice(1))
             v-for="(line, index) in brandTitleLines"
             :key="`${index}-${line}`"
             class="col-start-1 block whitespace-nowrap"
-            :class="index === 0 ? 'row-start-1' : 'row-start-2'"
+            :class="index === 0 ? 'row-start-1' : 'row-start-2 text-[0.963em]'"
           >
             {{ line }}
           </span>
           <span
-            class="col-start-2 row-start-1 ml-[0.06em] self-center whitespace-nowrap text-[0.22em] leading-none tracking-[-0.02em] [text-orientation:mixed] [writing-mode:vertical-rl] rotate-180"
+            class="col-start-2 row-span-2 row-start-1 ml-[0.06em] self-center whitespace-nowrap text-[0.34em] leading-none tracking-[-0.02em] [text-orientation:mixed] [writing-mode:vertical-rl] rotate-180"
           >
             {{ brandLabel }}
           </span>
