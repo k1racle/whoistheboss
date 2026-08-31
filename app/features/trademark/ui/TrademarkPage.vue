@@ -130,10 +130,10 @@ const orderedRules = computed(() => {
           </dl>
           <div class="mt-8 flex flex-wrap gap-3">
             <a v-if="page.registration.certificateUrl" :href="page.registration.certificateUrl" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center gap-2 bg-accent px-4 font-sans text-sm uppercase text-white hover:bg-text">
-              Скачать свидетельство <ArrowMark class="h-[17px] w-[30px]" />
+              Свидетельство <ArrowMark class="h-[17px] w-[30px]" />
             </a>
             <a v-if="page.registration.appendixUrl" :href="page.registration.appendixUrl" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center gap-2 border border-text px-4 font-sans text-sm uppercase hover:border-accent hover:text-accent">
-              Скачать приложение <ArrowMark class="h-[17px] w-[30px]" />
+              Приложение <ArrowMark class="h-[17px] w-[30px]" />
             </a>
           </div>
         </div>
