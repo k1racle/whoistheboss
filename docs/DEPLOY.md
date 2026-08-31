@@ -130,6 +130,12 @@ environment:
   NUXT_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION}
 ```
 
+Остальные приватные параметры runtime config передаются аналогично: `NUXT_UPLOAD_DIR`,
+`NUXT_MAX_UPLOAD_SIZE_MB`, `NUXT_MAX_IMAGE_UPLOAD_SIZE_MB`, `NUXT_IMAGE_CACHE_MAX_MB`,
+`NUXT_SMTP_*`, `NUXT_FROM_EMAIL`, `NUXT_ADMIN_EMAIL` и `NUXT_TELEGRAM_*`. Обычные
+переменные без префикса сохранены для Prisma, Nitro и совместимости с legacy-кодом,
+но сами по себе не гарантируют переопределение собранного Nuxt runtime config.
+
 Без `NUXT_SESSION_PASSWORD` production build может получить пустой пароль H3-сессии. В этом случае login и обновление cookie завершатся ошибкой, потому что H3 требует пароль длиной не менее 32 символов.
 
 Legacy-cookie `sid` и новая cookie `nuxt-session` несовместимы. Первый Nuxt-деплой потребует один повторный вход в админку, но не изменит пользователей или контент в PostgreSQL.
@@ -158,6 +164,32 @@ Push в `main` не запускает production-деплой. После push 
 - фактические имена volumes;
 - адрес reverse proxy и правила кэширования;
 - способ повторного развёртывания предыдущего commit.
+
+### Переключение reverse proxy на Docker-сеть
+
+Production app подключается к существующей external-сети Nginx Proxy Manager. По
+умолчанию это сеть `web`; другое имя задаётся переменной `PROXY_NETWORK`.
+
+Переключение выполняется в два этапа, чтобы не получить downtime:
+
+1. Задеплойте compose с подключённой `proxy-network`, пока публикация порта app ещё
+   сохранена.
+2. Убедитесь, что `nginx-proxy-manager` и `guessboss-app` находятся в одной сети:
+
+   ```sh
+   docker network inspect "${PROXY_NETWORK:-web}" \
+     --format '{{range .Containers}}{{println .Name .IPv4Address}}{{end}}'
+   ```
+
+3. В Nginx Proxy Manager замените destination с публичного IP и порта `5337` на:
+   `http://guessboss-app:5337`.
+4. Проверьте домен и `/health` через HTTPS.
+5. Только после успешной проверки отдельным изменением удалите публикацию app-порта
+   из `ports`. PostgreSQL не должен публиковаться на `0.0.0.0`; допустима только
+   локальная привязка `127.0.0.1` для аварийного доступа с host.
+
+Панели Nginx Proxy Manager и Portainer следует ограничить firewall-правилами по
+адресам администратора или открывать через SSH/VPN, а не оставлять общедоступными.
 
 ## Подготовка release candidate
 

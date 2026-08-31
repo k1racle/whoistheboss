@@ -2,7 +2,16 @@ import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
-const adminPassword = process.env.ADMIN_SEED_PASSWORD || 'admin123';
+
+function requireAdminSeedPassword(): string {
+  const value = process.env.ADMIN_SEED_PASSWORD?.trim();
+  if (!value || value.length < 12) {
+    throw new Error('ADMIN_SEED_PASSWORD must contain at least 12 characters');
+  }
+  return value;
+}
+
+const adminPassword = requireAdminSeedPassword();
 
 async function main() {
   const password = await bcrypt.hash(adminPassword, 10);
@@ -30,8 +39,8 @@ async function main() {
   });
 
   console.log('Admin seed completed');
-  console.log('Admin: admin@guessboss.local / ' + adminPassword);
-  console.log('Editor: editor@guessboss.local / ' + adminPassword);
+  console.log('Admin: admin@guessboss.local');
+  console.log('Editor: editor@guessboss.local');
 }
 
 main()

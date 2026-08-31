@@ -2,7 +2,16 @@ import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
-const adminPassword = process.env.ADMIN_SEED_PASSWORD || 'admin123';
+
+function requireAdminSeedPassword(): string {
+  const value = process.env.ADMIN_SEED_PASSWORD?.trim();
+  if (!value || value.length < 12) {
+    throw new Error('ADMIN_SEED_PASSWORD must contain at least 12 characters');
+  }
+  return value;
+}
+
+const adminPassword = requireAdminSeedPassword();
 
 function placeholder(width: number, height: number, bg: string, text: string) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="100%" height="100%" fill="${bg}"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#ffffff" font-size="${Math.min(width, height) / 4}" font-family="sans-serif" font-weight="bold">${text}</text></svg>`;
@@ -169,8 +178,8 @@ async function main() {
   ]);
 
   console.log('Seed completed');
-  console.log('Admin: admin@guessboss.local / ' + adminPassword);
-  console.log('Editor: editor@guessboss.local / ' + adminPassword);
+  console.log('Admin: admin@guessboss.local');
+  console.log('Editor: editor@guessboss.local');
 }
 
 main()

@@ -238,7 +238,6 @@ export default defineNuxtConfig({
     maxUploadSizeMb: Number.parseInt(process.env.MAX_UPLOAD_SIZE_MB ?? '100', 10),
     maxImageUploadSizeMb: Number.parseInt(process.env.MAX_IMAGE_UPLOAD_SIZE_MB ?? '20', 10),
     imageCacheMaxMb: Number.parseInt(process.env.IMAGE_CACHE_MAX_MB ?? '512', 10),
-    adminSeedPassword: process.env.ADMIN_SEED_PASSWORD ?? 'admin123',
     smtpHost: process.env.SMTP_HOST ?? '',
     smtpPort: Number.parseInt(process.env.SMTP_PORT ?? '587', 10),
     smtpUser: process.env.SMTP_USER ?? '',

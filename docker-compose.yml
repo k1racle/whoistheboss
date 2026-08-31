@@ -11,26 +11,41 @@ services:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: ${PORT:-3000}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-guessboss}?schema=public
+      NUXT_DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-guessboss}?schema=public
       SESSION_SECRET: ${SESSION_SECRET}
-      NUXT_SESSION_PASSWORD: ${SESSION_SECRET}
-      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin123}
+      NUXT_SESSION_PASSWORD: ${NUXT_SESSION_PASSWORD:-${SESSION_SECRET}}
       UPLOAD_DIR: ${UPLOAD_DIR:-./public/uploads}
+      NUXT_UPLOAD_DIR: ${UPLOAD_DIR:-./public/uploads}
       MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-100}
+      NUXT_MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-100}
       MAX_IMAGE_UPLOAD_SIZE_MB: ${MAX_IMAGE_UPLOAD_SIZE_MB:-20}
+      NUXT_MAX_IMAGE_UPLOAD_SIZE_MB: ${MAX_IMAGE_UPLOAD_SIZE_MB:-20}
       IMAGE_CACHE_MAX_MB: ${IMAGE_CACHE_MAX_MB:-512}
+      NUXT_IMAGE_CACHE_MAX_MB: ${IMAGE_CACHE_MAX_MB:-512}
       SMTP_HOST: ${SMTP_HOST:-}
+      NUXT_SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-587}
+      NUXT_SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
+      NUXT_SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
+      NUXT_SMTP_PASS: ${SMTP_PASS:-}
       FROM_EMAIL: ${FROM_EMAIL:-}
+      NUXT_FROM_EMAIL: ${FROM_EMAIL:-}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      NUXT_ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      NUXT_TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      NUXT_TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
       MIGRATE_ON_START: ${MIGRATE_ON_START:-true}
       FIX_UPLOAD_PERMISSIONS: ${FIX_UPLOAD_PERMISSIONS:-false}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
+      NUXT_PUBLIC_SITE_URL: ${SITE_URL:-http://localhost:3000}
       SITE_NAME: ${SITE_NAME:-Маршрут Построен}
+      NUXT_PUBLIC_SITE_NAME: ${SITE_NAME:-Маршрут Построен}
       SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Интервью с основателями бизнеса. Видео, рилсы, фото.}
+      NUXT_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Интервью с основателями бизнеса. Видео, рилсы, фото.}
     volumes:
       - uploads:/app/public/uploads
     depends_on:
@@ -38,6 +53,7 @@ services:
         condition: service_healthy
     networks:
       - guessboss-network
+      - proxy-network
 
   db:
     image: postgres:16-alpine
@@ -66,3 +82,6 @@ volumes:
 networks:
   guessboss-network:
     driver: bridge
+  proxy-network:
+    external: true
+    name: ${PROXY_NETWORK:-web}
