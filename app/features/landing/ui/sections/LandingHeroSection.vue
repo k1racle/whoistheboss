@@ -29,7 +29,7 @@ const titleLines = computed(() => protectedTitle.value.split('\n'))
             alt=""
             width="1856"
             height="863"
-            class="block h-auto w-full"
+            class="block h-auto w-[125%] max-w-none sm:w-full"
             aria-hidden="true"
             draggable="false"
           >
