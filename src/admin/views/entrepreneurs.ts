@@ -332,6 +332,7 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
             </fieldset>
             ${field('Цитата', 'quote', item.quote, { help: 'Используется как запасной тизер в блоках страницы.' })}
             ${mediaField('Главное фото героя', 'photo', 'photoFile', item.photo, 'Основной портрет для карточки героя и связанных блоков. Рекомендуется вертикальное изображение.')}
+            ${mediaField('Фото при наведении', 'hoverPhoto', 'hoverPhotoFile', item.hoverPhoto, 'Дополнительное изображение для состояний наведения на карточках героя.')}
           `, true)}
 
           ${section('editor-hero', '02', 'Херо', 'Первый полноэкранный блок страницы. Крупный текст можно задать отдельно или оставить имя из раздела «Основное».', `
@@ -398,8 +399,7 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
             </div>
           `)}
 
-          ${section('editor-extra', '10', 'Дополнительно', 'Резервные материалы и расширенное описание.', `
-            ${mediaField('Фото при наведении', 'hoverPhoto', 'hoverPhotoFile', item.hoverPhoto, 'Резервное изображение для состояний наведения на карточках героя.')}
+          ${section('editor-extra', '10', 'Дополнительно', 'Расширенное описание для дополнительных материалов.', `
             <div class="editor-field editor-field--wide">
               <label class="editor-field__label">Расширенная биография</label>
               <p class="editor-field__help">Текст для дополнительных материалов и старых шаблонов. Форматирование сохраняется.</p>
