@@ -44,15 +44,16 @@ async function submitRequest(event: Event, type: TrademarkRequestType) {
   }
 }
 
-const ruleToneClass = {
-  neutral: 'bg-surface text-text',
-  accent: 'border-l-4 border-accent bg-surface text-text',
-  warning: 'border-l-4 border-text bg-surface text-text',
-} as const
+const RULE_ORDER = ['license', 'no-consent', 'approval', 'prohibited']
+
+const orderedRules = computed(() => {
+  const rulesById = new Map(props.page.rules.map(rule => [rule.id, rule]))
+  return RULE_ORDER.map(id => rulesById.get(id)).filter((rule): rule is NonNullable<typeof rule> => Boolean(rule))
+})
 </script>
 
 <template>
-  <article class="bg-bg text-text">
+  <article class="flex flex-col bg-bg text-text">
     <section class="border-b border-border px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
       <div class="mx-auto grid w-full max-w-[1440px] gap-12">
         <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)] lg:gap-14">
@@ -139,7 +140,7 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section id="protection" class="scroll-mt-32 bg-surface px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+    <section id="protection" class="order-last scroll-mt-32 bg-surface px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
       <div class="mx-auto w-full max-w-[1440px]">
         <div class="grid gap-8 lg:grid-cols-2 lg:gap-16">
           <div>
@@ -154,7 +155,7 @@ const ruleToneClass = {
         </div>
 
         <div class="mt-12 border-t border-text sm:mt-16">
-          <details v-for="(item, index) in page.protection.classes" :key="item.number" class="group border-b border-border" :open="index === 0">
+          <details v-for="item in page.protection.classes" :key="item.number" class="group border-b border-border">
             <summary class="grid cursor-pointer list-none items-start gap-4 py-5 marker:hidden sm:grid-cols-[5rem_minmax(0,1fr)_2rem] sm:py-7">
               <span class="font-sans text-2xl font-semibold leading-none text-accent sm:text-3xl">{{ item.number }}</span>
               <span>
@@ -186,7 +187,7 @@ const ruleToneClass = {
           Упоминание — не лицензия
         </h2>
         <div class="mt-12 grid gap-4 lg:grid-cols-2 xl:mt-16">
-          <section v-for="rule in page.rules" :id="rule.id" :key="rule.id" class="flex flex-col border border-border p-5 sm:p-7" :class="ruleToneClass[rule.tone]">
+          <section v-for="(rule, index) in orderedRules" :id="rule.id" :key="rule.id" class="flex flex-col border p-5 sm:p-7" :class="index === 0 ? 'border-accent bg-accent text-white' : 'border-border bg-surface text-text'">
             <p class="font-sans text-xs uppercase leading-4 opacity-70 sm:text-sm">{{ rule.eyebrow }}</p>
             <h3 class="mt-4 max-w-[22ch] font-display text-[clamp(1.75rem,2.8vw,2.75rem)] font-black uppercase leading-[0.92] tracking-[-0.025em]">{{ rule.title }}</h3>
             <p class="mt-8 max-w-[70ch] whitespace-pre-line font-sans text-base leading-5 sm:text-lg sm:leading-6">{{ rule.intro }}</p>

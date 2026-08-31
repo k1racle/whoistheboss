@@ -10,6 +10,7 @@ import type {
 import { safeJsonParse } from '@server/utils/json'
 
 type UnknownRecord = Record<string, unknown>
+const PUBLIC_RULE_ORDER = ['license', 'no-consent', 'approval', 'prohibited']
 
 const LEGACY_TRADEMARK_HERO_TITLE = 'ТОВАРНЫЙ ЗНАК\n«МАРШРУТ ПОСТРОЕН»'
 
@@ -55,7 +56,9 @@ function mktuClasses(value: unknown): TrademarkMktuClass[] {
 }
 
 function ruleSections(value: unknown): TrademarkRuleSection[] {
-  if (!Array.isArray(value)) return DEFAULT_TRADEMARK_PAGE.rules
+  if (!Array.isArray(value)) {
+    return PUBLIC_RULE_ORDER.flatMap((id) => DEFAULT_TRADEMARK_PAGE.rules.filter(rule => rule.id === id))
+  }
   const rules = value.map((item, index) => {
     const source = record(item)
     const fallback = DEFAULT_TRADEMARK_PAGE.rules[index]
@@ -70,7 +73,8 @@ function ruleSections(value: unknown): TrademarkRuleSection[] {
       tone,
     } satisfies TrademarkRuleSection
   }).filter(item => item.title).slice(0, 20)
-  return rules.length ? rules : DEFAULT_TRADEMARK_PAGE.rules
+  const source = rules.length ? rules : DEFAULT_TRADEMARK_PAGE.rules
+  return PUBLIC_RULE_ORDER.flatMap((id) => source.filter(rule => rule.id === id))
 }
 
 function processSteps(value: unknown): TrademarkProcessStep[] {
