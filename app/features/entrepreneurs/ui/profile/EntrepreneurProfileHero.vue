@@ -14,6 +14,53 @@ const heroSubtitle = computed(() =>
   || '',
 )
 const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0, 3))
+
+const mobileTitleContainerRef = ref<HTMLElement | null>(null)
+const mobileTitleRefs = ref<HTMLElement[]>([])
+let mobileTitleResizeObserver: ResizeObserver | undefined
+let mobileTitleFitFrame = 0
+
+const fitMobileTitleLines = () => {
+  window.cancelAnimationFrame(mobileTitleFitFrame)
+  mobileTitleFitFrame = window.requestAnimationFrame(() => {
+    const container = mobileTitleContainerRef.value
+    if (!container || container.clientWidth === 0) return
+
+    for (const title of mobileTitleRefs.value) {
+      title.style.removeProperty('font-size')
+    }
+
+    const availableWidth = container.clientWidth - 2
+
+    for (const title of mobileTitleRefs.value) {
+      const naturalWidth = title.scrollWidth
+      if (naturalWidth <= availableWidth) continue
+
+      const naturalFontSize = Number.parseFloat(window.getComputedStyle(title).fontSize)
+      const fittedFontSize = naturalFontSize * availableWidth / naturalWidth
+      title.style.fontSize = `${fittedFontSize}px`
+    }
+  })
+}
+
+onMounted(() => {
+  mobileTitleResizeObserver = new ResizeObserver(fitMobileTitleLines)
+  if (mobileTitleContainerRef.value) {
+    mobileTitleResizeObserver.observe(mobileTitleContainerRef.value)
+  }
+
+  fitMobileTitleLines()
+  void document.fonts.ready.then(fitMobileTitleLines)
+})
+
+watch(heroTitleLines, () => {
+  void nextTick(fitMobileTitleLines)
+})
+
+onBeforeUnmount(() => {
+  window.cancelAnimationFrame(mobileTitleFitFrame)
+  mobileTitleResizeObserver?.disconnect()
+})
 </script>
 
 <template>
@@ -67,9 +114,10 @@ const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0,
           {{ heroSubtitle }}
         </p>
 
-        <div class="flex w-full flex-col">
+        <div ref="mobileTitleContainerRef" class="flex w-full flex-col">
           <h1
             v-for="(line, index) in heroTitleLines"
+            ref="mobileTitleRefs"
             :key="`${index}-${line}`"
             class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent"
           >
