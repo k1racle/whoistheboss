@@ -1,5 +1,6 @@
 const yandexMetrikaHttpSources = [
   'https://mc.yandex.ru',
+  'https://mc.yandex.com',
   'https://mc.webvisor.com',
   'https://mc.webvisor.org',
   'https://yastatic.net',
