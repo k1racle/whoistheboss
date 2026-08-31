@@ -9,15 +9,23 @@ const props = withDefaults(defineProps<{
   desktopImage?: string
   mobileImage?: string
   href?: string
+  priority?: boolean
 }>(), {
   desktopImage: '',
   mobileImage: '',
   href: '/',
+  priority: false,
 })
 
 const imageSource = computed(() => props.desktopImage || props.mobileImage)
 const isImageLoaded = shallowRef(false)
+const bannerImageRef = useTemplateRef<HTMLImageElement>('bannerImage')
 const image = useImage()
+
+function syncImageState() {
+  const element = bannerImageRef.value
+  isImageLoaded.value = Boolean(element?.complete && element.naturalWidth > 0)
+}
 
 function imageUrl(src: string, width: number) {
   return image(src, { width, quality: DEFAULT_IMAGE_QUALITY, format: 'webp' })
@@ -40,11 +48,15 @@ const mobileImageSrcset = computed(() => imageSrcset(props.mobileImage, MOBILE_I
 
 watch(
   [() => props.desktopImage, () => props.mobileImage],
-  () => {
+  async () => {
     isImageLoaded.value = false
+    await nextTick()
+    syncImageState()
   },
+  { flush: 'post' },
 )
 
+onMounted(syncImageState)
 </script>
 
 <template>
@@ -62,8 +74,7 @@ watch(
 
         <picture
           v-if="imageSource"
-          class="col-start-1 row-start-1 transition-opacity duration-300"
-          :class="isImageLoaded ? 'opacity-100' : 'opacity-0'"
+          class="col-start-1 row-start-1"
         >
           <source
             v-if="mobileImage"
@@ -72,14 +83,16 @@ watch(
             sizes="100vw"
           >
           <img
+            ref="bannerImage"
             :src="desktopImageSrc || imageSource"
             :srcset="desktopImageSrcset"
             sizes="100vw"
             alt=""
-            loading="lazy"
+            :loading="priority ? 'eager' : 'lazy'"
+            :fetchpriority="priority ? 'high' : 'auto'"
             decoding="async"
             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-            @load="isImageLoaded = true"
+            @load="syncImageState"
             @error="isImageLoaded = false"
           >
         </picture>

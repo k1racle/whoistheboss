@@ -13,5 +13,6 @@ defineProps<{
     :desktop-image="image"
     :mobile-image="mobileImage"
     :href="link"
+    priority
   />
 </template>
