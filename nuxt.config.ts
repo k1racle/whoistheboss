@@ -211,6 +211,27 @@ export default defineNuxtConfig({
         { name: 'yandex-verification', content: 'd15d7d69e47dbfb4' },
         { name: 'google-site-verification', content: 'ugG76OtpW7X-EHnACfPGilxtEPg26YLw6VNkDCd95uk' },
       ],
+      script: [
+        {
+          type: 'text/javascript',
+          innerHTML: `
+            (function(m,e,t,r,i,k,a){
+              m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+              m[i].l=1*new Date();
+              for (var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+              k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+            })(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=112035140','ym');
+
+            ym(112035140,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:'dataLayer',referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});
+          `,
+        },
+      ],
+      noscript: [
+        {
+          innerHTML: '<div><img src="https://mc.yandex.ru/watch/112035140" style="position:absolute;left:-9999px" alt=""></div>',
+          tagPosition: 'bodyOpen',
+        },
+      ],
       link: [
         { rel: 'preload', href: '/fonts/DexaPro-Condensed-900-Black.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon/favicon.svg' },
