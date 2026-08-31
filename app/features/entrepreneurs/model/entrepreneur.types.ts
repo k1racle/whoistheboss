@@ -83,6 +83,7 @@ export interface EntrepreneurDetailData {
   featuredInterviewVideoType: 'EMBED' | 'SELF_HOSTED'
   featuredInterviewVideoUrl: string | null
   featuredInterviewVideoFile: string | null
+  featuredInterviewCoverImage: string | null
   interviews: InterviewListItem[]
   articles: BlogArticleSummary[]
   reels: ReelItem[]

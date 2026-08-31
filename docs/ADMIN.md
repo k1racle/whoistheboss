@@ -383,7 +383,7 @@ Quill хранит доверенный rich text HTML. Инициализиру
 
 ## Медиафайлы
 
-Клиент отправляет изображения, видео и PDF как `FormData` в `/api/admin/upload/image`, `/api/admin/upload/video` и `/api/admin/upload/document`. Обложки видео интервью и рилсов сохраняются в `coverImage` и передаются публичному `VideoFrame` как poster. `fetchJson()` не выставляет `Content-Type` вручную для `FormData`, чтобы браузер добавил multipart boundary.
+Клиент отправляет изображения, видео и PDF как `FormData` в `/api/admin/upload/image`, `/api/admin/upload/video` и `/api/admin/upload/document`. Обложки отдельных интервью и рилсов сохраняются в `coverImage`; обложка главного интервью предпринимателя — в `featuredInterviewCoverImage`. Все они передаются публичному `VideoFrame` как poster. `fetchJson()` не выставляет `Content-Type` вручную для `FormData`, чтобы браузер добавил multipart boundary.
 
 URL загруженного файла сохраняется в поле сущности или `SiteSetting`. При изменении медиа-поля проверьте загрузку, ручной URL, preview, сбор payload и публичный способ отображения.
 

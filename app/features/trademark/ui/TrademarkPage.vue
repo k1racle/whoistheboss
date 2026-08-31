@@ -46,26 +46,26 @@ async function submitRequest(event: Event, type: TrademarkRequestType) {
 
 const ruleToneClass = {
   neutral: 'bg-surface text-text',
-  accent: 'bg-text text-surface',
-  warning: 'bg-accent text-text-on-accent',
+  accent: 'border-l-4 border-accent bg-surface text-text',
+  warning: 'border-l-4 border-text bg-surface text-text',
 } as const
 </script>
 
 <template>
   <article class="bg-bg text-text">
-    <section class="relative min-h-[calc(100svh-4rem)] overflow-hidden border-b border-border px-4 pb-10 pt-12 sm:px-6 sm:pb-14 lg:px-10 lg:pb-16 lg:pt-16">
-      <div class="mx-auto grid min-h-[calc(100svh-10rem)] w-full max-w-[1920px] content-between gap-16">
-        <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,32rem)] lg:gap-16">
+    <section class="border-b border-border px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto grid w-full max-w-[1440px] gap-12">
+        <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,28rem)] lg:gap-14">
           <div>
             <p class="font-sans text-sm uppercase leading-4 text-accent sm:text-base">
               {{ page.hero.eyebrow }}
             </p>
-            <h1 class="mt-6 whitespace-pre-line font-display text-[clamp(3.25rem,9.6vw,11.5rem)] font-black uppercase leading-[0.78] tracking-[-0.045em] [overflow-wrap:anywhere]">
+            <h1 class="mt-5 whitespace-pre-line font-display text-[clamp(3rem,6vw,6.75rem)] font-black uppercase leading-[0.82] tracking-[-0.04em] [overflow-wrap:anywhere]">
               {{ page.hero.title }}
             </h1>
           </div>
           <div class="lg:pt-8">
-            <p class="whitespace-pre-line font-display text-[clamp(1.75rem,3.3vw,3.5rem)] font-black uppercase leading-[0.86] tracking-[-0.03em]">
+            <p class="whitespace-pre-line font-sans text-[clamp(1.15rem,2vw,1.75rem)] font-semibold uppercase leading-[0.95] tracking-[-0.02em]">
               {{ page.hero.subtitle }}
             </p>
             <p class="mt-7 max-w-[48rem] whitespace-pre-line font-sans text-base leading-5 sm:text-lg sm:leading-6">
@@ -93,7 +93,7 @@ const ruleToneClass = {
               {{ page.hero.reportButton }}
             </ButtonLink>
           </div>
-          <p aria-hidden="true" class="font-display text-[clamp(4rem,11vw,12rem)] font-black leading-[0.7] tracking-[-0.05em] text-accent">
+          <p aria-hidden="true" class="font-sans text-[clamp(2.5rem,5vw,5.25rem)] font-semibold leading-none tracking-[-0.04em] text-accent">
             1177775
           </p>
         </div>
@@ -112,11 +112,11 @@ const ruleToneClass = {
       </div>
     </nav>
 
-    <section id="passport" class="scroll-mt-32 px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto grid w-full max-w-[1920px] gap-10 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
+    <section id="passport" class="scroll-mt-32 px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto grid w-full max-w-[1440px] gap-10 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
         <div>
           <p class="font-sans text-sm uppercase leading-4 text-accent">01 / Паспорт</p>
-          <h2 class="mt-5 font-display text-[clamp(2.75rem,7vw,8rem)] font-black uppercase leading-[0.82] tracking-[-0.04em]">
+          <h2 class="mt-4 font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">
             {{ page.registration.title }}
           </h2>
         </div>
@@ -139,12 +139,12 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section id="protection" class="scroll-mt-32 bg-surface px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto w-full max-w-[1920px]">
+    <section id="protection" class="scroll-mt-32 bg-surface px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto w-full max-w-[1440px]">
         <div class="grid gap-8 lg:grid-cols-2 lg:gap-16">
           <div>
             <p class="font-sans text-sm uppercase leading-4 text-accent">02 / Объём правовой охраны</p>
-            <h2 class="mt-5 max-w-[13ch] font-display text-[clamp(2.75rem,7vw,8rem)] font-black uppercase leading-[0.82] tracking-[-0.04em]">
+            <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">
               {{ page.protection.title }}
             </h2>
           </div>
@@ -156,9 +156,9 @@ const ruleToneClass = {
         <div class="mt-12 border-t border-text sm:mt-16">
           <details v-for="(item, index) in page.protection.classes" :key="item.number" class="group border-b border-border" :open="index === 0">
             <summary class="grid cursor-pointer list-none items-start gap-4 py-5 marker:hidden sm:grid-cols-[5rem_minmax(0,1fr)_2rem] sm:py-7">
-              <span class="font-display text-4xl font-black leading-none text-accent sm:text-5xl">{{ item.number }}</span>
+              <span class="font-sans text-2xl font-semibold leading-none text-accent sm:text-3xl">{{ item.number }}</span>
               <span>
-                <strong class="block font-display text-[clamp(1.8rem,4vw,4.5rem)] font-black uppercase leading-[0.86] tracking-[-0.035em]">{{ item.title }}</strong>
+                <strong class="block font-display text-[clamp(1.5rem,2.6vw,2.5rem)] font-black uppercase leading-[0.92] tracking-[-0.025em]">{{ item.title }}</strong>
                 <span class="mt-3 block max-w-[75ch] font-sans text-sm leading-5 text-text-muted sm:text-base sm:leading-6">{{ item.summary }}</span>
               </span>
               <span class="text-3xl transition-transform group-open:rotate-45">+</span>
@@ -179,16 +179,16 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section id="rules" class="scroll-mt-32 px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto w-full max-w-[1920px]">
+    <section id="rules" class="scroll-mt-32 px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto w-full max-w-[1440px]">
         <p class="font-sans text-sm uppercase leading-4 text-accent">03 / Правила использования</p>
-        <h2 class="mt-5 max-w-[14ch] font-display text-[clamp(3rem,8vw,9rem)] font-black uppercase leading-[0.8] tracking-[-0.045em]">
+        <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">
           Упоминание — не лицензия
         </h2>
         <div class="mt-12 grid gap-4 lg:grid-cols-2 xl:mt-16">
-          <section v-for="rule in page.rules" :id="rule.id" :key="rule.id" class="flex min-h-[34rem] flex-col p-5 sm:p-7 lg:p-9" :class="ruleToneClass[rule.tone]">
+          <section v-for="rule in page.rules" :id="rule.id" :key="rule.id" class="flex flex-col border border-border p-5 sm:p-7" :class="ruleToneClass[rule.tone]">
             <p class="font-sans text-xs uppercase leading-4 opacity-70 sm:text-sm">{{ rule.eyebrow }}</p>
-            <h3 class="mt-5 max-w-[18ch] font-display text-[clamp(2.25rem,5vw,5.5rem)] font-black uppercase leading-[0.84] tracking-[-0.035em]">{{ rule.title }}</h3>
+            <h3 class="mt-4 max-w-[22ch] font-display text-[clamp(1.75rem,2.8vw,2.75rem)] font-black uppercase leading-[0.92] tracking-[-0.025em]">{{ rule.title }}</h3>
             <p class="mt-8 max-w-[70ch] whitespace-pre-line font-sans text-base leading-5 sm:text-lg sm:leading-6">{{ rule.intro }}</p>
             <ul class="mt-7 grid gap-3 font-sans text-sm leading-5 sm:text-base sm:leading-6">
               <li v-for="point in rule.points" :key="point" class="grid grid-cols-[1rem_1fr] gap-2"><span aria-hidden="true">■</span><span>{{ point }}</span></li>
@@ -199,12 +199,12 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section id="licensing" class="scroll-mt-32 bg-text px-4 py-16 text-surface sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto w-full max-w-[1920px]">
+    <section id="licensing" class="scroll-mt-32 bg-text px-4 py-12 text-surface sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto w-full max-w-[1440px]">
         <div class="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
             <p class="font-sans text-sm uppercase leading-4 text-accent">04 / Лицензирование</p>
-            <h2 class="mt-5 max-w-[12ch] font-display text-[clamp(3rem,8vw,9rem)] font-black uppercase leading-[0.8] tracking-[-0.045em]">{{ page.licensing.title }}</h2>
+            <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.licensing.title }}</h2>
           </div>
           <div class="lg:pt-8">
             <p class="max-w-[52rem] whitespace-pre-line font-sans text-base leading-6 sm:text-xl sm:leading-7">{{ page.licensing.intro }}</p>
@@ -213,11 +213,11 @@ const ruleToneClass = {
             </div>
           </div>
         </div>
-        <h3 class="mt-20 font-display text-[clamp(2.5rem,6vw,6.5rem)] font-black uppercase leading-[0.84] tracking-[-0.04em]">{{ page.licensing.processTitle }}</h3>
+        <h3 class="mt-14 font-display text-[clamp(2rem,3.5vw,3.5rem)] font-black uppercase leading-[0.9] tracking-[-0.03em]">{{ page.licensing.processTitle }}</h3>
         <ol class="mt-8 border-t border-surface/30">
           <li v-for="step in page.licensing.steps" :key="step.number" class="grid gap-4 border-b border-surface/30 py-6 sm:grid-cols-[5rem_minmax(12rem,0.7fr)_minmax(0,1fr)] sm:gap-8">
-            <span class="font-display text-5xl font-black leading-none text-accent">{{ step.number }}</span>
-            <strong class="font-display text-3xl font-black uppercase leading-[0.9]">{{ step.title }}</strong>
+            <span class="font-sans text-3xl font-semibold leading-none text-accent">{{ step.number }}</span>
+            <strong class="font-display text-2xl font-black uppercase leading-[0.95]">{{ step.title }}</strong>
             <p class="max-w-[70ch] whitespace-pre-line font-sans text-sm leading-5 text-surface/80 sm:text-base sm:leading-6">{{ step.text }}</p>
           </li>
         </ol>
@@ -225,23 +225,23 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section class="bg-accent px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto grid w-full max-w-[1920px] gap-10 lg:grid-cols-2 lg:gap-16">
-        <h2 class="max-w-[12ch] font-display text-[clamp(3rem,7vw,8rem)] font-black uppercase leading-[0.8] tracking-[-0.045em]">{{ page.quality.title }}</h2>
+    <section class="border-y border-border bg-surface px-4 py-12 text-text sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto grid w-full max-w-[1440px] gap-10 lg:grid-cols-2 lg:gap-16">
+        <h2 class="max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.quality.title }}</h2>
         <div>
           <p class="max-w-[60ch] whitespace-pre-line font-sans text-base leading-6 sm:text-xl sm:leading-7">{{ page.quality.text }}</p>
           <ul class="mt-8 grid gap-3 font-sans text-sm leading-5 sm:text-base sm:leading-6">
-            <li v-for="point in page.quality.points" :key="point" class="border-t border-white/35 pt-3">{{ point }}</li>
+            <li v-for="point in page.quality.points" :key="point" class="border-t border-text/20 pt-3">{{ point }}</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <section id="license-request" class="scroll-mt-32 px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto grid w-full max-w-[1920px] gap-12 lg:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
+    <section id="license-request" class="scroll-mt-32 px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto grid w-full max-w-[1440px] gap-12 lg:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
         <div>
           <p class="font-sans text-sm uppercase leading-4 text-accent">05 / Заявка</p>
-          <h2 class="mt-5 max-w-[12ch] font-display text-[clamp(3rem,7vw,8rem)] font-black uppercase leading-[0.8] tracking-[-0.045em]">{{ page.application.title }}</h2>
+          <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.application.title }}</h2>
           <p class="mt-8 max-w-[45ch] whitespace-pre-line font-sans text-base leading-6 sm:text-lg">{{ page.application.intro }}</p>
         </div>
         <form class="grid gap-8" enctype="multipart/form-data" @submit="submitRequest($event, 'LICENSE')">
@@ -288,11 +288,11 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section id="report-violation" class="scroll-mt-32 bg-surface px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto grid w-full max-w-[1920px] gap-12 lg:grid-cols-2 lg:gap-16">
+    <section id="report-violation" class="scroll-mt-32 bg-surface px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto grid w-full max-w-[1440px] gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
           <p class="font-sans text-sm uppercase leading-4 text-accent">06 / Возможное нарушение</p>
-          <h2 class="mt-5 max-w-[12ch] font-display text-[clamp(3rem,7vw,8rem)] font-black uppercase leading-[0.8] tracking-[-0.045em]">{{ page.violation.title }}</h2>
+          <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.violation.title }}</h2>
           <p class="mt-8 max-w-[52ch] whitespace-pre-line font-sans text-base leading-6 sm:text-lg">{{ page.violation.text }}</p>
           <ul class="mt-8 grid gap-3 font-sans text-sm leading-5 sm:text-base">
             <li v-for="item in page.violation.requirements" :key="item" class="grid grid-cols-[1rem_1fr] gap-2"><span aria-hidden="true" class="text-accent">■</span><span>{{ item }}</span></li>
@@ -319,13 +319,13 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section id="faq" class="scroll-mt-32 px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto w-full max-w-[1920px]">
+    <section id="faq" class="scroll-mt-32 px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto w-full max-w-[1440px]">
         <p class="font-sans text-sm uppercase leading-4 text-accent">07 / Вопросы</p>
-        <h2 class="mt-5 font-display text-[clamp(3rem,8vw,9rem)] font-black uppercase leading-[0.8] tracking-[-0.045em]">{{ page.faqTitle }}</h2>
+        <h2 class="mt-4 font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.faqTitle }}</h2>
         <div class="mt-12 border-t border-text">
           <details v-for="item in page.faqItems" :key="item.question" class="group border-b border-border">
-            <summary class="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_2rem] gap-6 py-5 font-display text-[clamp(1.7rem,4vw,4rem)] font-black uppercase leading-[0.88] marker:hidden sm:py-7">
+            <summary class="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_2rem] gap-6 py-5 font-display text-[clamp(1.35rem,2.5vw,2.25rem)] font-black uppercase leading-[0.95] marker:hidden sm:py-6">
               <span>{{ item.question }}</span><span class="text-right transition-transform group-open:rotate-45">+</span>
             </summary>
             <p class="max-w-[75ch] whitespace-pre-line pb-7 font-sans text-base leading-6 sm:text-lg sm:leading-7">{{ item.answer }}</p>
@@ -334,11 +334,11 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section id="contacts" class="scroll-mt-32 border-t border-border px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-28">
-      <div class="mx-auto grid w-full max-w-[1920px] gap-12 lg:grid-cols-2 lg:gap-16">
+    <section id="contacts" class="scroll-mt-32 border-t border-border px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+      <div class="mx-auto grid w-full max-w-[1440px] gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
           <p class="font-sans text-sm uppercase leading-4 text-accent">08 / Контакты</p>
-          <h2 class="mt-5 max-w-[12ch] font-display text-[clamp(3rem,7vw,8rem)] font-black uppercase leading-[0.8] tracking-[-0.045em]">{{ page.contacts.title }}</h2>
+          <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.contacts.title }}</h2>
         </div>
         <div class="grid content-start gap-4 border-t border-text pt-5 font-sans text-base leading-6 sm:text-lg">
           <p><span class="text-text-muted">Правообладатель:</span> {{ page.contacts.rightsHolder }}</p>

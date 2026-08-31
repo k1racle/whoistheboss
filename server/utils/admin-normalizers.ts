@@ -58,6 +58,7 @@ export function normalizeFeaturedInterview<T extends {
   featuredInterviewVideoType?: 'EMBED' | 'SELF_HOSTED' | null
   featuredInterviewVideoUrl?: string | null
   featuredInterviewVideoFile?: string | null
+  featuredInterviewCoverImage?: string | null
 }>(data: T): T {
   const type = data.featuredInterviewVideoType
   if (!type) return data
@@ -72,6 +73,9 @@ export function normalizeFeaturedInterview<T extends {
           'Featured interview',
         )
       : null,
+    featuredInterviewCoverImage: normalizeOptionalUpload(
+      data.featuredInterviewCoverImage,
+      'Featured interview cover',
+    ),
   }
 }
-

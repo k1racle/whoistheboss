@@ -7,6 +7,7 @@ defineProps<{
   videoType: 'EMBED' | 'SELF_HOSTED'
   videoUrl: string | null
   videoFile: string | null
+  coverImage: string | null
 }>()
 </script>
 
@@ -23,6 +24,7 @@ defineProps<{
       :video-type="videoType"
       :video-url="videoUrl"
       :video-file="videoFile"
+      :poster="coverImage"
       aspect-class="aspect-video w-full"
     />
   </section>

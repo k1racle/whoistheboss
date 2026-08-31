@@ -87,6 +87,7 @@ export const entrepreneurSchema = z.object({
   featuredInterviewVideoType: z.enum(['EMBED', 'SELF_HOSTED']).optional().nullable(),
   featuredInterviewVideoUrl: nullableText,
   featuredInterviewVideoFile: nullableText,
+  featuredInterviewCoverImage: nullableText,
   photo: nullableText,
   aboutGalleryPhotos: nullableText,
   galleryPhotos: nullableText,

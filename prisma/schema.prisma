@@ -65,6 +65,7 @@ model Entrepreneur {
   featuredInterviewVideoType VideoType?
   featuredInterviewVideoUrl  String?    @db.Text
   featuredInterviewVideoFile String?
+  featuredInterviewCoverImage String?
   photo                      String?
   aboutGalleryPhotos         String?    @db.Text
   galleryPhotos              String?    @db.Text

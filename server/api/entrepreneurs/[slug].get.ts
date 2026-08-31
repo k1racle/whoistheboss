@@ -201,6 +201,7 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     featuredInterviewVideoType: entrepreneur.featuredInterviewVideoType || featuredInterview?.videoType || 'EMBED',
     featuredInterviewVideoUrl: entrepreneur.featuredInterviewVideoUrl || featuredInterview?.videoUrl || null,
     featuredInterviewVideoFile: entrepreneur.featuredInterviewVideoFile || featuredInterview?.videoFile || null,
+    featuredInterviewCoverImage: entrepreneur.featuredInterviewCoverImage || featuredInterview?.coverImage || null,
     interviews: interviews.map((item) => ({
       id: item.id,
       slug: item.slug,

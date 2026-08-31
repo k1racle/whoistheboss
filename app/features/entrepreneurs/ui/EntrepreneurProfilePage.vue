@@ -98,6 +98,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
       :video-type="entrepreneur.featuredInterviewVideoType"
       :video-url="entrepreneur.featuredInterviewVideoUrl"
       :video-file="entrepreneur.featuredInterviewVideoFile"
+      :cover-image="entrepreneur.featuredInterviewCoverImage"
     />
 
     <EntrepreneurRelatedSection

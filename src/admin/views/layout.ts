@@ -17,7 +17,6 @@ export function layout(title: string, content: string, user?: UserInfo | null): 
     ['/admin/entrepreneurs', 'Предприниматели'],
     ['/admin/cities', 'Города присутствия'],
     ['/admin/businesses', 'Бизнес'],
-    ['/admin/interviews', 'Интервью'],
     ['/admin/articles', 'Записи журнала'],
     ['/admin/reels', 'Рилсы'],
     ['/admin/shooting-requests', 'Заявки'],

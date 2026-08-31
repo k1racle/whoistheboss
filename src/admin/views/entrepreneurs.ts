@@ -398,6 +398,7 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
               <input type="file" name="featuredInterviewVideoFileUpload" accept="video/*" class="editor-file-input">
               <p class="editor-field__help">Рекомендуется MP4 (H.264), горизонтальное видео 16:9.</p>
             </div>
+            ${mediaField('Обложка видео', 'featuredInterviewCoverImage', 'featuredInterviewCoverImageFile', item.featuredInterviewCoverImage, 'Показывается до запуска интервью. Рекомендуется горизонтальное изображение 16:9.')}
           `)}
 
           ${section('editor-extra', '10', 'Дополнительно', 'Расширенное описание для дополнительных материалов.', `
@@ -819,6 +820,7 @@ function fillForm(item: Entrepreneur) {
   form.querySelector<HTMLInputElement>(`input[name="featuredInterviewVideoType"][value="${item.featuredInterviewVideoType || 'EMBED'}"]`)!.checked = true;
   form.querySelector<HTMLInputElement>('input[name="featuredInterviewVideoUrl"]')!.value = item.featuredInterviewVideoUrl || '';
   form.querySelector<HTMLInputElement>('input[name="featuredInterviewVideoFile"]')!.value = item.featuredInterviewVideoFile || '';
+  form.querySelector<HTMLInputElement>('input[name="featuredInterviewCoverImage"]')!.value = item.featuredInterviewCoverImage || '';
   form.querySelector<HTMLInputElement>('input[name="photo"]')!.value = item.photo || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="aboutGalleryPhotos"]')!.value = item.aboutGalleryPhotos || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="galleryPhotos"]')!.value = item.galleryPhotos || '';
@@ -1155,6 +1157,12 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
   }
 
   const featuredInterviewVideoType = (fd.get('featuredInterviewVideoType') as 'EMBED' | 'SELF_HOSTED') || 'EMBED';
+  const featuredInterviewCoverImageFile = fd.get('featuredInterviewCoverImageFile') as File | null;
+  let featuredInterviewCoverImage = (fd.get('featuredInterviewCoverImage') as string) || null;
+  if (featuredInterviewCoverImageFile && featuredInterviewCoverImageFile.size > 0) {
+    const uploaded = await api.uploadImage(featuredInterviewCoverImageFile);
+    featuredInterviewCoverImage = uploaded.url;
+  }
   const featuredInterviewVideoFileUpload = fd.get('featuredInterviewVideoFileUpload') as File | null;
   let featuredInterviewVideoFile = (fd.get('featuredInterviewVideoFile') as string) || null;
   if (featuredInterviewVideoType === 'SELF_HOSTED' && featuredInterviewVideoFileUpload && featuredInterviewVideoFileUpload.size > 0) {
@@ -1184,6 +1192,7 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
     featuredInterviewVideoType,
     featuredInterviewVideoUrl: featuredInterviewVideoType === 'EMBED' ? (fd.get('featuredInterviewVideoUrl') as string) || null : null,
     featuredInterviewVideoFile: featuredInterviewVideoType === 'SELF_HOSTED' ? featuredInterviewVideoFile : null,
+    featuredInterviewCoverImage,
     photo,
     aboutGalleryPhotos: (fd.get('aboutGalleryPhotos') as string) || null,
     galleryPhotos: (fd.get('galleryPhotos') as string) || null,

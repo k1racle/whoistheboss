@@ -70,6 +70,7 @@ export interface Entrepreneur {
   featuredInterviewVideoType?: 'EMBED' | 'SELF_HOSTED' | null;
   featuredInterviewVideoUrl?: string | null;
   featuredInterviewVideoFile?: string | null;
+  featuredInterviewCoverImage?: string | null;
   photo?: string | null;
   aboutGalleryPhotos?: string | null;
   galleryPhotos?: string | null;
