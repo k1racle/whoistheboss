@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   normalizeTextLineBreaks,
   protectPrepositions,
-  splitHeroTitle,
+  splitHeroTitleLines,
   splitPlainTextLines,
 } from '../app/shared/lib/typography'
 
@@ -30,20 +30,25 @@ describe('splitPlainTextLines', () => {
   })
 })
 
-describe('splitHeroTitle', () => {
-  it('uses an explicit line break in the custom hero title', () => {
-    expect(splitHeroTitle('ПЕРВАЯ СТРОКА\nВТОРАЯ СТРОКА', 'Имя Фамилия'))
-      .toEqual(['ПЕРВАЯ СТРОКА', 'ВТОРАЯ СТРОКА'])
+describe('splitHeroTitleLines', () => {
+  it('preserves every explicit line as a separate hero line', () => {
+    expect(splitHeroTitleLines('ПЕРВАЯ СТРОКА\nВТОРАЯ СТРОКА\nТРЕТЬЯ СТРОКА', ['МАРШРУТ', 'Имя', 'Фамилия']))
+      .toEqual(['ПЕРВАЯ СТРОКА', 'ВТОРАЯ СТРОКА', 'ТРЕТЬЯ СТРОКА'])
   })
 
   it('supports the textual line-break marker from the admin form', () => {
-    expect(splitHeroTitle('ПЕРВАЯ\\nВТОРАЯ', 'Имя Фамилия'))
+    expect(splitHeroTitleLines('ПЕРВАЯ\\nВТОРАЯ', ['МАРШРУТ', 'Имя', 'Фамилия']))
       .toEqual(['ПЕРВАЯ', 'ВТОРАЯ'])
   })
 
-  it('falls back to the entrepreneur name when the custom title is empty', () => {
-    expect(splitHeroTitle(null, 'Имя Фамилия'))
-      .toEqual(['Имя', 'Фамилия'])
+  it('uses all three fallback lines when the custom title is empty', () => {
+    expect(splitHeroTitleLines(null, ['МАРШРУТ', 'Имя', 'Фамилия']))
+      .toEqual(['МАРШРУТ', 'Имя', 'Фамилия'])
+  })
+
+  it('limits the large hero title to three lines', () => {
+    expect(splitHeroTitleLines('РАЗ\nДВА\nТРИ\nЧЕТЫРЕ', ['МАРШРУТ']))
+      .toEqual(['РАЗ', 'ДВА', 'ТРИ'])
   })
 })
 

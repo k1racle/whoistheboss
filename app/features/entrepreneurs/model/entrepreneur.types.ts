@@ -63,6 +63,7 @@ export interface EntrepreneurDetailData {
   name: string
   title: string
   quote: string | null
+  heroTitleLines: string[]
   heroLastName: string
   heroFirstName: string
   heroLeftTeaser: string

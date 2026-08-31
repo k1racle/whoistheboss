@@ -333,7 +333,7 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
           `, true)}
 
           ${section('editor-hero', '02', 'Херо', 'Первый полноэкранный блок страницы. Крупный текст можно задать отдельно или оставить имя из раздела «Основное».', `
-            ${field('Крупный текст херо', 'heroTitle', item.heroTitle, { textarea: true, rows: 3, help: 'Первая строка — до Enter, вторая — после. Если оставить пустым, используется имя и фамилия из раздела «Основное».', wide: true })}
+            ${field('Крупный текст херо', 'heroTitle', item.heroTitle, { textarea: true, rows: 4, help: 'Каждый Enter создаёт новую крупную строку. Можно задать до трёх строк. Если оставить пустым, используются «МАРШРУТ», имя и фамилия из раздела «Основное».', wide: true })}
             ${field('Текст слева', 'heroLeftTeaser', item.heroLeftTeaser, { textarea: true, rows: 3, help: 'Небольшая подпись слева от фамилии.' })}
             ${field('Текст справа сверху', 'heroRightTeaser', item.heroRightTeaser, { textarea: true, rows: 3, help: 'Подпись справа от строки «МАРШРУТ ПОСТРОЕН».' })}
             ${field('Текст справа снизу', 'heroBottomRightTeaser', item.heroBottomRightTeaser, { textarea: true, rows: 3, help: 'Дополнительная подпись в правой нижней части херо.' })}

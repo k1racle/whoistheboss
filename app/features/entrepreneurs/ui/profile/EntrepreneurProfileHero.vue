@@ -14,8 +14,9 @@ const heroSubtitle = computed(() =>
   || props.entrepreneur.quote
   || '',
 )
+const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0, 3))
 const displayNameSize = computed(() => getDisplayNameSize(
-  `${props.entrepreneur.heroLastName} ${props.entrepreneur.heroFirstName}`,
+  heroTitleLines.value.join(' '),
 ))
 </script>
 
@@ -25,7 +26,7 @@ const displayNameSize = computed(() => getDisplayNameSize(
       <div class="flex w-full flex-col gap-[clamp(1rem,1.5vw,2rem)]">
         <div class="flex w-full items-end justify-between gap-10">
           <span class="whitespace-nowrap font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
-            МАРШРУТ
+            {{ heroTitleLines[0] }}
           </span>
           <p
             v-if="entrepreneur.heroRightTeaser || entrepreneur.quote"
@@ -43,13 +44,13 @@ const displayNameSize = computed(() => getDisplayNameSize(
             {{ entrepreneur.heroLeftTeaser || entrepreneur.title }}
           </p>
           <h1 class="m-0 whitespace-nowrap text-right font-display font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent" :class="displayNameSize">
-            {{ entrepreneur.heroLastName }}
+            {{ heroTitleLines[1] }}
           </h1>
         </div>
 
         <div class="flex w-full items-end justify-between gap-10">
           <h1 class="m-0 whitespace-nowrap text-left font-display font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent" :class="displayNameSize">
-            {{ entrepreneur.heroFirstName }}
+            {{ heroTitleLines[2] }}
           </h1>
           <p
             v-if="entrepreneur.heroBottomRightTeaser || entrepreneur.title"
@@ -71,14 +72,12 @@ const displayNameSize = computed(() => getDisplayNameSize(
         </p>
 
         <div class="flex w-full flex-col">
-          <span class="whitespace-nowrap font-display text-[clamp(54px,15vw,86px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
-            МАРШРУТ
-          </span>
-          <h1 class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
-            {{ entrepreneur.heroLastName }}
-          </h1>
-          <h1 v-if="entrepreneur.heroFirstName" class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
-            {{ entrepreneur.heroFirstName }}
+          <h1
+            v-for="(line, index) in heroTitleLines"
+            :key="`${index}-${line}`"
+            class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent"
+          >
+            {{ line }}
           </h1>
         </div>
       </div>

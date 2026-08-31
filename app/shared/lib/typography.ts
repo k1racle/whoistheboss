@@ -19,20 +19,15 @@ export function splitPlainTextLines(text: string): string[] {
   return normalizeTextLineBreaks(text).split('\n')
 }
 
-export function splitHeroTitle(title: string | null | undefined, fallback: string): [string, string] {
+export function splitHeroTitleLines(title: string | null | undefined, fallbackLines: readonly string[]): string[] {
   const customTitle = normalizeTextLineBreaks(title || '').trim()
-  const source = customTitle || fallback.trim()
-  const explicitLines = source
+  if (!customTitle) return fallbackLines.map(line => line.trim()).filter(Boolean).slice(0, 3)
+
+  return customTitle
     .split(/\r?\n/)
     .map(line => line.trim())
     .filter(Boolean)
-
-  if (explicitLines.length > 1) {
-    return [explicitLines[0] || '', explicitLines.slice(1).join(' ')]
-  }
-
-  const words = source.split(/\s+/).filter(Boolean)
-  return [words[0] || fallback, words.slice(1).join(' ')]
+    .slice(0, 3)
 }
 
 export function protectPrepositions(text: string): string {
