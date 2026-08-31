@@ -49,7 +49,7 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
 
         <nav
           v-if="socialLinks.length"
-          class="grid content-start justify-items-end gap-4 xl:grid-cols-[1.15fr_1fr_auto] xl:justify-items-start xl:gap-x-6"
+          class="grid content-start justify-items-end gap-4 xl:grid-cols-[1.15fr_1fr_auto] xl:gap-x-6 xl:text-right"
           aria-label="Социальные сети"
         >
           <a
@@ -84,7 +84,7 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
           </ButtonLink>
         </div>
 
-        <div class="grid gap-x-6 gap-y-2 font-sans text-xs uppercase leading-4 text-text-muted sm:text-sm xl:grid-cols-[1.15fr_1fr_auto] xl:items-end xl:text-base">
+        <div class="grid gap-x-6 gap-y-2 font-sans text-xs uppercase leading-4 text-text-muted sm:text-sm xl:grid-cols-[1.15fr_1fr_auto] xl:items-end xl:justify-items-end xl:text-right xl:text-base">
           <template
             v-for="item in metaItems"
             :key="`${item.text}-${item.href}`"
