@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { EntrepreneurAboutMenuItem } from '@features/entrepreneurs/model/entrepreneur.types'
 import { protectPrepositions } from '@shared/lib/typography'
+import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
 
 const props = defineProps<{
   intro: string
@@ -77,7 +78,7 @@ const itemClass = (index: number) => {
           <small class="block min-w-0 w-3/5 whitespace-pre-line font-sans text-base uppercase leading-4 text-current [overflow-wrap:anywhere] hyphens-auto max-md:text-[13px] max-md:leading-[14px]">
             {{ protectPrepositions(item.note) }}
           </small>
-          <span class="absolute bottom-3.5 right-4 text-[22px] leading-none" aria-hidden="true">[↗]</span>
+          <ArrowMark class="absolute bottom-3.5 right-4 h-[19px] w-[34px]" />
         </NuxtLink>
       </nav>
     </div>

@@ -117,7 +117,7 @@ function renderForm(item: Partial<Reel>, entrepreneurs: Entrepreneur[]): string 
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Обложка (URL или загрузить)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Обложка видео (URL или загрузить изображение)</label>
           <input type="text" name="coverImage" value="${escapeHtml(item.coverImage || '')}" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta mb-2">
           <input type="file" name="coverImageFile" accept="image/*" class="block w-full text-sm text-gray-600">
         </div>
@@ -147,6 +147,26 @@ function renderForm(item: Partial<Reel>, entrepreneurs: Entrepreneur[]): string 
           <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>
           <input type="hidden" name="description">
           <div id="editor-description" class="bg-white">${item.description || ''}</div>
+        </div>
+        <div class="border-t border-gray-200 pt-4">
+          <h2 class="text-lg font-semibold text-gray-900">SEO</h2>
+          <p class="mt-1 text-xs text-gray-500">Отдельные данные для поисковой выдачи и превью ссылки.</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">SEO title</label>
+          <input type="text" name="metaTitle" value="${escapeHtml(item.metaTitle || '')}" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
+          <p class="mt-1 text-xs text-gray-500">Если оставить пустым, используется название рилса.</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">SEO description</label>
+          <textarea name="metaDesc" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta">${escapeHtml(item.metaDesc || '')}</textarea>
+          <p class="mt-1 text-xs text-gray-500">Если оставить пустым, используется основное описание.</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Изображение для соцсетей</label>
+          <input type="text" name="socialImage" value="${escapeHtml(item.socialImage || '')}" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta mb-2">
+          <input type="file" name="socialImageFile" accept="image/*" class="block w-full text-sm text-gray-600">
+          <p class="mt-1 text-xs text-gray-500">Если не выбрано, используется обложка рилса.</p>
         </div>
         <div class="flex items-center gap-2">
           <input type="checkbox" name="isPublished" id="isPublished" ${item.isPublished ? 'checked' : ''} class="h-4 w-4 text-terracotta border-gray-300 rounded">
@@ -195,6 +215,9 @@ function fillForm(item: Reel) {
   form.querySelector<HTMLInputElement>(`input[name="videoType"][value="${item.videoType}"]`)!.checked = true;
   form.querySelector<HTMLInputElement>('input[name="videoUrl"]')!.value = item.videoUrl || '';
   form.querySelector<HTMLInputElement>('input[name="videoFile"]')!.value = item.videoFile || '';
+  form.querySelector<HTMLInputElement>('input[name="metaTitle"]')!.value = item.metaTitle || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="metaDesc"]')!.value = item.metaDesc || '';
+  form.querySelector<HTMLInputElement>('input[name="socialImage"]')!.value = item.socialImage || '';
   setHtml('description', item.description || '');
   form.querySelector<HTMLInputElement>('input[name="isPublished"]')!.checked = item.isPublished;
 }
@@ -233,6 +256,13 @@ async function collectFormData(form: HTMLFormElement, descriptionHtml: string): 
     coverImage = uploaded.url;
   }
 
+  const socialImageFile = fd.get('socialImageFile') as File | null;
+  let socialImage = (fd.get('socialImage') as string) || null;
+  if (socialImageFile && socialImageFile.size > 0) {
+    const uploaded = await api.uploadImage(socialImageFile);
+    socialImage = uploaded.url;
+  }
+
   const videoFileUpload = fd.get('videoFileUpload') as File | null;
   let videoFile = (fd.get('videoFile') as string) || null;
   const videoType = (fd.get('videoType') as 'EMBED' | 'SELF_HOSTED') || 'EMBED';
@@ -250,6 +280,9 @@ async function collectFormData(form: HTMLFormElement, descriptionHtml: string): 
     videoUrl: videoType === 'EMBED' ? (fd.get('videoUrl') as string) || null : null,
     videoFile: videoType === 'SELF_HOSTED' ? videoFile : null,
     description: descriptionHtml || null,
+    metaTitle: (fd.get('metaTitle') as string) || null,
+    metaDesc: (fd.get('metaDesc') as string) || null,
+    socialImage,
     isPublished: fd.has('isPublished'),
   };
 }

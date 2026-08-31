@@ -10,6 +10,7 @@ import {
 
 const LANDING_PAGE_KEYS = [
   'HOME_HERO_TITLE',
+  'HOME_HERO_TRADEMARK_TEXT',
   'HOME_ABOUT_TITLE',
   'HOME_ABOUT_TEXT',
   'HOME_ABOUT_BOTTOM_TEXT',
@@ -114,6 +115,11 @@ export default defineEventHandler(async (event): Promise<LandingPageData> => {
 
   return {
     heroTitle: getSiteSetting(settings, 'HOME_HERO_TITLE', 'МЕДИА ГИД\nМАРШРУТ\nПОСТРОЕН'),
+    heroTrademarkText: getSiteSetting(
+      settings,
+      'HOME_HERO_TRADEMARK_TEXT',
+      'Зарегистрированный товарный знак.\nСвидетельство РФ № 1177775',
+    ),
     aboutTitle: getSiteSetting(settings, 'HOME_ABOUT_TITLE', 'О проекте'),
     aboutText: getSiteSetting(
       settings,

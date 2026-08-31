@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { BlogArticleDetailResponse } from '@features/blog/model/blog.types'
 import BlogDetailPage from '@features/blog/ui/BlogDetailPage.vue'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -22,24 +23,18 @@ const article = data.value.article
 const title = `${article.metaTitle || article.title} — ${config.public.siteName}`
 const description = article.metaDesc || article.subtitle || config.public.siteDescription
 
+const seo = useManagedSeo({ title, description, image: article.coverImage, type: 'article' })
 useSeoMeta({
-  title,
-  description,
-  ogTitle: title,
-  ogDescription: description,
-  ogType: 'article',
-  ogImage: article.coverImage || undefined,
   articlePublishedTime: article.publishedAt || article.createdAt,
   articleModifiedTime: article.updatedAt,
-  twitterCard: article.coverImage ? 'summary_large_image' : 'summary',
-  twitterImage: article.coverImage || undefined,
 })
 
 useSchemaOrg([
   defineArticle({
     headline: article.title,
     description,
-    image: article.coverImage || undefined,
+    image: seo.imageUrl,
+    url: seo.canonicalUrl,
     datePublished: article.publishedAt || article.createdAt,
     dateModified: article.updatedAt,
     author: article.entrepreneur
@@ -48,7 +43,15 @@ useSchemaOrg([
           url: `/entrepreneurs/${article.entrepreneur.slug}`,
           image: article.entrepreneur.photo || undefined,
         })
-      : undefined,
+      : defineOrganization({
+          name: config.public.siteName,
+          url: config.public.siteUrl,
+        }),
+    publisher: defineOrganization({
+      name: config.public.siteName,
+      url: config.public.siteUrl,
+      logo: '/favicon/web-app-manifest-512x512.png',
+    }),
   }),
   defineBreadcrumb({
     itemListElement: [

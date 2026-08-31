@@ -63,6 +63,9 @@ export interface EntrepreneurDetailData {
   name: string
   title: string
   quote: string | null
+  metaTitle: string | null
+  metaDesc: string | null
+  socialImage: string | null
   heroTitleLines: string[]
   heroLastName: string
   heroFirstName: string

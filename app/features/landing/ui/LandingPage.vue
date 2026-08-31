@@ -25,6 +25,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
   <div class="flex flex-col">
     <LandingHeroSection
       :title="page.heroTitle"
+      :trademark-text="page.heroTrademarkText"
       brand-lockup
     />
     <LandingAboutSection

@@ -286,6 +286,7 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
           <a href="#business-editor-gallery">12. Галерея</a>
           <a href="#business-editor-more">13. Больше</a>
           <a href="#business-editor-related">14. Читайте также</a>
+          <a href="#business-editor-seo">15. SEO</a>
         </aside>
         <div class="entrepreneur-editor__sections">
           ${section('business-editor-visibility', '00', 'Видимость блоков', 'Включайте только те разделы, которые нужны на публичной странице бизнеса.', `
@@ -571,6 +572,20 @@ function renderForm(item: Partial<Business>, entrepreneurs: Entrepreneur[], citi
             })}
           `)}
 
+          ${section('business-editor-seo', '15', 'SEO', 'Заголовок, описание и изображение для поисковой выдачи и социальных сетей.', `
+            ${field('SEO title', 'metaTitle', item.metaTitle, {
+              help: 'Если оставить пустым, используется название бизнеса и название сайта.',
+              wide: true
+            })}
+            ${field('SEO description', 'metaDesc', item.metaDesc, {
+              textarea: true,
+              rows: 4,
+              help: 'Кратко опишите компанию, продукт и город. Если оставить пустым, используется основное описание.',
+              wide: true
+            })}
+            ${mediaField('Изображение для соцсетей', 'socialImage', 'socialImageFile', item.socialImage, 'Отдельная обложка ссылки. Если не выбрана, используется основное изображение бизнеса.')}
+          `)}
+
           <div class="entrepreneur-editor__publish">
             <label class="editor-switch">
               <input type="checkbox" name="isPublished" id="isPublished" ${item.isPublished ? 'checked' : ''}>
@@ -655,6 +670,10 @@ function fillForm(item: Business) {
   form.querySelector<HTMLInputElement>('input[name="website"]')!.value = item.website || '';
   form.querySelector<HTMLInputElement>('input[name="coverImage"]')!.value = item.coverImage || '';
   updateCoverPreview(item.coverImage || '');
+  form.querySelector<HTMLInputElement>('input[name="metaTitle"]')!.value = item.metaTitle || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="metaDesc"]')!.value = item.metaDesc || '';
+  form.querySelector<HTMLInputElement>('input[name="socialImage"]')!.value = item.socialImage || '';
+  updateBusinessMediaPreview('socialImage', item.socialImage || '');
   form.querySelector<HTMLInputElement>('input[name="isPublished"]')!.checked = item.isPublished;
 }
 
@@ -774,6 +793,12 @@ async function collectFormData(form: HTMLFormElement, descriptionHtml: string): 
     const uploaded = await api.uploadImage(coverFile);
     coverImage = uploaded.url;
   }
+  const socialImageFile = fd.get('socialImageFile') as File | null;
+  let socialImage = (fd.get('socialImage') as string) || null;
+  if (socialImageFile && socialImageFile.size > 0) {
+    const uploaded = await api.uploadImage(socialImageFile);
+    socialImage = uploaded.url;
+  }
   const manifestBackgroundFile = fd.get('manifestBackgroundImageFile') as File | null;
   let manifestBackgroundImage = (fd.get('manifestBackgroundImage') as string) || null;
   if (manifestBackgroundFile && manifestBackgroundFile.size > 0) {
@@ -869,6 +894,9 @@ async function collectFormData(form: HTMLFormElement, descriptionHtml: string): 
     email: (fd.get('email') as string) || '',
     website: (fd.get('website') as string) || '',
     coverImage: coverImage || '',
+    metaTitle: (fd.get('metaTitle') as string) || null,
+    metaDesc: (fd.get('metaDesc') as string) || null,
+    socialImage,
     isPublished: fd.has('isPublished'),
   };
 }

@@ -52,7 +52,7 @@ const useImageFallback = (event: string | Event) => {
 
         <p
           v-if="card.text"
-          class="m-0 w-[min(52%,420px)] font-sans text-base leading-4 text-text"
+          class="m-0 w-[min(52%,420px)] whitespace-pre-line font-sans text-base leading-4 text-text"
         >
           {{ card.text }}
         </p>

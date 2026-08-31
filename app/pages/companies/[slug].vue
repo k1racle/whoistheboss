@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CompanyProfileData } from '@features/companies/model/companies-page.types'
 import CompanyProfilePage from '@features/companies/ui/CompanyProfilePage.vue'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -16,37 +17,38 @@ if (error.value || !data.value) {
 }
 
 const company = data.value
-const title = `${company.name} — ${config.public.siteName}`
-const description = company.description || config.public.siteDescription
-const socialImage = company.manifestSquareImage || company.aboutPhoto || undefined
+const title = company.metaTitle || `${company.name} — ${config.public.siteName}`
+const description = company.metaDesc || company.description || config.public.siteDescription
+const socialImage = company.socialImage || company.manifestSquareImage || company.aboutPhoto || undefined
 
 const success = computed(() => route.query.success === '1')
 const errorFlag = computed(() => route.query.error === '1')
 
-useSeoMeta({
-  title,
-  description,
-  ogTitle: title,
-  ogDescription: description,
-  ogType: 'website',
-  ogImage: socialImage,
-  twitterCard: socialImage ? 'summary_large_image' : 'summary',
-  twitterImage: socialImage,
-})
+const seo = useManagedSeo({ title, description, image: socialImage })
 
 useSchemaOrg([
   defineOrganization({
     name: company.name,
     description,
     url: `/companies/${company.slug}`,
+    image: seo.imageUrl,
+    sameAs: company.website ? [company.website] : undefined,
     address: company.address
       ? {
           streetAddress: company.address,
           addressLocality: company.city || undefined,
+          addressCountry: 'RU',
         }
       : undefined,
     telephone: company.phone || undefined,
     email: company.email || undefined,
+    founder: company.owner
+      ? definePerson({
+          name: company.owner.name,
+          url: `/entrepreneurs/${company.owner.slug}`,
+          image: company.owner.photo || undefined,
+        })
+      : undefined,
   }),
   defineBreadcrumb({
     itemListElement: [

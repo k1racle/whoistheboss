@@ -20,7 +20,7 @@ const coverImageFailed = shallowRef(false)
 
 const protectedText = computed(() => protectPrepositions(props.text))
 const protectedTitle = computed(() => protectPrepositions(props.title))
-const coverImageSrc = computed(() => props.coverImage || '/images/placeholder.svg')
+const coverImageSrc = computed(() => props.coverImage.trim())
 
 interface AboutMedia {
   type: 'EMBED' | 'SELF_HOSTED'
@@ -122,7 +122,7 @@ watch(() => props.coverImage, () => {
           preload="metadata"
         />
         <NuxtImg
-          v-else-if="!coverImageFailed"
+          v-else-if="coverImageSrc && !coverImageFailed"
           :src="coverImageSrc"
           alt="Обложка видео проекта Маршрут Построен"
           sizes="320:100vw 480:100vw sm:100vw lg:67vw 2000:1220px"

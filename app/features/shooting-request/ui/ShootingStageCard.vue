@@ -26,7 +26,7 @@ defineProps<{
 
     <template v-else>
       <span class="font-sans text-base leading-4">{{ stage.eyebrow }}</span>
-      <p class="min-w-0 max-w-[94%] self-end font-sans text-base leading-4 [overflow-wrap:anywhere]">
+      <p class="min-w-0 max-w-[94%] self-end whitespace-pre-line font-sans text-base leading-4 [overflow-wrap:anywhere]">
         {{ stage.description }}
       </p>
     </template>

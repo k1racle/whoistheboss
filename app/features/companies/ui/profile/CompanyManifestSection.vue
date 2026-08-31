@@ -19,7 +19,7 @@ const protectedTextThree = computed(() => protectPrepositions(props.textThree))
 </script>
 
 <template>
-  <section id="interview" class="min-h-svh bg-bg pt-36 lg:pt-[160px]">
+  <section class="min-h-svh bg-bg pt-36 lg:pt-[160px]">
     <div
       class="relative mb-36 h-[628px] bg-border-strong bg-cover bg-center lg:mb-[170px]"
     >

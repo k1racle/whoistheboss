@@ -30,7 +30,7 @@ defineProps<{
       <h2 class="font-sans text-[27px] font-bold uppercase leading-[27px] tracking-[-1.25px] md:text-[32px] md:leading-8">
         {{ interview.title }}
       </h2>
-      <p v-if="interview.subtitle" class="mt-auto font-sans text-base leading-5">
+      <p v-if="interview.subtitle" class="mt-auto whitespace-pre-line font-sans text-base leading-5">
         {{ interview.subtitle }}
       </p>
     </div>

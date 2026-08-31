@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { protectPrepositions } from '@shared/lib/typography'
 import FullPage from '@shared/ui/page/FullPage.vue'
+import { ROUTES } from '@shared/navigation'
 
 const props = withDefaults(defineProps<{
   title: string
   staggeredLines?: boolean
   brandLockup?: boolean
+  trademarkText?: string
 }>(), {
   staggeredLines: false,
   brandLockup: false,
+  trademarkText: '',
 })
 
 const protectedTitle = computed(() => protectPrepositions(props.title))
@@ -18,22 +21,28 @@ const titleLines = computed(() => protectedTitle.value.split('\n'))
 <template>
   <FullPage id="top" next-label="Перейти к следующей секции">
     <div class="mx-auto flex w-full max-w-[1920px] flex-1 items-end px-4 pb-0 sm:px-6  lg:px-10 ">
-      <div class="flex w-full justify-start">
-        <h1
-          v-if="brandLockup"
-          class="w-full"
-          :aria-label="protectedTitle.replace(/\n/g, ' ')"
-        >
-          <img
-            src="/images/landing/brand-lockup.svg"
-            alt=""
-            width="1856"
-            height="863"
-            class="block h-auto w-[125%] max-w-none sm:w-full"
-            aria-hidden="true"
-            draggable="false"
+      <div class="flex w-full flex-col items-start justify-start">
+        <template v-if="brandLockup">
+          <h1 class="w-full">
+            <span class="sr-only">{{ protectedTitle.replace(/\n/g, ' ') }}</span>
+            <img
+              src="/images/landing/brand-lockup.svg"
+              alt=""
+              width="1856"
+              height="863"
+              class="block h-auto w-[125%] max-w-none sm:w-full"
+              aria-hidden="true"
+              draggable="false"
+            >
+          </h1>
+          <NuxtLink
+            v-if="trademarkText"
+            :to="ROUTES.TRADEMARK"
+            class="mb-4 mt-5 whitespace-pre-line font-sans text-[10px] uppercase leading-[11px] text-text transition-colors hover:text-accent sm:mb-6 sm:text-xs sm:leading-[13px]"
           >
-        </h1>
+            {{ trademarkText }}
+          </NuxtLink>
+        </template>
         <h1
           v-else-if="staggeredLines"
           class="flex w-full flex-col text-left font-display text-[clamp(80px,20vw,320px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent"

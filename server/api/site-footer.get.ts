@@ -9,6 +9,7 @@ import {
   SOCIAL_LINKS_KEY,
 } from '@server/utils/site-footer'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+import { normalizeTrademarkPage } from '@server/utils/trademark-page'
 
 const socialSettings = [
   ['SOCIAL_TELEGRAM', 'TELEGRAM'],
@@ -25,6 +26,7 @@ const settingKeys = [
   ...socialSettings.map(([key]) => key),
   SOCIAL_LINKS_KEY,
   FOOTER_META_ITEMS_KEY,
+  'TRADEMARK_PAGE_JSON',
 ] as const
 
 export default defineEventHandler(async (): Promise<SiteFooterData> => {
@@ -40,5 +42,6 @@ export default defineEventHandler(async (): Promise<SiteFooterData> => {
   return {
     socialLinks,
     metaItems: ensurePrivacyPolicyLink(parseFooterMetaItems(settings[FOOTER_META_ITEMS_KEY])),
+    trademarkLegalText: normalizeTrademarkPage(settings.TRADEMARK_PAGE_JSON).footerLegalText,
   }
 })

@@ -14,6 +14,8 @@ import { settingsView } from './views/settings.js';
 import { blogPageView, companiesPageView, entrepreneursPageView, shootingPageView } from './views/pageEditors.js';
 import { citiesView, cityFormView } from './views/cities.js';
 import { privacyPolicyView } from './views/privacyPolicy.js';
+import { trademarkPageView } from './views/trademarkPageEditor.js';
+import { trademarkRequestsView } from './views/trademarkRequests.js';
 import type { UserInfo } from './views/layout.js';
 
 export interface RouteResult {
@@ -47,6 +49,7 @@ export const router = {
     if (path === '/admin/pages/blog') return blogPageView(user);
     if (path === '/admin/pages/shooting-request') return shootingPageView(user);
     if (path === '/admin/pages/privacy-policy') return privacyPolicyView(user);
+    if (path === '/admin/pages/trademark') return trademarkPageView(user);
 
     if (path === '/admin/entrepreneurs') return entrepreneursView(user);
     if (match(path, '/admin/entrepreneurs/new')) return entrepreneurFormView(null, user);
@@ -79,6 +82,7 @@ export const router = {
     if (path === '/admin/stages') return stagesView(user);
 
     if (path === '/admin/shooting-requests') return shootingRequestsView(user);
+    if (path === '/admin/trademark-requests') return trademarkRequestsView(user);
     if (path === '/admin/users') return usersView(user);
     if (match(path, '/admin/users/new')) return userFormView(null, user);
     if (match(path, '/admin/users/:id/edit')) return userFormView(param(path, '/admin/users/:id/edit'), user);

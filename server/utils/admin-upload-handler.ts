@@ -9,9 +9,10 @@ import { readLimitedRawBody } from '@server/utils/request-security'
 
 const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'])
 const videoExtensions = new Set(['.mp4', '.webm', '.mov', '.m4v'])
+const documentExtensions = new Set(['.pdf'])
 const optimizableImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif'])
-const MAX_IMAGE_DIMENSION = 2560
-const WEBP_QUALITY = 90
+const MAX_IMAGE_DIMENSION = 3840
+const WEBP_QUALITY = 96
 
 async function optimizeImageUpload(
   data: Buffer,
@@ -81,7 +82,7 @@ export async function handleUploads(event: H3Event, path: readonly string[]) {
           url: `/uploads/${entry.name}`,
           type: imageExtensions.has(extension)
             ? 'image'
-            : videoExtensions.has(extension) ? 'video' : 'file',
+            : videoExtensions.has(extension) ? 'video' : documentExtensions.has(extension) ? 'document' : 'file',
           size: stat.size,
           updatedAt: stat.mtime.toISOString(),
         }
@@ -91,7 +92,7 @@ export async function handleUploads(event: H3Event, path: readonly string[]) {
     return files
   }
 
-  if (path.length !== 1 || (path[0] !== 'image' && path[0] !== 'video')) {
+  if (path.length !== 1 || !['image', 'video', 'document'].includes(path[0] || '')) {
     throwAdminError(404, 'Not found')
   }
 
@@ -104,11 +105,11 @@ export async function handleUploads(event: H3Event, path: readonly string[]) {
   const file = parts?.find(part => part.name === 'file' && part.filename)
   if (!file?.filename) throwAdminError(400, 'No file uploaded')
 
-  const expectedMimePrefix = `${kind}/`
-  if (!file.type?.startsWith(expectedMimePrefix)) {
-    throwAdminError(400, kind === 'image'
-      ? 'Only image files are allowed'
-      : 'Only video files are allowed')
+  const isExpectedMime = kind === 'document'
+    ? file.type === 'application/pdf'
+    : file.type?.startsWith(`${kind}/`)
+  if (!isExpectedMime) {
+    throwAdminError(400, `Only ${kind} files are allowed`)
   }
 
   const maxSizeMb = kind === 'image' ? config.maxImageUploadSizeMb : config.maxUploadSizeMb
@@ -117,12 +118,17 @@ export async function handleUploads(event: H3Event, path: readonly string[]) {
 
   const originalName = normalizeOriginalName(file.filename)
   const extension = extname(originalName).toLowerCase()
-  const allowedExtensions = kind === 'image' ? imageExtensions : videoExtensions
+  const allowedExtensions = kind === 'image'
+    ? imageExtensions
+    : kind === 'video' ? videoExtensions : documentExtensions
   if (!allowedExtensions.has(extension)) {
     throwAdminError(400, `Unsupported ${kind} file extension`)
   }
   if (kind === 'video' && !hasValidVideoSignature(file.data, extension)) {
     throwAdminError(400, 'Invalid or unsupported video file')
+  }
+  if (kind === 'document' && file.data.subarray(0, 5).toString('ascii') !== '%PDF-') {
+    throwAdminError(400, 'Invalid or unsupported PDF file')
   }
 
   let outputData = file.data

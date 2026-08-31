@@ -18,7 +18,7 @@ defineProps<ContactPageData & {
         <div class="mt-10 grid gap-3 font-sans text-base uppercase leading-5">
           <a v-if="phone" :href="`tel:${phone}`" class="hover:text-accent">{{ phone }}</a>
           <a v-if="email" :href="`mailto:${email}`" class="hover:text-accent">{{ email }}</a>
-          <p v-if="address">{{ address }}</p>
+          <p v-if="address" class="whitespace-pre-line">{{ address }}</p>
         </div>
         <div v-if="SOCIAL_LINKS.length" class="mt-10 flex flex-wrap gap-4">
           <a

@@ -25,6 +25,7 @@ export interface CompanyOwnerSummary {
   slug: string
   name: string
   title: string
+  interviewHref: string
   heroRightTeaser: string | null
   heroBottomRightTeaser: string | null
   quote: string | null
@@ -55,6 +56,9 @@ export interface CompanyProfileData {
   name: string
   type: string
   description: string | null
+  metaTitle: string | null
+  metaDesc: string | null
+  socialImage: string | null
   heroTitleTop: string
   heroTitleBottom: string
   heroTeaser: string

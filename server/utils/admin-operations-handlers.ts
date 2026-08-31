@@ -187,6 +187,36 @@ export async function handleShootingRequests(event: H3Event, path: readonly stri
   return { ok: true }
 }
 
+export async function handleTrademarkRequests(event: H3Event, path: readonly string[]) {
+  if (path.length === 0) {
+    requireAdminMethod(event, ['GET'])
+    const { limit, offset } = readPagination(event, { defaultLimit: 100, maxLimit: 250 })
+    return prisma.trademarkRequest.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    })
+  }
+
+  const [id, action] = path
+  if (!id || path.length > 2) throwAdminError(404, 'Not found')
+
+  if (action === 'status') {
+    requireAdminMethod(event, ['PUT'])
+    const data = await readAdminBody(event, shootingRequestStatusSchema)
+    const existing = await prisma.trademarkRequest.findUnique({ where: { id } })
+    if (!existing) throwAdminError(404, 'Request not found')
+    return prisma.trademarkRequest.update({ where: { id }, data: { status: data.status } })
+  }
+
+  if (action) throwAdminError(404, 'Not found')
+  requireAdminMethod(event, ['DELETE'])
+  const existing = await prisma.trademarkRequest.findUnique({ where: { id } })
+  if (!existing) throwAdminError(404, 'Request not found')
+  await prisma.trademarkRequest.delete({ where: { id } })
+  return { ok: true }
+}
+
 export async function handleSubscribers(event: H3Event, path: readonly string[]) {
   requireAdminMethod(event, path[0] === 'export.csv' || path.length === 0 ? ['GET'] : ['DELETE'])
 

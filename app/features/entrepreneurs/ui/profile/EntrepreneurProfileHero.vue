@@ -19,6 +19,7 @@ const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0,
 
 <template>
   <section id="top" class="relative min-h-[calc(100svh-142px)] overflow-hidden bg-bg">
+    <h1 class="sr-only">{{ entrepreneur.name }}</h1>
     <div class="mx-auto hidden min-h-[calc(100svh-142px)] w-[min(calc(100%_-_80px),1920px)] items-end lg:flex">
       <div class="flex w-full flex-col gap-[clamp(1rem,1.5vw,2rem)]">
         <div class="flex w-full items-end justify-between gap-10">
@@ -27,7 +28,7 @@ const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0,
           </span>
           <p
             v-if="entrepreneur.heroRightTeaser || entrepreneur.quote"
-            class="w-[min(500px,32vw)] max-w-[500px] self-center font-sans text-base font-bold uppercase leading-4 text-text"
+            class="w-[min(500px,32vw)] max-w-[500px] self-center whitespace-pre-line font-sans text-base font-bold uppercase leading-4 text-text"
           >
             {{ entrepreneur.heroRightTeaser || entrepreneur.quote }}
           </p>
@@ -36,22 +37,22 @@ const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0,
         <div class="flex w-full items-end justify-between gap-10">
           <p
             v-if="entrepreneur.heroLeftTeaser || entrepreneur.title"
-            class="w-[min(500px,32vw)] max-w-[500px] self-center text-right font-sans text-base font-bold uppercase leading-4 text-text"
+            class="w-[min(500px,32vw)] max-w-[500px] self-center whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text"
           >
             {{ entrepreneur.heroLeftTeaser || entrepreneur.title }}
           </p>
-          <h1 class="m-0 whitespace-nowrap text-right font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
+          <span class="m-0 whitespace-nowrap text-right font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
             {{ heroTitleLines[1] }}
-          </h1>
+          </span>
         </div>
 
         <div class="flex w-full items-end justify-between gap-10">
-          <h1 class="m-0 whitespace-nowrap text-left font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
+          <span class="m-0 whitespace-nowrap text-left font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
             {{ heroTitleLines[2] }}
-          </h1>
+          </span>
           <p
             v-if="entrepreneur.heroBottomRightTeaser || entrepreneur.title"
-            class="w-[min(500px,32vw)] max-w-[500px] self-center font-sans text-base font-bold uppercase leading-4 text-text"
+            class="w-[min(500px,32vw)] max-w-[500px] self-center whitespace-pre-line font-sans text-base font-bold uppercase leading-4 text-text"
           >
             {{ entrepreneur.heroBottomRightTeaser || entrepreneur.title }}
           </p>
@@ -63,7 +64,7 @@ const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0,
       <div class="flex w-full flex-col items-start gap-5">
         <p
           v-if="heroSubtitle"
-          class="m-0 w-full font-sans text-[13px] font-bold uppercase leading-[14px] text-text"
+          class="m-0 w-full whitespace-pre-line font-sans text-[13px] font-bold uppercase leading-[14px] text-text"
         >
           {{ heroSubtitle }}
         </p>
@@ -72,7 +73,7 @@ const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0,
           <AutoFitText
             v-for="(line, index) in heroTitleLines"
             :key="`${index}-${line}`"
-            as="h1"
+            as="span"
             :text="line"
             class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent"
           />

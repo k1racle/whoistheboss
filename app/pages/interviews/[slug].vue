@@ -3,6 +3,7 @@ import type { InterviewDetailResponse } from '@features/interviews/model/intervi
 import InterviewDetailPage from '@features/interviews/ui/InterviewDetailPage.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -22,23 +23,15 @@ const interview = data.value.interview
 const title = `${interview.metaTitle || interview.title} — ${config.public.siteName}`
 const description = interview.metaDesc || interview.summary || config.public.siteDescription
 
-useSeoMeta({
-  title,
-  description,
-  ogTitle: title,
-  ogDescription: description,
-  ogType: 'video.other',
-  ogImage: interview.coverImage || undefined,
-  twitterCard: interview.coverImage ? 'summary_large_image' : 'summary',
-  twitterImage: interview.coverImage || undefined,
-})
+const seo = useManagedSeo({ title, description, image: interview.coverImage, type: 'video.other' })
 
 useSchemaOrg([
   defineVideo({
     name: interview.title,
     description,
-    thumbnailUrl: interview.coverImage || undefined,
+    thumbnailUrl: seo.imageUrl,
     uploadDate: interview.publishedAt || interview.updatedAt,
+    url: seo.canonicalUrl,
     embedUrl: interview.videoType === 'EMBED' ? interview.videoUrl || undefined : undefined,
     contentUrl: interview.videoType === 'SELF_HOSTED' ? interview.videoFile || interview.videoUrl || undefined : undefined,
   }),

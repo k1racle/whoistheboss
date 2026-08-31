@@ -125,6 +125,7 @@ function renderHomeForm(settings: Settings): string {
 
           ${section('home-hero', '01', 'Херо', 'Первый полноэкранный блок главной.', `
             ${field('Заголовок', 'HOME_HERO_TITLE', 'Перенос строки задает деление большого заголовка.', true, 3)}
+            ${field('Подпись товарного знака', 'HOME_HERO_TRADEMARK_TEXT', 'Текст под логотипом. Рекомендуется две строки.', true, 2)}
           `)}
 
           ${section('home-about', '02', 'О проекте', 'Текст, обложка-картинка и видео.', `

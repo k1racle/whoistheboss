@@ -76,6 +76,9 @@ export interface Entrepreneur {
   hoverPhoto?: string | null;
   bio?: string | null;
   quote?: string | null;
+  metaTitle?: string | null;
+  metaDesc?: string | null;
+  socialImage?: string | null;
   sectionVisibility?: string | null;
   sectionOrder?: string | null;
   isPublished: boolean;
@@ -90,7 +93,7 @@ export interface Entrepreneur {
 export interface MediaFile {
   name: string;
   url: string;
-  type: 'image' | 'video' | 'file';
+  type: 'image' | 'video' | 'document' | 'file';
   size: number;
   updatedAt: string;
 }
@@ -128,6 +131,9 @@ export interface Reel {
   videoUrl?: string | null;
   videoFile?: string | null;
   description?: string | null;
+  metaTitle?: string | null;
+  metaDesc?: string | null;
+  socialImage?: string | null;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
@@ -209,6 +215,9 @@ export interface Business {
   email?: string | null;
   website?: string | null;
   coverImage?: string | null;
+  metaTitle?: string | null;
+  metaDesc?: string | null;
+  socialImage?: string | null;
   isPublished: boolean;
   placesSortOrder: number;
   entrepreneurId: string;
@@ -254,6 +263,29 @@ export class ApiError extends Error {
   }
 }
 
+export interface TrademarkAttachment {
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+}
+
+export interface TrademarkRequest {
+  id: string;
+  requestNumber: string;
+  type: 'LICENSE' | 'INFRINGEMENT';
+  applicantName: string;
+  organization?: string | null;
+  contactName?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  details: Record<string, unknown>;
+  attachments?: TrademarkAttachment[] | null;
+  status: ShootingRequest['status'];
+  createdAt: string;
+  updatedAt: string;
+}
+
 async function fetchJson(input: string, init?: RequestInit) {
   const isFormData = init?.body instanceof FormData;
   const headers: Record<string, string> = {
@@ -284,7 +316,7 @@ async function fetchJson(input: string, init?: RequestInit) {
   return res.json();
 }
 
-async function uploadFile(type: 'image' | 'video', file: File): Promise<{ url: string }> {
+async function uploadFile(type: 'image' | 'video' | 'document', file: File): Promise<{ url: string }> {
   const formData = new FormData();
   formData.append('file', file);
   return fetchJson(`/admin/upload/${type}`, {
@@ -304,6 +336,7 @@ export const api = {
 
   uploadImage: (file: File) => uploadFile('image', file),
   uploadVideo: (file: File) => uploadFile('video', file),
+  uploadDocument: (file: File) => uploadFile('document', file),
   media: {
     list: (): Promise<MediaFile[]> => fetchJson('/admin/upload'),
   },
@@ -395,6 +428,17 @@ export const api = {
     updateStatus: (id: string, status: ShootingRequest['status']) =>
       fetchJson(`/admin/shooting-requests/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
     delete: (id: string) => fetchJson(`/admin/shooting-requests/${id}`, { method: 'DELETE' }),
+  },
+
+  trademarkRequests: {
+    list: (): Promise<TrademarkRequest[]> => fetchJson('/admin/trademark-requests'),
+    updateStatus: (id: string, status: TrademarkRequest['status']) =>
+      fetchJson(`/admin/trademark-requests/${id}/status`, { method: 'PUT', body: JSON.stringify({ status }) }),
+    delete: (id: string) => fetchJson(`/admin/trademark-requests/${id}`, { method: 'DELETE' }),
+  },
+
+  trademarkPage: {
+    get: <T>(): Promise<T> => fetchJson('/trademark-page'),
   },
 
   settings: {

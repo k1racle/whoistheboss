@@ -2,6 +2,7 @@
 import { ROUTES } from '@shared/navigation'
 import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
+import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
 import type { PresenceCity } from '@shared/types/city'
 
 const props = withDefaults(defineProps<{
@@ -16,6 +17,7 @@ const navigationItems = [
   { label: 'Предприниматели', to: ROUTES.ENTREPRENEURS },
   { label: 'Бизнес', to: ROUTES.COMPANIES },
   { label: 'Журнал', to: ROUTES.BLOG },
+  { label: 'Товарный знак «Маршрут Построен»', to: ROUTES.TRADEMARK },
 ] as const
 
 const mobileNavigationItems = [
@@ -126,7 +128,7 @@ onBeforeUnmount(() => {
         </NuxtLink>
 
         <nav
-          class="hidden items-center gap-8 lg:flex xl:gap-12"
+          class="hidden items-center gap-5 lg:flex xl:gap-9"
           aria-label="Основная навигация"
         >
           <NuxtLink
@@ -168,7 +170,7 @@ onBeforeUnmount(() => {
               :class="{ 'text-accent': !currentCitySlug }"
               @click="selectCity()"
             >
-              <span>Все города</span><span>[ ↗ ]</span>
+              <span>Все города</span><ArrowMark class="h-[19px] w-[34px]" />
             </button>
             <button
               v-for="city in cities"
@@ -254,7 +256,7 @@ onBeforeUnmount(() => {
               :class="{ 'bg-accent text-text-on-accent': !currentCitySlug }"
               @click="selectCity()"
             >
-              <span>Все города</span><span>[ ↗ ]</span>
+              <span>Все города</span><ArrowMark class="h-[19px] w-[34px]" />
             </button>
             <button
               v-for="city in cities"

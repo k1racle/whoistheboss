@@ -26,11 +26,11 @@ const hoverDescription = computed(() => protectPrepositions(props.card.hoverDesc
   >
     <span
       aria-hidden="true"
-      class="pointer-events-none absolute right-4 top-4 z-10 block h-7 w-12 shrink-0 bg-current [-webkit-mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat] [mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat]"
+      class="pointer-events-none absolute right-4 top-4 z-10 block h-7 w-12 shrink-0 bg-current [-webkit-mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat] [mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat]"
     />
 
     <div class="absolute inset-4 flex flex-col justify-end transition-[opacity,transform] duration-350 group-hover:-translate-y-2.5 group-hover:opacity-0">
-      <strong class="max-w-[88%] whitespace-pre-line font-display text-[clamp(2rem,2.8vw,2.8rem)] font-black uppercase leading-[0.88] tracking-[-0.05em]">
+      <strong class="max-w-[88%] whitespace-pre-line font-sans text-[22px] font-bold uppercase leading-[1.05] tracking-[-0.6px] sm:text-[26px] sm:leading-7 md:text-[30px] md:leading-8 md:tracking-[-1.25px]">
         {{ title }}
       </strong>
       <small

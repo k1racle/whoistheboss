@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
+
 interface PageMoreItem {
   title: string
   href: string
@@ -24,7 +26,7 @@ withDefaults(defineProps<{
             :to="item.href"
             class="relative flex h-[min(29.0625rem,24vw)] max-h-[29.0625rem] w-full flex-col justify-end bg-accent p-5 text-text-on-accent no-underline transition-colors duration-200 hover:bg-surface hover:text-text hover:ring-1 hover:ring-inset hover:ring-text max-lg:aspect-square max-lg:h-auto max-lg:max-h-none"
           >
-            <span class="absolute right-5 top-5 text-[32px] leading-none" aria-hidden="true">[↗]</span>
+            <ArrowMark class="absolute right-5 top-5 h-[19px] w-[34px]" />
             <strong class="min-w-0 max-w-[85%] whitespace-pre-line font-sans text-[clamp(22px,2vw,32px)] font-normal uppercase leading-none [overflow-wrap:anywhere] hyphens-auto">
               {{ item.title }}
             </strong>
@@ -35,7 +37,7 @@ withDefaults(defineProps<{
             class="relative flex h-[min(29.0625rem,24vw)] max-h-[29.0625rem] w-full flex-col justify-end bg-accent p-5 text-text-on-accent max-lg:aspect-square max-lg:h-auto max-lg:max-h-none"
             aria-disabled="true"
           >
-            <span class="absolute right-5 top-5 text-[32px] leading-none" aria-hidden="true">[↗]</span>
+            <ArrowMark class="absolute right-5 top-5 h-[19px] w-[34px]" />
             <strong class="min-w-0 max-w-[85%] whitespace-pre-line font-sans text-[clamp(22px,2vw,32px)] font-normal uppercase leading-none [overflow-wrap:anywhere] hyphens-auto">
               {{ item.title }}
             </strong>

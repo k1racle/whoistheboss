@@ -83,7 +83,7 @@ const buttonClasses = computed(() => [
       <span
         v-else-if="arrow === 'mark'"
         aria-hidden="true"
-        class="inline-block h-[17px] w-[30px] shrink-0 bg-current [-webkit-mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat] [mask:url(/images/frame-1321316003.svg)_center/contain_no-repeat]"
+        class="inline-block h-[17px] w-[30px] shrink-0 bg-current [-webkit-mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat] [mask:url(/images/arrow-right-corner.svg)_center/contain_no-repeat]"
       />
     </span>
   </NuxtLink>

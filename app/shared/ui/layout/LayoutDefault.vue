@@ -26,6 +26,7 @@ const { data: citiesData } = await useFetch<PresenceCity[]>('/api/cities', {
     <SiteFooter
       :social-links="footerData?.socialLinks"
       :meta-items="footerData?.metaItems"
+      :trademark-legal-text="footerData?.trademarkLegalText"
     />
     <CookieConsentBanner />
   </LayoutMaster>

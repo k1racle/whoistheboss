@@ -122,7 +122,7 @@ function renderForm(item: Partial<Interview>, entrepreneurs: Entrepreneur[]): st
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Обложка (URL или загрузить)</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Обложка видео (URL или загрузить изображение)</label>
           <input type="text" name="coverImage" value="${escapeHtml(item.coverImage || '')}" class="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-terracotta mb-2">
           <input type="file" name="coverImageFile" accept="image/*" class="block w-full text-sm text-gray-600">
         </div>

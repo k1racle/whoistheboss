@@ -116,6 +116,7 @@ Entrypoint не выполняет рекурсивный `chown` persistent upl
 | Интервью | `server/api/interviews.get.ts`, `server/api/interviews/[slug].get.ts` | `app/features/interviews/` |
 | Рилсы | `server/api/reels.get.ts`, `server/api/reels/[slug].get.ts` | `app/features/reels/` |
 | Стать героем | `server/api/shooting-page.get.ts` | `app/features/shooting-request/` |
+| Товарный знак | `server/api/trademark-page.get.ts` | `app/features/trademark/` |
 | Баннер | `server/api/site-banner.get.ts` | Общий UI публичных страниц |
 | Футер | `server/api/site-footer.get.ts` | `app/shared/ui/footer/SiteFooter.vue` через `LayoutDefault.vue` |
 | Политика конфиденциальности | `server/api/privacy-policy.get.ts` | `app/pages/privacy-policy.vue` |
@@ -132,6 +133,7 @@ Entrypoint не выполняет рекурсивный `chown` persistent upl
 | `/admin/pages/companies` | `views/pageEditors.ts` | `COMPANIES_PAGE_*` |
 | `/admin/pages/blog` | `views/pageEditors.ts` | `BLOG_PAGE_*` и список статей |
 | `/admin/pages/shooting-request` | `views/shootingPageEditor.ts` | `SHOOTING_PAGE_*` |
+| `/admin/pages/trademark` | `views/trademarkPageEditor.ts` | `TRADEMARK_PAGE_JSON` |
 | `/admin/pages/privacy-policy` | `views/privacyPolicy.ts` | `PRIVACY_POLICY_TEXT` |
 | `/admin/entrepreneurs` и формы | `views/entrepreneurs.ts` | `Entrepreneur` |
 | `/admin/cities` и формы | `views/cities.ts` | `City`, города присутствия |
@@ -141,6 +143,7 @@ Entrypoint не выполняет рекурсивный `chown` persistent upl
 | `/admin/reels` и формы | `views/reels.ts` | `Reel` |
 | `/admin/audience-cards` и формы | `views/audienceCards.ts` | `AudienceCard` |
 | `/admin/shooting-requests` | `views/shootingRequests.ts` | `ShootingRequest` |
+| `/admin/trademark-requests` | `views/trademarkRequests.ts` | `TrademarkRequest` |
 | `/admin/users` и формы | `views/users.ts` | `User`, только роль `ADMIN` |
 | `/admin/banner` | `views/banner.ts` | Общие настройки баннера |
 | `/admin/stages` | `views/stages.ts` | `HOME_STAGES_*` |
@@ -195,6 +198,7 @@ Catch-all admin API выполняет серверную проверку ро�
 - `audience-cards`;
 - `comments`;
 - `shooting-requests`;
+- `trademark-requests`;
 - `subscribers`;
 - `settings`;
 - `upload`.
@@ -228,6 +232,8 @@ Catch-all admin API выполняет серверную проверку ро�
 ### `SiteSetting`
 
 Редакторы главной, общих страниц, баннера, этапов и страницы заявки сохраняют словарь `Record<string, string>` через `/api/admin/settings`. Имена настроек являются частью контракта между формой и публичным API.
+
+Подпись о регистрации товарного знака под логотипом главной хранится в `HOME_HERO_TRADEMARK_TEXT`; переносы строк из textarea сохраняются на публичной странице.
 
 При добавлении настройки обновите форму, список читаемых ключей в нужном публичном endpoint и его fallback. Не переименовывайте существующий ключ без миграции данных или совместимого fallback.
 
@@ -377,7 +383,7 @@ Quill хранит доверенный rich text HTML. Инициализиру
 
 ## Медиафайлы
 
-Клиент отправляет изображения и видео как `FormData` в `/api/admin/upload/image` и `/api/admin/upload/video`. `fetchJson()` не выставляет `Content-Type` вручную для `FormData`, чтобы браузер добавил multipart boundary.
+Клиент отправляет изображения, видео и PDF как `FormData` в `/api/admin/upload/image`, `/api/admin/upload/video` и `/api/admin/upload/document`. Обложки видео интервью и рилсов сохраняются в `coverImage` и передаются публичному `VideoFrame` как poster. `fetchJson()` не выставляет `Content-Type` вручную для `FormData`, чтобы браузер добавил multipart boundary.
 
 URL загруженного файла сохраняется в поле сущности или `SiteSetting`. При изменении медиа-поля проверьте загрузку, ручной URL, preview, сбор payload и публичный способ отображения.
 
@@ -433,6 +439,8 @@ URL загруженного файла сохраняется в поле су�
 | «Текст и вертикальное/широкое фото» | story sections в `entrepreneurs.ts`/`businesses.ts` и `app/shared/ui/additional-sections/` |
 | «Главная страница» | `src/admin/views/home.ts`, `server/api/landing-page.get.ts`, `app/features/landing/` |
 | «Стать героем» | `src/admin/views/shootingPageEditor.ts`, `server/api/shooting-page.get.ts` |
+| «Товарный знак» | `src/admin/views/trademarkPageEditor.ts`, `server/api/trademark-page.get.ts`, `app/features/trademark/` |
+| «Заявки на лицензию / сообщения о нарушениях» | `src/admin/views/trademarkRequests.ts`, `server/api/trademark-requests.post.ts` |
 | «Порядок и видимость» | поиск `sectionOrder`, `SECTION_ORDER`, `attachSortableList`, `sortOrder` |
 | «Футер», «социальные ссылки» | `src/admin/views/settings.ts`, `server/api/site-footer.get.ts`, `server/utils/site-footer.ts`, `app/shared/ui/footer/` |
 | «Не сохраняется» | `collect*`, `src/admin/api.ts`, Zod schema, handler |

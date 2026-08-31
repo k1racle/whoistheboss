@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { EntrepreneursPageData } from '@features/entrepreneurs/model/entrepreneur.types'
 import EntrepreneursPage from '@features/entrepreneurs/ui/EntrepreneursPage.vue'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
+import { usePageSeo } from '@shared/seo/use-page-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -35,13 +37,13 @@ const page = computed(() => data.value ?? fallbackPage)
 const success = computed(() => route.query.success === '1')
 const error = computed(() => route.query.error === '1')
 
-useSeoMeta({
+const seo = await usePageSeo('entrepreneurs', {
   title: `Предприниматели — ${config.public.siteName}`,
-  description: 'Истории предпринимателей, руководителей и основателей проектов.',
-  ogTitle: `Предприниматели — ${config.public.siteName}`,
-  ogDescription: 'Истории предпринимателей, руководителей и основателей проектов.',
-  ogType: 'website',
+  description: 'Истории предпринимателей, руководителей и основателей компаний: их путь, решения, проекты и опыт развития бизнеса.',
+  image: '',
 })
+
+useManagedSeo(seo.value)
 </script>
 
 <template>

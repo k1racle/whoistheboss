@@ -71,7 +71,7 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
       :aside-text="company.aboutAsideText"
       :image="company.aboutPhoto"
       :image-alt="company.name"
-      button-href="#interview"
+      :button-href="company.owner?.interviewHref || ROUTES.INTERVIEWS"
     />
 
     <CompanyFounderSection

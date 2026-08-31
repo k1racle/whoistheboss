@@ -13,6 +13,7 @@ export const ROUTES = {
   ARTICLE: (slug: string) => `/blog/${slug}`,
   CONTACTS: '/contacts',
   SHOOTING_REQUEST: '/shooting-request',
+  TRADEMARK: '/tovarnyy-znak-marshrut-postroen/',
   LOGIN: '/login',
   REGISTER: '/register',
   ADMIN: '/admin',

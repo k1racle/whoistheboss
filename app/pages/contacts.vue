@@ -3,6 +3,8 @@ import type { ContactPageData } from '@features/contacts/model/contact-page.type
 import ContactsPage from '@features/contacts/ui/ContactsPage.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
+import { usePageSeo } from '@shared/seo/use-page-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -24,12 +26,13 @@ if (pageError.value) {
   })
 }
 
-useSeoMeta({
+const seo = await usePageSeo('contacts', {
   title: `Контакты — ${config.public.siteName}`,
-  description: config.public.siteDescription,
-  ogTitle: `Контакты — ${config.public.siteName}`,
-  ogDescription: config.public.siteDescription,
+  description: 'Контакты редакции проекта «Маршрут Построен»: адрес, телефон, электронная почта и форма обратной связи.',
+  image: '',
 })
+
+useManagedSeo(seo.value)
 
 const pageData = computed(() => data.value ?? fallbackData)
 const success = computed(() => route.query.success === '1')

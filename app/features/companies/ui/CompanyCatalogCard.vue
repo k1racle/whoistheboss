@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CompanyCatalogItem } from '@features/companies/model/companies-page.types'
 import { ROUTES } from '@shared/navigation'
+import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
 
 const props = defineProps<{
   company: CompanyCatalogItem
@@ -35,7 +36,7 @@ const imageSrc = computed(() => props.company.coverImage || '/images/placeholder
 
     <div class="flex items-end justify-between gap-[clamp(8px,1.25vw,24px)] px-[clamp(8px,0.9vw,16px)] pb-[clamp(10px,1.1vw,20px)] pt-[clamp(8px,1vw,18px)]">
       <span class="inline-flex h-[clamp(27px,2.25vw,46px)] w-[clamp(48px,4vw,82px)] shrink-0" aria-hidden="true">
-        <img src="/images/company-card-arrow.svg" alt="">
+        <ArrowMark class="size-full" />
       </span>
 
       <p class="m-0 w-3/5 text-right font-sans text-[clamp(11px,1vw,16px)] font-normal uppercase leading-none tracking-normal">

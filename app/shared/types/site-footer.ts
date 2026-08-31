@@ -8,4 +8,5 @@ export interface FooterMetaItem {
 export interface SiteFooterData {
   socialLinks: SocialLink[]
   metaItems: FooterMetaItem[]
+  trademarkLegalText: string
 }

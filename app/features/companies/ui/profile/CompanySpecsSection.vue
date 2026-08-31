@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { CompanySpecItem } from '@features/companies/model/companies-page.types'
 import { protectPrepositions } from '@shared/lib/typography'
-import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
-import SectionTitle from '@shared/ui/page/SectionTitle.vue'
+import AutoFitText from '@shared/ui/text/AutoFitText.vue'
 
 const props = defineProps<{
   title: string
@@ -10,16 +9,21 @@ const props = defineProps<{
   items: CompanySpecItem[]
 }>()
 
-const protectedTitle = computed(() => protectPrepositions(props.title))
+const singleLineTitle = computed(() => protectPrepositions(props.title.replace(/\s+/g, ' ').trim()))
 const protectedDescription = computed(() => protectPrepositions(props.description))
 </script>
 
 <template>
   <section class="bg-bg px-5 py-[90px] sm:px-6 lg:px-10 lg:py-[130px]">
     <div class="mx-auto w-full max-w-[1920px]">
-      <SectionTitle class="m-0 whitespace-pre-line">
-        {{ protectedTitle }}
-      </SectionTitle>
+      <AutoFitText
+        as="h2"
+        :text="singleLineTitle"
+        :min-font-size="24"
+        class="m-0 block w-full max-w-full whitespace-nowrap font-display text-[42px] font-black uppercase leading-[0.88] tracking-[-0.03em] text-text sm:text-[clamp(3rem,8vw,6rem)]"
+      >
+        {{ singleLineTitle }}
+      </AutoFitText>
       <p class="mt-3 whitespace-pre-line font-sans text-base uppercase leading-4 text-text">
         {{ protectedDescription }}
       </p>
@@ -28,7 +32,7 @@ const protectedDescription = computed(() => protectPrepositions(props.descriptio
         <article
           v-for="(item, index) in items"
           :key="`${item.title}-${index}`"
-          class="group flex min-h-[100px] min-w-0 items-center justify-between gap-6 overflow-hidden border border-accent bg-accent px-5 py-4 text-text-on-accent transition-colors duration-200 hover:border-text hover:bg-surface hover:text-text lg:px-7"
+          class="group flex min-h-[100px] min-w-0 items-center gap-6 overflow-hidden border border-accent bg-accent px-5 py-4 text-text-on-accent transition-colors duration-200 hover:border-text hover:bg-surface hover:text-text lg:px-7"
         >
           <div class="flex min-w-0 flex-1 items-center gap-5">
             <img
@@ -46,8 +50,6 @@ const protectedDescription = computed(() => protectPrepositions(props.descriptio
               </small>
             </span>
           </div>
-
-          <ArrowMark class="h-8 w-12 shrink-0" />
         </article>
       </div>
     </div>

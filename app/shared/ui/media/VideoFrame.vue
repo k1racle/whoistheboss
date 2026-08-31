@@ -7,6 +7,7 @@ interface Props {
   videoType?: 'EMBED' | 'SELF_HOSTED' | null
   videoUrl?: string | null
   videoFile?: string | null
+  poster?: string | null
   aspectClass?: string
 }
 
@@ -14,6 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
   videoType: 'EMBED',
   videoUrl: '',
   videoFile: '',
+  poster: '',
   aspectClass: 'aspect-video',
 })
 
@@ -75,6 +77,7 @@ watch(
       v-else-if="safeVideoFile"
       ref="videoElement"
       :src="safeVideoFile"
+      :poster="poster || undefined"
       :title="title"
       class="h-full w-full object-cover"
       controls
@@ -82,6 +85,14 @@ watch(
       preload="metadata"
       @play="hasStarted = true"
     />
+
+    <img
+      v-if="poster && hasPlayableMedia && !hasStarted"
+      :src="poster"
+      :alt="`Обложка видео: ${title}`"
+      class="absolute inset-0 z-[5] h-full w-full object-cover"
+      loading="eager"
+    >
 
     <div
       v-else

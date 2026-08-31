@@ -7,6 +7,7 @@ import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 withDefaults(defineProps<{
   socialLinks?: SocialLink[]
   metaItems?: FooterMetaItem[]
+  trademarkLegalText?: string
 }>(), {
   socialLinks: () => SOCIAL_LINKS,
   metaItems: () => [
@@ -14,12 +15,15 @@ withDefaults(defineProps<{
     { text: 'Пошта Почта', href: '' },
     { text: 'Политика конф-ти', href: '/privacy-policy' },
   ],
+  trademarkLegalText: '',
 })
 
 const pageLinks = [
+  { label: 'Главная', to: ROUTES.LANDING },
   { label: 'Предприниматели', to: ROUTES.ENTREPRENEURS },
   { label: 'Бизнес', to: ROUTES.COMPANIES },
   { label: 'Журнал', to: ROUTES.BLOG },
+  { label: 'Товарный знак «Маршрут Построен»', to: ROUTES.TRADEMARK },
 ] as const
 
 const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта', '?'] as const
@@ -113,6 +117,13 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
       <p class="mt-6 max-w-5xl font-sans text-[10px] leading-3 text-text-muted sm:text-xs sm:leading-4">
         Instagram, Facebook, WhatsApp принадлежат компании Meta, признанной экстремистской на территории Российской Федерации.
       </p>
+      <NuxtLink
+        v-if="trademarkLegalText"
+        :to="ROUTES.TRADEMARK"
+        class="mt-2 max-w-5xl font-sans text-[10px] leading-3 text-text-muted transition-colors hover:text-accent sm:text-xs sm:leading-4"
+      >
+        {{ trademarkLegalText }}
+      </NuxtLink>
     </div>
   </footer>
 </template>

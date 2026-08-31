@@ -164,7 +164,16 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
   const business = await prisma.business.findFirst({
     where: { slug, isPublished: true, ...businessCityFilter(citySlug) },
     include: {
-      entrepreneur: true,
+      entrepreneur: {
+        include: {
+          interviews: {
+            where: { isPublished: true },
+            orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+            take: 1,
+            select: { slug: true },
+          },
+        },
+      },
     },
   })
 
@@ -273,6 +282,9 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
     name: business.name,
     type: business.type,
     description: plainDescription || null,
+    metaTitle: business.metaTitle,
+    metaDesc: business.metaDesc,
+    socialImage: business.socialImage,
     heroTitleTop: nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : business.name,
     heroTitleBottom: nameParts.length > 1 ? (nameParts[nameParts.length - 1] || '') : '',
     heroTeaser: business.heroTeaser || business.type,
@@ -292,6 +304,9 @@ export default defineEventHandler(async (event): Promise<CompanyProfileData> => 
         slug: business.entrepreneur.slug,
         name: business.entrepreneur.name,
         title: business.entrepreneur.title,
+        interviewHref: business.entrepreneur.interviews[0]
+          ? ROUTES.INTERVIEW(business.entrepreneur.interviews[0].slug)
+          : `${ROUTES.ENTREPRENEUR(business.entrepreneur.slug)}#interviews`,
         heroRightTeaser: business.entrepreneur.heroRightTeaser,
         heroBottomRightTeaser: business.entrepreneur.heroBottomRightTeaser,
         quote: business.entrepreneur.quote,

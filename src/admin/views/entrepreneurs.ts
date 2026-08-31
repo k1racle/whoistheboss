@@ -299,6 +299,7 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
           <a href="#editor-more">08. Больше</a>
           <a href="#editor-interview">09. Интервью</a>
           <a href="#editor-extra">10. Дополнительно</a>
+          <a href="#editor-seo">11. SEO</a>
         </aside>
         <div class="entrepreneur-editor__sections">
           ${section('editor-visibility', '00', 'Видимость блоков', 'Включайте только те блоки, которые должны отображаться на странице героя.', `
@@ -406,6 +407,12 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
               <input type="hidden" name="bio">
               <div id="editor-bio" class="bg-white">${item.bio || ''}</div>
             </div>
+          `)}
+
+          ${section('editor-seo', '11', 'SEO', 'Заголовок, описание и изображение для поисковой выдачи и социальных сетей.', `
+            ${field('SEO title', 'metaTitle', item.metaTitle, { help: 'Если оставить пустым, используется имя предпринимателя и название сайта.', wide: true })}
+            ${field('SEO description', 'metaDesc', item.metaDesc, { textarea: true, rows: 4, help: 'Кратко опишите героя и его деятельность. Если оставить пустым, используется цитата или должность.', wide: true })}
+            ${mediaField('Изображение для соцсетей', 'socialImage', 'socialImageFile', item.socialImage, 'Отдельная обложка ссылки. Если не выбрана, используется главное фото героя.')}
           `)}
 
           <div class="entrepreneur-editor__publish">
@@ -818,6 +825,9 @@ function fillForm(item: Entrepreneur) {
   form.querySelector<HTMLInputElement>('input[name="hoverPhoto"]')!.value = item.hoverPhoto || '';
   setHtml('bio', item.bio || '');
   form.querySelector<HTMLInputElement>('input[name="quote"]')!.value = item.quote || '';
+  form.querySelector<HTMLInputElement>('input[name="metaTitle"]')!.value = item.metaTitle || '';
+  form.querySelector<HTMLTextAreaElement>('textarea[name="metaDesc"]')!.value = item.metaDesc || '';
+  form.querySelector<HTMLInputElement>('input[name="socialImage"]')!.value = item.socialImage || '';
   const visibility = parseVisibility(item.sectionVisibility);
   const storySections = normalizeAdminStorySections(item);
   renderStorySections(storySections);
@@ -1137,6 +1147,13 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
     morePhoto = uploaded.url;
   }
 
+  const socialImageFile = fd.get('socialImageFile') as File | null;
+  let socialImage = (fd.get('socialImage') as string) || null;
+  if (socialImageFile && socialImageFile.size > 0) {
+    const uploaded = await api.uploadImage(socialImageFile);
+    socialImage = uploaded.url;
+  }
+
   const featuredInterviewVideoType = (fd.get('featuredInterviewVideoType') as 'EMBED' | 'SELF_HOSTED') || 'EMBED';
   const featuredInterviewVideoFileUpload = fd.get('featuredInterviewVideoFileUpload') as File | null;
   let featuredInterviewVideoFile = (fd.get('featuredInterviewVideoFile') as string) || null;
@@ -1173,6 +1190,9 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
     hoverPhoto,
     bio: bioHtml || null,
     quote: (fd.get('quote') as string) || null,
+    metaTitle: (fd.get('metaTitle') as string) || null,
+    metaDesc: (fd.get('metaDesc') as string) || null,
+    socialImage,
     sectionVisibility: JSON.stringify(Object.fromEntries(
       entrepreneurSectionOptions.map(([key]) => [key, fd.has(`section_${key}`)])
     )),

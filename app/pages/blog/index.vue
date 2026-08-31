@@ -3,6 +3,8 @@ import type { BlogPageData } from '@features/blog/model/blog.types'
 import BlogPage from '@features/blog/ui/BlogPage.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
+import { usePageSeo } from '@shared/seo/use-page-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -41,13 +43,13 @@ const success = computed(() => route.query.success === '1')
 const error = computed(() => route.query.error === '1')
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
-useSeoMeta({
-  title: `Блог — ${config.public.siteName}`,
-  description: 'Статьи, новости и заметки о предпринимателях, компаниях и бизнесе проекта.',
-  ogTitle: `Блог — ${config.public.siteName}`,
-  ogDescription: 'Статьи, новости и заметки о предпринимателях, компаниях и бизнесе проекта.',
-  ogType: 'website',
+const seo = await usePageSeo('blog', {
+  title: `Журнал — ${config.public.siteName}`,
+  description: 'Статьи, новости и разборы о предпринимателях, российских компаниях, продуктах и развитии бизнеса.',
+  image: '',
 })
+
+useManagedSeo(seo.value)
 </script>
 
 <template>

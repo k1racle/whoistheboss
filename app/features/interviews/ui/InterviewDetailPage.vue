@@ -21,6 +21,14 @@ const hasVideo = computed(() => Boolean(props.interview.videoUrl || props.interv
         {{ interview.title }}
       </h1>
 
+      <p v-if="interview.subtitle" class="mt-6 max-w-[920px] whitespace-pre-line font-sans text-xl leading-7 text-text sm:text-2xl sm:leading-8">
+        {{ interview.subtitle }}
+      </p>
+
+      <p v-if="interview.summary" class="mt-6 max-w-[920px] whitespace-pre-line font-sans text-base leading-6 text-text/75 sm:text-lg sm:leading-7">
+        {{ interview.summary }}
+      </p>
+
       <p v-if="interview.publishedAt" class="mt-6 font-sans text-sm uppercase leading-4 text-text/60">
         {{ formatRussianDate(interview.publishedAt) }}
       </p>
@@ -32,6 +40,7 @@ const hasVideo = computed(() => Boolean(props.interview.videoUrl || props.interv
         :video-type="interview.videoType"
         :video-url="interview.videoUrl"
         :video-file="interview.videoFile"
+        :poster="interview.coverImage"
         aspect-class="aspect-video"
       />
 

@@ -24,7 +24,7 @@ defineProps<{
       <h3 class="m-0 min-w-0 max-w-full font-sans text-[22px] font-bold uppercase leading-[22px] [overflow-wrap:anywhere] hyphens-auto">
         {{ article.title }}
       </h3>
-      <p v-if="article.subtitle" class="mt-auto min-w-0 max-w-full font-sans text-sm leading-[18px] [overflow-wrap:anywhere] hyphens-auto">
+      <p v-if="article.subtitle" class="mt-auto min-w-0 max-w-full whitespace-pre-line font-sans text-sm leading-[18px] [overflow-wrap:anywhere] hyphens-auto">
         {{ article.subtitle }}
       </p>
     </div>

@@ -44,6 +44,7 @@ export const landingHeroesDescription = 'Главные герои проект�
 
 export type LandingPageData = {
   heroTitle: string
+  heroTrademarkText: string
   aboutTitle: string
   aboutText: string
   aboutBottomText: string
@@ -88,6 +89,7 @@ export const landingPlacesDescription = 'Компании и проекты на
 
 export const landingPageFallback: LandingPageData = {
   heroTitle: 'МЕДИА ГИД\nМАРШРУТ\nПОСТРОЕН',
+  heroTrademarkText: 'Зарегистрированный товарный знак.\nСвидетельство РФ № 1177775',
   aboutTitle: 'О проекте',
   aboutText: landingAboutParagraphs.join('\n\n'),
   aboutBottomText: landingAudienceIntro,

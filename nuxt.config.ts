@@ -21,6 +21,7 @@ const cachedRouteRules: Record<string, { swr: number }> = {
   '/reels/**': { swr: 60 },
   '/contacts': { swr: 60 },
   '/shooting-request': { swr: 60 },
+  '/tovarnyy-znak-marshrut-postroen/': { swr: 60 },
   '/privacy-policy': { swr: 300 },
   '/api/site-footer': { swr: 300 },
   '/api/site-banner': { swr: 60 },
@@ -40,7 +41,9 @@ const cachedRouteRules: Record<string, { swr: number }> = {
   '/api/reels/**': { swr: 60 },
   '/api/contacts': { swr: 60 },
   '/api/shooting-page': { swr: 60 },
+  '/api/trademark-page': { swr: 60 },
   '/api/privacy-policy': { swr: 300 },
+  '/api/page-seo': { swr: 300 },
 }
 
 const developmentRouteRules = Object.fromEntries(
@@ -89,7 +92,7 @@ export default defineNuxtConfig({
 
   image: {
     provider: 'persistent',
-    quality: 90,
+    quality: 96,
     providers: {
       persistent: {
         provider: './app/shared/image/persistent-provider.ts',
@@ -127,6 +130,7 @@ export default defineNuxtConfig({
     identity: {
       '@type': 'Organization',
       name: siteName,
+      alternateName: 'Маршрут построен',
       url: siteUrl,
       logo: '/favicon/web-app-manifest-512x512.png',
     },
@@ -201,6 +205,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      titleTemplate: '%s',
       htmlAttrs: {
         lang: 'ru',
       },
@@ -208,6 +213,10 @@ export default defineNuxtConfig({
       meta: [
         { name: 'format-detection', content: 'telephone=no' },
         { name: 'apple-mobile-web-app-title', content: siteName },
+        { property: 'og:site_name', content: siteName },
+        { property: 'og:image', content: `${siteUrl}/favicon/web-app-manifest-512x512.png` },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:image', content: `${siteUrl}/favicon/web-app-manifest-512x512.png` },
         { name: 'yandex-verification', content: 'd15d7d69e47dbfb4' },
         { name: 'google-site-verification', content: 'ugG76OtpW7X-EHnACfPGilxtEPg26YLw6VNkDCd95uk' },
       ],

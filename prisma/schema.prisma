@@ -71,6 +71,9 @@ model Entrepreneur {
   hoverPhoto                 String?
   bio                        String?    @db.Text
   quote                      String?
+  metaTitle                  String?
+  metaDesc                   String?
+  socialImage               String?
   sectionVisibility          String?    @db.Text
   sectionOrder               String?    @db.Text
   isPublished                Boolean    @default(false)
@@ -169,6 +172,9 @@ model Reel {
   videoUrl       String?
   videoFile      String?
   description    String?       @db.Text
+  metaTitle      String?
+  metaDesc       String?
+  socialImage    String?
   isPublished    Boolean       @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
@@ -262,6 +268,9 @@ model Business {
   email                   String?
   website                 String?
   coverImage              String?
+  metaTitle               String?
+  metaDesc                String?
+  socialImage             String?
   isPublished             Boolean      @default(false)
   placesSortOrder         Int          @default(0)
   entrepreneurId          String
@@ -331,6 +340,30 @@ model ShootingRequest {
   updatedAt DateTime      @updatedAt
 
   @@map("shooting_requests")
+}
+
+model TrademarkRequest {
+  id            String               @id @default(cuid())
+  requestNumber String               @unique
+  type          TrademarkRequestType
+  applicantName String
+  organization  String?
+  contactName   String?
+  email         String?
+  phone         String?
+  details       Json
+  attachments   Json?
+  status        RequestStatus        @default(NEW)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@index([type, status, createdAt])
+  @@map("trademark_requests")
+}
+
+enum TrademarkRequestType {
+  LICENSE
+  INFRINGEMENT
 }
 
 enum RequestStatus {

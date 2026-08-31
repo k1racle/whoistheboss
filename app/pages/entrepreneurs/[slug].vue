@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { EntrepreneurDetailData } from '@features/entrepreneurs/model/entrepreneur.types'
 import EntrepreneurProfilePage from '@features/entrepreneurs/ui/EntrepreneurProfilePage.vue'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -16,29 +17,20 @@ if (error.value || !data.value) {
 }
 
 const entrepreneur = data.value
-const title = `${entrepreneur.name} — ${config.public.siteName}`
-const description = entrepreneur.quote || entrepreneur.title || config.public.siteDescription
-const profileImage = entrepreneur.aboutGalleryImages[0]
+const title = entrepreneur.metaTitle || `${entrepreneur.name} — ${config.public.siteName}`
+const description = entrepreneur.metaDesc || entrepreneur.quote || entrepreneur.title || config.public.siteDescription
+const profileImage = entrepreneur.socialImage || entrepreneur.aboutGalleryImages[0]
 
 const success = computed(() => route.query.success === '1')
 const errorFlag = computed(() => route.query.error === '1')
 
-useSeoMeta({
-  title,
-  description,
-  ogTitle: title,
-  ogDescription: description,
-  ogType: 'profile',
-  ogImage: profileImage,
-  twitterCard: profileImage ? 'summary_large_image' : 'summary',
-  twitterImage: profileImage,
-})
+const seo = useManagedSeo({ title, description, image: profileImage, type: 'profile' })
 
 useSchemaOrg([
   definePerson({
     name: entrepreneur.name,
     description,
-    image: profileImage,
+    image: seo.imageUrl,
     url: `/entrepreneurs/${entrepreneur.slug}`,
     jobTitle: entrepreneur.title,
   }),

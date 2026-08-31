@@ -10,7 +10,7 @@ import {
 
 const supportedExtensions = new Set(['.avif', '.jpeg', '.jpg', '.png', '.webp'])
 const pendingVariants = new Map<string, Promise<void>>()
-const CACHE_VERSION = 'v1'
+const CACHE_VERSION = 'v2'
 const MAX_PARALLEL_TRANSFORMS = 4
 const MAX_PENDING_QUEUE = 64
 

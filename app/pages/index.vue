@@ -2,6 +2,8 @@
 import type { LandingPageData } from '@features/landing/model/landing.data'
 import { landingPageFallback } from '@features/landing/model/landing.data'
 import LandingPage from '@features/landing/ui/LandingPage.vue'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
+import { usePageSeo } from '@shared/seo/use-page-seo'
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -18,15 +20,13 @@ if (error.value) {
 }
 
 const page = computed(() => data.value ?? landingPageFallback)
-
-useSeoMeta({
+const seo = await usePageSeo('home', {
   title: config.public.siteName,
   description: config.public.siteDescription,
-  ogTitle: config.public.siteName,
-  ogDescription: config.public.siteDescription,
-  ogType: 'website',
-  ogUrl: config.public.siteUrl,
+  image: '',
 })
+
+useManagedSeo(seo.value)
 </script>
 
 <template>

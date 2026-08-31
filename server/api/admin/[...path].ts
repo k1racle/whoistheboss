@@ -11,6 +11,7 @@ import {
   handleComments,
   handleSettings,
   handleShootingRequests,
+  handleTrademarkRequests,
   handleSubscribers,
   handleUsers,
 } from '@server/utils/admin-operations-handlers'
@@ -61,6 +62,9 @@ export default defineEventHandler(async (event) => {
         break
       case 'shooting-requests':
         result = await handleShootingRequests(event, path)
+        break
+      case 'trademark-requests':
+        result = await handleTrademarkRequests(event, path)
         break
       case 'subscribers':
         result = await handleSubscribers(event, path)

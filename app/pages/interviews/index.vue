@@ -3,6 +3,8 @@ import type { InterviewListItem } from '@features/interviews/model/interview.typ
 import InterviewsPage from '@features/interviews/ui/InterviewsPage.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
+import { usePageSeo } from '@shared/seo/use-page-seo'
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -19,12 +21,13 @@ if (error.value) {
 }
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
-useSeoMeta({
+const seo = await usePageSeo('interviews', {
   title: `Интервью — ${config.public.siteName}`,
-  description: 'Интервью с основателями бизнеса. Видео, рилсы и истории решений.',
-  ogTitle: `Интервью — ${config.public.siteName}`,
-  ogDescription: 'Интервью с основателями бизнеса. Видео, рилсы и истории решений.',
+  description: 'Видеоинтервью с предпринимателями и основателями бизнеса о решениях, трудностях, командах и развитии проектов.',
+  image: '',
 })
+
+useManagedSeo(seo.value)
 </script>
 
 <template>
