@@ -34,6 +34,7 @@ model Entrepreneur {
   slug                       String     @unique
   name                       String
   title                      String
+  heroTitle                  String?    @db.Text
   heroLeftTeaser             String?
   heroRightTeaser            String?
   heroBottomRightTeaser      String?

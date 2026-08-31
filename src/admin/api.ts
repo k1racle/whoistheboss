@@ -39,6 +39,7 @@ export interface Entrepreneur {
   slug: string;
   name: string;
   title: string;
+  heroTitle?: string | null;
   heroLeftTeaser?: string | null;
   heroRightTeaser?: string | null;
   heroBottomRightTeaser?: string | null;

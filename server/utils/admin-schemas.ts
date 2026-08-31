@@ -56,6 +56,7 @@ export const entrepreneurSchema = z.object({
   slug: z.string().max(200).optional(),
   name: shortText.min(1),
   title: shortText,
+  heroTitle: nullableText,
   heroLeftTeaser: nullableText,
   heroRightTeaser: nullableText,
   heroBottomRightTeaser: nullableText,

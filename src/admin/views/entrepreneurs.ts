@@ -332,7 +332,8 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
             ${mediaField('Главное фото героя', 'photo', 'photoFile', item.photo, 'Основной портрет для карточки героя и связанных блоков. Рекомендуется вертикальное изображение.')}
           `, true)}
 
-          ${section('editor-hero', '02', 'Херо', 'Первый полноэкранный блок страницы. Имя берётся из раздела «Основное».', `
+          ${section('editor-hero', '02', 'Херо', 'Первый полноэкранный блок страницы. Крупный текст можно задать отдельно или оставить имя из раздела «Основное».', `
+            ${field('Крупный текст херо', 'heroTitle', item.heroTitle, { textarea: true, rows: 3, help: 'Первая строка — до Enter, вторая — после. Если оставить пустым, используется имя и фамилия из раздела «Основное».', wide: true })}
             ${field('Текст слева', 'heroLeftTeaser', item.heroLeftTeaser, { textarea: true, rows: 3, help: 'Небольшая подпись слева от фамилии.' })}
             ${field('Текст справа сверху', 'heroRightTeaser', item.heroRightTeaser, { textarea: true, rows: 3, help: 'Подпись справа от строки «МАРШРУТ ПОСТРОЕН».' })}
             ${field('Текст справа снизу', 'heroBottomRightTeaser', item.heroBottomRightTeaser, { textarea: true, rows: 3, help: 'Дополнительная подпись в правой нижней части херо.' })}
@@ -786,6 +787,7 @@ function fillForm(item: Entrepreneur) {
   form.querySelector<HTMLInputElement>('input[name="name"]')!.value = item.name;
   form.querySelector<HTMLInputElement>('input[name="slug"]')!.value = item.slug;
   form.querySelector<HTMLInputElement>('input[name="title"]')!.value = item.title;
+  form.querySelector<HTMLTextAreaElement>('textarea[name="heroTitle"]')!.value = item.heroTitle || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="heroLeftTeaser"]')!.value = item.heroLeftTeaser || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="heroRightTeaser"]')!.value = item.heroRightTeaser || '';
   form.querySelector<HTMLTextAreaElement>('textarea[name="heroBottomRightTeaser"]')!.value = item.heroBottomRightTeaser || '';
@@ -1139,6 +1141,7 @@ async function collectFormData(form: HTMLFormElement, bioHtml: string): Promise<
     name: fd.get('name') as string,
     slug: fd.get('slug') as string,
     title: fd.get('title') as string,
+    heroTitle: (fd.get('heroTitle') as string) || null,
     heroLeftTeaser: (fd.get('heroLeftTeaser') as string) || null,
     heroRightTeaser: (fd.get('heroRightTeaser') as string) || null,
     heroBottomRightTeaser: (fd.get('heroBottomRightTeaser') as string) || null,

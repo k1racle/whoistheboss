@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   normalizeTextLineBreaks,
   protectPrepositions,
+  splitHeroTitle,
   splitPlainTextLines,
 } from '../app/shared/lib/typography'
 
@@ -26,6 +27,23 @@ describe('splitPlainTextLines', () => {
   it('preserves every repeated marker as a separate line', () => {
     expect(splitPlainTextLines('Первый абзац\\n\\n\\nВторой абзац'))
       .toEqual(['Первый абзац', '', '', 'Второй абзац'])
+  })
+})
+
+describe('splitHeroTitle', () => {
+  it('uses an explicit line break in the custom hero title', () => {
+    expect(splitHeroTitle('ПЕРВАЯ СТРОКА\nВТОРАЯ СТРОКА', 'Имя Фамилия'))
+      .toEqual(['ПЕРВАЯ СТРОКА', 'ВТОРАЯ СТРОКА'])
+  })
+
+  it('supports the textual line-break marker from the admin form', () => {
+    expect(splitHeroTitle('ПЕРВАЯ\\nВТОРАЯ', 'Имя Фамилия'))
+      .toEqual(['ПЕРВАЯ', 'ВТОРАЯ'])
+  })
+
+  it('falls back to the entrepreneur name when the custom title is empty', () => {
+    expect(splitHeroTitle(null, 'Имя Фамилия'))
+      .toEqual(['Имя', 'Фамилия'])
   })
 })
 

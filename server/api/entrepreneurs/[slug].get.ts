@@ -5,6 +5,7 @@ import {
 } from '@features/entrepreneurs/model/entrepreneur.types'
 import prisma from '~~/lib/prisma'
 import { parseSectionVisibility } from '@shared/lib/section-config'
+import { splitHeroTitle } from '@shared/lib/typography'
 import { ROUTES } from '@shared/navigation'
 import {
   normalizeEntrepreneurSectionOrder,
@@ -121,7 +122,7 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     getSiteSettings(ENTREPRENEUR_DETAIL_SETTINGS_KEYS),
   ])
 
-  const heroNameParts = entrepreneur.name.split(/\s+/).filter(Boolean)
+  const [heroTitleTop, heroTitleBottom] = splitHeroTitle(entrepreneur.heroTitle, entrepreneur.name)
   const aboutGalleryImages = Array.from(new Set([
     entrepreneur.photo,
     ...parseGallery(entrepreneur.aboutGalleryPhotos || entrepreneur.galleryPhotos),
@@ -172,8 +173,8 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     name: entrepreneur.name,
     title: entrepreneur.title,
     quote: entrepreneur.quote,
-    heroLastName: heroNameParts[0] || entrepreneur.name,
-    heroFirstName: heroNameParts.slice(1).join(' ') || entrepreneur.name,
+    heroLastName: heroTitleTop,
+    heroFirstName: heroTitleBottom,
     heroLeftTeaser: entrepreneur.heroLeftTeaser || entrepreneur.title || '',
     heroRightTeaser: entrepreneur.heroRightTeaser || entrepreneur.quote || entrepreneur.title || '',
     heroBottomRightTeaser: entrepreneur.heroBottomRightTeaser || entrepreneur.title || '',

@@ -19,6 +19,22 @@ export function splitPlainTextLines(text: string): string[] {
   return normalizeTextLineBreaks(text).split('\n')
 }
 
+export function splitHeroTitle(title: string | null | undefined, fallback: string): [string, string] {
+  const customTitle = normalizeTextLineBreaks(title || '').trim()
+  const source = customTitle || fallback.trim()
+  const explicitLines = source
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+
+  if (explicitLines.length > 1) {
+    return [explicitLines[0] || '', explicitLines.slice(1).join(' ')]
+  }
+
+  const words = source.split(/\s+/).filter(Boolean)
+  return [words[0] || fallback, words.slice(1).join(' ')]
+}
+
 export function protectPrepositions(text: string): string {
   let result = normalizeTextLineBreaks(text)
 

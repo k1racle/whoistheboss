@@ -14,7 +14,9 @@ const heroSubtitle = computed(() =>
   || props.entrepreneur.quote
   || '',
 )
-const displayNameSize = computed(() => getDisplayNameSize(props.entrepreneur.name))
+const displayNameSize = computed(() => getDisplayNameSize(
+  `${props.entrepreneur.heroLastName} ${props.entrepreneur.heroFirstName}`,
+))
 </script>
 
 <template>
@@ -75,7 +77,7 @@ const displayNameSize = computed(() => getDisplayNameSize(props.entrepreneur.nam
           <h1 class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
             {{ entrepreneur.heroLastName }}
           </h1>
-          <h1 class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
+          <h1 v-if="entrepreneur.heroFirstName" class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
             {{ entrepreneur.heroFirstName }}
           </h1>
         </div>
