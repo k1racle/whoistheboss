@@ -11,7 +11,7 @@ const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avi
 const videoExtensions = new Set(['.mp4', '.webm', '.mov', '.m4v'])
 const optimizableImageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif'])
 const MAX_IMAGE_DIMENSION = 2560
-const WEBP_QUALITY = 78
+const WEBP_QUALITY = 90
 
 async function optimizeImageUpload(
   data: Buffer,

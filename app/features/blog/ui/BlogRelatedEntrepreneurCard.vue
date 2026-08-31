@@ -18,16 +18,6 @@ function loadHoverImage() {
   if (hasDistinctHoverImage.value) shouldLoadHover.value = true
 }
 
-let hoverPreloadTimer: ReturnType<typeof setTimeout> | undefined
-
-onMounted(() => {
-  hoverPreloadTimer = setTimeout(loadHoverImage, 400)
-})
-
-onBeforeUnmount(() => {
-  if (hoverPreloadTimer) clearTimeout(hoverPreloadTimer)
-})
-
 function hideBrokenHoverImage() {
   hoverImageFailed.value = true
 }

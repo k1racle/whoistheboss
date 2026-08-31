@@ -12,13 +12,6 @@ const props = defineProps<{
   imageAlt: string
 }>()
 
-const image = useImage()
-const backgroundImageUrl = computed(() => props.backgroundImage
-  ? image(props.backgroundImage, { width: 1920, quality: 76, format: 'webp' })
-  : '')
-const backdropStyle = computed(() => backgroundImageUrl.value
-  ? { backgroundImage: `url('${backgroundImageUrl.value}')` }
-  : undefined)
 const protectedTitle = computed(() => protectPrepositions(props.title))
 const protectedTextOne = computed(() => protectPrepositions(props.textOne))
 const protectedTextTwo = computed(() => protectPrepositions(props.textTwo))
@@ -29,8 +22,17 @@ const protectedTextThree = computed(() => protectPrepositions(props.textThree))
   <section id="interview" class="min-h-svh bg-bg pt-36 lg:pt-[160px]">
     <div
       class="relative mb-36 h-[628px] bg-border-strong bg-cover bg-center lg:mb-[170px]"
-      :style="backdropStyle"
     >
+      <NuxtImg
+        v-if="backgroundImage"
+        :src="backgroundImage"
+        alt=""
+        sizes="320:100vw 768:100vw lg:100vw 2000:1920px 3000:2560px 4000:3840px"
+        format="webp"
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
       <div class="absolute left-1/2 top-1/2 aspect-square w-[min(72vw,420px)] -translate-x-1/2 overflow-hidden bg-text-muted lg:w-[min(420px,28vw)]">
         <NuxtImg
           v-if="squareImage"

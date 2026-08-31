@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { DEFAULT_IMAGE_QUALITY, isOptimizableUploadImage } from '@shared/image/image-variants'
 import BannerSkeleton from '@shared/ui/skeleton/BannerSkeleton.vue'
+
+const DESKTOP_IMAGE_WIDTHS = [640, 960, 1280, 1600, 1920, 2560, 3200, 3840] as const
+const MOBILE_IMAGE_WIDTHS = [480, 640, 768, 960, 1280, 1600] as const
 
 const props = withDefaults(defineProps<{
   desktopImage?: string
@@ -14,17 +18,25 @@ const props = withDefaults(defineProps<{
 const imageSource = computed(() => props.desktopImage || props.mobileImage)
 const isImageLoaded = shallowRef(false)
 const image = useImage()
-const desktopImageSrc = computed(() => imageSource.value
-  ? image(imageSource.value, { width: 1920, quality: 76, format: 'webp' })
-  : '')
-const mobileImageSrcset = computed(() => {
-  if (!props.mobileImage) return undefined
 
-  return [
-    `${image(props.mobileImage, { width: 768, quality: 78, format: 'webp' })} 768w`,
-    `${image(props.mobileImage, { width: 1536, quality: 78, format: 'webp' })} 1536w`,
-  ].join(', ')
-})
+function imageUrl(src: string, width: number) {
+  return image(src, { width, quality: DEFAULT_IMAGE_QUALITY, format: 'webp' })
+}
+
+function imageSrcset(src: string, widths: readonly number[]) {
+  if (!src) return undefined
+  if (!isOptimizableUploadImage(src)) return src
+
+  return widths
+    .map(width => `${imageUrl(src, width)} ${width}w`)
+    .join(', ')
+}
+
+const desktopImageSrc = computed(() => imageSource.value
+  ? imageUrl(imageSource.value, 1920)
+  : '')
+const desktopImageSrcset = computed(() => imageSrcset(imageSource.value, DESKTOP_IMAGE_WIDTHS))
+const mobileImageSrcset = computed(() => imageSrcset(props.mobileImage, MOBILE_IMAGE_WIDTHS))
 
 watch(
   [() => props.desktopImage, () => props.mobileImage],
@@ -59,17 +71,17 @@ watch(
             :srcset="mobileImageSrcset"
             sizes="100vw"
           >
-          <NuxtImg
+          <img
             :src="desktopImageSrc || imageSource"
+            :srcset="desktopImageSrcset"
+            sizes="100vw"
             alt=""
-            sizes="320:100vw 768:100vw lg:100vw 2000:1920px"
-            format="webp"
             loading="lazy"
             decoding="async"
             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
             @load="isImageLoaded = true"
             @error="isImageLoaded = false"
-          />
+          >
         </picture>
       </NuxtLink>
     </div>

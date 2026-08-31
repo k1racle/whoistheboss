@@ -17,16 +17,6 @@ function loadHoverImage() {
   if (hasDistinctHoverImage.value) shouldLoadHover.value = true
 }
 
-let hoverPreloadTimer: ReturnType<typeof setTimeout> | undefined
-
-onMounted(() => {
-  hoverPreloadTimer = setTimeout(loadHoverImage, 400)
-})
-
-onBeforeUnmount(() => {
-  if (hoverPreloadTimer) clearTimeout(hoverPreloadTimer)
-})
-
 const useImageFallback = (event: string | Event) => {
   if (!(event instanceof Event)) return
 
