@@ -94,14 +94,14 @@ const ruleToneClass = {
             </ButtonLink>
           </div>
           <p aria-hidden="true" class="font-sans text-[clamp(2.5rem,5vw,5.25rem)] font-semibold leading-none tracking-[-0.04em] text-accent">
-            1177775
+            № 1177775
           </p>
         </div>
       </div>
     </section>
 
     <nav class="sticky top-[64px] z-30 overflow-x-auto border-b border-border bg-bg/95 px-4 backdrop-blur sm:px-6 lg:top-[72px] lg:px-10" aria-label="Разделы страницы">
-      <div class="mx-auto flex w-max min-w-full max-w-[1920px] gap-8 py-4 font-sans text-xs uppercase leading-4 sm:text-sm">
+      <div class="mx-auto flex w-max min-w-full justify-center gap-8 py-4 font-sans text-xs uppercase leading-4 sm:text-sm">
         <a href="#passport" class="hover:text-accent">Паспорт</a>
         <a href="#protection" class="hover:text-accent">Объём охраны</a>
         <a href="#rules" class="hover:text-accent">Правила</a>
@@ -199,7 +199,7 @@ const ruleToneClass = {
       </div>
     </section>
 
-    <section id="licensing" class="scroll-mt-32 bg-text px-4 py-12 text-surface sm:px-6 sm:py-16 lg:px-10 lg:py-20">
+    <section id="licensing" class="scroll-mt-32 border-y border-border bg-surface px-4 py-12 text-text sm:px-6 sm:py-16 lg:px-10 lg:py-20">
       <div class="mx-auto w-full max-w-[1440px]">
         <div class="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
@@ -209,16 +209,16 @@ const ruleToneClass = {
           <div class="lg:pt-8">
             <p class="max-w-[52rem] whitespace-pre-line font-sans text-base leading-6 sm:text-xl sm:leading-7">{{ page.licensing.intro }}</p>
             <div class="mt-8 flex flex-wrap gap-2">
-              <span v-for="point in page.licensing.points" :key="point" class="border border-surface/30 px-3 py-2 font-sans text-xs uppercase leading-4 sm:text-sm">{{ point }}</span>
+              <span v-for="point in page.licensing.points" :key="point" class="border border-border px-3 py-2 font-sans text-xs uppercase leading-4 sm:text-sm">{{ point }}</span>
             </div>
           </div>
         </div>
         <h3 class="mt-14 font-display text-[clamp(2rem,3.5vw,3.5rem)] font-black uppercase leading-[0.9] tracking-[-0.03em]">{{ page.licensing.processTitle }}</h3>
-        <ol class="mt-8 border-t border-surface/30">
-          <li v-for="step in page.licensing.steps" :key="step.number" class="grid gap-4 border-b border-surface/30 py-6 sm:grid-cols-[5rem_minmax(12rem,0.7fr)_minmax(0,1fr)] sm:gap-8">
+        <ol class="mt-8 border-t border-border">
+          <li v-for="step in page.licensing.steps" :key="step.number" class="grid gap-4 border-b border-border py-6 sm:grid-cols-[5rem_minmax(12rem,0.7fr)_minmax(0,1fr)] sm:gap-8">
             <span class="font-sans text-3xl font-semibold leading-none text-accent">{{ step.number }}</span>
             <strong class="font-display text-2xl font-black uppercase leading-[0.95]">{{ step.title }}</strong>
-            <p class="max-w-[70ch] whitespace-pre-line font-sans text-sm leading-5 text-surface/80 sm:text-base sm:leading-6">{{ step.text }}</p>
+            <p class="max-w-[70ch] whitespace-pre-line font-sans text-sm leading-5 text-text-muted sm:text-base sm:leading-6">{{ step.text }}</p>
           </li>
         </ol>
         <p class="mt-8 max-w-[100ch] whitespace-pre-line border-l-4 border-accent pl-5 font-sans text-sm leading-5 sm:text-base sm:leading-6">{{ page.licensing.disclaimer }}</p>
