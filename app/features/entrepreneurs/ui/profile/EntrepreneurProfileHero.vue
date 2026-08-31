@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { EntrepreneurDetailData } from '@features/entrepreneurs/model/entrepreneur.types'
-import { getDisplayNameSize } from '@shared/lib/typography'
 
 const props = defineProps<{
   entrepreneur: EntrepreneurDetailData
@@ -15,9 +14,6 @@ const heroSubtitle = computed(() =>
   || '',
 )
 const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0, 3))
-const displayNameSize = computed(() => getDisplayNameSize(
-  heroTitleLines.value.join(' '),
-))
 </script>
 
 <template>
@@ -43,13 +39,13 @@ const displayNameSize = computed(() => getDisplayNameSize(
           >
             {{ entrepreneur.heroLeftTeaser || entrepreneur.title }}
           </p>
-          <h1 class="m-0 whitespace-nowrap text-right font-display font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent" :class="displayNameSize">
+          <h1 class="m-0 whitespace-nowrap text-right font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
             {{ heroTitleLines[1] }}
           </h1>
         </div>
 
         <div class="flex w-full items-end justify-between gap-10">
-          <h1 class="m-0 whitespace-nowrap text-left font-display font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent" :class="displayNameSize">
+          <h1 class="m-0 whitespace-nowrap text-left font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
             {{ heroTitleLines[2] }}
           </h1>
           <p
