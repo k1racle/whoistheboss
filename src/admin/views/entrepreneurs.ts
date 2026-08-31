@@ -9,6 +9,7 @@ const entrepreneurSectionOptions = [
   ['hero', 'Херо'],
   ['about', 'Меню и фотослайдер'],
   ['shorts', 'Короткие видео'],
+  ['gallery', 'Галерея'],
   ['more', 'Больше о герое'],
   ['featuredInterview', 'Главное интервью'],
   ['cta', 'Стать участником'],
@@ -294,6 +295,7 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
           <a href="#editor-hero">02. Херо</a>
           <a href="#editor-about">03. Меню и галерея</a>
           <a href="#editor-stories">04. Секции с текстом</a>
+          <a href="#editor-gallery">07. Галерея</a>
           <a href="#editor-more">08. Больше</a>
           <a href="#editor-interview">09. Интервью</a>
           <a href="#editor-extra">10. Дополнительно</a>
@@ -364,6 +366,10 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
             </div>
           `)}
 
+          ${section('editor-gallery', '07', 'Галерея', 'Отдельный блок с горизонтальной прокруткой, такой же как на странице бизнеса.', `
+            ${galleryField('Фотографии галереи', 'galleryPhotos', item.galleryPhotos, 'Добавляйте фотографии в порядке показа на публичной странице предпринимателя.')}
+          `)}
+
           ${section('editor-more', '08', 'Больше о герое', 'Красные карточки ссылок и широкая фотография перед интервью.', `
             ${field('Тексты четырёх карточек', 'moreCardTitles', item.moreCardTitles, { textarea: true, rows: 6, help: 'Ровно четыре строки: одна строка — одна карточка.' })}
             ${field('Ссылки четырёх карточек', 'moreCardLinks', item.moreCardLinks, { textarea: true, rows: 6, help: 'Ровно четыре строки в том же порядке. Допустимы относительные и полные ссылки.' })}
@@ -394,7 +400,6 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
 
           ${section('editor-extra', '10', 'Дополнительно', 'Резервные материалы и расширенное описание.', `
             ${mediaField('Фото при наведении', 'hoverPhoto', 'hoverPhotoFile', item.hoverPhoto, 'Резервное изображение для состояний наведения на карточках героя.')}
-            ${galleryField('Дополнительная галерея', 'galleryPhotos', item.galleryPhotos, 'Общая галерея героя. Используйте её для дополнительных материалов, не входящих в фотослайдер меню.')}
             <div class="editor-field editor-field--wide">
               <label class="editor-field__label">Расширенная биография</label>
               <p class="editor-field__help">Текст для дополнительных материалов и старых шаблонов. Форматирование сохраняется.</p>
@@ -675,6 +680,7 @@ function normalizeEditorSectionOrder(raw: string | null | undefined, stories: En
     ...storyKeys.slice(0, 3),
     'shorts',
     ...storyKeys.slice(3),
+    'gallery',
     'more',
     'featuredInterview',
     'cta',
@@ -701,7 +707,12 @@ function normalizeEditorSectionOrder(raw: string | null | undefined, stories: En
   } catch {
     saved = [];
   }
-  return [...saved, ...defaults.filter(key => !saved.includes(key))];
+  const normalized = [...saved];
+  if (!normalized.includes('gallery')) {
+    const moreIndex = normalized.indexOf('more');
+    if (moreIndex >= 0) normalized.splice(moreIndex, 0, 'gallery');
+  }
+  return [...normalized, ...defaults.filter(key => !normalized.includes(key))];
 }
 
 function renderSectionOrderItems(

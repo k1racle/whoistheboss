@@ -73,6 +73,7 @@ export interface EntrepreneurDetailData {
   aboutIntroDescription: string
   aboutMenuItems: EntrepreneurAboutMenuItem[]
   aboutGalleryImages: string[]
+  galleryImages: string[]
   storySections: AdditionalSectionData[]
   moreItems: EntrepreneurMoreItem[]
   morePhoto: string | null

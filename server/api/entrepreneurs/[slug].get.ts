@@ -132,6 +132,7 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     entrepreneur.photo,
     ...parseGallery(entrepreneur.aboutGalleryPhotos || entrepreneur.galleryPhotos),
   ].filter(Boolean) as string[]))
+  const galleryImages = Array.from(new Set(parseGallery(entrepreneur.galleryPhotos)))
 
   const sectionVisibility = parseSectionVisibility(entrepreneur.sectionVisibility)
   const hasStoredStorySections = Array.isArray(entrepreneur.storySections)
@@ -190,6 +191,7 @@ export default defineEventHandler(async (event): Promise<EntrepreneurDetailData>
     aboutGalleryImages: aboutGalleryImages.length
       ? aboutGalleryImages
       : [entrepreneur.photo || '/images/placeholder.svg'],
+    galleryImages,
     storySections,
     moreItems: parseMoreItems(entrepreneur.moreCardTitles, entrepreneur.moreCardLinks),
     morePhoto: entrepreneur.morePhoto || entrepreneur.photo || aboutGalleryImages[0] || null,

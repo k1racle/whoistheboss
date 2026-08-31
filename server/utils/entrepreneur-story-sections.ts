@@ -5,6 +5,7 @@ const FIXED_SECTION_ORDER = [
   'hero',
   'about',
   'shorts',
+  'gallery',
   'more',
   'featuredInterview',
   'articles',
@@ -179,6 +180,7 @@ export function normalizeEntrepreneurSectionOrder(
     ...storyKeys.slice(0, 3),
     'shorts',
     ...storyKeys.slice(3),
+    'gallery',
     'more',
     'featuredInterview',
     'articles',
@@ -205,5 +207,11 @@ export function normalizeEntrepreneurSectionOrder(
     saved = []
   }
 
-  return [...saved, ...defaults.filter(key => !saved.includes(key))]
+  const normalized = [...saved]
+  if (!normalized.includes('gallery')) {
+    const moreIndex = normalized.indexOf('more')
+    if (moreIndex >= 0) normalized.splice(moreIndex, 0, 'gallery')
+  }
+
+  return [...normalized, ...defaults.filter(key => !normalized.includes(key))]
 }

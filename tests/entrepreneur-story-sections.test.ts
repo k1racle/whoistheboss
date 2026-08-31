@@ -1,6 +1,9 @@
 import type { Entrepreneur } from '@prisma/client'
 import { describe, expect, it } from 'vitest'
-import { normalizeEntrepreneurStorySections } from '../server/utils/entrepreneur-story-sections'
+import {
+  normalizeEntrepreneurSectionOrder,
+  normalizeEntrepreneurStorySections,
+} from '../server/utils/entrepreneur-story-sections'
 
 function entrepreneurWith(storySections: unknown): Entrepreneur {
   return {
@@ -71,5 +74,17 @@ describe('entrepreneur biography titles', () => {
     )
 
     expect(sections.map(section => section.title)).toEqual(['', '', '', ''])
+  })
+})
+
+describe('entrepreneur section order', () => {
+  it('adds the gallery before the more section for previously saved pages', () => {
+    const order = normalizeEntrepreneurSectionOrder(
+      JSON.stringify(['hero', 'about', 'more']),
+      [],
+    )
+
+    expect(order).toContain('gallery')
+    expect(order.indexOf('gallery')).toBeLessThan(order.indexOf('more'))
   })
 })

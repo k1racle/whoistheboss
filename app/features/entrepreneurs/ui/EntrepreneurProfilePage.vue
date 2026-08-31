@@ -6,6 +6,7 @@ import {
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
 import { ROUTES } from '@shared/navigation'
 import AdditionalSection from '@shared/ui/additional-sections/AdditionalSection.vue'
+import ProfileGallerySection from '@shared/ui/gallery/ProfileGallerySection.vue'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import TextMarquee from '@shared/ui/marquee/TextMarquee.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
@@ -71,6 +72,15 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
       v-if="isVisible('shorts')"
       :style="sectionStyle('shorts')"
       :reels="entrepreneur.reels"
+    />
+
+    <ProfileGallerySection
+      v-if="isVisible('gallery') && entrepreneur.galleryImages.length"
+      :style="sectionStyle('gallery')"
+      section-id="entrepreneur-gallery"
+      gallery-aria-label="Галерея предпринимателя"
+      :images="entrepreneur.galleryImages"
+      :image-alt-prefix="entrepreneur.name"
     />
 
     <EntrepreneurMoreSection

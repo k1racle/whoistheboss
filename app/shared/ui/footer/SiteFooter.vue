@@ -29,10 +29,10 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
 <template>
   <footer
     id="contacts"
-    class="bg-surface text-text"
+    class="min-h-[520px] bg-surface text-text"
   >
-    <div class="mx-auto flex w-full max-w-[1920px] flex-col px-4 pb-6 pt-9 sm:px-6 sm:pt-10 lg:px-10 lg:pt-12">
-      <div class="grid grid-cols-2 items-start gap-8 lg:flex lg:justify-between">
+    <div class="mx-auto flex min-h-[520px] w-full max-w-[1920px] flex-col px-4 pb-6 pt-9 sm:px-6 sm:pt-10 lg:px-10 lg:pt-12">
+      <div class="grid grid-cols-2 items-start gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(700px,44%)]">
         <nav
           class="grid justify-items-start gap-4"
           aria-label="Разделы сайта"
@@ -49,7 +49,7 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
 
         <nav
           v-if="socialLinks.length"
-          class="grid content-start justify-items-end gap-4 lg:grid-cols-3 lg:gap-x-[4.75rem]"
+          class="grid content-start justify-items-end gap-4 xl:grid-cols-[1.15fr_1fr_auto] xl:justify-items-start xl:gap-x-6"
           aria-label="Социальные сети"
         >
           <a
@@ -65,7 +65,7 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
         </nav>
       </div>
 
-      <div class="mt-16 flex flex-col gap-10 sm:mt-20 lg:mt-24 lg:flex-row lg:items-end lg:justify-between">
+      <div class="mt-auto grid gap-10 pt-16 sm:pt-20 xl:grid-cols-[minmax(0,1fr)_minmax(700px,44%)] xl:items-end xl:pt-24">
         <div class="flex flex-col items-start gap-4">
           <p class="flex flex-wrap gap-x-[1.65rem] gap-y-1 font-sans text-sm uppercase leading-4 text-text sm:text-base">
             <span
@@ -84,7 +84,7 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
           </ButtonLink>
         </div>
 
-        <div class="flex flex-wrap items-center gap-x-8 gap-y-2 font-sans text-xs uppercase leading-4 text-text-muted sm:text-sm lg:justify-end lg:text-base">
+        <div class="grid gap-x-6 gap-y-2 font-sans text-xs uppercase leading-4 text-text-muted sm:text-sm xl:grid-cols-[1.15fr_1fr_auto] xl:items-end xl:text-base">
           <template
             v-for="item in metaItems"
             :key="`${item.text}-${item.href}`"
@@ -109,6 +109,10 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
           </template>
         </div>
       </div>
+
+      <p class="mt-6 max-w-5xl font-sans text-[10px] leading-3 text-text-muted sm:text-xs sm:leading-4">
+        Instagram, Facebook, WhatsApp принадлежат компании Meta, признанной экстремистской на территории Российской Федерации.
+      </p>
     </div>
   </footer>
 </template>
