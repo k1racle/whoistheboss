@@ -48,14 +48,14 @@ const bannerImageSource = computed(() => props.bannerImage || props.bannerMobile
         </ButtonLink>
       </div>
 
-      <div class="relative aspect-video overflow-hidden border border-border-strong bg-surface lg:w-2/3">
+      <div class="relative overflow-hidden border border-border-strong bg-surface lg:w-2/3">
         <NuxtLink
           v-if="showBanner && bannerImageSource"
           :to="bannerLink"
-          class="group block h-full w-full"
+          class="group block w-full"
           aria-label="Открыть материал баннера"
         >
-          <picture class="block h-full w-full">
+          <picture class="block w-full">
             <source v-if="bannerMobileImage" media="(max-width: 768px)" :srcset="bannerMobileImage">
             <NuxtImg
               :src="bannerImageSource"
@@ -64,7 +64,7 @@ const bannerImageSource = computed(() => props.bannerImage || props.bannerMobile
               format="webp"
               loading="lazy"
               decoding="async"
-              class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+              class="h-auto w-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
             />
           </picture>
         </NuxtLink>
@@ -72,7 +72,7 @@ const bannerImageSource = computed(() => props.bannerImage || props.bannerMobile
           v-else
           role="img"
           aria-label="Баннер пока не добавлен"
-          class="flex h-full w-full animate-pulse items-center justify-center bg-linear-to-br from-surface via-border/45 to-surface px-6"
+          class="flex aspect-video w-full animate-pulse items-center justify-center bg-linear-to-br from-surface via-border/45 to-surface px-6"
         >
           <span class="h-2/3 w-2/3 rounded-sm bg-border-strong/45" aria-hidden="true" />
         </div>
