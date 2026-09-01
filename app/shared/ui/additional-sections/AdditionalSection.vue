@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AdditionalSectionData } from '@shared/types/additional-section'
-import { protectPrepositions } from '@shared/lib/typography'
+import { localizeRussianServiceHeading, protectPrepositions } from '@shared/lib/typography'
 import AdditionalSectionAccent from './AdditionalSectionAccent.vue'
 import AdditionalSectionBiography from './AdditionalSectionBiography.vue'
 import AdditionalSectionPortrait from './AdditionalSectionPortrait.vue'
@@ -25,6 +25,7 @@ const biographyBlocks = computed(() => {
     .filter(Boolean)
     .map(protectPrepositions)
 })
+const sectionTitle = computed(() => protectPrepositions(localizeRussianServiceHeading(props.section.title)))
 </script>
 
 <template>
@@ -32,7 +33,7 @@ const biographyBlocks = computed(() => {
     v-if="section.type === 'BIOGRAPHY'"
     v-bind="attrs"
     :eyebrow="protectPrepositions(section.eyebrow)"
-    :title="protectPrepositions(section.title)"
+    :title="sectionTitle"
     :image="section.image"
     :image-alt="subjectName"
     :blocks="biographyBlocks"
@@ -42,14 +43,14 @@ const biographyBlocks = computed(() => {
   <AdditionalSectionAccent
     v-else-if="section.type === 'ACCENT'"
     v-bind="attrs"
-    :title="protectPrepositions(section.title)"
+    :title="sectionTitle"
     :text-one="protectPrepositions(section.textOne)"
     :text-two="protectPrepositions(section.textTwo)"
   />
   <AdditionalSectionPortrait
     v-else-if="section.type === 'PORTRAIT'"
     v-bind="attrs"
-    :title="protectPrepositions(section.title)"
+    :title="sectionTitle"
     :text="protectPrepositions(section.text)"
     :aside-text="protectPrepositions(section.asideText)"
     :image="section.image"
@@ -60,7 +61,7 @@ const biographyBlocks = computed(() => {
   <AdditionalSectionWide
     v-else
     v-bind="attrs"
-    :title="protectPrepositions(section.title)"
+    :title="sectionTitle"
     :text="protectPrepositions(section.text)"
     :bottom-text="protectPrepositions(section.bottomText)"
     :image="section.image"

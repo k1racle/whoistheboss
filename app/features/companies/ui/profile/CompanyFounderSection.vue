@@ -11,8 +11,8 @@ const props = defineProps<{
 }>()
 
 const nameParts = computed(() => props.ownerName.trim().split(/\s+/).filter(Boolean))
-const lastName = computed(() => nameParts.value[0] || props.ownerName)
-const firstName = computed(() => nameParts.value.slice(1).join(' '))
+const givenName = computed(() => nameParts.value[0] || props.ownerName)
+const familyName = computed(() => nameParts.value.slice(1).join(' '))
 const topText = computed(() => props.ownerHeroRightTeaser || props.ownerQuote || props.ownerTitle)
 const bottomText = computed(() => props.ownerHeroBottomRightTeaser || props.ownerTitle)
 const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
@@ -34,40 +34,29 @@ const displayNameSize = computed(() => getDisplayNameSize(props.ownerName))
         />
       </div>
 
-      <div class="mt-11 hidden lg:block">
-        <div class="flex min-w-0 w-full items-center justify-between gap-[clamp(20px,2vw,40px)]">
-          <p class="m-0 w-[min(500px,27%)] shrink-0 whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text [overflow-wrap:anywhere]">
-            {{ topText }}
-          </p>
-          <h2 class="m-0 ml-auto min-w-0 whitespace-nowrap text-right font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
-            {{ lastName }}
-          </h2>
-        </div>
-
-        <div class="-mt-[clamp(24px,3vw,58px)] flex min-w-0 w-full items-center justify-between gap-[clamp(20px,2vw,40px)]">
-          <h2 class="m-0 min-w-0 whitespace-nowrap font-display font-black uppercase leading-none tracking-[-0.03em] text-accent" :class="displayNameSize">
-            {{ firstName }}
-          </h2>
-          <p class="m-0 ml-auto w-[min(500px,27%)] shrink-0 whitespace-pre-line text-left font-sans text-base font-bold uppercase leading-4 text-text [overflow-wrap:anywhere]">
-            {{ bottomText }}
-          </p>
-        </div>
-      </div>
-
-      <div class="mt-11 flex flex-col lg:hidden">
-        <p class="m-0 mb-4 whitespace-pre-line font-sans text-[13px] font-bold uppercase leading-[14px] text-text">
+      <div class="relative mt-11 flex min-w-0 flex-col">
+        <p class="m-0 mb-4 whitespace-pre-line font-sans text-[13px] font-bold uppercase leading-[14px] text-text lg:absolute lg:left-0 lg:top-[18%] lg:mb-0 lg:w-[min(500px,27%)] lg:text-right lg:text-base lg:leading-4 [overflow-wrap:anywhere]">
           {{ topText }}
         </p>
-        <h2 class="m-0 font-display text-[clamp(72px,20vw,160px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
-          {{ firstName || lastName }}
+        <h2
+          class="company-founder-name m-0 flex min-w-0 flex-col whitespace-nowrap font-display font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent lg:leading-none"
+          :class="displayNameSize"
+        >
+          <span class="order-2 lg:order-1 lg:self-end">{{ givenName }}</span>
+          <span v-if="familyName" class="order-1 lg:order-2 lg:-mt-[clamp(24px,3vw,58px)] lg:self-start">{{ familyName }}</span>
         </h2>
-        <h2 v-if="firstName" class="m-0 font-display text-[clamp(72px,20vw,160px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent">
-          {{ lastName }}
-        </h2>
-        <p class="m-0 mt-4 whitespace-pre-line font-sans text-[13px] font-bold uppercase leading-[14px] text-text">
+        <p class="m-0 mt-4 whitespace-pre-line font-sans text-[13px] font-bold uppercase leading-[14px] text-text lg:absolute lg:bottom-[18%] lg:right-0 lg:mt-0 lg:w-[min(500px,27%)] lg:text-left lg:text-base lg:leading-4 [overflow-wrap:anywhere]">
           {{ bottomText }}
         </p>
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+@media (max-width: 1023px) {
+  .company-founder-name {
+    font-size: clamp(72px, 20vw, 160px);
+  }
+}
+</style>

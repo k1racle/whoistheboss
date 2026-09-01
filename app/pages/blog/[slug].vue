@@ -26,6 +26,24 @@ const title = buildArticleSeoTitle(article)
 const description = buildArticleSeoDescription(article)
 
 const seo = useManagedSeo({ title, description, image: article.coverImage, type: 'article' })
+const siteIdentityId = new URL('/#identity', config.public.siteUrl).href
+const relatedPersonId = article.entrepreneur
+  ? new URL(`/entrepreneurs/${article.entrepreneur.slug}#person`, config.public.siteUrl).href
+  : undefined
+const sitePublisher = defineOrganization({
+  '@id': siteIdentityId,
+  name: SEO_SITE_NAME,
+  url: config.public.siteUrl,
+  logo: '/favicon/web-app-manifest-512x512.png',
+})
+const relatedPersonSchema = article.entrepreneur
+  ? definePerson({
+      '@id': relatedPersonId,
+      name: article.entrepreneur.name,
+      url: `/entrepreneurs/${article.entrepreneur.slug}`,
+      image: article.entrepreneur.photo || undefined,
+    })
+  : undefined
 useSeoMeta({
   articlePublishedTime: article.publishedAt || article.createdAt,
   articleModifiedTime: article.updatedAt,
@@ -39,21 +57,14 @@ useSchemaOrg([
     url: seo.canonicalUrl,
     datePublished: article.publishedAt || article.createdAt,
     dateModified: article.updatedAt,
-    author: article.entrepreneur
-      ? definePerson({
-          name: article.entrepreneur.name,
-          url: `/entrepreneurs/${article.entrepreneur.slug}`,
-          image: article.entrepreneur.photo || undefined,
-        })
-      : defineOrganization({
-          name: SEO_SITE_NAME,
-          url: config.public.siteUrl,
-        }),
-    publisher: defineOrganization({
-      name: SEO_SITE_NAME,
-      url: config.public.siteUrl,
-      logo: '/favicon/web-app-manifest-512x512.png',
-    }),
+    author: sitePublisher,
+    about: article.entrepreneur?.name,
+    publisher: sitePublisher,
+  }),
+  defineWebPage({
+    '@id': `${seo.canonicalUrl}#webpage`,
+    description: seo.description,
+    about: relatedPersonSchema || sitePublisher,
   }),
   defineBreadcrumb({
     itemListElement: [

@@ -2,6 +2,7 @@
 import type { ReelItem } from '@features/reels/model/reel.types'
 import ReelModal from '@features/reels/ui/ReelModal.vue'
 import MediaPlayBadge from '@shared/ui/media/MediaPlayBadge.vue'
+import { ROUTES } from '@shared/navigation'
 
 const props = defineProps<{
   reels: ReelItem[]
@@ -55,12 +56,12 @@ onBeforeUnmount(() => {
       </h1>
 
       <div v-if="reels.length" class="mt-14 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <button
+        <NuxtLink
           v-for="(reel, index) in reels"
           :key="reel.id"
-          type="button"
+          :to="ROUTES.REEL(reel.slug)"
           class="group relative aspect-[9/16] overflow-hidden bg-surface text-left text-text"
-          @click="openReel(reel.slug)"
+          @click.prevent="openReel(reel.slug)"
         >
           <NuxtImg
             :src="reel.coverImage || '/images/placeholder.svg'"
@@ -76,7 +77,7 @@ onBeforeUnmount(() => {
           <span class="absolute inset-x-0 bottom-0 bg-text/80 p-4 font-sans text-base font-bold uppercase leading-5 text-white">
             {{ reel.title }}
           </span>
-        </button>
+        </NuxtLink>
       </div>
 
       <p v-else class="mt-14 font-sans text-sm uppercase tracking-[0.14em] text-text/55">

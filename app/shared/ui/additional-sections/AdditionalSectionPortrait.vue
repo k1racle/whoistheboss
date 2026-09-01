@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import AutoFitText from '@shared/ui/text/AutoFitText.vue'
+import { localizeRussianServiceHeading } from '@shared/lib/typography'
 
 const props = withDefaults(defineProps<{
   title: string
@@ -20,7 +21,8 @@ const props = withDefaults(defineProps<{
   buttonLabel: 'СМОТРЕТЬ ИНТЕРВЬЮ',
 })
 
-const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.trim()).filter(Boolean))
+const localizedTitle = computed(() => localizeRussianServiceHeading(props.title))
+const titleLines = computed(() => localizedTitle.value.split(/\r?\n/).map(line => line.trim()).filter(Boolean))
 </script>
 
 <template>
@@ -29,7 +31,7 @@ const titleLines = computed(() => props.title.split(/\r?\n/).map(line => line.tr
       <div class="flex min-h-full min-w-0 flex-col items-start">
         <AutoFitText
           as="h2"
-          :text="title"
+          :text="localizedTitle"
           class="m-0 w-full max-w-full font-display text-[80px] font-black uppercase leading-[80px] tracking-[-0.03em] text-text max-lg:text-[clamp(43px,10vw,74px)] max-lg:leading-[0.92] lg:text-[clamp(43px,5.3vw,80px)] lg:leading-none"
         >
           <span

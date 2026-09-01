@@ -117,6 +117,8 @@ Portainer должен хранить production-значения в Environment
 | `SITE_NAME` | Содержит название сайта. |
 | `SITE_DESCRIPTION` | Содержит описание сайта. |
 
+`INDEXNOW_KEY` необязателен. Без него отправка IndexNow полностью выключена и сохранение контента работает как прежде. Для включения создайте ключ длиной 8–128 символов из латинских букв, цифр и дефиса и сохраните его только в Environment variables Stack. Приложение публикует проверочный файл `/<INDEXNOW_KEY>.txt` автоматически.
+
 ### Nuxt runtime bridging
 
 Nuxt runtime config переопределяет значения через переменные `NUXT_*`. Отдельный новый session secret не нужен, но compose должен передать существующее значение под Nuxt-именем:
@@ -128,6 +130,7 @@ environment:
   NUXT_PUBLIC_SITE_URL: ${SITE_URL}
   NUXT_PUBLIC_SITE_NAME: ${SITE_NAME}
   NUXT_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION}
+  NUXT_INDEX_NOW_KEY: ${INDEXNOW_KEY}
 ```
 
 Остальные приватные параметры runtime config передаются аналогично: `NUXT_UPLOAD_DIR`,
@@ -148,8 +151,11 @@ Compose также передаёт настройки uploads, SMTP, Telegram �
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`;
 - `FROM_EMAIL` и `ADMIN_EMAIL`;
 - `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID`.
+- `INDEXNOW_KEY` для точечных уведомлений поисковых систем о публикации, изменении и удалении URL.
 
 Текущая Nuxt-версия сохраняет заявку на съёмку в PostgreSQL, но ещё не переносит legacy email- и Telegram-уведомления. Наличие environment variables не означает, что уведомления уже работают.
+
+IndexNow не отправляет sitemap или весь сайт при build. Уведомления запускаются только после CRUD-операций опубликованных предпринимателей, компаний, статей, интервью и рилсов; повтор одной ссылки в течение 10 минут подавляется. Ошибка внешнего IndexNow API записывается в лог и не отменяет сохранение в CMS.
 
 ## Ручной деплой через Portainer
 

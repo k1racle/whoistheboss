@@ -5,6 +5,7 @@ import { buildCompanySeoDescription, buildCompanySeoTitle } from '@shared/seo/co
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const slug = computed(() => String(route.params.slug))
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
@@ -25,30 +26,43 @@ const success = computed(() => route.query.success === '1')
 const errorFlag = computed(() => route.query.error === '1')
 
 const seo = useManagedSeo({ title, description, image: socialImage })
+const companyId = `${seo.canonicalUrl}#organization`
+const founderId = company.owner
+  ? new URL(`/entrepreneurs/${company.owner.slug}#person`, config.public.siteUrl).href
+  : undefined
+const founderSchema = company.owner
+  ? definePerson({
+      '@id': founderId,
+      name: company.owner.name,
+      url: `/entrepreneurs/${company.owner.slug}`,
+      image: company.owner.photo || undefined,
+    })
+  : undefined
+const companySchema = defineOrganization({
+  '@id': companyId,
+  name: company.name,
+  description: seo.description,
+  url: `/companies/${company.slug}`,
+  image: seo.imageUrl,
+  sameAs: company.website ? [company.website] : undefined,
+  address: company.address
+    ? {
+        streetAddress: company.address,
+        addressLocality: company.city || undefined,
+        addressCountry: 'RU',
+      }
+    : undefined,
+  telephone: company.phone || undefined,
+  email: company.email || undefined,
+  founder: founderSchema,
+})
 
 useSchemaOrg([
-  defineOrganization({
-    name: company.name,
+  companySchema,
+  defineWebPage({
+    '@id': `${seo.canonicalUrl}#webpage`,
     description: seo.description,
-    url: `/companies/${company.slug}`,
-    image: seo.imageUrl,
-    sameAs: company.website ? [company.website] : undefined,
-    address: company.address
-      ? {
-          streetAddress: company.address,
-          addressLocality: company.city || undefined,
-          addressCountry: 'RU',
-        }
-      : undefined,
-    telephone: company.phone || undefined,
-    email: company.email || undefined,
-    founder: company.owner
-      ? definePerson({
-          name: company.owner.name,
-          url: `/entrepreneurs/${company.owner.slug}`,
-          image: company.owner.photo || undefined,
-        })
-      : undefined,
+    about: companySchema,
   }),
   defineBreadcrumb({
     itemListElement: [

@@ -5,8 +5,10 @@ import { protectPrepositions } from '@shared/lib/typography'
 const props = withDefaults(defineProps<{
   card: LandingAudienceCard
   variant?: 'light' | 'accent'
+  desktopVariant?: 'light' | 'accent'
 }>(), {
   variant: 'light',
+  desktopVariant: 'light',
 })
 
 const title = computed(() => protectPrepositions(props.card.title))
@@ -16,15 +18,25 @@ const hoverDescription = computed(() => protectPrepositions(props.card.hoverDesc
 const isRevealed = ref(false)
 
 const colorClass = computed(() => {
+  const desktopClass = props.desktopVariant === 'accent'
+    ? isRevealed.value
+      ? 'lg:bg-surface lg:text-text'
+      : 'lg:bg-accent lg:text-text-on-accent lg:hover:bg-surface lg:hover:text-text'
+    : isRevealed.value
+      ? 'lg:bg-accent lg:text-text-on-accent'
+      : 'lg:bg-surface/60 lg:text-text lg:backdrop-blur-[12px] lg:hover:bg-accent lg:hover:text-text-on-accent'
+
   if (props.variant === 'accent') {
-    return isRevealed.value
+    const mobileClass = isRevealed.value
       ? 'bg-surface text-text'
       : 'bg-accent text-text-on-accent hover:bg-surface hover:text-text'
+    return `${mobileClass} ${desktopClass}`
   }
 
-  return isRevealed.value
+  const mobileClass = isRevealed.value
     ? 'bg-accent text-text-on-accent'
     : 'bg-surface/60 text-text hover:bg-accent backdrop-blur-[12px] hover:text-text-on-accent'
+  return `${mobileClass} ${desktopClass}`
 })
 
 const toggleReveal = () => {

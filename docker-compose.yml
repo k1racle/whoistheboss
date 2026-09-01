@@ -44,6 +44,8 @@ services:
       NUXT_PUBLIC_SITE_NAME: ${SITE_NAME:-МАРШРУТ ПОСТРОЕН МЕДИАГИД}
       SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Медиагид о предпринимателях, компаниях, брендах и проектах России.}
       NUXT_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Медиагид о предпринимателях, компаниях, брендах и проектах России.}
+      INDEXNOW_KEY: ${INDEXNOW_KEY:-}
+      NUXT_INDEX_NOW_KEY: ${INDEXNOW_KEY:-}
     volumes:
       - uploads:/app/public/uploads
     depends_on:

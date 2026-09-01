@@ -15,8 +15,6 @@ const props = defineProps<{
   sectionId?: string
 }>()
 
-const titleLines = computed(() => props.title.split('\n'))
-const desktopTitle = computed(() => props.title.replace(/\n/g, ' '))
 const protectedIntro = computed(() => protectPrepositions(props.intro))
 
 const SLOT_POSITIONS = [
@@ -40,8 +38,6 @@ const isDesktop = shallowRef(false)
 const cards = computed<LandingAudienceCard[]>(() =>
   props.cards?.length ? props.cards : [...landingAudienceFallback],
 )
-
-const desktopCards = computed(() => cards.value.slice(0, SLOT_POSITIONS.length))
 
 const isPinned = ref(false)
 const isComplete = ref(false)
@@ -146,8 +142,8 @@ onBeforeUnmount(() => {
     :id="sectionId || 'for-whom'"
     class="relative bg-bg"
   >
-    <div class="mx-auto hidden w-full max-w-[1920px] px-10 lg:block lg:mt-30 lg:mb-1">
-      <p class="mx-auto max-w-[800px] whitespace-pre-line text-center font-sans text-[32px] font-normal uppercase leading-8 tracking-[-2.5px] text-text/78">
+    <div class="mx-auto w-full max-w-[1920px] px-4 pt-14 sm:px-6 lg:mb-1 lg:mt-30 lg:px-10 lg:pt-0">
+      <p class="mx-auto max-w-[800px] whitespace-pre-line text-center font-sans text-base font-normal uppercase leading-6 tracking-normal text-text/78 lg:text-[32px] lg:leading-8 lg:tracking-[-2.5px]">
         {{ protectedIntro }}
       </p>
     </div>
@@ -160,63 +156,30 @@ onBeforeUnmount(() => {
           :class="scenePositionClass"
           :style="sceneStyle"
         >
-        <div class="mx-auto flex w-full max-w-[1920px] justify-center px-4 pt-14 sm:px-6 lg:hidden">
-          <div class="flex w-full justify-center">
-            <p class="mx-auto max-w-[800px] whitespace-pre-line text-center font-sans text-base font-normal uppercase leading-6 tracking-normal text-text/78">
-              {{ protectedIntro }}
-            </p>
-          </div>
-        </div>
-
-        <div class="relative mx-auto w-full max-w-[1920px] px-4 pb-14 sm:px-6 lg:hidden">
-          <div class="pointer-events-none sticky top-0 z-0 flex h-screen h-svh items-center justify-center">
-            <h2 class="mx-auto flex w-fit flex-col items-center text-center font-display text-[clamp(8rem,20vw,24rem)] font-black uppercase leading-none tracking-[-0.03em] text-text">
-              <span
-                v-for="line in titleLines"
-                :key="line"
-              >
-                {{ line }}
-              </span>
+        <div class="relative mx-auto w-full max-w-[1920px] px-4 pb-14 sm:px-6 lg:contents">
+          <div class="pointer-events-none sticky top-0 z-0 flex h-screen h-svh items-center justify-center lg:absolute lg:inset-0 lg:h-auto lg:transition-[opacity,transform] lg:duration-300" :class="isFinal ? 'lg:-translate-y-6 lg:opacity-0' : 'lg:translate-y-0 lg:opacity-100'">
+            <h2 class="mx-auto w-fit whitespace-pre-line text-center font-display text-[clamp(8rem,20vw,24rem)] font-black uppercase leading-none tracking-[-0.03em] text-text lg:whitespace-normal">
+              {{ title }}
             </h2>
           </div>
 
-          <div class="mobile-audience-track relative z-10 flex flex-col gap-5">
+          <div
+            ref="stageRef"
+            class="mobile-audience-track relative z-10 flex flex-col gap-5 will-change-transform transition-opacity duration-200 lg:absolute lg:inset-x-0 lg:top-0 lg:grid lg:h-[150vw] lg:gap-0"
+            :class="isActiveFlow ? 'lg:opacity-100' : 'lg:opacity-0'"
+            :style="stageStyle"
+          >
             <AudienceCard
-              v-for="(card, index) in cards"
+              v-for="(card, index) in cards.slice(0, SLOT_POSITIONS.length)"
               :key="card.id"
               :card="card"
               :variant="index % 2 === 0 ? 'accent' : 'light'"
-              class="aspect-square w-[85%]"
-              :class="index % 2 === 0 ? 'ml-auto' : 'mr-auto'"
+              :desktop-variant="slotVariant(index)"
+              class="aspect-square w-[85%] lg:m-0 lg:h-full lg:w-full"
+              :class="index % 2 === 0 ? 'ml-auto lg:ml-0' : 'mr-auto lg:mr-0'"
+              :style="slotStyle(index)"
             />
           </div>
-        </div>
-
-        <div class="pointer-events-none absolute inset-0 z-0 hidden items-center justify-center lg:flex">
-          <div
-            class="flex flex-col items-center transition-[opacity,transform] duration-300"
-            :class="isFinal ? 'opacity-0 -translate-y-6' : 'opacity-100 translate-y-0'"
-          >
-            <h2 class="font-display text-[clamp(8rem,20vw,24rem)] font-black uppercase leading-none tracking-[-0.03em] text-text">
-              {{ desktopTitle }}
-            </h2>
-          </div>
-        </div>
-
-        <div
-          ref="stageRef"
-          class="absolute inset-x-0 top-0 z-10 hidden h-[150vw] will-change-transform transition-opacity duration-200 lg:grid"
-          :class="isActiveFlow ? 'opacity-100' : 'opacity-0'"
-          :style="stageStyle"
-        >
-          <AudienceCard
-            v-for="(card, index) in desktopCards"
-            :key="card.id"
-            :card="card"
-            :variant="slotVariant(index)"
-            class="h-full w-full"
-            :style="slotStyle(index)"
-          />
         </div>
 
         <div
@@ -250,6 +213,14 @@ onBeforeUnmount(() => {
     margin-top: -100svh;
     padding-bottom: 45svh;
     padding-top: 65svh;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-audience-track {
+    margin-top: 0;
+    padding-bottom: 0;
+    padding-top: 0;
   }
 }
 </style>

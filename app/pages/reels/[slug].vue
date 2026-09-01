@@ -7,6 +7,7 @@ import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 import TrustedRichText from '@shared/ui/page/TrustedRichText.vue'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const slug = String(route.params.slug)
 const city = typeof route.params.city === 'string' ? route.params.city : undefined
 
@@ -26,9 +27,21 @@ const seo = useManagedSeo({
   image: reel.socialImage || reel.coverImage,
   type: 'video.other',
 })
+const relatedPersonId = reel.entrepreneur
+  ? new URL(`/entrepreneurs/${reel.entrepreneur.slug}#person`, config.public.siteUrl).href
+  : undefined
+const relatedPersonSchema = reel.entrepreneur
+  ? definePerson({
+      '@id': relatedPersonId,
+      name: reel.entrepreneur.name,
+      url: `/entrepreneurs/${reel.entrepreneur.slug}`,
+      image: reel.entrepreneur.photo || undefined,
+    })
+  : undefined
 
 useSchemaOrg([
   defineVideo({
+    '@id': `${seo.canonicalUrl}#video`,
     name: reel.title,
     description: seo.description,
     thumbnailUrl: seo.imageUrl,
@@ -36,6 +49,12 @@ useSchemaOrg([
     url: seo.canonicalUrl,
     embedUrl: reel.videoType === 'EMBED' ? reel.videoUrl || undefined : undefined,
     contentUrl: reel.videoType === 'SELF_HOSTED' ? reel.videoFile || undefined : undefined,
+    about: relatedPersonSchema,
+  }),
+  defineWebPage({
+    '@id': `${seo.canonicalUrl}#webpage`,
+    description: seo.description,
+    about: relatedPersonSchema,
   }),
   defineBreadcrumb({
     itemListElement: [

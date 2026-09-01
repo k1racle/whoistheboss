@@ -20,6 +20,7 @@ import {
   normalizeInterviewContent,
   normalizeVideoFields,
 } from '@server/utils/admin-normalizers'
+import { notifyIndexNow } from '@server/utils/index-now'
 
 const entrepreneurSummary = { select: { id: true, name: true } } as const
 const citySummary = { select: { id: true, name: true, slug: true } } as const
@@ -107,7 +108,7 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
       _max: { sortOrder: true },
     })
     setResponseStatus(event, 201)
-    return prisma.entrepreneur.create({
+    const created = await prisma.entrepreneur.create({
       data: {
         ...data,
         slug,
@@ -116,6 +117,8 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
       },
       include: entrepreneurCityInclude,
     })
+    await notifyIndexNow('entrepreneur', null, created)
+    return created
   }
 
   const existing = await prisma.entrepreneur.findUnique({
@@ -128,6 +131,7 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
 
   if (method === 'DELETE') {
     await prisma.entrepreneur.delete({ where: { id: id! } })
+    await notifyIndexNow('entrepreneur', existing, null)
     return { ok: true }
   }
 
@@ -140,7 +144,7 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
       select: { id: true },
     }),
   ))
-  return updateVersionedRecord(expectedUpdatedAt, () => prisma.entrepreneur.update({
+  const updated = await updateVersionedRecord(expectedUpdatedAt, () => prisma.entrepreneur.update({
     where: {
       id: id!,
       ...(expectedUpdatedAt ? { updatedAt: new Date(expectedUpdatedAt) } : {}),
@@ -155,6 +159,8 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
     },
     include: entrepreneurCityInclude,
   }))
+  await notifyIndexNow('entrepreneur', existing, updated)
+  return updated
 }
 
 export async function handleInterviews(event: H3Event, path: readonly string[]) {
@@ -175,10 +181,12 @@ export async function handleInterviews(event: H3Event, path: readonly string[]) 
       await prisma.interview.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
     setResponseStatus(event, 201)
-    return prisma.interview.create({
+    const created = await prisma.interview.create({
       data: { ...data, slug, publishedAt: normalizePublishedAt(publishedAt) },
       include: { entrepreneur: entrepreneurSummary },
     })
+    await notifyIndexNow('interview', null, created)
+    return created
   }
 
   const existing = await prisma.interview.findUnique({ where: { id: id! } })
@@ -188,6 +196,7 @@ export async function handleInterviews(event: H3Event, path: readonly string[]) 
 
   if (method === 'DELETE') {
     await prisma.interview.delete({ where: { id: id! } })
+    await notifyIndexNow('interview', existing, null)
     return { ok: true }
   }
 
@@ -199,11 +208,13 @@ export async function handleInterviews(event: H3Event, path: readonly string[]) 
       select: { id: true },
     }),
   ))
-  return prisma.interview.update({
+  const updated = await prisma.interview.update({
     where: { id: id! },
     data: { ...data, slug, publishedAt: normalizePublishedAt(publishedAt) },
     include: { entrepreneur: entrepreneurSummary },
   })
+  await notifyIndexNow('interview', existing, updated)
+  return updated
 }
 
 export async function handleReels(event: H3Event, path: readonly string[]) {
@@ -223,10 +234,12 @@ export async function handleReels(event: H3Event, path: readonly string[]) {
       await prisma.reel.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
     setResponseStatus(event, 201)
-    return prisma.reel.create({
+    const created = await prisma.reel.create({
       data: { ...data, slug },
       include: { entrepreneur: entrepreneurSummary },
     })
+    await notifyIndexNow('reel', null, created)
+    return created
   }
 
   const existing = await prisma.reel.findUnique({ where: { id: id! } })
@@ -236,6 +249,7 @@ export async function handleReels(event: H3Event, path: readonly string[]) {
 
   if (method === 'DELETE') {
     await prisma.reel.delete({ where: { id: id! } })
+    await notifyIndexNow('reel', existing, null)
     return { ok: true }
   }
 
@@ -246,11 +260,13 @@ export async function handleReels(event: H3Event, path: readonly string[]) {
       select: { id: true },
     }),
   ))
-  return prisma.reel.update({
+  const updated = await prisma.reel.update({
     where: { id: id! },
     data: { ...data, slug },
     include: { entrepreneur: entrepreneurSummary },
   })
+  await notifyIndexNow('reel', existing, updated)
+  return updated
 }
 
 export async function handleArticles(event: H3Event, path: readonly string[]) {
@@ -272,10 +288,12 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
       await prisma.article.findUnique({ where: { slug: candidate }, select: { id: true } }),
     ))
     setResponseStatus(event, 201)
-    return prisma.article.create({
+    const created = await prisma.article.create({
       data: { ...data, slug, publishedAt: normalizePublishedAt(publishedAt) },
       include: { entrepreneur: entrepreneurSummary },
     })
+    await notifyIndexNow('article', null, created)
+    return created
   }
 
   const existing = await prisma.article.findUnique({ where: { id: id! } })
@@ -285,6 +303,7 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
 
   if (method === 'DELETE') {
     await prisma.article.delete({ where: { id: id! } })
+    await notifyIndexNow('article', existing, null)
     return { ok: true }
   }
 
@@ -297,7 +316,7 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
       select: { id: true },
     }),
   ))
-  return updateVersionedRecord(expectedUpdatedAt, () => prisma.article.update({
+  const updated = await updateVersionedRecord(expectedUpdatedAt, () => prisma.article.update({
     where: {
       id: id!,
       ...(expectedUpdatedAt ? { updatedAt: new Date(expectedUpdatedAt) } : {}),
@@ -305,6 +324,8 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
     data: { ...data, slug, publishedAt: normalizePublishedAt(publishedAt) },
     include: { entrepreneur: entrepreneurSummary },
   }))
+  await notifyIndexNow('article', existing, updated)
+  return updated
 }
 
 export async function handleBusinesses(event: H3Event, path: readonly string[]) {
@@ -350,7 +371,10 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
   }
 
   if (id && method === 'DELETE') {
+    const existing = await prisma.business.findUnique({ where: { id } })
+    if (!existing) throwAdminError(404, 'Business not found')
     await prisma.business.delete({ where: { id } })
+    await notifyIndexNow('company', existing, null)
     return { ok: true }
   }
 
@@ -379,16 +403,19 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
       _max: { placesSortOrder: true },
     })
     setResponseStatus(event, 201)
-    return prisma.business.create({
+    const created = await prisma.business.create({
       data: {
         ...normalized,
         placesSortOrder: (lastBusiness._max.placesSortOrder ?? -1) + 1,
       },
       include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
     })
+    await notifyIndexNow('company', null, created)
+    return created
   }
 
-  return updateVersionedRecord(expectedUpdatedAt, () => prisma.business.update({
+  const previous = await prisma.business.findUnique({ where: { id } })
+  const updated = await updateVersionedRecord(expectedUpdatedAt, () => prisma.business.update({
     where: {
       id,
       ...(expectedUpdatedAt ? { updatedAt: new Date(expectedUpdatedAt) } : {}),
@@ -396,4 +423,6 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
     data: normalized,
     include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
   }))
+  await notifyIndexNow('company', previous, updated)
+  return updated
 }

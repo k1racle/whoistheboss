@@ -51,7 +51,7 @@ function render(page: TrademarkPage): string {
         ${['SEO и герой', 'Регистрация', 'Классы МКТУ', 'Правила', 'Лицензирование', 'Качество и нарушения', 'FAQ', 'Контакты'].map((label, index) => `<a href="#tm-${index + 1}">${String(index + 1).padStart(2, '0')}. ${label}</a>`).join('')}
       </aside>
       <div class="entrepreneur-editor__sections">
-        <div class="entrepreneur-editor__actions standalone-editor__actions"><button class="editor-button editor-button--primary" type="submit">Сохранить страницу</button><a class="editor-button" href="/tovarnyy-znak-marshrut-postroen/" target="_blank" rel="noopener">Открыть страницу ↗</a></div>
+        <div class="entrepreneur-editor__actions standalone-editor__actions"><button class="editor-button editor-button--primary" type="submit">Сохранить страницу</button><a class="editor-button" href="/tovarnyy-znak-marshrut-postroen" target="_blank" rel="noopener">Открыть страницу ↗</a></div>
         <div id="tm-1">${section(1, 'SEO и герой', 'Заголовки, описание и кнопки первого экрана.', `
           ${field('SEO-заголовок', 'seoTitle', page.seoTitle)}${field('SEO-описание', 'seoDescription', page.seoDescription, true)}${field('Дата обновления', 'lastUpdated', page.lastUpdated)}
           ${field('Надзаголовок', 'hero.eyebrow', hero.eyebrow || '')}${field('Крупный заголовок', 'hero.title', hero.title || '', true, 'Каждый Enter создаёт новую строку.')}${field('Подзаголовок', 'hero.subtitle', hero.subtitle || '', true)}${field('Вводный текст', 'hero.intro', hero.intro || '', true)}

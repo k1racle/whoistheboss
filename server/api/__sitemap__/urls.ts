@@ -59,7 +59,7 @@ export default defineSitemapEventHandler(async () => {
   ])
 
   return [
-    { loc: '/tovarnyy-znak-marshrut-postroen/' } satisfies SitemapUrlInput,
+    { loc: '/tovarnyy-znak-marshrut-postroen' } satisfies SitemapUrlInput,
     ...entrepreneurs.map(item => ({
       loc: `/entrepreneurs/${item.slug}`,
       lastmod: item.updatedAt,

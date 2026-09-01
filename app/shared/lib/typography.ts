@@ -40,6 +40,25 @@ export function protectPrepositions(text: string): string {
   }
 }
 
+const feminineServiceHeadingSubjects = new Set([
+  'эленика корелова',
+])
+
+export function localizeRussianServiceHeading(text: string): string {
+  const value = normalizeTextLineBreaks(text).trim()
+  const whatMatch = value.match(/^what is\s+(.+?)[?]?$/iu)
+  if (whatMatch?.[1]) return `Что такое ${whatMatch[1].trim()}?`
+
+  const whoMatch = value.match(/^(?:who is|who['’]s(?:\s+the)?)\s+(.+?)[?]?$/iu)
+  if (!whoMatch?.[1]) return value
+
+  const subject = whoMatch[1].trim()
+  const prefix = feminineServiceHeadingSubjects.has(subject.toLocaleLowerCase('ru-RU'))
+    ? 'Кто такая'
+    : 'Кто такой'
+  return `${prefix} ${subject}?`
+}
+
 export type DisplayNameSize =
   | 'display-title-size--xl'
   | 'display-title-size--lg'

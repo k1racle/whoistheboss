@@ -7,6 +7,7 @@ import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const slug = computed(() => String(route.params.slug))
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
@@ -24,9 +25,21 @@ const title = buildInterviewSeoTitle(interview)
 const description = buildInterviewSeoDescription(interview)
 
 const seo = useManagedSeo({ title, description, image: interview.coverImage, type: 'video.other' })
+const relatedPersonId = interview.entrepreneur
+  ? new URL(`/entrepreneurs/${interview.entrepreneur.slug}#person`, config.public.siteUrl).href
+  : undefined
+const relatedPersonSchema = interview.entrepreneur
+  ? definePerson({
+      '@id': relatedPersonId,
+      name: interview.entrepreneur.name,
+      url: `/entrepreneurs/${interview.entrepreneur.slug}`,
+      image: interview.entrepreneur.photo || undefined,
+    })
+  : undefined
 
 useSchemaOrg([
   defineVideo({
+    '@id': `${seo.canonicalUrl}#video`,
     name: interview.title,
     description: seo.description,
     thumbnailUrl: seo.imageUrl,
@@ -34,6 +47,12 @@ useSchemaOrg([
     url: seo.canonicalUrl,
     embedUrl: interview.videoType === 'EMBED' ? interview.videoUrl || undefined : undefined,
     contentUrl: interview.videoType === 'SELF_HOSTED' ? interview.videoFile || interview.videoUrl || undefined : undefined,
+    about: relatedPersonSchema,
+  }),
+  defineWebPage({
+    '@id': `${seo.canonicalUrl}#webpage`,
+    description: seo.description,
+    about: relatedPersonSchema,
   }),
   defineBreadcrumb({
     itemListElement: [

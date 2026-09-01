@@ -6,80 +6,62 @@ const props = defineProps<{
   entrepreneur: EntrepreneurDetailData
 }>()
 
-const heroSubtitle = computed(() =>
-  props.entrepreneur.heroRightTeaser
-  || props.entrepreneur.heroBottomRightTeaser
-  || props.entrepreneur.heroLeftTeaser
-  || props.entrepreneur.title
-  || props.entrepreneur.quote
-  || '',
-)
 const heroTitleLines = computed(() => props.entrepreneur.heroTitleLines.slice(0, 3))
+
+const heroTeasers = computed(() => {
+  const candidates = [
+    {
+      text: props.entrepreneur.heroRightTeaser || props.entrepreneur.quote || props.entrepreneur.title,
+      className: 'lg:right-0 lg:top-[12%]',
+    },
+    {
+      text: props.entrepreneur.heroLeftTeaser || props.entrepreneur.title,
+      className: 'lg:left-0 lg:top-1/2 lg:-translate-y-1/2 lg:text-right',
+    },
+    {
+      text: props.entrepreneur.heroBottomRightTeaser || props.entrepreneur.title,
+      className: 'lg:bottom-[8%] lg:right-0',
+    },
+  ]
+  const seen = new Set<string>()
+  return candidates.filter(({ text }) => {
+    const normalized = text.trim()
+    if (!normalized || seen.has(normalized)) return false
+    seen.add(normalized)
+    return true
+  })
+})
+
+const titleLineClass = (index: number) => {
+  if (index === 1) return 'lg:justify-self-end lg:text-right'
+  return 'lg:justify-self-start lg:text-left'
+}
 </script>
 
 <template>
   <section id="top" class="relative min-h-[calc(100svh-142px)] overflow-hidden bg-bg">
-    <h1 class="sr-only">{{ entrepreneur.name }}</h1>
-    <div class="mx-auto hidden min-h-[calc(100svh-142px)] w-[min(calc(100%_-_80px),1920px)] items-end lg:flex">
-      <div class="flex w-full flex-col gap-[clamp(1rem,1.5vw,2rem)]">
-        <div class="flex w-full items-end justify-between gap-10">
-          <span class="whitespace-nowrap font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
-            {{ heroTitleLines[0] }}
-          </span>
-          <p
-            v-if="entrepreneur.heroRightTeaser || entrepreneur.quote"
-            class="w-[min(500px,32vw)] max-w-[500px] self-center whitespace-pre-line font-sans text-base font-bold uppercase leading-4 text-text"
-          >
-            {{ entrepreneur.heroRightTeaser || entrepreneur.quote }}
-          </p>
-        </div>
-
-        <div class="flex w-full items-end justify-between gap-10">
-          <p
-            v-if="entrepreneur.heroLeftTeaser || entrepreneur.title"
-            class="w-[min(500px,32vw)] max-w-[500px] self-center whitespace-pre-line text-right font-sans text-base font-bold uppercase leading-4 text-text"
-          >
-            {{ entrepreneur.heroLeftTeaser || entrepreneur.title }}
-          </p>
-          <span class="m-0 whitespace-nowrap text-right font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
-            {{ heroTitleLines[1] }}
-          </span>
-        </div>
-
-        <div class="flex w-full items-end justify-between gap-10">
-          <span class="m-0 whitespace-nowrap text-left font-display text-[clamp(120px,16.6667vw,320px)] font-black uppercase leading-[0.78] tracking-[-0.03em] text-accent">
-            {{ heroTitleLines[2] }}
-          </span>
-          <p
-            v-if="entrepreneur.heroBottomRightTeaser || entrepreneur.title"
-            class="w-[min(500px,32vw)] max-w-[500px] self-center whitespace-pre-line font-sans text-base font-bold uppercase leading-4 text-text"
-          >
-            {{ entrepreneur.heroBottomRightTeaser || entrepreneur.title }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="mx-auto flex min-h-[calc(100svh-142px)] w-[calc(100%_-_40px)] items-end pb-6 pt-[84px] lg:hidden">
+    <div class="relative mx-auto flex min-h-[calc(100svh-142px)] w-[calc(100%_-_40px)] items-end pb-6 pt-[84px] lg:w-[min(calc(100%_-_80px),1920px)] lg:pb-0 lg:pt-0">
       <div class="flex w-full flex-col items-start gap-5">
         <p
-          v-if="heroSubtitle"
-          class="m-0 w-full whitespace-pre-line font-sans text-[13px] font-bold uppercase leading-[14px] text-text"
+          v-for="(teaser, index) in heroTeasers"
+          :key="teaser.text"
+          class="m-0 w-full whitespace-pre-line font-sans text-[13px] font-bold uppercase leading-[14px] text-text lg:absolute lg:z-10 lg:w-[min(500px,32vw)] lg:max-w-[500px] lg:text-base lg:leading-4"
+          :class="[teaser.className, { 'hidden lg:block': index > 0 }]"
         >
-          {{ heroSubtitle }}
+          {{ teaser.text }}
         </p>
 
-        <div class="flex w-full flex-col">
+        <h1 class="m-0 grid w-full grid-cols-1 gap-0 lg:grid-rows-3 lg:gap-[clamp(1rem,1.5vw,2rem)]">
           <AutoFitText
             v-for="(line, index) in heroTitleLines"
             :key="`${index}-${line}`"
             as="span"
             :text="line"
-            class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent"
+            class="m-0 whitespace-nowrap font-display text-[clamp(62px,18vw,106px)] font-black uppercase leading-[0.88] tracking-[-0.03em] text-accent lg:text-[clamp(120px,16.6667vw,320px)] lg:leading-[0.78]"
+            :class="titleLineClass(index)"
           />
-        </div>
+        </h1>
       </div>
     </div>
-
   </section>
 </template>

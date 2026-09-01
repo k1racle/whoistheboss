@@ -25,14 +25,22 @@ const success = computed(() => route.query.success === '1')
 const errorFlag = computed(() => route.query.error === '1')
 
 const seo = useManagedSeo({ title, description, image: profileImage, type: 'profile' })
+const personId = `${seo.canonicalUrl}#person`
+const personSchema = definePerson({
+  '@id': personId,
+  name: entrepreneur.name,
+  description: seo.description,
+  image: seo.imageUrl,
+  url: `/entrepreneurs/${entrepreneur.slug}`,
+  jobTitle: entrepreneur.title,
+})
 
 useSchemaOrg([
-  definePerson({
-    name: entrepreneur.name,
+  personSchema,
+  defineWebPage({
+    '@id': `${seo.canonicalUrl}#webpage`,
     description: seo.description,
-    image: seo.imageUrl,
-    url: `/entrepreneurs/${entrepreneur.slug}`,
-    jobTitle: entrepreneur.title,
+    about: personSchema,
   }),
   defineBreadcrumb({
     itemListElement: [
