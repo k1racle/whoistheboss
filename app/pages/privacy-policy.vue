@@ -1,16 +1,15 @@
 <script setup lang="ts">
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
+
 interface PrivacyPolicyResponse {
   text: string
 }
 
-const config = useRuntimeConfig()
 const { data } = await useAsyncData('privacy-policy', () => $fetch<PrivacyPolicyResponse>('/api/privacy-policy'))
 
-useSeoMeta({
-  title: `Политика конфиденциальности — ${config.public.siteName}`,
-  description: 'Политика конфиденциальности проекта «Маршрут построен».',
-  ogTitle: `Политика конфиденциальности — ${config.public.siteName}`,
-  ogDescription: 'Политика конфиденциальности проекта «Маршрут построен».',
+useManagedSeo({
+  title: 'Политика конфиденциальности',
+  description: 'Политика конфиденциальности проекта «МАРШРУТ ПОСТРОЕН МЕДИАГИД».',
 })
 </script>
 

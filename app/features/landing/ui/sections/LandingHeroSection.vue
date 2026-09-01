@@ -38,7 +38,7 @@ const titleLines = computed(() => protectedTitle.value.split('\n'))
           <NuxtLink
             v-if="trademarkText"
             :to="ROUTES.TRADEMARK"
-            class="-mt-2 mb-4 whitespace-pre-line font-sans text-base uppercase leading-[18px] text-text transition-colors hover:text-accent sm:-mt-3 sm:mb-6"
+            class="-mt-2 mb-4 whitespace-pre-line font-sans text-sm uppercase leading-4 text-text transition-colors hover:text-accent sm:-mt-3 sm:mb-6 sm:text-base sm:leading-[18px]"
           >
             {{ trademarkText }}
           </NuxtLink>

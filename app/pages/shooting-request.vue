@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ShootingPageData } from '@features/shooting-request/model/shooting-page.types'
 import ShootingRequestPage from '@features/shooting-request/ui/ShootingRequestPage.vue'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const config = useRuntimeConfig()
@@ -35,11 +36,9 @@ if (error.value) {
 
 const page = computed(() => data.value ?? fallbackPage)
 const { banner } = useSiteBanner()
-useSeoMeta({
-  title: `${page.value.seoTitle} — ${config.public.siteName}`,
+useManagedSeo({
+  title: page.value.seoTitle,
   description: page.value.seoDescription || config.public.siteDescription,
-  ogTitle: `${page.value.seoTitle} — ${config.public.siteName}`,
-  ogDescription: page.value.seoDescription || config.public.siteDescription,
 })
 </script>
 

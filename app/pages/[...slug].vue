@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ROUTES } from '@shared/navigation'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const config = useRuntimeConfig()
 const event = useRequestEvent()
@@ -8,11 +9,9 @@ if (event) {
   setResponseStatus(event, 404)
 }
 
-useSeoMeta({
-  title: `404 — ${config.public.siteName}`,
+useManagedSeo({
+  title: '404',
   description: config.public.siteDescription,
-  ogTitle: `404 — ${config.public.siteName}`,
-  ogDescription: config.public.siteDescription,
 })
 
 useRobotsRule('noindex, nofollow')

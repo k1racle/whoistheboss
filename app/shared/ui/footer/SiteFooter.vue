@@ -15,7 +15,7 @@ withDefaults(defineProps<{
     { text: 'Пошта Почта', href: '' },
     { text: 'Политика конф-ти', href: '/privacy-policy' },
   ],
-  trademarkLegalText: '',
+  trademarkLegalText: '«МАРШРУТ ПОСТРОЕН»® — зарегистрированный товарный знак. Свидетельство РФ № 1177775.',
 })
 
 const pageLinks = [

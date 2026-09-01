@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AuthCard from '@features/auth/ui/AuthCard.vue'
 import { ROUTES } from '@shared/navigation'
+import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -8,11 +9,9 @@ const config = useRuntimeConfig()
 const hasError = computed(() => route.query.error === '1')
 const returnTo = computed(() => typeof route.query.returnTo === 'string' ? route.query.returnTo : '')
 
-useSeoMeta({
-  title: `Вход — ${config.public.siteName}`,
+useManagedSeo({
+  title: 'Вход',
   description: config.public.siteDescription,
-  ogTitle: `Вход — ${config.public.siteName}`,
-  ogDescription: config.public.siteDescription,
 })
 
 useRobotsRule('noindex, nofollow')

@@ -1,4 +1,7 @@
-import { DEFAULT_TRADEMARK_PAGE } from '@features/trademark/model/trademark-page.defaults'
+import {
+  DEFAULT_TRADEMARK_PAGE,
+  TRADEMARK_FOOTER_LEGAL_TEXT,
+} from '@features/trademark/model/trademark-page.defaults'
 import type {
   TrademarkFaqItem,
   TrademarkMktuClass,
@@ -13,6 +16,7 @@ type UnknownRecord = Record<string, unknown>
 const PUBLIC_RULE_ORDER = ['license', 'no-consent', 'approval', 'prohibited']
 
 const LEGACY_TRADEMARK_HERO_TITLE = 'ТОВАРНЫЙ ЗНАК\n«МАРШРУТ ПОСТРОЕН»'
+const LEGACY_FOOTER_LEGAL_TEXT = '«МАРШРУТ ПОСТРОЕН»® — зарегистрированный товарный знак ООО «МАРИКО». Свидетельство РФ № 1177775.'
 
 function record(value: unknown): UnknownRecord {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as UnknownRecord : {}
@@ -20,6 +24,13 @@ function record(value: unknown): UnknownRecord {
 
 function text(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback
+}
+
+function footerLegalText(value: unknown): string {
+  const normalized = text(value).trim()
+  return !normalized || normalized === LEGACY_FOOTER_LEGAL_TEXT
+    ? TRADEMARK_FOOTER_LEGAL_TEXT
+    : normalized
 }
 
 function trademarkHeroTitle(value: unknown, fallback: string): string {
@@ -177,6 +188,6 @@ export function normalizeTrademarkPage(value?: string): TrademarkPageData {
       intro: text(application.intro, fallback.application.intro),
       successText: text(application.successText, fallback.application.successText),
     },
-    footerLegalText: text(source.footerLegalText, fallback.footerLegalText),
+    footerLegalText: footerLegalText(source.footerLegalText),
   }
 }

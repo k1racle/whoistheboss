@@ -880,7 +880,7 @@ function attachMediaEditor() {
   const libraryPagination = modal?.querySelector<HTMLElement>('[data-media-library-pagination]');
   const mediaPageSize = 20;
   let selectMedia: ((url: string) => void) | null = null;
-  let currentMediaOffset = 0;
+  const currentMediaOffset = 0;
 
   const renderPreview = (field: HTMLElement, url: string, localUrl?: string) => {
     const preview = field.querySelector<HTMLElement>('[data-media-preview]');
@@ -1027,7 +1027,6 @@ function attachMediaEditor() {
         const uploaded = [];
         for (const file of files) uploaded.push((await api.uploadImage(file)).url);
         writeUrls([...readUrls(), ...uploaded]);
-        mediaPromise = null;
       } catch (error) {
         alert(error instanceof Error ? error.message : 'Не удалось загрузить изображения');
       } finally {

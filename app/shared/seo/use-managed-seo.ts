@@ -1,4 +1,5 @@
 import { isCrawlableSeoImage } from './page-seo'
+import { SEO_SITE_NAME, withSeoSiteName } from './brand'
 
 type OpenGraphType = 'website' | 'article' | 'profile' | 'video.other'
 
@@ -22,22 +23,23 @@ export function useManagedSeo(options: ManagedSeoOptions) {
   const canonicalUrl = new URL(canonicalPath, `${config.public.siteUrl}/`).toString()
   const imagePath = isCrawlableSeoImage(options.image) ? options.image.trim() : DEFAULT_SOCIAL_IMAGE
   const imageUrl = new URL(imagePath, `${config.public.siteUrl}/`).toString()
+  const title = withSeoSiteName(options.title)
 
   useHead({
     link: [{ key: 'canonical', rel: 'canonical', href: canonicalUrl }],
   })
 
   useSeoMeta({
-    title: options.title,
+    title,
     description: options.description,
-    ogTitle: options.title,
+    ogTitle: title,
     ogDescription: options.description,
     ogType: options.type || 'website',
     ogUrl: canonicalUrl,
     ogImage: imageUrl,
-    ogSiteName: config.public.siteName,
+    ogSiteName: SEO_SITE_NAME,
     twitterCard: 'summary_large_image',
-    twitterTitle: options.title,
+    twitterTitle: title,
     twitterDescription: options.description,
     twitterImage: imageUrl,
   })

@@ -1,8 +1,9 @@
 import { resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
+import { normalizeConfiguredSiteName } from './app/shared/seo/brand'
 
 const siteUrl = process.env.SITE_URL ?? 'https://xn----7sbqzieaghadljej2f.xn--p1ai'
-const siteName = process.env.SITE_NAME ?? 'Маршрут Построен'
+const siteName = normalizeConfiguredSiteName(process.env.SITE_NAME)
 const siteDescription = process.env.SITE_DESCRIPTION ?? 'Интервью с основателями бизнеса. Видео, рилсы, фото.'
 const uploadDir = resolve(process.env.UPLOAD_DIR ?? './public/uploads')
 const nitroCacheDir = resolve('./.data/nitro-cache')

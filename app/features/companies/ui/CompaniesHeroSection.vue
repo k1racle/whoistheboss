@@ -1,27 +1,11 @@
 <script setup lang="ts">
-import FullPage from '@shared/ui/page/FullPage.vue'
+import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection.vue'
 
-const props = defineProps<{
+defineProps<{
   title: string
 }>()
-
-const titleLines = computed(() => {
-  const lines = props.title.split(/\r?\n/).map(line => line.trim()).filter(Boolean)
-
-  return {
-    first: lines[0] || 'ГЛАВНЫЕ',
-    second: lines.slice(1).join(' ') || 'КОМПАНИИ',
-  }
-})
 </script>
 
 <template>
-  <FullPage id="top" next-label="Перейти к следующей секции">
-    <div class="mx-auto flex w-full max-w-[1920px] flex-1 items-end px-5 sm:px-6 lg:px-10">
-      <h1 class="flex w-full flex-col gap-1 font-display text-[clamp(80px,20vw,320px)] font-black uppercase leading-[0.9] tracking-normal text-accent">
-        <span class="self-start">{{ titleLines.first }}</span>
-        <span class="self-start text-left">{{ titleLines.second }}</span>
-      </h1>
-    </div>
-  </FullPage>
+  <LandingHeroSection :title="title" />
 </template>
