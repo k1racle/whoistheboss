@@ -53,7 +53,7 @@ export default defineEventHandler(async (event): Promise<LandingPageData> => {
     getSiteSetting(settings, 'HOME_LATEST_NEWS_COUNT'),
   )
   const [entrepreneurs, audienceCards, places, articleRows] = await Promise.all([
-    getPublishedEntrepreneurs(6, citySlug),
+    getPublishedEntrepreneurs(3, citySlug),
     prisma.audienceCard.findMany({
       where: { isPublished: true },
       orderBy: { sortOrder: 'asc' },
