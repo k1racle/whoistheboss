@@ -34,7 +34,7 @@ if (error.value) {
 }
 
 const page = computed(() => data.value ?? fallbackPage)
-const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
+const { banner } = useSiteBanner()
 useSeoMeta({
   title: `${page.value.seoTitle} — ${config.public.siteName}`,
   description: page.value.seoDescription || config.public.siteDescription,
@@ -50,7 +50,7 @@ useSeoMeta({
       :banner-image="banner.image"
       :banner-mobile-image="banner.mobileImage"
       :banner-link="banner.link"
-      :show-banner="isBannerEnabled('/shooting-request')"
+      :show-banner="Boolean(banner.image || banner.mobileImage)"
     />
   </div>
 </template>
