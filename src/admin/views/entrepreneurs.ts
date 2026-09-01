@@ -442,6 +442,7 @@ function renderForm(item: Partial<Entrepreneur>, cities: City[]): string {
           <button type="button" class="media-library__close" data-media-close aria-label="Закрыть">×</button>
         </div>
         <div class="media-library__grid" data-media-library-grid></div>
+        <div class="media-library__pagination" data-media-library-pagination></div>
       </div>
     </div>
   `;
@@ -876,8 +877,10 @@ function attachSectionNavigation() {
 function attachMediaEditor() {
   const modal = document.getElementById('media-library');
   const libraryGrid = modal?.querySelector<HTMLElement>('[data-media-library-grid]');
+  const libraryPagination = modal?.querySelector<HTMLElement>('[data-media-library-pagination]');
+  const mediaPageSize = 20;
   let selectMedia: ((url: string) => void) | null = null;
-  let mediaPromise: ReturnType<typeof api.media.list> | null = null;
+  let currentMediaOffset = 0;
 
   const renderPreview = (field: HTMLElement, url: string, localUrl?: string) => {
     const preview = field.querySelector<HTMLElement>('[data-media-preview]');
@@ -900,8 +903,8 @@ function attachMediaEditor() {
     document.body.classList.add('media-library-open');
     libraryGrid.innerHTML = '<p class="media-library__loading">Загружаем изображения…</p>';
     try {
-      mediaPromise ||= api.media.list();
-      const files = (await mediaPromise).filter((file) => file.type === 'image');
+      const page = await api.media.listPage(currentMediaOffset, mediaPageSize);
+      const files = page.files.filter((file) => file.type === 'image');
       libraryGrid.innerHTML = files.length
         ? files.map((file) => `
             <button type="button" class="media-library__item" data-library-url="${escapeHtml(file.url)}">
@@ -910,6 +913,15 @@ function attachMediaEditor() {
             </button>
           `).join('')
         : '<p class="media-library__loading">Загруженных изображений пока нет.</p>';
+      if (libraryPagination && page.total > mediaPageSize) {
+        const pageNumber = Math.floor(currentMediaOffset / mediaPageSize) + 1;
+        const pagesCount = Math.ceil(page.total / mediaPageSize);
+        libraryPagination.innerHTML = `
+          <button type="button" class="editor-button" data-media-page="previous" ${currentMediaOffset === 0 ? 'disabled' : ''}>Назад</button>
+          <span>${pageNumber} из ${pagesCount}</span>
+          <button type="button" class="editor-button" data-media-page="next" ${currentMediaOffset + mediaPageSize >= page.total ? 'disabled' : ''}>Вперёд</button>
+        `;
+      }
     } catch (error) {
       libraryGrid.innerHTML = `<p class="media-library__loading media-library__loading--error">${escapeHtml(error instanceof Error ? error.message : 'Не удалось открыть библиотеку')}</p>`;
     }

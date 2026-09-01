@@ -291,6 +291,7 @@ function renderForm(
           <button type="button" class="media-library__close" data-media-close aria-label="Закрыть">×</button>
         </div>
         <div class="media-library__grid" data-media-library-grid></div>
+        <div class="media-library__pagination" data-media-library-pagination></div>
       </div>
     </div>
   `;

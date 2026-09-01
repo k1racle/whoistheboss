@@ -264,6 +264,11 @@ export class ApiError extends Error {
   }
 }
 
+export interface MediaPage {
+  files: MediaFile[];
+  total: number;
+}
+
 export interface TrademarkAttachment {
   name: string;
   url: string;
@@ -340,6 +345,8 @@ export const api = {
   uploadDocument: (file: File) => uploadFile('document', file),
   media: {
     list: (): Promise<MediaFile[]> => fetchJson('/admin/upload'),
+    listPage: (offset: number, limit = 20): Promise<MediaPage> =>
+      fetchJson(`/admin/upload?offset=${Math.max(0, offset)}&limit=${Math.min(Math.max(1, limit), 100)}`),
   },
 
   users: {

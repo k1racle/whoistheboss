@@ -70,6 +70,12 @@ function getUploadDirectory(): string {
 export async function handleUploads(event: H3Event, path: readonly string[]) {
   if (path.length === 0) {
     requireAdminMethod(event, ['GET'])
+    const query = getQuery(event)
+    const requestedLimit = typeof query.limit === 'string' ? Number.parseInt(query.limit, 10) : Number.NaN
+    const requestedOffset = typeof query.offset === 'string' ? Number.parseInt(query.offset, 10) : Number.NaN
+    const isPaginated = Number.isFinite(requestedLimit) || Number.isFinite(requestedOffset)
+    const limit = Math.min(Math.max(Number.isFinite(requestedLimit) ? requestedLimit : 20, 1), 100)
+    const offset = Math.max(Number.isFinite(requestedOffset) ? requestedOffset : 0, 0)
     const uploadDir = getUploadDirectory()
     const entries = await fs.readdir(uploadDir, { withFileTypes: true }).catch(() => [])
     const files = await Promise.all(entries
@@ -89,6 +95,12 @@ export async function handleUploads(event: H3Event, path: readonly string[]) {
       }))
 
     files.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    if (isPaginated) {
+      return {
+        files: files.slice(offset, offset + limit),
+        total: files.length,
+      }
+    }
     return files
   }
 
