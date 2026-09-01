@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
 import { protectPrepositions } from '@shared/lib/typography'
-import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 import SectionTitle from '@shared/ui/page/SectionTitle.vue'
 import PlainTextWithBreaks from '@shared/ui/text/PlainTextWithBreaks.vue'
 
@@ -9,14 +8,16 @@ const props = defineProps<{
   title: string
   text: string
   bottomText: string
-  videoType: 'EMBED' | 'SELF_HOSTED'
-  videoUrl: string
-  videoFile: string
+  bannerImage: string
+  bannerMobileImage: string
+  bannerLink: string
+  showBanner: boolean
 }>()
 
 const protectedText = computed(() => protectPrepositions(props.text))
 const protectedTitle = computed(() => protectPrepositions(props.title))
 const protectedBottomText = computed(() => protectPrepositions(props.bottomText))
+const bannerImageSource = computed(() => props.bannerImage || props.bannerMobileImage)
 
 </script>
 
@@ -41,13 +42,35 @@ const protectedBottomText = computed(() => protectPrepositions(props.bottomText)
         </ButtonLink>
       </div>
 
-      <VideoFrame
-        :title="title"
-        :video-type="videoType"
-        :video-url="videoUrl"
-        :video-file="videoFile"
-        aspect-class="aspect-video"
-      />
+      <div class="relative overflow-hidden border border-border-strong bg-surface">
+        <NuxtLink
+          v-if="showBanner && bannerImageSource"
+          :to="bannerLink"
+          class="group block w-full"
+          aria-label="Открыть материал баннера"
+        >
+          <picture class="block w-full">
+            <source v-if="bannerMobileImage" media="(max-width: 768px)" :srcset="bannerMobileImage">
+            <NuxtImg
+              :src="bannerImageSource"
+              alt=""
+              sizes="320:100vw 480:100vw sm:100vw lg:67vw 2000:1220px"
+              format="webp"
+              loading="lazy"
+              decoding="async"
+              class="h-auto w-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+            />
+          </picture>
+        </NuxtLink>
+        <div
+          v-else
+          role="img"
+          aria-label="Баннер пока не добавлен"
+          class="flex aspect-video w-full animate-pulse items-center justify-center bg-linear-to-br from-surface via-border/45 to-surface px-6"
+        >
+          <span class="h-2/3 w-2/3 rounded-sm bg-border-strong/45" aria-hidden="true" />
+        </div>
+      </div>
     </div>
 
     <p class="mx-auto mt-16 w-full max-w-[1920px] whitespace-pre-line font-display text-[clamp(3.5rem,9vw,10rem)] font-black uppercase leading-[0.8] tracking-[-0.04em] text-accent lg:mt-24">

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ShootingPageData } from '@features/shooting-request/model/shooting-page.types'
 import ShootingRequestPage from '@features/shooting-request/ui/ShootingRequestPage.vue'
-import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
 const config = useRuntimeConfig()
@@ -46,12 +45,12 @@ useSeoMeta({
 
 <template>
   <div class="flex flex-col">
-    <ShootingRequestPage :page="page" />
-    <PageBannerSection
-      v-if="isBannerEnabled('/shooting-request')"
-      :desktop-image="banner.image"
-      :mobile-image="banner.mobileImage"
-      :href="banner.link"
+    <ShootingRequestPage
+      :page="page"
+      :banner-image="banner.image"
+      :banner-mobile-image="banner.mobileImage"
+      :banner-link="banner.link"
+      :show-banner="isBannerEnabled('/shooting-request')"
     />
   </div>
 </template>

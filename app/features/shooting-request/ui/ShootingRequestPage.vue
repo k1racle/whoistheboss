@@ -8,6 +8,10 @@ import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection
 
 const props = defineProps<{
   page: ShootingPageData
+  bannerImage: string
+  bannerMobileImage: string
+  bannerLink: string
+  showBanner: boolean
 }>()
 
 const sectionOrder = computed(() => new Map(props.page.sectionOrder.map((key, index) => [key, index])))
@@ -30,9 +34,10 @@ const isVisible = (key: string) => props.page.sectionVisibility[key] !== false
       :title="page.aboutTitle"
       :text="page.aboutText"
       :bottom-text="page.aboutBottomText"
-      :video-type="page.aboutVideoType"
-      :video-url="page.aboutVideoUrl"
-      :video-file="page.aboutVideoFile"
+      :banner-image="bannerImage"
+      :banner-mobile-image="bannerMobileImage"
+      :banner-link="bannerLink"
+      :show-banner="showBanner"
     />
 
     <ShootingStagesSection
