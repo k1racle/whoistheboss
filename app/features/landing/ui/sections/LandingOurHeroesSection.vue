@@ -51,6 +51,12 @@ const protectedDescription = computed(() => protectPrepositions(props.descriptio
           class="w-[70%] max-w-[70%] shrink-0 snap-center overflow-hidden bg-surface md:w-auto md:max-w-none"
         />
       </LandingSlider>
+
+      <div v-if="showMore" class="mt-3 flex justify-end lg:hidden">
+        <ButtonLink :to="ROUTES.ENTREPRENEURS">
+          Еще
+        </ButtonLink>
+      </div>
     </div>
 
     <ButtonLink

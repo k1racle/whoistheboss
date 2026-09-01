@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
         class="sticky top-0 block h-screen h-dvh w-full overflow-hidden bg-bg"
       >
         <div class="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
-          <h2 class="font-display text-[clamp(8rem,20vw,24rem)] font-black uppercase leading-none tracking-[-0.03em] text-text">
+          <h2 class="max-w-[calc(100%_-_2rem)] text-center font-display text-[clamp(3.25rem,18vw,8rem)] font-black uppercase leading-[0.9] tracking-[-0.03em] text-text sm:text-[clamp(4.5rem,18vw,10rem)] lg:max-w-none lg:text-[clamp(8rem,20vw,24rem)] lg:leading-none">
             {{ title }}
           </h2>
         </div>
@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
       </div>
 
       <div v-else class="overflow-x-auto px-4 py-16 sm:px-6 md:px-10 md:py-20">
-        <h2 class="mb-10 text-center font-display text-[clamp(80px,20vw,130px)] font-black uppercase leading-none tracking-[-0.03em] text-text">
+        <h2 class="mb-10 text-center font-display text-[clamp(3.25rem,18vw,8rem)] font-black uppercase leading-[0.9] tracking-[-0.03em] text-text sm:text-[clamp(4.5rem,18vw,10rem)] lg:text-[clamp(80px,20vw,130px)] lg:leading-none">
           {{ title }}
         </h2>
         <div class="flex w-max gap-5 md:gap-7">

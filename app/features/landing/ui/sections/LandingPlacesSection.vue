@@ -54,6 +54,12 @@ const protectedDescription = computed(() => protectPrepositions(props.descriptio
       >
         Места появятся после первой публикации
       </p>
+
+      <div class="mt-3 flex justify-end lg:hidden">
+        <ButtonLink :to="ROUTES.COMPANIES">
+          Еще
+        </ButtonLink>
+      </div>
     </div>
 
     <ButtonLink
