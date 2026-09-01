@@ -66,7 +66,10 @@ function normalizeStoredSection(
         textOne: text(value.textOne),
         textTwo: text(value.textTwo),
         textThree: text(value.textThree),
-        image: nullableText(value.image),
+        // Earlier editor versions exposed the menu image more prominently than
+        // the section image. Keep a selected menu image visible on the public
+        // page until a separate section image is supplied.
+        image: nullableText(value.image) || nullableText(value.menuImage),
       }
     case 'ACCENT':
       return {
@@ -83,7 +86,7 @@ function normalizeStoredSection(
         title: text(value.title),
         text: text(value.text),
         asideText: text(value.asideText),
-        image: nullableText(value.image),
+        image: nullableText(value.image) || nullableText(value.menuImage),
       }
     case 'WIDE':
       return {
@@ -92,7 +95,7 @@ function normalizeStoredSection(
         title: text(value.title),
         text: text(value.text),
         bottomText: text(value.bottomText),
-        image: nullableText(value.image),
+        image: nullableText(value.image) || nullableText(value.menuImage),
       }
     default:
       return null
