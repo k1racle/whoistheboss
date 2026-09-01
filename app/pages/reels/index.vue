@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { ReelItem } from '@features/reels/model/reel.types'
 import ReelsPage from '@features/reels/ui/ReelsPage.vue'
+import { getStaticPageSeo } from '@shared/seo/static-page-seo'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { usePageSeo } from '@shared/seo/use-page-seo'
 
-const config = useRuntimeConfig()
 const route = useRoute()
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
@@ -21,11 +21,7 @@ if (error.value) {
 }
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
-const seo = await usePageSeo('reels', {
-  title: `Рилсы — ${config.public.siteName}`,
-  description: 'Короткие видео с предпринимателями: практический опыт, быстрые ответы и главные мысли героев проекта.',
-  image: '',
-})
+const seo = await usePageSeo('reels', getStaticPageSeo('reels'))
 
 useManagedSeo(seo.value)
 </script>

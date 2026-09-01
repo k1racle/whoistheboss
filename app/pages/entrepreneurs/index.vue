@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { EntrepreneursPageData } from '@features/entrepreneurs/model/entrepreneur.types'
 import EntrepreneursPage from '@features/entrepreneurs/ui/EntrepreneursPage.vue'
+import { getStaticPageSeo } from '@shared/seo/static-page-seo'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { usePageSeo } from '@shared/seo/use-page-seo'
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
 const fallbackPage: EntrepreneursPageData = {
@@ -37,11 +37,7 @@ const page = computed(() => data.value ?? fallbackPage)
 const success = computed(() => route.query.success === '1')
 const error = computed(() => route.query.error === '1')
 
-const seo = await usePageSeo('entrepreneurs', {
-  title: `Предприниматели — ${config.public.siteName}`,
-  description: 'Истории предпринимателей, руководителей и основателей компаний: их путь, решения, проекты и опыт развития бизнеса.',
-  image: '',
-})
+const seo = await usePageSeo('entrepreneurs', getStaticPageSeo('entrepreneurs'))
 
 useManagedSeo(seo.value)
 </script>

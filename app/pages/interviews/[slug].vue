@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { InterviewDetailResponse } from '@features/interviews/model/interview.types'
 import InterviewDetailPage from '@features/interviews/ui/InterviewDetailPage.vue'
+import { buildInterviewSeoDescription, buildInterviewSeoTitle } from '@shared/seo/content'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const slug = computed(() => String(route.params.slug))
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
@@ -20,15 +20,15 @@ if (error.value || !data.value) {
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
 const interview = data.value.interview
-const title = `${interview.metaTitle || interview.title} — ${config.public.siteName}`
-const description = interview.metaDesc || interview.summary || config.public.siteDescription
+const title = buildInterviewSeoTitle(interview)
+const description = buildInterviewSeoDescription(interview)
 
 const seo = useManagedSeo({ title, description, image: interview.coverImage, type: 'video.other' })
 
 useSchemaOrg([
   defineVideo({
     name: interview.title,
-    description,
+    description: seo.description,
     thumbnailUrl: seo.imageUrl,
     uploadDate: interview.publishedAt || interview.updatedAt,
     url: seo.canonicalUrl,

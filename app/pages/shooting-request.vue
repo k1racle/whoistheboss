@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import type { ShootingPageData } from '@features/shooting-request/model/shooting-page.types'
 import ShootingRequestPage from '@features/shooting-request/ui/ShootingRequestPage.vue'
+import { SEO_FALLBACK_DESCRIPTION } from '@shared/seo/brand'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 
-const config = useRuntimeConfig()
-
 const fallbackPage: ShootingPageData = {
   heroTitle: 'КАК ПРИНЯТЬ\nУЧАСТИЕ',
-  seoTitle: 'Стать героем',
-  seoDescription: config.public.siteDescription,
+  seoTitle: 'Стать героем проекта | МАРШРУТ ПОСТРОЕН МЕДИАГИД',
+  seoDescription: 'Как стать героем МАРШРУТ ПОСТРОЕН МЕДИАГИД: этапы участия, съёмка интервью, подготовка биографии, страницы предпринимателя и материалов о бизнесе.',
   aboutTitle: 'О ПРОЕКТЕ',
   aboutText: 'Мы рассказываем личные истории предпринимателей через их дело.',
   aboutBottomText: 'Проект помогает увидеть не только бизнес, но и человека, который его создал.',
@@ -38,7 +37,7 @@ const page = computed(() => data.value ?? fallbackPage)
 const { banner } = useSiteBanner()
 useManagedSeo({
   title: page.value.seoTitle,
-  description: page.value.seoDescription || config.public.siteDescription,
+  description: page.value.seoDescription || SEO_FALLBACK_DESCRIPTION,
 })
 </script>
 

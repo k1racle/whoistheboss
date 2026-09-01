@@ -1,24 +1,67 @@
 export const SEO_SITE_NAME = 'МАРШРУТ ПОСТРОЕН МЕДИАГИД'
 
-const LEGACY_SITE_NAME = 'маршрут построен'
-const SITE_NAME_ONLY_PATTERN = new RegExp(`^«?${LEGACY_SITE_NAME}(?: медиагид)?»?$`, 'iu')
-const SITE_NAME_SUFFIX_PATTERN = new RegExp(`\\s+(?:—|\\||-)\\s*«?${LEGACY_SITE_NAME}(?: медиагид)?»?$`, 'iu')
+export const SEO_FALLBACK_DESCRIPTION = 'Медиагид о предпринимателях, компаниях, брендах и проектах России.'
 
-export function normalizeConfiguredSiteName(siteName?: string | null): string {
-  const normalized = siteName?.trim() || ''
-  return SITE_NAME_ONLY_PATTERN.test(normalized) ? SEO_SITE_NAME : normalized || SEO_SITE_NAME
+export type SeoBrandMode = 'auto' | 'always' | 'never'
+
+const SEO_BRAND_PATTERN = /[«"]?маршрут\s+построен(?:\s+медиагид)?[»"]?/giu
+
+export function normalizeSeoBrand(value: string | null | undefined) {
+  return value
+    ?.replace(SEO_BRAND_PATTERN, SEO_SITE_NAME)
+    .replace(/\s+/g, ' ')
+    .trim() || ''
 }
 
-export function withSeoSiteName(title: string): string {
-  const normalized = title.replace(/\s+/g, ' ').trim()
+function deduplicateTitleSegments(title: string) {
+  const parts = title.split(/(\s*(?:\||—)\s*)/u)
+  const seen = new Set<string>()
+  let result = ''
 
-  if (!normalized || SITE_NAME_ONLY_PATTERN.test(normalized)) {
+  for (let index = 0; index < parts.length; index += 2) {
+    const segment = parts[index]?.trim()
+
+    if (!segment) {
+      continue
+    }
+
+    const key = segment.toLocaleLowerCase('ru-RU')
+
+    if (seen.has(key)) {
+      continue
+    }
+
+    const separator = result ? (parts[index - 1] || ' | ') : ''
+    result += `${separator}${segment}`
+    seen.add(key)
+  }
+
+  return result.trim()
+}
+
+export function normalizeConfiguredSiteName(siteName?: string | null): string {
+  return normalizeSeoBrand(siteName) || SEO_SITE_NAME
+}
+
+export function withSeoSiteName(
+  title: string | null | undefined,
+  mode: SeoBrandMode = 'auto',
+): string {
+  const normalizedTitle = deduplicateTitleSegments(normalizeSeoBrand(title))
+
+  if (!normalizedTitle) {
     return SEO_SITE_NAME
   }
 
-  if (SITE_NAME_SUFFIX_PATTERN.test(normalized)) {
-    return normalized.replace(SITE_NAME_SUFFIX_PATTERN, ` — ${SEO_SITE_NAME}`)
+  if (normalizedTitle.includes(SEO_SITE_NAME) || mode === 'never') {
+    return normalizedTitle
   }
 
-  return `${normalized} — ${SEO_SITE_NAME}`
+  const brandedTitle = `${normalizedTitle} | ${SEO_SITE_NAME}`
+
+  if (mode === 'always' || brandedTitle.length <= 70) {
+    return brandedTitle
+  }
+
+  return normalizedTitle
 }

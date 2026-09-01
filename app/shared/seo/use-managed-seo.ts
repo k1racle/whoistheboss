@@ -1,5 +1,11 @@
 import { isCrawlableSeoImage } from './page-seo'
-import { SEO_SITE_NAME, withSeoSiteName } from './brand'
+import {
+  normalizeSeoBrand,
+  SEO_FALLBACK_DESCRIPTION,
+  SEO_SITE_NAME,
+  withSeoSiteName,
+} from './brand'
+import type { SeoBrandMode } from './brand'
 
 type OpenGraphType = 'website' | 'article' | 'profile' | 'video.other'
 
@@ -8,6 +14,7 @@ interface ManagedSeoOptions {
   description: string
   image?: string | null
   type?: OpenGraphType
+  titleBrandMode?: SeoBrandMode
 }
 
 const DEFAULT_SOCIAL_IMAGE = '/favicon/web-app-manifest-512x512.png'
@@ -23,7 +30,8 @@ export function useManagedSeo(options: ManagedSeoOptions) {
   const canonicalUrl = new URL(canonicalPath, `${config.public.siteUrl}/`).toString()
   const imagePath = isCrawlableSeoImage(options.image) ? options.image.trim() : DEFAULT_SOCIAL_IMAGE
   const imageUrl = new URL(imagePath, `${config.public.siteUrl}/`).toString()
-  const title = withSeoSiteName(options.title)
+  const title = withSeoSiteName(options.title, options.titleBrandMode)
+  const description = normalizeSeoBrand(options.description) || SEO_FALLBACK_DESCRIPTION
 
   useHead({
     link: [{ key: 'canonical', rel: 'canonical', href: canonicalUrl }],
@@ -31,18 +39,18 @@ export function useManagedSeo(options: ManagedSeoOptions) {
 
   useSeoMeta({
     title,
-    description: options.description,
+    description,
     ogTitle: title,
-    ogDescription: options.description,
+    ogDescription: description,
     ogType: options.type || 'website',
     ogUrl: canonicalUrl,
     ogImage: imageUrl,
     ogSiteName: SEO_SITE_NAME,
     twitterCard: 'summary_large_image',
     twitterTitle: title,
-    twitterDescription: options.description,
+    twitterDescription: description,
     twitterImage: imageUrl,
   })
 
-  return { canonicalPath, canonicalUrl, imageUrl }
+  return { canonicalPath, canonicalUrl, imageUrl, title, description }
 }

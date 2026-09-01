@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { InterviewListItem } from '@features/interviews/model/interview.types'
 import InterviewsPage from '@features/interviews/ui/InterviewsPage.vue'
+import { getStaticPageSeo } from '@shared/seo/static-page-seo'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { usePageSeo } from '@shared/seo/use-page-seo'
 
-const config = useRuntimeConfig()
 const route = useRoute()
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
@@ -21,11 +21,7 @@ if (error.value) {
 }
 const { banner, isEnabled: isBannerEnabled } = useSiteBanner()
 
-const seo = await usePageSeo('interviews', {
-  title: `Интервью — ${config.public.siteName}`,
-  description: 'Видеоинтервью с предпринимателями и основателями бизнеса о решениях, трудностях, командах и развитии проектов.',
-  image: '',
-})
+const seo = await usePageSeo('interviews', getStaticPageSeo('interviews'))
 
 useManagedSeo(seo.value)
 </script>

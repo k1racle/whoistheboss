@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { EntrepreneurDetailData } from '@features/entrepreneurs/model/entrepreneur.types'
 import EntrepreneurProfilePage from '@features/entrepreneurs/ui/EntrepreneurProfilePage.vue'
+import { buildEntrepreneurSeoDescription, buildEntrepreneurSeoTitle } from '@shared/seo/content'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const slug = computed(() => String(route.params.slug))
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
@@ -17,8 +17,8 @@ if (error.value || !data.value) {
 }
 
 const entrepreneur = data.value
-const title = entrepreneur.metaTitle || `${entrepreneur.name} — ${config.public.siteName}`
-const description = entrepreneur.metaDesc || entrepreneur.quote || entrepreneur.title || config.public.siteDescription
+const title = buildEntrepreneurSeoTitle(entrepreneur)
+const description = buildEntrepreneurSeoDescription(entrepreneur)
 const profileImage = entrepreneur.socialImage || entrepreneur.aboutGalleryImages[0]
 
 const success = computed(() => route.query.success === '1')
@@ -29,7 +29,7 @@ const seo = useManagedSeo({ title, description, image: profileImage, type: 'prof
 useSchemaOrg([
   definePerson({
     name: entrepreneur.name,
-    description,
+    description: seo.description,
     image: seo.imageUrl,
     url: `/entrepreneurs/${entrepreneur.slug}`,
     jobTitle: entrepreneur.title,

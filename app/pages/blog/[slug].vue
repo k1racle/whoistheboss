@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { BlogArticleDetailResponse } from '@features/blog/model/blog.types'
 import BlogDetailPage from '@features/blog/ui/BlogDetailPage.vue'
+import { SEO_SITE_NAME } from '@shared/seo/brand'
+import { buildArticleSeoDescription, buildArticleSeoTitle } from '@shared/seo/content'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const route = useRoute()
@@ -20,8 +22,8 @@ if (error.value || !data.value) {
 }
 
 const article = data.value.article
-const title = `${article.metaTitle || article.title} — ${config.public.siteName}`
-const description = article.metaDesc || article.subtitle || config.public.siteDescription
+const title = buildArticleSeoTitle(article)
+const description = buildArticleSeoDescription(article)
 
 const seo = useManagedSeo({ title, description, image: article.coverImage, type: 'article' })
 useSeoMeta({
@@ -32,7 +34,7 @@ useSeoMeta({
 useSchemaOrg([
   defineArticle({
     headline: article.title,
-    description,
+    description: seo.description,
     image: seo.imageUrl,
     url: seo.canonicalUrl,
     datePublished: article.publishedAt || article.createdAt,
@@ -44,11 +46,11 @@ useSchemaOrg([
           image: article.entrepreneur.photo || undefined,
         })
       : defineOrganization({
-          name: config.public.siteName,
+          name: SEO_SITE_NAME,
           url: config.public.siteUrl,
         }),
     publisher: defineOrganization({
-      name: config.public.siteName,
+      name: SEO_SITE_NAME,
       url: config.public.siteUrl,
       logo: '/favicon/web-app-manifest-512x512.png',
     }),

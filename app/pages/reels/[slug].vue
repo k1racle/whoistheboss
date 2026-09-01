@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { ReelItem } from '@features/reels/model/reel.types'
 import { ROUTES } from '@shared/navigation'
+import { buildReelSeoDescription, buildReelSeoTitle } from '@shared/seo/content'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 import TrustedRichText from '@shared/ui/page/TrustedRichText.vue'
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const slug = String(route.params.slug)
 const city = typeof route.params.city === 'string' ? route.params.city : undefined
 
@@ -18,13 +18,8 @@ if (error.value || !data.value) {
 }
 
 const reel = data.value
-const plainDescription = (reel.metaDesc || reel.description || '')
-  .replace(/<br\s*\/?>/gi, ' ')
-  .replace(/<[^>]+>/g, ' ')
-  .replace(/\s+/g, ' ')
-  .trim()
-const title = reel.metaTitle || `${reel.title} — ${config.public.siteName}`
-const description = plainDescription || `Короткое видео «${reel.title}» в проекте «${config.public.siteName}».`
+const title = buildReelSeoTitle(reel)
+const description = buildReelSeoDescription(reel)
 const seo = useManagedSeo({
   title,
   description,
@@ -35,7 +30,7 @@ const seo = useManagedSeo({
 useSchemaOrg([
   defineVideo({
     name: reel.title,
-    description,
+    description: seo.description,
     thumbnailUrl: seo.imageUrl,
     uploadDate: reel.createdAt,
     url: seo.canonicalUrl,

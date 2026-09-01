@@ -19,7 +19,7 @@ useManagedSeo({
 defineBreadcrumb({
   itemListElement: [
     { name: 'Главная', item: ROUTES.LANDING },
-    { name: 'Товарный знак «Маршрут Построен»', item: ROUTES.TRADEMARK },
+    { name: 'Товарный знак МАРШРУТ ПОСТРОЕН МЕДИАГИД', item: ROUTES.TRADEMARK },
   ],
 })
 </script>

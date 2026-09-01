@@ -17,6 +17,8 @@ const PUBLIC_RULE_ORDER = ['license', 'no-consent', 'approval', 'prohibited']
 
 const LEGACY_TRADEMARK_HERO_TITLE = 'ТОВАРНЫЙ ЗНАК\n«МАРШРУТ ПОСТРОЕН»'
 const LEGACY_FOOTER_LEGAL_TEXT = '«МАРШРУТ ПОСТРОЕН»® — зарегистрированный товарный знак ООО «МАРИКО». Свидетельство РФ № 1177775.'
+const LEGACY_SEO_TITLE = 'Товарный знак «Маршрут построен» № 1177775 — ООО «МАРИКО»'
+const LEGACY_SEO_DESCRIPTION = 'ООО «МАРИКО» — правообладатель товарного знака «Маршрут построен» № 1177775. Свидетельство, классы МКТУ, правила использования, заявка на лицензию и сообщение о возможном нарушении.'
 
 function record(value: unknown): UnknownRecord {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as UnknownRecord : {}
@@ -36,6 +38,11 @@ function footerLegalText(value: unknown): string {
 function trademarkHeroTitle(value: unknown, fallback: string): string {
   const title = text(value, fallback)
   return title === LEGACY_TRADEMARK_HERO_TITLE ? fallback : title
+}
+
+function trademarkSeoText(value: unknown, legacyValue: string, fallback: string): string {
+  const normalized = text(value).trim()
+  return !normalized || normalized === legacyValue ? fallback : normalized
 }
 
 function textList(value: unknown, fallback: string[] = []): string[] {
@@ -123,8 +130,8 @@ export function normalizeTrademarkPage(value?: string): TrademarkPageData {
   const fallback = DEFAULT_TRADEMARK_PAGE
 
   return {
-    seoTitle: text(source.seoTitle, fallback.seoTitle),
-    seoDescription: text(source.seoDescription, fallback.seoDescription),
+    seoTitle: trademarkSeoText(source.seoTitle, LEGACY_SEO_TITLE, fallback.seoTitle),
+    seoDescription: trademarkSeoText(source.seoDescription, LEGACY_SEO_DESCRIPTION, fallback.seoDescription),
     lastUpdated: text(source.lastUpdated, fallback.lastUpdated),
     hero: {
       eyebrow: text(hero.eyebrow, fallback.hero.eyebrow),

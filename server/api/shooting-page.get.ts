@@ -108,8 +108,12 @@ export default defineEventHandler(async (): Promise<ShootingPageData> => {
   const settings = await getSiteSettings(SHOOTING_PAGE_KEYS)
 
   const heroTitle = getSiteSetting(settings, 'SHOOTING_PAGE_HERO_TITLE', 'КАК ПРИНЯТЬ\nУЧАСТИЕ')
-  const seoTitle = getSiteSetting(settings, 'SHOOTING_PAGE_TITLE', 'Стать героем')
-  const seoDescription = getSiteSetting(settings, 'SHOOTING_PAGE_DESCRIPTION')
+  const seoTitle = getSiteSetting(settings, 'SHOOTING_PAGE_TITLE', 'Стать героем проекта | МАРШРУТ ПОСТРОЕН МЕДИАГИД')
+  const seoDescription = getSiteSetting(
+    settings,
+    'SHOOTING_PAGE_DESCRIPTION',
+    'Как стать героем МАРШРУТ ПОСТРОЕН МЕДИАГИД: этапы участия, съёмка интервью, подготовка биографии, страницы предпринимателя и материалов о бизнесе.',
+  )
   const aboutTitle = getSiteSetting(settings, 'SHOOTING_PAGE_ABOUT_TITLE', 'О ПРОЕКТЕ')
   const aboutText = getSiteSetting(settings, 'SHOOTING_PAGE_ABOUT_TEXT')
   const aboutBottomText = getSiteSetting(settings, 'SHOOTING_PAGE_ABOUT_BOTTOM_TEXT')

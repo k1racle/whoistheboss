@@ -1,10 +1,10 @@
 import { resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
-import { normalizeConfiguredSiteName } from './app/shared/seo/brand'
+import { normalizeConfiguredSiteName, SEO_FALLBACK_DESCRIPTION } from './app/shared/seo/brand'
 
 const siteUrl = process.env.SITE_URL ?? 'https://xn----7sbqzieaghadljej2f.xn--p1ai'
 const siteName = normalizeConfiguredSiteName(process.env.SITE_NAME)
-const siteDescription = process.env.SITE_DESCRIPTION ?? 'Интервью с основателями бизнеса. Видео, рилсы, фото.'
+const siteDescription = process.env.SITE_DESCRIPTION ?? SEO_FALLBACK_DESCRIPTION
 const uploadDir = resolve(process.env.UPLOAD_DIR ?? './public/uploads')
 const nitroCacheDir = resolve('./.data/nitro-cache')
 

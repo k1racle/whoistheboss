@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { CompaniesPageData } from '@features/companies/model/companies-page.types'
 import CompaniesPage from '@features/companies/ui/CompaniesPage.vue'
+import { getStaticPageSeo } from '@shared/seo/static-page-seo'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { usePageSeo } from '@shared/seo/use-page-seo'
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
 const fallbackPage: CompaniesPageData = {
@@ -34,11 +34,7 @@ const page = computed(() => data.value ?? fallbackPage)
 const success = computed(() => route.query.success === '1')
 const error = computed(() => route.query.error === '1')
 
-const seo = await usePageSeo('companies', {
-  title: `Бизнес — ${config.public.siteName}`,
-  description: 'Компании, рестораны, магазины и другие проекты героев «Маршрут Построен»: история создания, команда и ключевые факты.',
-  image: '',
-})
+const seo = await usePageSeo('companies', getStaticPageSeo('companies'))
 
 useManagedSeo(seo.value)
 </script>

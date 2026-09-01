@@ -2,10 +2,10 @@
 import type { LandingPageData } from '@features/landing/model/landing.data'
 import { landingPageFallback } from '@features/landing/model/landing.data'
 import LandingPage from '@features/landing/ui/LandingPage.vue'
+import { getStaticPageSeo } from '@shared/seo/static-page-seo'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { usePageSeo } from '@shared/seo/use-page-seo'
 
-const config = useRuntimeConfig()
 const route = useRoute()
 const city = computed(() => typeof route.params.city === 'string' ? route.params.city : undefined)
 
@@ -20,11 +20,7 @@ if (error.value) {
 }
 
 const page = computed(() => data.value ?? landingPageFallback)
-const seo = await usePageSeo('home', {
-  title: config.public.siteName,
-  description: config.public.siteDescription,
-  image: '',
-})
+const seo = await usePageSeo('home', getStaticPageSeo('home'))
 
 useManagedSeo(seo.value)
 </script>

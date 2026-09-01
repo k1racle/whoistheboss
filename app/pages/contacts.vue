@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { ContactPageData } from '@features/contacts/model/contact-page.types'
 import ContactsPage from '@features/contacts/ui/ContactsPage.vue'
+import { getStaticPageSeo } from '@shared/seo/static-page-seo'
 import PageBannerSection from '@shared/ui/page/PageBannerSection.vue'
 import { useSiteBanner } from '@shared/ui/page/useSiteBanner'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { usePageSeo } from '@shared/seo/use-page-seo'
 
 const route = useRoute()
-const config = useRuntimeConfig()
 
 const fallbackData: ContactPageData = {
   address: '',
@@ -26,11 +26,7 @@ if (pageError.value) {
   })
 }
 
-const seo = await usePageSeo('contacts', {
-  title: `Контакты — ${config.public.siteName}`,
-  description: 'Контакты редакции проекта «Маршрут Построен»: адрес, телефон, электронная почта и форма обратной связи.',
-  image: '',
-})
+const seo = await usePageSeo('contacts', getStaticPageSeo('contacts'))
 
 useManagedSeo(seo.value)
 

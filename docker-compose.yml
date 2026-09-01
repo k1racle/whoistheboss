@@ -42,8 +42,8 @@ services:
       NUXT_PUBLIC_SITE_URL: ${SITE_URL:-http://localhost:3000}
       SITE_NAME: ${SITE_NAME:-МАРШРУТ ПОСТРОЕН МЕДИАГИД}
       NUXT_PUBLIC_SITE_NAME: ${SITE_NAME:-МАРШРУТ ПОСТРОЕН МЕДИАГИД}
-      SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Интервью с основателями бизнеса. Видео, рилсы, фото.}
-      NUXT_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Интервью с основателями бизнеса. Видео, рилсы, фото.}
+      SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Медиагид о предпринимателях, компаниях, брендах и проектах России.}
+      NUXT_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Медиагид о предпринимателях, компаниях, брендах и проектах России.}
     volumes:
       - uploads:/app/public/uploads
     depends_on:
