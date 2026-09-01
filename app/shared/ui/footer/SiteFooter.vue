@@ -90,13 +90,14 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
 
         <div class="grid gap-x-6 gap-y-2 font-sans text-xs uppercase leading-4 text-text-muted sm:text-sm xl:grid-cols-[1.15fr_1fr_11rem] xl:items-end xl:justify-items-end xl:text-right xl:text-base">
           <template
-            v-for="item in metaItems"
+            v-for="(item, index) in metaItems"
             :key="`${item.text}-${item.href}`"
           >
             <NuxtLink
               v-if="item.href.startsWith('/') && !item.href.startsWith('//')"
               :to="item.href"
               class="transition-colors hover:text-accent"
+              :class="{ 'xl:col-start-3': index === metaItems.length - 1 }"
             >
               {{ item.text }}
             </NuxtLink>
@@ -104,12 +105,13 @@ const ctaWords = ['Готовы', 'к', 'обсуждению', 'проекта'
               v-else-if="item.href"
               :href="item.href"
               class="transition-colors hover:text-accent"
+              :class="{ 'xl:col-start-3': index === metaItems.length - 1 }"
               target="_blank"
               rel="noopener"
             >
               {{ item.text }}
             </a>
-            <span v-else>{{ item.text }}</span>
+            <span v-else :class="{ 'xl:col-start-3': index === metaItems.length - 1 }">{{ item.text }}</span>
           </template>
         </div>
       </div>
