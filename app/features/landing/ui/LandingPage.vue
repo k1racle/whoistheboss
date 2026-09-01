@@ -5,7 +5,6 @@ import LandingAboutSection from '@features/landing/ui/sections/LandingAboutSecti
 import LandingArticles from '@features/landing/ui/sections/LandingArticles.vue'
 import LandingAudienceSection from '@features/landing/ui/sections/LandingAudienceSection.vue'
 import LandingContactSection from '@features/landing/ui/sections/LandingContactSection.vue'
-import LandingFeaturedHeroSection from '@features/landing/ui/sections/LandingFeaturedHeroSection.vue'
 import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection.vue'
 import LandingOurHeroesSection from '@features/landing/ui/sections/LandingOurHeroesSection.vue'
 import LandingPlacesSection from '@features/landing/ui/sections/LandingPlacesSection.vue'
@@ -31,16 +30,10 @@ const { isEnabled: isBannerEnabled } = useSiteBanner()
     <LandingAboutSection
       :title="page.aboutTitle"
       :text="page.aboutText"
-      :cover-image="page.aboutCoverImage"
-      :video-type="page.aboutVideoType"
-      :video-url="page.aboutVideoUrl"
-      :video-file="page.aboutVideoFile"
-    />
-    <LandingFeaturedHeroSection
-      v-if="isBannerEnabled('/')"
-      :image="page.bannerImage"
-      :mobile-image="page.bannerMobileImage"
-      :link="page.bannerLink"
+      :banner-image="page.bannerImage"
+      :banner-mobile-image="page.bannerMobileImage"
+      :banner-link="page.bannerLink"
+      :show-banner="isBannerEnabled('/')"
     />
     <LandingOurHeroesSection
       :title="page.heroesTitle"

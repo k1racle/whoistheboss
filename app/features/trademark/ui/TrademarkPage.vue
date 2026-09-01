@@ -104,12 +104,12 @@ const orderedRules = computed(() => {
     <nav class="sticky top-[64px] z-30 overflow-x-auto border-b border-border bg-bg/95 px-4 backdrop-blur sm:px-6 lg:top-[72px] lg:px-10" aria-label="Разделы страницы">
       <div class="mx-auto flex w-max min-w-full justify-center gap-8 py-4 font-sans text-xs uppercase leading-4 sm:text-sm">
         <a href="#passport" class="hover:text-accent">Паспорт</a>
-        <a href="#protection" class="hover:text-accent">Объём охраны</a>
         <a href="#rules" class="hover:text-accent">Правила</a>
         <a href="#licensing" class="hover:text-accent">Лицензирование</a>
         <a href="#report-violation" class="hover:text-accent">Нарушения</a>
         <a href="#faq" class="hover:text-accent">FAQ</a>
         <a href="#contacts" class="hover:text-accent">Контакты</a>
+        <a href="#protection" class="hover:text-accent">Объём охраны</a>
       </div>
     </nav>
 
@@ -144,7 +144,7 @@ const orderedRules = computed(() => {
       <div class="mx-auto w-full max-w-[1440px]">
         <div class="grid gap-8 lg:grid-cols-2 lg:gap-16">
           <div>
-            <p class="font-sans text-sm uppercase leading-4 text-accent">02 / Объём правовой охраны</p>
+            <p class="font-sans text-sm uppercase leading-4 text-accent">08 / Объём правовой охраны</p>
             <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">
               {{ page.protection.title }}
             </h2>
@@ -182,7 +182,7 @@ const orderedRules = computed(() => {
 
     <section id="rules" class="scroll-mt-32 px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
       <div class="mx-auto w-full max-w-[1440px]">
-        <p class="font-sans text-sm uppercase leading-4 text-accent">03 / Правила использования</p>
+        <p class="font-sans text-sm uppercase leading-4 text-accent">02 / Правила использования</p>
         <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">
           Упоминание — не лицензия
         </h2>
@@ -204,7 +204,7 @@ const orderedRules = computed(() => {
       <div class="mx-auto w-full max-w-[1440px]">
         <div class="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div>
-            <p class="font-sans text-sm uppercase leading-4 text-accent">04 / Лицензирование</p>
+            <p class="font-sans text-sm uppercase leading-4 text-accent">03 / Лицензирование</p>
             <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.licensing.title }}</h2>
           </div>
           <div class="lg:pt-8">
@@ -241,7 +241,7 @@ const orderedRules = computed(() => {
     <section id="license-request" class="scroll-mt-32 px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
       <div class="mx-auto grid w-full max-w-[1440px] gap-12 lg:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
         <div>
-          <p class="font-sans text-sm uppercase leading-4 text-accent">05 / Заявка</p>
+          <p class="font-sans text-sm uppercase leading-4 text-accent">04 / Заявка</p>
           <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.application.title }}</h2>
           <p class="mt-8 max-w-[45ch] whitespace-pre-line font-sans text-base leading-6 sm:text-lg">{{ page.application.intro }}</p>
         </div>
@@ -292,7 +292,7 @@ const orderedRules = computed(() => {
     <section id="report-violation" class="scroll-mt-32 bg-surface px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
       <div class="mx-auto grid w-full max-w-[1440px] gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
-          <p class="font-sans text-sm uppercase leading-4 text-accent">06 / Возможное нарушение</p>
+          <p class="font-sans text-sm uppercase leading-4 text-accent">05 / Возможное нарушение</p>
           <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.violation.title }}</h2>
           <p class="mt-8 max-w-[52ch] whitespace-pre-line font-sans text-base leading-6 sm:text-lg">{{ page.violation.text }}</p>
           <ul class="mt-8 grid gap-3 font-sans text-sm leading-5 sm:text-base">
@@ -322,7 +322,7 @@ const orderedRules = computed(() => {
 
     <section id="faq" class="scroll-mt-32 px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
       <div class="mx-auto w-full max-w-[1440px]">
-        <p class="font-sans text-sm uppercase leading-4 text-accent">07 / Вопросы</p>
+        <p class="font-sans text-sm uppercase leading-4 text-accent">06 / Вопросы</p>
         <h2 class="mt-4 font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.faqTitle }}</h2>
         <div class="mt-12 border-t border-text">
           <details v-for="item in page.faqItems" :key="item.question" class="group border-b border-border">
@@ -338,7 +338,7 @@ const orderedRules = computed(() => {
     <section id="contacts" class="scroll-mt-32 border-t border-border px-4 py-12 sm:px-6 sm:py-16 lg:px-10 lg:py-20">
       <div class="mx-auto grid w-full max-w-[1440px] gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
-          <p class="font-sans text-sm uppercase leading-4 text-accent">08 / Контакты</p>
+          <p class="font-sans text-sm uppercase leading-4 text-accent">07 / Контакты</p>
           <h2 class="mt-4 max-w-[18ch] font-display text-[clamp(2.25rem,4.2vw,4.5rem)] font-black uppercase leading-[0.88] tracking-[-0.035em]">{{ page.contacts.title }}</h2>
         </div>
         <div class="grid content-start gap-4 border-t border-text pt-5 font-sans text-base leading-6 sm:text-lg">
