@@ -17,7 +17,7 @@ interface ManagedSeoOptions {
   titleBrandMode?: SeoBrandMode
 }
 
-const DEFAULT_SOCIAL_IMAGE = '/favicon/web-app-manifest-512x512.png'
+const DEFAULT_SOCIAL_IMAGE = '/ogimage.png'
 
 export function useManagedSeo(options: ManagedSeoOptions) {
   const route = useRoute()

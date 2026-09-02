@@ -40,7 +40,7 @@ export default defineEventHandler(async (event): Promise<PageSeoData> => {
     image: getSiteSetting(
       settings,
       `${key}_IMAGE`,
-      getSiteSetting(settings, 'SEO_DEFAULT_IMAGE', '/favicon/web-app-manifest-512x512.png'),
+      getSiteSetting(settings, 'SEO_DEFAULT_IMAGE', '/ogimage.png'),
     ),
   }
 })

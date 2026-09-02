@@ -3,6 +3,7 @@ import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
 
 const DEFAULT_SPLASH_LOGO = '/images/logo.svg'
 const DEFAULT_SPLASH_MARQUEE = 'Маршрут построен — личные истории предпринимателей через их бизнес'
+const DEFAULT_SOCIAL_IMAGE = '/ogimage.png'
 
 const SPLASH_SETTING_KEYS = [
   'SPLASH_ENABLED',
@@ -62,6 +63,7 @@ function renderSplashPage(siteName: string, siteUrl: string, logo: string, marqu
   const safeSiteName = escapeHtml(siteName)
   const safeSiteUrl = escapeHtml(siteUrl)
   const safeLogo = escapeHtml(logo)
+  const safeSocialImage = escapeHtml(DEFAULT_SOCIAL_IMAGE)
   const safeMarquee = escapeHtml(marquee)
   const marqueeItems = Array.from({ length: 4 }, () => `<span class="marquee-item">${safeMarquee}</span>`).join('')
   const marqueeGroups = Array.from(
@@ -86,12 +88,12 @@ function renderSplashPage(siteName: string, siteUrl: string, logo: string, marqu
   <meta property="og:description" content="${safeMarquee}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="${safeSiteUrl}">
-  <meta property="og:image" content="${safeSiteUrl}${safeLogo}">
+  <meta property="og:image" content="${safeSiteUrl}${safeSocialImage}">
   <meta property="og:site_name" content="${safeSiteName}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${safeSiteName}">
   <meta name="twitter:description" content="${safeMarquee}">
-  <meta name="twitter:image" content="${safeSiteUrl}${safeLogo}">
+  <meta name="twitter:image" content="${safeSiteUrl}${safeSocialImage}">
   <style>
     :root {
       color-scheme: light;
