@@ -1,0 +1,53 @@
+<script setup lang="ts">
+import type { VideoInterviewItem } from '@features/videos/model/video.types'
+import MediaPlayBadge from '@shared/ui/media/MediaPlayBadge.vue'
+
+defineProps<{
+  interview: VideoInterviewItem
+  index: number
+  priority?: boolean
+}>()
+
+const emit = defineEmits<{
+  play: []
+}>()
+</script>
+
+<template>
+  <button
+    type="button"
+    class="group flex min-h-full w-full cursor-pointer flex-col text-left text-text"
+    :aria-label="`Смотреть видео «${interview.title}»`"
+    @click="emit('play')"
+  >
+    <span class="relative block aspect-video w-full overflow-hidden bg-surface-invert">
+      <NuxtImg
+        :src="interview.coverImage || interview.entrepreneur.photo || '/images/placeholder.svg'"
+        :alt="interview.title"
+        sizes="320:100vw 480:100vw sm:50vw xl:33vw 2000:614px"
+        format="webp"
+        :loading="priority ? 'eager' : 'lazy'"
+        :fetchpriority="priority ? 'high' : 'auto'"
+        decoding="async"
+        class="size-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.025] group-focus-visible:scale-[1.025] motion-reduce:transition-none"
+      />
+      <span class="absolute inset-0 bg-black/10 transition-colors duration-200 group-hover:bg-black/25 group-focus-visible:bg-black/25" aria-hidden="true" />
+      <span class="absolute left-3 top-3 bg-surface px-2 py-1 font-sans text-xs uppercase leading-none text-text sm:left-4 sm:top-4">
+        [{{ String(index + 1).padStart(2, '0') }}]
+      </span>
+      <MediaPlayBadge class="absolute left-1/2 top-1/2 !size-16 -translate-x-1/2 -translate-y-1/2 !shadow-none group-hover:scale-110 group-focus-visible:scale-110 sm:!size-20" />
+    </span>
+
+    <span class="flex flex-1 flex-col border border-t-0 border-text/20 bg-bg p-4 transition-colors duration-200 group-hover:bg-accent group-hover:text-text-on-accent group-focus-visible:bg-accent group-focus-visible:text-text-on-accent sm:p-5">
+      <span class="font-sans text-xs uppercase leading-4 opacity-60 sm:text-sm">
+        {{ interview.entrepreneur.name }}
+      </span>
+      <span class="mt-3 font-display text-[clamp(2rem,4vw,4rem)] font-black uppercase leading-[0.88] tracking-[-0.03em]">
+        {{ interview.title }}
+      </span>
+      <span v-if="interview.subtitle" class="mt-4 font-sans text-sm leading-4 opacity-75 sm:text-base sm:leading-5">
+        {{ interview.subtitle }}
+      </span>
+    </span>
+  </button>
+</template>

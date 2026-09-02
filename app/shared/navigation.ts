@@ -9,6 +9,7 @@ export const ROUTES = {
   INTERVIEW: (slug: string) => `/interviews/${slug}`,
   REELS: '/reels',
   REEL: (slug: string) => `/reels/${slug}`,
+  VIDEOS: '/videos',
   BLOG: '/blog',
   ARTICLE: (slug: string) => `/blog/${slug}`,
   CONTACTS: '/contacts',

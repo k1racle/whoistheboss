@@ -2,15 +2,12 @@
 import { ROUTES } from '@shared/navigation'
 import { SOCIAL_LINKS, type SocialLink } from '@shared/social'
 import ButtonLink from '@shared/ui/buttons/ButtonLink.vue'
-import ArrowMark from '@shared/ui/icons/ArrowMark.vue'
-import type { PresenceCity } from '@shared/types/city'
+import PlayMark from '@shared/ui/icons/PlayMark.vue'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   socialLinks?: SocialLink[]
-  cities?: PresenceCity[]
 }>(), {
   socialLinks: () => SOCIAL_LINKS,
-  cities: () => [],
 })
 
 const navigationItems = [
@@ -23,39 +20,14 @@ const navigationItems = [
 const mobileNavigationItems = [
   ...navigationItems,
   { label: 'Съемка', to: ROUTES.SHOOTING_REQUEST },
+  { label: 'Все видео', to: ROUTES.VIDEOS, play: true },
 ] as const
 
 const route = useRoute()
 const isMenuOpen = ref(false)
-const isCityMenuOpen = ref(false)
-const currentCitySlug = computed(() => typeof route.params.city === 'string' ? route.params.city : '')
-const currentCity = computed(() => props.cities.find(city => city.slug === currentCitySlug.value))
-
-const pathWithoutCity = computed(() => {
-  if (!currentCitySlug.value) return route.path
-  const segments = route.path.split('/').filter(Boolean)
-  const rest = segments.slice(1)
-  return rest.length ? `/${rest.join('/')}` : '/'
-})
-
-const selectCity = async (slug?: string) => {
-  isCityMenuOpen.value = false
-  closeMenu()
-  if (!slug) {
-    sessionStorage.setItem('marshrut-city-navigation-bypass', '1')
-    await navigateTo({ path: pathWithoutCity.value, query: route.query })
-    return
-  }
-  localStorage.setItem('marshrut-presence-city-v1', slug)
-  await navigateTo({
-    path: `/${slug}${pathWithoutCity.value === '/' ? '' : pathWithoutCity.value}`,
-    query: route.query,
-  })
-}
 
 const closeMenu = () => {
   isMenuOpen.value = false
-  isCityMenuOpen.value = false
 }
 
 const toggleMenu = () => {
@@ -144,46 +116,14 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-        <div
-          v-if="cities.length"
-          class="relative hidden lg:block"
+        <NuxtLink
+          :to="ROUTES.VIDEOS"
+          class="group hidden min-h-11 items-center gap-3 px-2 font-sans text-sm uppercase leading-4 text-text transition-colors hover:text-accent focus-visible:text-accent lg:inline-flex xl:text-base"
+          :class="{ 'text-accent': route.path === ROUTES.VIDEOS }"
         >
-          <button
-            type="button"
-            class="inline-flex min-h-11 items-center gap-3 px-2 font-sans text-sm uppercase leading-4 text-text transition-colors hover:text-accent xl:text-base"
-            :aria-expanded="isCityMenuOpen"
-            aria-controls="desktop-city-menu"
-            @click="isCityMenuOpen = !isCityMenuOpen"
-          >
-            <span class="size-4 shrink-0 bg-accent" aria-hidden="true" />
-            {{ currentCity?.name || 'Все города' }}
-          </button>
-
-          <div
-            id="desktop-city-menu"
-            class="absolute right-0 top-[calc(100%+0.75rem)] min-w-56 border border-text/15 bg-surface p-2 shadow-[0_16px_40px_rgba(0,0,0,0.14)] transition-[opacity,transform,visibility]"
-            :class="isCityMenuOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-2 opacity-0'"
-          >
-            <button
-              type="button"
-              class="flex min-h-11 w-full items-center justify-between px-3 text-left font-sans text-sm uppercase hover:bg-bg"
-              :class="{ 'text-accent': !currentCitySlug }"
-              @click="selectCity()"
-            >
-              <span>Все города</span><ArrowMark class="h-[19px] w-[34px]" />
-            </button>
-            <button
-              v-for="city in cities"
-              :key="city.id"
-              type="button"
-              class="flex min-h-11 w-full items-center justify-between px-3 text-left font-sans text-sm uppercase hover:bg-bg"
-              :class="{ 'bg-accent text-text-on-accent': city.slug === currentCitySlug }"
-              @click="selectCity(city.slug)"
-            >
-              <span>{{ city.name }}</span><span>{{ city.slug }}</span>
-            </button>
-          </div>
-        </div>
+          <PlayMark class="transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110" />
+          <span>Все видео</span>
+        </NuxtLink>
 
         <ButtonLink
           :to="ROUTES.SHOOTING_REQUEST"
@@ -240,40 +180,14 @@ onBeforeUnmount(() => {
             :style="{ transitionDelay: isMenuOpen ? `${80 + index * 50}ms` : '0ms' }"
             @click="closeMenu"
           >
+            <PlayMark v-if="'play' in item && item.play" class="mr-2" />
             {{ item.label }}
           </NuxtLink>
         </nav>
 
-        <section
-          v-if="cities.length"
-          class="mt-auto w-full border-y border-text/15 py-4"
-          aria-label="Выбор города"
-        >
-          <div class="flex flex-col gap-1">
-            <button
-              type="button"
-              class="flex min-h-11 w-full items-center justify-between px-3 text-left font-sans text-sm uppercase transition-colors hover:bg-surface"
-              :class="{ 'bg-accent text-text-on-accent': !currentCitySlug }"
-              @click="selectCity()"
-            >
-              <span>Все города</span><ArrowMark class="h-[19px] w-[34px]" />
-            </button>
-            <button
-              v-for="city in cities"
-              :key="city.id"
-              type="button"
-              class="flex min-h-11 w-full items-center justify-between px-3 text-left font-sans text-sm uppercase transition-colors hover:bg-surface"
-              :class="{ 'bg-accent text-text-on-accent': city.slug === currentCitySlug }"
-              @click="selectCity(city.slug)"
-            >
-              <span>{{ city.name }}</span><span class="text-xs">{{ city.slug }}</span>
-            </button>
-          </div>
-        </section>
-
         <div
           v-if="socialLinks.length"
-          class="flex flex-wrap justify-end gap-3"
+          class="mt-auto flex flex-wrap justify-end gap-3"
         >
           <a
             v-for="(link, index) in socialLinks"
