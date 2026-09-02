@@ -38,7 +38,7 @@ const emit = defineEmits<{
       <span class="font-sans text-xs uppercase leading-4 opacity-60 sm:text-sm">
         Смотреть интервью
       </span>
-      <span class="mt-3 font-display text-[18px] font-black uppercase leading-none tracking-[-0.03em] sm:text-[20px] lg:text-[22px]">
+      <span class="mt-3 font-display text-[24px] font-black uppercase leading-none tracking-[-0.03em] sm:text-[28px] lg:text-[32px]">
         {{ video.name }}
       </span>
       <span class="mt-4 line-clamp-3 font-sans text-sm leading-5 opacity-75 sm:text-base sm:leading-6">

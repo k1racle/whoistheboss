@@ -9,6 +9,7 @@ interface Props {
   videoFile?: string | null
   poster?: string | null
   aspectClass?: string
+  autoplay?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,12 +18,13 @@ const props = withDefaults(defineProps<Props>(), {
   videoFile: '',
   poster: '',
   aspectClass: 'aspect-video',
+  autoplay: false,
 })
 
 const safeVideoUrl = computed(() => getTrustedEmbedUrl(props.videoUrl))
 const safeVideoFile = computed(() => getSafeUploadedMediaUrl(props.videoFile))
 const videoElement = useTemplateRef<HTMLVideoElement>('videoElement')
-const hasStarted = shallowRef(false)
+const hasStarted = shallowRef(props.autoplay)
 const hasPlayableMedia = computed(() => Boolean(
   (props.videoType === 'EMBED' && safeVideoUrl.value)
   || safeVideoFile.value,
@@ -48,11 +50,21 @@ const startPlayback = async () => {
 }
 
 watch(
-  () => [props.videoType, props.videoUrl, props.videoFile],
+  () => [props.videoType, props.videoUrl, props.videoFile, props.autoplay],
   () => {
-    hasStarted.value = false
+    hasStarted.value = props.autoplay
+
+    if (props.autoplay && props.videoType === 'SELF_HOSTED') {
+      nextTick(() => startPlayback())
+    }
   },
 )
+
+onMounted(() => {
+  if (props.autoplay && props.videoType === 'SELF_HOSTED') {
+    startPlayback()
+  }
+})
 </script>
 
 <template>
@@ -69,7 +81,7 @@ watch(
       allowfullscreen
       sandbox="allow-scripts allow-same-origin allow-presentation"
       referrerpolicy="strict-origin-when-cross-origin"
-      loading="lazy"
+      :loading="autoplay ? 'eager' : 'lazy'"
       frameborder="0"
     />
 
@@ -81,6 +93,7 @@ watch(
       :title="title"
       class="h-full w-full object-cover"
       controls
+      :autoplay="autoplay"
       playsinline
       preload="metadata"
       @play="hasStarted = true"
@@ -95,7 +108,7 @@ watch(
     >
 
     <div
-      v-else
+      v-else-if="!hasPlayableMedia"
       class="flex h-full w-full items-center justify-center px-6 text-center font-sans text-sm leading-6 text-text-muted sm:text-base"
     >
       Видео пока не добавлено.

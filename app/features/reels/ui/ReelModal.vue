@@ -57,6 +57,7 @@ onBeforeUnmount(() => {
             :video-file="reel.videoFile"
             :poster="reel.coverImage"
             aspect-class="aspect-[9/16]"
+            autoplay
           />
         </div>
 
