@@ -38,7 +38,7 @@ const emit = defineEmits<{
       <span class="font-sans text-xs uppercase leading-4 opacity-60 sm:text-sm">
         Reels
       </span>
-      <span class="mt-3 font-display text-[clamp(32px,6vw,50px)] font-black uppercase leading-[0.88] tracking-[-0.03em]">
+      <span class="mt-3 font-display text-[18px] font-black uppercase leading-none tracking-[-0.03em] sm:text-[20px] lg:text-[22px]">
         {{ reel.title }}
       </span>
       <span
