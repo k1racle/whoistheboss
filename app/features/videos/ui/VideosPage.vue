@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import type { VideoInterviewItem } from '@features/videos/model/video.types'
+import LandingHeroSection from '@features/landing/ui/sections/LandingHeroSection.vue'
+import type { EntrepreneurVideoItem } from '@features/videos/model/video.types'
 import VideoInterviewCard from '@features/videos/ui/VideoInterviewCard.vue'
 import VideoInterviewModal from '@features/videos/ui/VideoInterviewModal.vue'
 
 const props = defineProps<{
-  interviews: VideoInterviewItem[]
+  videos: EntrepreneurVideoItem[]
 }>()
 
 const route = useRoute()
 const router = useRouter()
 const activeSlug = computed(() => typeof route.query.play === 'string' ? route.query.play : '')
-const activeInterview = computed(() =>
-  props.interviews.find(interview => interview.slug === activeSlug.value) ?? null)
+const activeVideo = computed(() =>
+  props.videos.find(video => video.slug === activeSlug.value) ?? null)
 
 let previousBodyOverflow = ''
 
@@ -30,14 +31,14 @@ const closeVideo = async () => {
   await router.replace({ query: nextQuery })
 }
 
-watch(activeInterview, (interview, previous) => {
+watch(activeVideo, (video, previous) => {
   if (!import.meta.client) return
 
-  if (interview && !previous) {
+  if (video && !previous) {
     previousBodyOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
   }
-  else if (!interview && previous) {
+  else if (!video && previous) {
     document.body.style.overflow = previousBodyOverflow
   }
 }, { immediate: true })
@@ -48,41 +49,35 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="bg-bg text-text">
-    <div class="mx-auto w-full max-w-[1920px] px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16 lg:px-10 lg:pb-28 lg:pt-20">
-      <div class="border-b border-text/20 pb-7 sm:pb-9">
-        <p class="font-sans text-xs uppercase tracking-[0.12em] text-text-muted sm:text-sm">
-          [ видеоархив медиагида ]
+  <main class="bg-bg text-text">
+    <LandingHeroSection title="Все видео" />
+
+    <section class="mx-auto w-full max-w-[1920px] px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14 lg:px-10 lg:pb-28 lg:pt-20">
+      <div class="grid gap-5 border-y border-text/20 py-5 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.6fr)]">
+        <p class="max-w-[42rem] font-sans text-base leading-5 sm:text-lg sm:leading-6">
+          Видеоинтервью с предпринимателями о бизнесе, решениях, командах и людях, которые создают проекты в России.
         </p>
-        <h1 class="mt-5 font-display text-[clamp(5.5rem,17vw,20rem)] font-black uppercase leading-[0.72] tracking-[-0.04em] text-accent">
-          Все видео
-        </h1>
-        <div class="mt-8 grid gap-5 border-t border-text/20 pt-5 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.6fr)]">
-          <p class="max-w-[42rem] font-sans text-base leading-5 sm:text-lg sm:leading-6">
-            Видеоинтервью с предпринимателями о бизнесе, решениях, командах и людях, которые создают проекты в России.
-          </p>
-          <p class="font-sans text-sm uppercase leading-4 text-text-muted sm:text-right">
-            {{ interviews.length }} {{ interviews.length === 1 ? 'видео' : 'видео в коллекции' }}
-          </p>
-        </div>
+        <p class="font-sans text-sm uppercase leading-4 text-text-muted sm:text-right">
+          {{ videos.length }} {{ videos.length === 1 ? 'видео' : 'видео в коллекции' }}
+        </p>
       </div>
 
-      <div v-if="interviews.length" class="mt-8 grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:mt-12 xl:grid-cols-3">
+      <div v-if="videos.length" class="mt-8 grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:mt-12 xl:grid-cols-3">
         <VideoInterviewCard
-          v-for="(interview, index) in interviews"
-          :key="interview.id"
-          :interview="interview"
+          v-for="(video, index) in videos"
+          :key="video.id"
+          :video="video"
           :index="index"
           :priority="index < 3"
-          @play="openVideo(interview.slug)"
+          @play="openVideo(video.slug)"
         />
       </div>
 
       <p v-else class="mt-10 border-y border-text/20 py-8 font-sans text-base uppercase leading-5 text-text-muted">
-        Видео появятся после первой публикации.
+        Видео появятся после добавления интервью на страницах предпринимателей.
       </p>
-    </div>
+    </section>
 
-    <VideoInterviewModal :interview="activeInterview" @close="closeVideo" />
-  </section>
+    <VideoInterviewModal :video="activeVideo" @close="closeVideo" />
+  </main>
 </template>

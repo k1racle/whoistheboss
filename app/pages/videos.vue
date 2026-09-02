@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { VideoInterviewItem } from '@features/videos/model/video.types'
+import type { EntrepreneurVideoItem } from '@features/videos/model/video.types'
 import VideosPage from '@features/videos/ui/VideosPage.vue'
 import { SEO_SITE_NAME } from '@shared/seo/brand'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
 const { data, error } = await useAsyncData('videos-list', async () =>
-  await $fetch<VideoInterviewItem[]>('/api/videos'))
+  await $fetch<EntrepreneurVideoItem[]>('/api/videos'))
 
 if (error.value) {
   throw createError({
@@ -22,5 +22,5 @@ useManagedSeo({
 </script>
 
 <template>
-  <VideosPage :interviews="data ?? []" />
+  <VideosPage :videos="data ?? []" />
 </template>

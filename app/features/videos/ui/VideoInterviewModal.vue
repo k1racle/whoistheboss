@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { VideoInterviewItem } from '@features/videos/model/video.types'
+import type { EntrepreneurVideoItem } from '@features/videos/model/video.types'
 import VideoFrame from '@shared/ui/media/VideoFrame.vue'
 
 const props = defineProps<{
-  interview: VideoInterviewItem | null
+  video: EntrepreneurVideoItem | null
 }>()
 
 const emit = defineEmits<{
@@ -19,7 +19,7 @@ const getFocusableElements = () => Array.from(dialog.value?.querySelectorAll<HTM
 ) || [])
 
 const onKeydown = (event: KeyboardEvent) => {
-  if (!props.interview) return
+  if (!props.video) return
 
   if (event.key === 'Escape') {
     emit('close')
@@ -45,13 +45,13 @@ const onKeydown = (event: KeyboardEvent) => {
   }
 }
 
-watch(() => props.interview, async (interview, previous) => {
-  if (interview && !previous) {
+watch(() => props.video, async (video, previous) => {
+  if (video && !previous) {
     previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
     await nextTick()
     closeButton.value?.focus()
   }
-  else if (!interview && previous) {
+  else if (!video && previous) {
     await nextTick()
     previouslyFocused?.focus()
     previouslyFocused = null
@@ -79,7 +79,7 @@ onBeforeUnmount(() => {
       leave-to-class="opacity-0"
     >
       <div
-        v-if="interview"
+        v-if="video"
         class="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-3 backdrop-blur-sm sm:p-6 lg:p-10"
         role="dialog"
         aria-modal="true"
@@ -90,10 +90,10 @@ onBeforeUnmount(() => {
           <div class="grid min-h-14 grid-cols-[minmax(0,1fr)_3.5rem] border-b border-text/20 bg-accent text-text-on-accent">
             <div class="min-w-0 px-4 py-3 sm:px-5">
               <p class="truncate font-sans text-xs uppercase leading-4 opacity-75 sm:text-sm">
-                {{ interview.entrepreneur.name }}
+                Смотреть интервью
               </p>
               <h2 id="video-modal-title" class="truncate font-sans text-sm font-bold uppercase leading-4 sm:text-base">
-                {{ interview.title }}
+                {{ video.name }}
               </h2>
             </div>
             <button
@@ -108,12 +108,12 @@ onBeforeUnmount(() => {
           </div>
 
           <VideoFrame
-            :key="interview.id"
-            :title="interview.title"
-            :video-type="interview.videoType"
-            :video-url="interview.videoUrl"
-            :video-file="interview.videoFile"
-            :poster="interview.coverImage"
+            :key="video.id"
+            :title="`Интервью — ${video.name}`"
+            :video-type="video.videoType"
+            :video-url="video.videoUrl"
+            :video-file="video.videoFile"
+            :poster="video.coverImage"
             aspect-class="aspect-video"
             class="min-h-0 w-full border-0"
           />

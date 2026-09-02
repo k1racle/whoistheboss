@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { VideoInterviewItem } from '@features/videos/model/video.types'
+import type { EntrepreneurVideoItem } from '@features/videos/model/video.types'
 import MediaPlayBadge from '@shared/ui/media/MediaPlayBadge.vue'
 
 defineProps<{
-  interview: VideoInterviewItem
+  video: EntrepreneurVideoItem
   index: number
   priority?: boolean
 }>()
@@ -17,13 +17,13 @@ const emit = defineEmits<{
   <button
     type="button"
     class="group flex min-h-full w-full cursor-pointer flex-col text-left text-text"
-    :aria-label="`Смотреть видео «${interview.title}»`"
+    :aria-label="`Смотреть интервью с ${video.name}`"
     @click="emit('play')"
   >
     <span class="relative block aspect-video w-full overflow-hidden bg-surface-invert">
       <NuxtImg
-        :src="interview.coverImage || interview.entrepreneur.photo || '/images/placeholder.svg'"
-        :alt="interview.title"
+        :src="video.coverImage || '/images/placeholder.svg'"
+        :alt="video.name"
         sizes="320:100vw 480:100vw sm:50vw xl:33vw 2000:614px"
         format="webp"
         :loading="priority ? 'eager' : 'lazy'"
@@ -40,13 +40,13 @@ const emit = defineEmits<{
 
     <span class="flex flex-1 flex-col border border-t-0 border-text/20 bg-bg p-4 transition-colors duration-200 group-hover:bg-accent group-hover:text-text-on-accent group-focus-visible:bg-accent group-focus-visible:text-text-on-accent sm:p-5">
       <span class="font-sans text-xs uppercase leading-4 opacity-60 sm:text-sm">
-        {{ interview.entrepreneur.name }}
+        Смотреть интервью
       </span>
       <span class="mt-3 font-display text-[clamp(2rem,4vw,4rem)] font-black uppercase leading-[0.88] tracking-[-0.03em]">
-        {{ interview.title }}
+        {{ video.name }}
       </span>
-      <span v-if="interview.subtitle" class="mt-4 font-sans text-sm leading-4 opacity-75 sm:text-base sm:leading-5">
-        {{ interview.subtitle }}
+      <span class="mt-4 font-sans text-sm leading-4 opacity-75 sm:text-base sm:leading-5">
+        {{ video.title }}
       </span>
     </span>
   </button>

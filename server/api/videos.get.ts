@@ -1,52 +1,44 @@
-import prisma from '~~/lib/prisma'
 import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-url'
+import prisma from '~~/lib/prisma'
 
 export default defineEventHandler(async () => {
-  const interviews = await prisma.interview.findMany({
+  const entrepreneurs = await prisma.entrepreneur.findMany({
     where: { isPublished: true },
-    orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
+    orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
     select: {
       id: true,
       slug: true,
+      name: true,
       title: true,
-      subtitle: true,
-      coverImage: true,
-      publishedAt: true,
-      videoType: true,
-      videoUrl: true,
-      videoFile: true,
-      entrepreneur: {
-        select: {
-          slug: true,
-          name: true,
-          title: true,
-          photo: true,
-        },
-      },
+      photo: true,
+      featuredInterviewVideoType: true,
+      featuredInterviewVideoUrl: true,
+      featuredInterviewVideoFile: true,
+      featuredInterviewCoverImage: true,
     },
   })
 
-  return interviews.flatMap((interview) => {
-    const videoUrl = interview.videoType === 'EMBED'
-      ? getTrustedEmbedUrl(interview.videoUrl)
+  return entrepreneurs.flatMap((entrepreneur) => {
+    const videoType = entrepreneur.featuredInterviewVideoType
+      || (entrepreneur.featuredInterviewVideoFile ? 'SELF_HOSTED' : 'EMBED')
+    const videoUrl = videoType === 'EMBED'
+      ? getTrustedEmbedUrl(entrepreneur.featuredInterviewVideoUrl)
       : ''
-    const videoFile = interview.videoType === 'SELF_HOSTED'
-      ? getSafeUploadedMediaUrl(interview.videoFile)
+    const videoFile = videoType === 'SELF_HOSTED'
+      ? getSafeUploadedMediaUrl(entrepreneur.featuredInterviewVideoFile)
       : ''
 
     if (!videoUrl && !videoFile) return []
 
     return [{
-      id: interview.id,
-      slug: interview.slug,
-      title: interview.title,
-      subtitle: interview.subtitle,
-      coverImage: interview.coverImage,
-      publishedAt: interview.publishedAt?.toISOString() ?? null,
-      videoType: interview.videoType,
+      id: entrepreneur.id,
+      slug: entrepreneur.slug,
+      name: entrepreneur.name,
+      title: entrepreneur.title,
+      coverImage: entrepreneur.featuredInterviewCoverImage || entrepreneur.photo,
+      videoType,
       videoUrl: videoUrl || null,
       videoFile: videoFile || null,
-      entrepreneur: interview.entrepreneur,
     }]
   })
 })
