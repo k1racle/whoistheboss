@@ -34,11 +34,11 @@ const emit = defineEmits<{
       <MediaPlayBadge class="absolute left-1/2 top-1/2 !size-16 -translate-x-1/2 -translate-y-1/2 !shadow-none group-hover:scale-110 group-focus-visible:scale-110 sm:!size-20" />
     </span>
 
-    <span class="flex flex-1 flex-col border border-t-0 border-text/20 bg-bg p-4 transition-colors duration-200 group-hover:bg-accent group-hover:text-text-on-accent group-focus-visible:bg-accent group-focus-visible:text-text-on-accent sm:p-5">
+    <span class="flex flex-1 flex-col border border-t-0 border-text/20 bg-surface p-4 transition-colors duration-200 group-hover:bg-accent group-hover:text-text-on-accent group-focus-visible:bg-accent group-focus-visible:text-text-on-accent sm:p-5">
       <span class="font-sans text-xs uppercase leading-4 opacity-60 sm:text-sm">
         Reels
       </span>
-      <span class="mt-3 font-display text-[clamp(2rem,3.5vw,3.5rem)] font-black uppercase leading-[0.88] tracking-[-0.03em]">
+      <span class="mt-3 font-display text-[clamp(32px,6vw,50px)] font-black uppercase leading-[0.88] tracking-[-0.03em]">
         {{ reel.title }}
       </span>
       <span

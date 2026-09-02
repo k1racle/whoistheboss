@@ -1,7 +1,7 @@
 <template>
   <svg
     aria-hidden="true"
-    class="size-4 shrink-0 text-accent"
+    class="size-5 shrink-0 text-accent"
     viewBox="0 0 16 16"
     fill="currentColor"
     focusable="false"
