@@ -2,6 +2,7 @@
 import type { LandingPageData } from '@features/landing/model/landing.data'
 import { landingPageFallback } from '@features/landing/model/landing.data'
 import LandingPage from '@features/landing/ui/LandingPage.vue'
+import { HOME_SEO } from '@shared/seo/home-seo'
 import { getStaticPageSeo } from '@shared/seo/static-page-seo'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 import { usePageSeo } from '@shared/seo/use-page-seo'
@@ -22,7 +23,11 @@ if (error.value) {
 const page = computed(() => data.value ?? landingPageFallback)
 const seo = await usePageSeo('home', getStaticPageSeo('home'))
 
-useManagedSeo(seo.value)
+useManagedSeo({
+  ...seo.value,
+  ...HOME_SEO,
+  normalizeBrand: false,
+})
 </script>
 
 <template>

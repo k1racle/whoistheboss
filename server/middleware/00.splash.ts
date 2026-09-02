@@ -1,9 +1,9 @@
 import type { SiteSettingsRecord } from '@server/utils/site-settings'
 import { getSiteSetting, getSiteSettings } from '@server/utils/site-settings'
+import { HOME_SEO } from '@shared/seo/home-seo'
 
 const DEFAULT_SPLASH_LOGO = '/images/logo.svg'
 const DEFAULT_SPLASH_MARQUEE = 'Маршрут построен — личные истории предпринимателей через их бизнес'
-const DEFAULT_SOCIAL_IMAGE = '/ogimage.png'
 
 const SPLASH_SETTING_KEYS = [
   'SPLASH_ENABLED',
@@ -61,9 +61,15 @@ function getNonEmptySiteSetting(
 
 function renderSplashPage(siteName: string, siteUrl: string, logo: string, marquee: string): string {
   const safeSiteName = escapeHtml(siteName)
-  const safeSiteUrl = escapeHtml(siteUrl)
+  const safeSiteUrl = escapeHtml(siteUrl.replace(/\/+$/u, ''))
   const safeLogo = escapeHtml(logo)
-  const safeSocialImage = escapeHtml(DEFAULT_SOCIAL_IMAGE)
+  const safeSocialImage = escapeHtml(HOME_SEO.image)
+  const safeSeoTitle = escapeHtml(HOME_SEO.title)
+  const safeSeoDescription = escapeHtml(HOME_SEO.description)
+  const safeOgTitle = escapeHtml(HOME_SEO.ogTitle)
+  const safeOgDescription = escapeHtml(HOME_SEO.ogDescription)
+  const safeTwitterDescription = escapeHtml(HOME_SEO.twitterDescription)
+  const safeImageAlt = escapeHtml(HOME_SEO.imageAlt)
   const safeMarquee = escapeHtml(marquee)
   const marqueeItems = Array.from({ length: 4 }, () => `<span class="marquee-item">${safeMarquee}</span>`).join('')
   const marqueeGroups = Array.from(
@@ -82,18 +88,26 @@ function renderSplashPage(siteName: string, siteUrl: string, logo: string, marqu
   <link rel="shortcut icon" href="/favicon/favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
   <link rel="manifest" href="/favicon/site.webmanifest">
-  <title>${safeSiteName}</title>
-  <meta name="description" content="${safeMarquee}">
-  <meta property="og:title" content="${safeSiteName}">
-  <meta property="og:description" content="${safeMarquee}">
+  <title>${safeSeoTitle}</title>
+  <meta name="description" content="${safeSeoDescription}">
+  <link rel="canonical" href="${safeSiteUrl}/">
+  <meta property="og:title" content="${safeOgTitle}">
+  <meta property="og:description" content="${safeOgDescription}">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="${safeSiteUrl}">
+  <meta property="og:locale" content="${HOME_SEO.locale}">
+  <meta property="og:url" content="${safeSiteUrl}/">
   <meta property="og:image" content="${safeSiteUrl}${safeSocialImage}">
-  <meta property="og:site_name" content="${safeSiteName}">
+  <meta property="og:image:secure_url" content="${safeSiteUrl}${safeSocialImage}">
+  <meta property="og:image:type" content="${HOME_SEO.imageType}">
+  <meta property="og:image:width" content="${HOME_SEO.imageWidth}">
+  <meta property="og:image:height" content="${HOME_SEO.imageHeight}">
+  <meta property="og:image:alt" content="${safeImageAlt}">
+  <meta property="og:site_name" content="${HOME_SEO.siteName}">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${safeSiteName}">
-  <meta name="twitter:description" content="${safeMarquee}">
+  <meta name="twitter:title" content="${safeOgTitle}">
+  <meta name="twitter:description" content="${safeTwitterDescription}">
   <meta name="twitter:image" content="${safeSiteUrl}${safeSocialImage}">
+  <meta name="twitter:image:alt" content="${safeImageAlt}">
   <style>
     :root {
       color-scheme: light;

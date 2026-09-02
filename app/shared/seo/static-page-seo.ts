@@ -1,9 +1,10 @@
 import type { PageSeoData, PageSeoKey } from './page-seo'
+import { HOME_SEO } from './home-seo'
 
 export const STATIC_PAGE_SEO = {
   home: {
-    title: 'МАРШРУТ ПОСТРОЕН МЕДИАГИД — предприниматели и бизнес России',
-    description: 'МАРШРУТ ПОСТРОЕН МЕДИАГИД — истории предпринимателей, компаний, брендов и проектов России. Интервью, биографии, бизнес-модели и факты.',
+    title: HOME_SEO.title,
+    description: HOME_SEO.description,
   },
   entrepreneurs: {
     title: 'Предприниматели России | МАРШРУТ ПОСТРОЕН МЕДИАГИД',

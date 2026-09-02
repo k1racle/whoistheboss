@@ -217,10 +217,6 @@ export default defineNuxtConfig({
       meta: [
         { name: 'format-detection', content: 'telephone=no' },
         { name: 'apple-mobile-web-app-title', content: siteName },
-        { property: 'og:site_name', content: siteName },
-        { property: 'og:image', content: `${siteUrl}/ogimage.png` },
-        { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:image', content: `${siteUrl}/ogimage.png` },
         { name: 'yandex-verification', content: 'd15d7d69e47dbfb4' },
         { name: 'google-site-verification', content: 'ugG76OtpW7X-EHnACfPGilxtEPg26YLw6VNkDCd95uk' },
       ],
