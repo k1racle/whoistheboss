@@ -3,6 +3,7 @@ export interface EntrepreneurVideoItem {
   slug: string
   name: string
   title: string
+  description: string
   coverImage: string | null
   videoType: 'EMBED' | 'SELF_HOSTED'
   videoUrl: string | null

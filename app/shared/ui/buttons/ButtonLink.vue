@@ -50,6 +50,7 @@ const variantClasses: Record<ButtonLinkVariant, string> = {
 const weightClass = computed(() => props.emphasis ? 'font-bold tracking-[0.12em]' : 'font-normal tracking-normal')
 const horizontalPaddingClass = computed(() => props.size === 'header' ? 'px-3 sm:px-4' : 'px-4')
 const contentGapClass = computed(() => props.size === 'story' ? 'gap-3' : 'gap-2')
+const contentAlignmentClass = computed(() => props.size === 'header' ? 'translate-y-px' : '')
 
 const buttonClasses = computed(() => [
   displayClass.value,
@@ -68,7 +69,7 @@ const buttonClasses = computed(() => [
   >
     <span
       class="inline-flex h-full items-center justify-center"
-      :class="contentGapClass"
+      :class="[contentGapClass, contentAlignmentClass]"
     >
       <span class="inline-flex items-center justify-center">
         <slot />

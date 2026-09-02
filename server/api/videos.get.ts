@@ -1,4 +1,5 @@
 import { getSafeUploadedMediaUrl, getTrustedEmbedUrl } from '@shared/lib/media-url'
+import { stripHtml } from '@server/utils/stripHtml'
 import prisma from '~~/lib/prisma'
 
 export default defineEventHandler(async () => {
@@ -10,6 +11,9 @@ export default defineEventHandler(async () => {
       slug: true,
       name: true,
       title: true,
+      quote: true,
+      metaDesc: true,
+      aboutIntroDescription: true,
       photo: true,
       featuredInterviewVideoType: true,
       featuredInterviewVideoUrl: true,
@@ -35,6 +39,12 @@ export default defineEventHandler(async () => {
       slug: entrepreneur.slug,
       name: entrepreneur.name,
       title: entrepreneur.title,
+      description: stripHtml(
+        entrepreneur.metaDesc
+        || entrepreneur.aboutIntroDescription
+        || entrepreneur.quote
+        || entrepreneur.title,
+      ),
       coverImage: entrepreneur.featuredInterviewCoverImage || entrepreneur.photo,
       videoType,
       videoUrl: videoUrl || null,

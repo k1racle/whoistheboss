@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import type { EntrepreneurVideoItem } from '@features/videos/model/video.types'
 import VideosPage from '@features/videos/ui/VideosPage.vue'
+import type { ReelItem } from '@features/reels/model/reel.types'
 import { SEO_SITE_NAME } from '@shared/seo/brand'
 import { useManagedSeo } from '@shared/seo/use-managed-seo'
 
-const { data, error } = await useAsyncData('videos-list', async () =>
-  await $fetch<EntrepreneurVideoItem[]>('/api/videos'))
+const { data, error } = await useAsyncData('videos-page-content', async () => {
+  const [videos, reels] = await Promise.all([
+    $fetch<EntrepreneurVideoItem[]>('/api/videos'),
+    $fetch<ReelItem[]>('/api/reels', { query: { limit: 120 } }),
+  ])
+
+  return { videos, reels }
+})
 
 if (error.value) {
   throw createError({
@@ -22,5 +29,5 @@ useManagedSeo({
 </script>
 
 <template>
-  <VideosPage :videos="data ?? []" />
+  <VideosPage :videos="data?.videos ?? []" :reels="data?.reels ?? []" />
 </template>

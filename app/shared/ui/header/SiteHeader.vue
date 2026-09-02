@@ -121,8 +121,10 @@ onBeforeUnmount(() => {
           class="group hidden min-h-11 items-center gap-3 px-2 font-sans text-sm uppercase leading-4 text-text transition-colors hover:text-accent focus-visible:text-accent lg:inline-flex xl:text-base"
           :class="{ 'text-accent': route.path === ROUTES.VIDEOS }"
         >
-          <PlayMark class="transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110" />
-          <span>Все видео</span>
+          <span class="inline-flex translate-y-px items-center gap-3">
+            <PlayMark class="transition-transform duration-200 group-hover:scale-110 group-focus-visible:scale-110" />
+            <span>Все видео</span>
+          </span>
         </NuxtLink>
 
         <ButtonLink

@@ -1,7 +1,11 @@
 import type { RouterConfig } from '@nuxt/schema'
 
 export default <RouterConfig>{
-  scrollBehavior(to, _from, savedPosition) {
+  scrollBehavior(to, from, savedPosition) {
+    if (to.path === from.path && to.query.play !== from.query.play) {
+      return false
+    }
+
     if (savedPosition) {
       return {
         ...savedPosition,
