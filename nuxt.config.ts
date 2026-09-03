@@ -282,6 +282,8 @@ export default defineNuxtConfig({
     adminEmail: process.env.ADMIN_EMAIL ?? '',
     telegramBotToken: process.env.TELEGRAM_BOT_TOKEN ?? '',
     telegramChatId: process.env.TELEGRAM_CHAT_ID ?? '',
+    botApiKeyId: process.env.BOT_API_KEY_ID ?? '',
+    botApiSecret: process.env.BOT_API_SECRET ?? '',
     indexNowKey: process.env.INDEXNOW_KEY ?? '',
     session: {
       password: process.env.NUXT_SESSION_PASSWORD || process.env.SESSION_SECRET || '',

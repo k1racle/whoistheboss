@@ -330,17 +330,61 @@ model ShareEvent {
 }
 
 model ShootingRequest {
-  id        String        @id @default(cuid())
-  name      String
-  company   String?
-  phone     String?
-  email     String?
-  message   String?       @db.Text
-  status    RequestStatus @default(NEW)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id                 String                    @id @default(cuid())
+  requestNumber      String                    @unique
+  name               String
+  company            String?
+  position           String?
+  phone              String?
+  email              String?
+  message            String?                   @db.Text
+  status             RequestStatus             @default(NEW)
+  source             RequestSource             @default(WEBSITE)
+  externalPlatform   BotPlatform?
+  externalUserId     String?
+  externalChatId     String?
+  externalRequestKey String?                   @unique
+  campaign           String?
+  consentAt          DateTime?
+  assignedAdminKey   String?
+  assignedAdminName  String?
+  nextContactAt      DateTime?
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+  activities         ShootingRequestActivity[]
 
+  @@index([status, createdAt])
+  @@index([externalPlatform, externalUserId, createdAt])
+  @@index([campaign, createdAt])
+  @@index([assignedAdminKey, status])
+  @@index([nextContactAt, status])
   @@map("shooting_requests")
+}
+
+model ShootingRequestActivity {
+  id          String              @id @default(cuid())
+  requestId   String
+  request     ShootingRequest     @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  type        RequestActivityType
+  body        String?             @db.Text
+  actorKey    String?
+  actorName   String?
+  fromStatus  RequestStatus?
+  toStatus    RequestStatus?
+  createdAt   DateTime            @default(now())
+
+  @@index([requestId, createdAt])
+  @@map("shooting_request_activities")
+}
+
+model BotOutboxEvent {
+  id        Int      @id @default(autoincrement())
+  type      String
+  payload   Json
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("bot_outbox_events")
 }
 
 model TrademarkRequest {
@@ -372,6 +416,28 @@ enum RequestStatus {
   IN_PROGRESS
   COMPLETED
   ARCHIVED
+}
+
+enum RequestSource {
+  WEBSITE
+  TELEGRAM
+  MAX
+}
+
+enum BotPlatform {
+  TELEGRAM
+  MAX
+}
+
+enum RequestActivityType {
+  CREATED
+  STATUS_CHANGED
+  ASSIGNED
+  COMMENT
+  MESSAGE_FROM_USER
+  MESSAGE_TO_USER
+  REMINDER_SET
+  USER_CANCELLED
 }
 
 model Subscriber {

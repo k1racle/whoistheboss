@@ -21,6 +21,7 @@ import {
   normalizeVideoFields,
 } from '@server/utils/admin-normalizers'
 import { notifyIndexNow } from '@server/utils/index-now'
+import { enqueuePublicationEvent } from '@server/utils/shooting-requests'
 
 const entrepreneurSummary = { select: { id: true, name: true } } as const
 const citySummary = { select: { id: true, name: true, slug: true } } as const
@@ -118,6 +119,7 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
       include: entrepreneurCityInclude,
     })
     await notifyIndexNow('entrepreneur', null, created)
+    await enqueuePublicationEvent('entrepreneur', null, created)
     return created
   }
 
@@ -160,6 +162,7 @@ export async function handleEntrepreneurs(event: H3Event, path: readonly string[
     include: entrepreneurCityInclude,
   }))
   await notifyIndexNow('entrepreneur', existing, updated)
+  await enqueuePublicationEvent('entrepreneur', existing, updated)
   return updated
 }
 
@@ -186,6 +189,7 @@ export async function handleInterviews(event: H3Event, path: readonly string[]) 
       include: { entrepreneur: entrepreneurSummary },
     })
     await notifyIndexNow('interview', null, created)
+    await enqueuePublicationEvent('interview', null, created)
     return created
   }
 
@@ -214,6 +218,7 @@ export async function handleInterviews(event: H3Event, path: readonly string[]) 
     include: { entrepreneur: entrepreneurSummary },
   })
   await notifyIndexNow('interview', existing, updated)
+  await enqueuePublicationEvent('interview', existing, updated)
   return updated
 }
 
@@ -239,6 +244,7 @@ export async function handleReels(event: H3Event, path: readonly string[]) {
       include: { entrepreneur: entrepreneurSummary },
     })
     await notifyIndexNow('reel', null, created)
+    await enqueuePublicationEvent('reel', null, created)
     return created
   }
 
@@ -266,6 +272,7 @@ export async function handleReels(event: H3Event, path: readonly string[]) {
     include: { entrepreneur: entrepreneurSummary },
   })
   await notifyIndexNow('reel', existing, updated)
+  await enqueuePublicationEvent('reel', existing, updated)
   return updated
 }
 
@@ -293,6 +300,7 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
       include: { entrepreneur: entrepreneurSummary },
     })
     await notifyIndexNow('article', null, created)
+    await enqueuePublicationEvent('article', null, created)
     return created
   }
 
@@ -325,6 +333,7 @@ export async function handleArticles(event: H3Event, path: readonly string[]) {
     include: { entrepreneur: entrepreneurSummary },
   }))
   await notifyIndexNow('article', existing, updated)
+  await enqueuePublicationEvent('article', existing, updated)
   return updated
 }
 
@@ -411,6 +420,7 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
       include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
     })
     await notifyIndexNow('company', null, created)
+    await enqueuePublicationEvent('business', null, created)
     return created
   }
 
@@ -424,5 +434,6 @@ export async function handleBusinesses(event: H3Event, path: readonly string[]) 
     include: { entrepreneur: entrepreneurSummary, presenceCity: citySummary },
   }))
   await notifyIndexNow('company', previous, updated)
+  await enqueuePublicationEvent('business', previous, updated)
   return updated
 }

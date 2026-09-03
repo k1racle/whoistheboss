@@ -241,12 +241,19 @@ export interface AudienceCard {
 
 export interface ShootingRequest {
   id: string;
+  requestNumber: string;
   name: string;
   company?: string | null;
+  position?: string | null;
   phone?: string | null;
   email?: string | null;
   message?: string | null;
   status: 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
+  source: 'WEBSITE' | 'TELEGRAM' | 'MAX';
+  externalPlatform?: 'TELEGRAM' | 'MAX' | null;
+  campaign?: string | null;
+  assignedAdminName?: string | null;
+  nextContactAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

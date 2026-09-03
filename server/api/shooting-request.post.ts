@@ -1,4 +1,3 @@
-import prisma from '~~/lib/prisma'
 import { z } from 'zod'
 import { notifyAdminAboutShootingRequest } from '@server/utils/notify-admin'
 import { enforceRateLimit } from '@server/utils/rate-limit'
@@ -11,6 +10,7 @@ import {
   requestWantsJson,
 } from '@server/utils/request-flow'
 import { assertSameOriginMutation, readLimitedBody } from '@server/utils/request-security'
+import { createShootingRequest } from '@server/utils/shooting-requests'
 
 interface ShootingRequestBody {
   name?: unknown
@@ -60,14 +60,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid input' })
   }
 
-  const data = await prisma.shootingRequest.create({
-    data: {
-      name,
-      phone: phone || null,
-      company: company || null,
-      email: email || null,
-      message: message || null,
-    },
+  const { request: data } = await createShootingRequest({
+    name,
+    phone,
+    company,
+    email,
+    message,
+    source: 'WEBSITE',
   })
 
   void notifyAdminAboutShootingRequest({
@@ -82,5 +81,5 @@ export default defineEventHandler(async (event) => {
     return sendRedirect(event, buildSuccessRedirect(body.redirect), 303)
   }
 
-  return { success: true, id: data.id }
+  return { success: true, id: data.id, requestNumber: data.requestNumber }
 })
