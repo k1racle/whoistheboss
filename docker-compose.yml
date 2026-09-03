@@ -46,6 +46,10 @@ services:
       NUXT_PUBLIC_SITE_DESCRIPTION: ${SITE_DESCRIPTION:-Медиагид о предпринимателях, компаниях, брендах и проектах России.}
       INDEXNOW_KEY: ${INDEXNOW_KEY:-}
       NUXT_INDEX_NOW_KEY: ${INDEXNOW_KEY:-}
+      BOT_API_KEY_ID: "${BOT_API_KEY_ID}"
+      BOT_API_SECRET: "${BOT_API_SECRET}"
+      NUXT_BOT_API_KEY_ID: "${BOT_API_KEY_ID}"
+      NUXT_BOT_API_SECRET: "${BOT_API_SECRET}"
     volumes:
       - uploads:/app/public/uploads
     depends_on:
