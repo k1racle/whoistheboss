@@ -181,6 +181,12 @@ export default defineNuxtConfig({
       ...developmentRouteRules,
       '/admin/**': { proxy: 'http://127.0.0.1:5173/admin/**' },
     },
+    nitro: {
+      // Nitro's dev router treats `:key.txt` as one dynamic parameter and
+      // otherwise intercepts `/` and every single-segment public route.
+      // Production keeps the IndexNow verification endpoint unchanged.
+      ignore: ['routes/[[]key[]].txt.get.ts'],
+    },
   },
 
   nitro: {
