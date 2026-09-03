@@ -13,10 +13,11 @@ export function shootingRequestsView(user?: UserInfo | null) {
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Имя</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Заявка</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Контакты</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Бизнес</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Сообщение</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ответственный</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Статус</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Дата</th>
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Действия</th>
@@ -38,10 +39,11 @@ export function shootingRequestsView(user?: UserInfo | null) {
 function renderRow(item: ShootingRequest): string {
   return `
     <tr data-id="${item.id}">
-      <td class="px-4 py-3 text-sm font-medium text-gray-900">${escapeHtml(item.name)}</td>
+      <td class="px-4 py-3 text-sm font-medium text-gray-900"><strong>${escapeHtml(item.requestNumber)}</strong><br>${escapeHtml(item.name)}<br><span class="text-xs text-gray-500">${escapeHtml(sourceLabel(item.source))}${item.campaign ? ` · ${escapeHtml(item.campaign)}` : ''}</span></td>
       <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.email || '—')}<br>${escapeHtml(item.phone || '')}</td>
-      <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.company || '—')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.company || '—')}<br><span class="text-xs text-gray-500">${escapeHtml(item.position || '')}</span></td>
       <td class="px-4 py-3 text-sm text-gray-700 max-w-xs">${escapeHtml(item.message || '—')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${escapeHtml(item.assignedAdminName || 'Не назначен')}${item.nextContactAt ? `<br><span class="text-xs text-gray-500">Связаться: ${formatDate(item.nextContactAt)}</span>` : ''}</td>
       <td class="px-4 py-3 text-sm">${statusSelect(item)}</td>
       <td class="px-4 py-3 text-sm text-gray-500">${formatDate(item.createdAt)}</td>
       <td class="px-4 py-3 text-sm text-right">
@@ -63,6 +65,10 @@ function statusSelect(item: ShootingRequest): string {
       ${statuses.map((s) => `<option value="${s.value}" ${item.status === s.value ? 'selected' : ''}>${s.label}</option>`).join('')}
     </select>
   `;
+}
+
+function sourceLabel(source: ShootingRequest['source']): string {
+  return { WEBSITE: 'Сайт', TELEGRAM: 'Telegram', MAX: 'MAX' }[source];
 }
 
 function attachActions(items: ShootingRequest[], refresh: () => Promise<void>) {
@@ -107,5 +113,5 @@ function renderLoading(): string {
 }
 
 function emptyRow(): string {
-  return `<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Нет заявок</td></tr>`;
+  return `<tr><td colspan="8" class="px-4 py-8 text-center text-gray-500">Нет заявок</td></tr>`;
 }

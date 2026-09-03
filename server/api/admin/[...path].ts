@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
         result = await handleComments(event, path)
         break
       case 'shooting-requests':
-        result = await handleShootingRequests(event, path)
+        result = await handleShootingRequests(event, path, adminUser)
         break
       case 'trademark-requests':
         result = await handleTrademarkRequests(event, path)

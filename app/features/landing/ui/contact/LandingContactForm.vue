@@ -4,6 +4,7 @@ import InputBasic from '@shared/ui/forms/InputBasic.vue'
 
 defineProps<{
   status: 'idle' | 'loading' | 'success' | 'error'
+  requestNumber?: string
 }>()
 
 const emit = defineEmits<{
@@ -57,7 +58,11 @@ const phone = defineModel<string>('phone', { required: true })
       class="mt-4 font-sans text-sm leading-5"
       role="status"
     >
-      Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.
+      Спасибо! Ваша заявка принята.
+      <span v-if="requestNumber" class="mt-1 block">
+        Номер: <strong>{{ requestNumber }}</strong>. Сохраните его — по номеру заявку можно привязать в Telegram или MAX.
+      </span>
+      <span v-else>Мы свяжемся с вами в ближайшее время.</span>
     </p>
 
     <p

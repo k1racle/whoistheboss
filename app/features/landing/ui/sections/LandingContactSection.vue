@@ -20,6 +20,7 @@ type FormStatus = 'idle' | 'loading' | 'success' | 'error'
 
 const form = reactive({ name: '', phone: '' })
 const status = shallowRef<FormStatus>('idle')
+const requestNumber = shallowRef('')
 
 const canSubmit = computed(
   () => form.name.trim().length >= 2 && form.phone.trim().length >= 5,
@@ -29,11 +30,13 @@ const onSubmit = async () => {
   if (!canSubmit.value || status.value === 'loading') return
 
   status.value = 'loading'
+  requestNumber.value = ''
   try {
-    await $fetch('/api/shooting-request', {
+    const response = await $fetch<{ success: true, requestNumber: string }>('/api/shooting-request', {
       method: 'POST',
       body: { name: form.name.trim(), phone: form.phone.trim() },
     })
+    requestNumber.value = response.requestNumber
     status.value = 'success'
     form.name = ''
     form.phone = ''
@@ -59,6 +62,7 @@ const onSubmit = async () => {
         v-model:name="form.name"
         v-model:phone="form.phone"
         class="self-stretch"
+        :request-number="requestNumber"
         :status="status"
         @submit="onSubmit"
       />

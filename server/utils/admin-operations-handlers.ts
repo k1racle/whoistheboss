@@ -25,6 +25,7 @@ import {
   socialLinksSchema,
 } from '@server/utils/site-footer'
 import { readPagination } from '@server/utils/pagination'
+import { enqueueRequestEvent } from '@server/utils/shooting-requests'
 
 const publicUserSelect = {
   id: true,
@@ -157,7 +158,7 @@ export async function handleComments(event: H3Event, path: readonly string[]) {
   return { ok: true }
 }
 
-export async function handleShootingRequests(event: H3Event, path: readonly string[]) {
+export async function handleShootingRequests(event: H3Event, path: readonly string[], currentUser?: PublicSessionUser) {
   if (path.length === 0) {
     requireAdminMethod(event, ['GET'])
     const { limit, offset } = readPagination(event, { defaultLimit: 100, maxLimit: 250 })
@@ -176,7 +177,24 @@ export async function handleShootingRequests(event: H3Event, path: readonly stri
     const data = await readAdminBody(event, shootingRequestStatusSchema)
     const existing = await prisma.shootingRequest.findUnique({ where: { id } })
     if (!existing) throwAdminError(404, 'Request not found')
-    return prisma.shootingRequest.update({ where: { id }, data: { status: data.status } })
+    const updated = await prisma.$transaction(async (tx) => {
+      const request = await tx.shootingRequest.update({ where: { id }, data: { status: data.status } })
+      if (existing.status !== data.status) {
+        await tx.shootingRequestActivity.create({
+          data: {
+            requestId: id,
+            type: 'STATUS_CHANGED',
+            actorKey: currentUser?.id || null,
+            actorName: currentUser?.name || null,
+            fromStatus: existing.status,
+            toStatus: data.status,
+          },
+        })
+      }
+      return request
+    })
+    await enqueueRequestEvent('request.status_changed', id)
+    return updated
   }
 
   if (action) throwAdminError(404, 'Not found')
